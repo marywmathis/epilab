@@ -287,117 +287,53 @@ NAV_STRUCTURE = [
 if "current_page" not in st.session_state:
     st.session_state["current_page"] = "home"
 
-# ── Minimal sidebar CSS ─────────────────────────────────────
-st.markdown("""
-<style>
-section[data-testid="stSidebar"] > div:first-child {
-  background-color: #f8f9fb !important;
-  padding-top: 1rem !important;
-}
-/* Style the selectbox labels */
-section[data-testid="stSidebar"] .stSelectbox label {
-  font-size: 9.5px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.12em !important;
-  text-transform: uppercase !important;
-  color: #a0aec0 !important;
-}
-/* Log out button */
-section[data-testid="stSidebar"] button {
-  background: transparent !important;
-  border: 1px solid #e2e8f0 !important;
-  box-shadow: none !important;
-  color: #718096 !important;
-  font-size: 12px !important;
-}
-section[data-testid="stSidebar"] button:hover {
-  background: #eef1fb !important;
-  color: #1a56db !important;
-  border-color: #bee3f8 !important;
-  box-shadow: none !important;
-}
-</style>
-""", unsafe_allow_html=True)
+# ── NAVIGATION ────────────────────────────────────────────────
+if "current_page" not in st.session_state:
+    st.session_state["current_page"] = "study_designs"
 
-# Build page lookup
-_PAGE_LOOKUP = {
-    key: (icon, label, subtitle, section_title)
-    for section_title, items in NAV_STRUCTURE
-    for key, icon, label, subtitle in items
-}
+ALL_PAGES = [
+    ("📐 Study Designs",                "study_designs"),
+    ("⚠️ Bias",                          "bias"),
+    ("🔀 Confounding & Effect Mod.",     "confounding"),
+    ("🔗 Causal Inference",              "causal_inference"),
+    ("📊 Disease Frequency",             "disease_frequency"),
+    ("🔬 Screening & Diagnostics",       "screening"),
+    ("📈 Measures of Association",       "measures_association"),
+    ("📉 Advanced Epi Measures",         "advanced_measures"),
+    ("📏 Standardization",               "standardization"),
+    ("🧪 Hypothesis Testing & Power",    "hypothesis_testing"),
+    ("🎯 Practice: Study Design",        "practice_design"),
+    ("🎯 Practice: Advanced Measures",   "practice_advanced"),
+    ("🎯 Practice: Confounding & Bias",  "practice_confounding"),
+    ("🎯 Practice: Screening & Freq.",   "practice_screening"),
+    ("📖 Glossary",                      "glossary"),
+]
+PAGE_LABELS = [p[0] for p in ALL_PAGES]
+PAGE_KEYS   = [p[1] for p in ALL_PAGES]
 
 with st.sidebar:
-    user = st.session_state.get("current_user", "")
-    st.markdown(
-        f"<div style='padding:0 2px 12px 2px;'>"
-        f"<div style='font-size:20px;font-weight:800;color:#1a202c;line-height:1.2;'>🧭 EpiLab</div>"
-        f"<div style='font-size:11px;color:#a0aec0;margin-top:2px;'>Logged in as "
-        f"<b style='color:#4a5568;'>{user}</b></div>"
-        f"</div>",
-        unsafe_allow_html=True
-    )
-    if st.button("↩ Log Out", key="logout_sidebar", use_container_width=True):
+    st.markdown(f"### 🧭 EpiLab")
+    st.caption(f"Logged in as **{st.session_state.get('current_user', '')}**")
+    if st.button("↩ Log Out", key="logout_btn"):
         st.session_state["authenticated"] = False
-        st.session_state["current_user"] = ""
+        st.rerun()
+    st.divider()
+    cur = st.session_state.get("current_page", "study_designs")
+    cur_idx = PAGE_KEYS.index(cur) if cur in PAGE_KEYS else 0
+    chosen = st.radio("", PAGE_LABELS, index=cur_idx, label_visibility="collapsed")
+    chosen_key = PAGE_KEYS[PAGE_LABELS.index(chosen)]
+    if chosen_key != cur:
+        st.session_state["current_page"] = chosen_key
         st.rerun()
 
-    st.markdown("<div style='border-top:1px solid #e2e8f0;margin:12px 0 4px 0;'></div>",
-                unsafe_allow_html=True)
+current_page = st.session_state.get("current_page", "study_designs")
 
-    current_page = st.session_state["current_page"]
-
-    # One selectbox per module — purely native Streamlit
-    for s_idx, (section_title, items) in enumerate(NAV_STRUCTURE):
-        option_labels = [f"{icon}  {label}" for key, icon, label, subtitle in items]
-        option_keys   = [key for key, icon, label, subtitle in items]
-
-        # Default index: active page if it's in this section, else 0
-        cur_idx = next((i for i, k in enumerate(option_keys) if k == current_page), 0)
-
-        chosen_label = st.selectbox(
-            section_title,
-            options=option_labels,
-            index=cur_idx,
-            key=f"sel_mod_{s_idx}",
-        )
-
-        chosen_key = option_keys[option_labels.index(chosen_label)]
-        if chosen_key != current_page:
-            st.session_state["current_page"] = chosen_key
-            st.rerun()
-
-current_page = st.session_state["current_page"]
-
-
-# ==================================================
-# HOME PAGE
-# ==================================================
-if current_page == "home":
-    st.title("🧭 Epidemiology Decision Simulator")
-    st.markdown("*EpiLab Interactive — an interactive epidemiology learning suite*")
-    st.divider()
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("#### 📐 Module 1 — Study Design & Causation")
-        st.markdown("Study designs, bias, confounding & effect modification, causal inference")
-        st.markdown("#### 📊 Module 2 — Foundations")
-        st.markdown("Disease frequency measures, screening & diagnostic test performance")
-        st.markdown("#### 📈 Module 3 — Measures & Analysis")
-        st.markdown("Measures of association, advanced epi measures, standardization, hypothesis testing & power")
-    with col2:
-        st.markdown("#### 🎯 Module 4 — Practice")
-        st.markdown("Apply your knowledge to randomized scenarios with locked feedback")
-        st.markdown("#### 📖 Reference")
-        st.markdown("Glossary of all key terms")
-    st.divider()
-    st.info("**How to use this lab:** Use the sidebar to navigate between modules. Work through Module 1 first if you're new — the concepts build on each other. Each module page has interactive tools and a 'Show me the math' expander. Practice tabs give you scenarios with hidden feedback until you commit an answer.")
-    st.markdown("*Strong epidemiologists think structurally before computing.*")
 
 
 # ==================================================
 # MODULE 1: STUDY DESIGNS
 # ==================================================
-elif current_page == "study_designs":
+if current_page == "study_designs":
     st.title("📐 Study Designs")
     st.markdown("Epidemiologic study design determines what measure of association you can calculate, what biases are possible, and how strong the evidence for causation can be.")
 

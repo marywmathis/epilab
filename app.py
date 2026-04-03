@@ -319,13 +319,6 @@ section[data-testid="stSidebar"] button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-# Build page lookup
-_PAGE_LOOKUP = {
-    key: (icon, label, subtitle, section_title)
-    for section_title, items in NAV_STRUCTURE
-    for key, icon, label, subtitle in items
-}
-
 with st.sidebar:
     user = st.session_state.get("current_user", "")
     st.markdown(
@@ -344,60 +337,39 @@ with st.sidebar:
     st.markdown("<div style='border-top:1px solid #e2e8f0;margin:12px 0 4px 0;'></div>",
                 unsafe_allow_html=True)
 
-    current_page = st.session_state["current_page"]
+    current_page = st.session_state.get("current_page", "study_designs")
 
-    # One selectbox per module — purely native Streamlit
+    # Render ALL selectboxes first, then navigate — never rerun mid-loop
+    navigate_to = None
     for s_idx, (section_title, items) in enumerate(NAV_STRUCTURE):
         option_labels = [f"{icon}  {label}" for key, icon, label, subtitle in items]
         option_keys   = [key for key, icon, label, subtitle in items]
-
-        # Default index: active page if it's in this section, else 0
-        cur_idx = next((i for i, k in enumerate(option_keys) if k == current_page), 0)
-
+        cur_idx = option_keys.index(current_page) if current_page in option_keys else 0
         chosen_label = st.selectbox(
             section_title,
             options=option_labels,
             index=cur_idx,
             key=f"sel_mod_{s_idx}",
         )
-
         chosen_key = option_keys[option_labels.index(chosen_label)]
-        if chosen_key != current_page:
-            st.session_state["current_page"] = chosen_key
-            st.rerun()
+        if current_page in option_keys and chosen_key != current_page:
+            navigate_to = chosen_key
 
-current_page = st.session_state["current_page"]
+    # Navigate after ALL selectboxes have rendered
+    if navigate_to:
+        st.session_state["current_page"] = navigate_to
+        st.rerun()
 
-
-# ==================================================
-# HOME PAGE
-# ==================================================
+current_page = st.session_state.get("current_page", "study_designs")
 if current_page == "home":
-    st.title("🧭 Epidemiology Decision Simulator")
-    st.markdown("*EpiLab Interactive — an interactive epidemiology learning suite*")
-    st.divider()
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("#### 📐 Module 1 — Study Design & Causation")
-        st.markdown("Study designs, bias, confounding & effect modification, causal inference")
-        st.markdown("#### 📊 Module 2 — Foundations")
-        st.markdown("Disease frequency measures, screening & diagnostic test performance")
-        st.markdown("#### 📈 Module 3 — Measures & Analysis")
-        st.markdown("Measures of association, advanced epi measures, standardization, hypothesis testing & power")
-    with col2:
-        st.markdown("#### 🎯 Module 4 — Practice")
-        st.markdown("Apply your knowledge to randomized scenarios with locked feedback")
-        st.markdown("#### 📖 Reference")
-        st.markdown("Glossary of all key terms")
-    st.divider()
-    st.info("**How to use this lab:** Use the sidebar to navigate between modules. Work through Module 1 first if you're new — the concepts build on each other. Each module page has interactive tools and a 'Show me the math' expander. Practice tabs give you scenarios with hidden feedback until you commit an answer.")
-    st.markdown("*Strong epidemiologists think structurally before computing.*")
+    current_page = "study_designs"
+    st.session_state["current_page"] = current_page
 
 
 # ==================================================
 # MODULE 1: STUDY DESIGNS
 # ==================================================
-elif current_page == "study_designs":
+if current_page == "study_designs":
     st.title("📐 Study Designs")
     st.markdown("Epidemiologic study design determines what measure of association you can calculate, what biases are possible, and how strong the evidence for causation can be.")
 

@@ -699,7 +699,12 @@ elif current_page == "bias":
     st.markdown("Bias is a **systematic error** that leads to an incorrect estimate of the association between exposure and outcome. Unlike random error, bias does not average out with larger sample sizes.")
     st.info("**Key principle:** Bias operates in one direction — it either inflates or deflates the true association. Recognizing the type of bias helps you predict whether your result is likely an over- or under-estimate.")
 
-    bias_section = st.radio("Section:", ["1️⃣ Selection Bias", "2️⃣ Information Bias", "3️⃣ Bias Direction Exercise"], horizontal=True)
+    bias_section = st.radio("Section:", [
+        "1️⃣ Selection Bias",
+        "2️⃣ Information Bias",
+        "3️⃣ Bias Direction Exercise",
+        "4️⃣ Reliability & Validity"
+    ], horizontal=True)
     st.divider()
 
     if bias_section == "1️⃣ Selection Bias":
@@ -875,6 +880,221 @@ elif current_page == "bias":
                     for k in [f"bias_type_{sid}_{rc}", f"bias_dir_{sid}_{rc}", submitted_key]:
                         if k in st.session_state: del st.session_state[k]
                     st.rerun()
+
+    if bias_section == "4️⃣ Reliability & Validity":
+        st.subheader("Reliability & Validity in Epidemiologic Measurement")
+        st.markdown("""
+Measurement quality underpins the entire enterprise of epidemiology. Every exposure, outcome, and covariate in a study is a measurement — and every measurement can be wrong in two distinct ways: it can be **unreliable** (inconsistent) or **invalid** (systematically off target). Understanding the difference is essential for evaluating study quality and interpreting results.
+        """)
+
+        bulls_html = """
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:16px 0;">
+  <div style="font-weight:700;font-size:14px;color:#1a202c;margin-bottom:12px;text-align:center;">The Bulls-Eye Diagram — Reliability vs. Validity</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:16px;text-align:center;">
+    <div>
+      <svg viewBox="0 0 120 120" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="56" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="40" fill="#fecaca" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="24" fill="#ef4444" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="8" fill="#7f1d1d"/>
+        <circle cx="60" cy="60" r="4" fill="#fbbf24"/>
+        <circle cx="62" cy="58" r="5" fill="#1d4ed8"/><circle cx="58" cy="62" r="5" fill="#1d4ed8"/>
+        <circle cx="61" cy="61" r="5" fill="#1d4ed8"/><circle cx="59" cy="59" r="5" fill="#1d4ed8"/>
+      </svg>
+      <div style="font-weight:700;color:#166534;font-size:12px;margin-top:4px;">✅ Reliable &amp; Valid</div>
+      <div style="font-size:11px;color:#555;margin-top:2px;">Tight cluster on target<br>Low random + systematic error</div>
+    </div>
+    <div>
+      <svg viewBox="0 0 120 120" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="56" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="40" fill="#fecaca" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="24" fill="#ef4444" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="8" fill="#7f1d1d"/>
+        <circle cx="60" cy="60" r="4" fill="#fbbf24"/>
+        <circle cx="90" cy="28" r="5" fill="#1d4ed8"/><circle cx="92" cy="30" r="5" fill="#1d4ed8"/>
+        <circle cx="88" cy="32" r="5" fill="#1d4ed8"/><circle cx="91" cy="29" r="5" fill="#1d4ed8"/>
+      </svg>
+      <div style="font-weight:700;color:#b45309;font-size:12px;margin-top:4px;">⚠️ Reliable, Not Valid</div>
+      <div style="font-size:11px;color:#555;margin-top:2px;">Tight cluster, off target<br>Low random, high systematic error</div>
+    </div>
+    <div>
+      <svg viewBox="0 0 120 120" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="56" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="40" fill="#fecaca" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="24" fill="#ef4444" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="8" fill="#7f1d1d"/>
+        <circle cx="60" cy="60" r="4" fill="#fbbf24"/>
+        <circle cx="40" cy="50" r="5" fill="#1d4ed8"/><circle cx="75" cy="40" r="5" fill="#1d4ed8"/>
+        <circle cx="55" cy="80" r="5" fill="#1d4ed8"/><circle cx="80" cy="72" r="5" fill="#1d4ed8"/>
+      </svg>
+      <div style="font-weight:700;color:#0369a1;font-size:12px;margin-top:4px;">🔵 Valid, Not Reliable</div>
+      <div style="font-size:11px;color:#555;margin-top:2px;">Scattered around target<br>High random, low systematic error</div>
+    </div>
+    <div>
+      <svg viewBox="0 0 120 120" width="120" height="120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="56" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="40" fill="#fecaca" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="24" fill="#ef4444" stroke="#dc2626" stroke-width="2"/>
+        <circle cx="60" cy="60" r="8" fill="#7f1d1d"/>
+        <circle cx="60" cy="60" r="4" fill="#fbbf24"/>
+        <circle cx="88" cy="32" r="5" fill="#1d4ed8"/><circle cx="96" cy="70" r="5" fill="#1d4ed8"/>
+        <circle cx="78" cy="96" r="5" fill="#1d4ed8"/><circle cx="92" cy="48" r="5" fill="#1d4ed8"/>
+      </svg>
+      <div style="font-weight:700;color:#dc2626;font-size:12px;margin-top:4px;">❌ Neither</div>
+      <div style="font-size:11px;color:#555;margin-top:2px;">Scattered and off target<br>High random + systematic error</div>
+    </div>
+  </div>
+  <div style="text-align:center;font-size:11px;color:#718096;margin-top:8px;">🟡 = True value (bulls-eye center) &nbsp;|&nbsp; 🔵 = Measurements</div>
+</div>"""
+        st.markdown(bulls_html, unsafe_allow_html=True)
+
+        st.info("**The fundamental rule:** A measure can be reliable without being valid — it consistently misses the target. But a measure cannot be valid without being reliable — if measurements are scattered randomly, they cannot consistently hit the truth.")
+
+        st.divider()
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("### 🎯 Validity")
+            st.markdown("""
+**Definition:** Does the measure capture what it intends to measure? A valid measure has minimal systematic error (bias).
+
+**Face validity** — Does it *look* like it measures the concept? Weakest form. Example: asking "do you exercise?" has face validity for physical activity.
+
+**Content validity** — Does it cover all relevant dimensions? Example: a diet questionnaire asking only about fat intake has poor content validity for "overall diet quality."
+
+**Criterion validity** — How well does it correlate with a gold standard?
+- *Concurrent:* Measured at the same time as the gold standard
+- *Predictive:* Measured earlier predicts a future outcome
+
+**Construct validity** — Does the measure behave as theoretically expected? Example: a stress scale should correlate positively with cortisol and negatively with wellbeing.
+
+**Internal validity** — Study results are unbiased for the study population. Threatened by bias and confounding.
+
+**External validity (generalizability)** — Findings apply to other populations and settings. Requires internal validity first.
+            """)
+
+        with col2:
+            st.markdown("### 🔁 Reliability")
+            st.markdown("""
+**Definition:** Does the measure produce consistent results under the same conditions? A reliable measure has minimal random error.
+
+**Test-retest reliability** — Same measure, same subjects, two time points. Assumes true value hasn't changed. Example: blood pressure one week apart in stable patients.
+
+**Inter-rater reliability** — Agreement between different raters. Critical for subjective assessments. Measured with **Kappa (κ)**.
+
+**Intra-rater reliability** — Same rater, different occasions. Even skilled pathologists may classify the same slide differently weeks later.
+
+**Internal consistency** — For multi-item scales: do all items measure the same construct? Measured with **Cronbach's alpha (α)**. Acceptable: α ≥ 0.70; excellent: α ≥ 0.90.
+
+**Parallel forms** — Two versions of a test produce similar scores. Relevant for standardized tests with multiple forms.
+            """)
+
+        st.divider()
+        st.markdown("### 📊 Measuring Agreement — Kappa Statistic (κ)")
+        st.markdown("""
+Percent agreement is inflated by **chance agreement**. Two raters randomly classifying with 50/50 probability agree ~50% of the time by chance. Kappa corrects for this.
+
+**κ = (P_observed − P_expected) ÷ (1 − P_expected)**
+        """)
+
+        kappa_html = """
+<div style="overflow-x:auto;margin:12px 0;">
+<table style="border-collapse:collapse;width:100%;font-size:13px;">
+  <tr style="background:#1e40af;color:white;">
+    <th style="padding:10px 14px;text-align:left;">Kappa (κ)</th>
+    <th style="padding:10px 14px;text-align:left;">Interpretation</th>
+    <th style="padding:10px 14px;text-align:left;">Context</th>
+  </tr>
+  <tr style="background:#f8fafc;"><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">&lt; 0.00</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;color:#dc2626;font-weight:600;">Less than chance</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">Systematic disagreement</td></tr>
+  <tr><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">0.00–0.20</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;color:#dc2626;">Slight</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">Unacceptable for research</td></tr>
+  <tr style="background:#f8fafc;"><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">0.21–0.40</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;color:#d97706;">Fair</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">Marginal — needs improvement</td></tr>
+  <tr><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">0.41–0.60</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;color:#d97706;font-weight:600;">Moderate</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">Acceptable for exploratory work</td></tr>
+  <tr style="background:#f8fafc;"><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">0.61–0.80</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;color:#16a34a;font-weight:600;">Substantial</td><td style="padding:9px 14px;border-bottom:1px solid #e2e8f0;">Good — acceptable for most research</td></tr>
+  <tr><td style="padding:9px 14px;">0.81–1.00</td><td style="padding:9px 14px;color:#166534;font-weight:700;">Almost perfect</td><td style="padding:9px 14px;">Excellent — gold standard quality</td></tr>
+</table>
+</div>"""
+        st.markdown(kappa_html, unsafe_allow_html=True)
+
+        st.markdown("#### 🔢 Interactive Kappa Calculator")
+        st.markdown("Enter the 2×2 agreement table between two raters:")
+        k1, k2 = st.columns(2)
+        with k1:
+            a = st.number_input("Both rate POSITIVE (a)", min_value=0, value=45, key="kap_a")
+            b = st.number_input("Rater 1 positive, Rater 2 negative (b)", min_value=0, value=10, key="kap_b")
+        with k2:
+            c = st.number_input("Rater 1 negative, Rater 2 positive (c)", min_value=0, value=5, key="kap_c")
+            d = st.number_input("Both rate NEGATIVE (d)", min_value=0, value=40, key="kap_d")
+
+        N = a + b + c + d
+        if N > 0:
+            p_obs = (a + d) / N
+            p_exp = ((a + b) / N * (a + c) / N) + ((c + d) / N * (b + d) / N)
+            if p_exp < 1:
+                kappa = (p_obs - p_exp) / (1 - p_exp)
+                pct_agree = round(p_obs * 100, 1)
+                kappa_r = round(kappa, 3)
+                if kappa < 0: interp = "Less than chance ❌"
+                elif kappa < 0.21: interp = "Slight ❌"
+                elif kappa < 0.41: interp = "Fair ⚠️"
+                elif kappa < 0.61: interp = "Moderate ✅"
+                elif kappa < 0.81: interp = "Substantial ✅"
+                else: interp = "Almost perfect ✅"
+                c1, c2, c3 = st.columns(3)
+                c1.metric("% Agreement", f"{pct_agree}%")
+                c2.metric("κ (Kappa)", kappa_r)
+                c3.metric("Interpretation", interp)
+                with st.expander("🔢 Show the math"):
+                    st.markdown(f"""
+**N = {N}**
+P_observed = ({a} + {d}) / {N} = **{round(p_obs,4)}**
+P_expected = [{a+b}/{N} × {a+c}/{N}] + [{c+d}/{N} × {b+d}/{N}] = **{round(p_exp,4)}**
+κ = ({round(p_obs,4)} − {round(p_exp,4)}) / (1 − {round(p_exp,4)}) = **{kappa_r}** → {interp}
+
+Simple % agreement was {pct_agree}%. Kappa adjusts for {round(p_exp*100,1)}% expected by chance.
+                    """)
+
+        st.divider()
+        st.markdown("### 🔗 Connection to Misclassification Bias")
+        conn_html = """
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0;">
+  <div style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:6px;padding:14px;">
+    <div style="font-weight:700;color:#dc2626;margin-bottom:8px;">Low Reliability → Non-Differential Misclassification</div>
+    <div style="font-size:12px;color:#7f1d1d;line-height:1.7;">
+      Random measurement error equal across groups → same error rate in cases and controls.<br><br>
+      <b>Effect:</b> Always biases RR/OR <b>toward null</b> (attenuates the true association).<br><br>
+      <b>Example:</b> Self-report physical activity questionnaire with poor test-retest reliability misclassifies active/inactive equally regardless of disease status. True protective effect is underestimated.
+    </div>
+  </div>
+  <div style="background:#fffbeb;border-left:4px solid #d97706;border-radius:6px;padding:14px;">
+    <div style="font-weight:700;color:#92400e;margin-bottom:8px;">Invalid Measure → Differential Misclassification</div>
+    <div style="font-size:12px;color:#78350f;line-height:1.7;">
+      Systematic error differs by group — different error rates in cases vs. controls.<br><br>
+      <b>Effect:</b> Can bias in <b>either direction</b> — toward or away from null.<br><br>
+      <b>Example:</b> Cases recall past exposures more carefully after diagnosis (recall bias). Error rate is higher in controls → OR inflated away from null.
+    </div>
+  </div>
+</div>
+<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:12px 14px;margin-top:4px;font-size:12px;color:#1e40af;line-height:1.7;">
+  <b>Practical implication:</b> A null result with poor measurement reliability may not mean no effect — non-differential misclassification biases toward null. Always evaluate measurement quality before interpreting results.
+</div>"""
+        st.markdown(conn_html, unsafe_allow_html=True)
+
+        with st.expander("📋 Quick Reference Table"):
+            st.markdown("""
+| Concept | Definition | Measured by | Failure effect |
+|---|---|---|---|
+| **Reliability** | Consistency | Kappa (κ), Cronbach's α, ICC | Non-differential misclassification → toward null |
+| **Validity** | Accuracy | Gold standard correlation | Differential misclassification → any direction |
+| **Face validity** | Looks right | Expert judgment | Weakest form |
+| **Content validity** | Covers all dimensions | Expert review | Incomplete construct coverage |
+| **Criterion validity** | Agrees with gold standard | Concurrent/predictive r | Most objective |
+| **Construct validity** | Behaves as expected | Convergent/discriminant | Tests theory |
+| **Internal validity** | Unbiased for study population | Bias/confounding absence | Cannot conclude causation |
+| **External validity** | Generalizes to other settings | Sample representativeness | Limited applicability |
+| **κ < 0.40** | Poor agreement | — | Revise tool or training |
+| **κ 0.61–0.80** | Substantial agreement | — | Acceptable for epi research |
+| **α < 0.70** | Poor internal consistency | — | Items may not measure same construct |
+            """)
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")

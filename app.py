@@ -3790,9 +3790,49 @@ elif current_page == "practice_design":
          "exposure_wrong":{"Categorical (>2 groups)":"❌ High vs. low = two groups = binary."},
          "data":{"type":"contingency","context":"Matched data. OR appropriate — each person is their own control.",
                  "row_names":["High PM2.5 (hazard)","Low PM2.5 (hazard)"],"col_names":["High PM2.5 (control)","Low PM2.5 (control)"],"cells":[[210,480],[95,1315]]}},
+        {"id":"s8","title":"Scenario 7: Sodium Intake & Hypertension (Retrospective Cohort)",
+         "description":"Researchers identify 3,500 adults from a health system's electronic medical records. They review dietary assessments recorded at enrollment 8 years ago, classify each person as high or low sodium intake, then look at hypertension diagnoses recorded in the years since. The researchers are conducting the study today using historical records.",
+         "correct_design":"Cohort",
+         "correct_outcome":"Binary",
+         "correct_exposure":"Binary (2 groups)",
+         "design_hint":"Participants are classified by **exposure** (sodium intake recorded in the past) and the outcome (hypertension) is ascertained afterward — this is the defining logic of a cohort study. Using historical records makes it retrospective, but the design is still cohort.",
+         "outcome_hint":"Hypertension: diagnosed or not diagnosed — two categories = binary.",
+         "exposure_hint":"High vs. low sodium — two groups = binary.",
+         "design_wrong":{
+             "Case-Control":"❌ Case-control starts by recruiting people who already have hypertension (cases) and looks back at sodium intake. Here participants were classified by sodium intake first, then outcomes were assessed — that's cohort logic, even with historical data.",
+             "Cross-sectional":"❌ Cross-sectional measures exposure and outcome at the same point in time. Here sodium was measured first (8 years ago) and hypertension was assessed afterward — temporal separation = cohort.",
+         },
+         "outcome_wrong":{
+             "Categorical (Nominal >2 levels)":"❌ Hypertension is diagnosed or not — two categories = binary.",
+             "Ordinal":"❌ A diagnosis is yes/no = binary.",
+             "Rate (person-time)":"❌ All participants have the same 8-year follow-up period — binary outcome is appropriate here.",
+         },
+         "exposure_wrong":{"Categorical (>2 groups)":"❌ High vs. low sodium = two groups = binary."},
+         "data":{"type":"contingency","context":"Retrospective cohort data. Calculate RR, OR, and chi-square.",
+                 "row_names":["High sodium","Low sodium"],"col_names":["Hypertension","No Hypertension"],"cells":[[312,1188],[198,1802]]}},
+        {"id":"s9","title":"Scenario 8: Country-Level Alcohol Consumption & Liver Cirrhosis",
+         "description":"A researcher compiles data from 42 countries. For each country, she records the national average alcohol consumption (liters per capita per year) and the national age-standardized liver cirrhosis mortality rate (per 100,000). She finds a strong positive correlation (r = 0.74) between the two country-level measures.",
+         "correct_design":"Ecological",
+         "correct_outcome":"Rate (person-time)",
+         "correct_exposure":"Categorical (>2 groups)",
+         "design_hint":"The unit of analysis is **countries**, not individuals. Exposure and outcome are both measured at the aggregate (population) level — this is an ecological study.",
+         "outcome_hint":"Liver cirrhosis mortality rate per 100,000 is a **rate with a person-time denominator** — countries contribute population-years of observation.",
+         "exposure_hint":"Average alcohol consumption is a continuous measure recorded across 42 countries — more than 2 levels = categorical.",
+         "design_wrong":{
+             "Cohort":"❌ A cohort study would follow individual people classified by their own alcohol consumption. Here the data are country averages — no individual-level data exist.",
+             "Cross-sectional":"❌ Cross-sectional studies measure exposure and outcome for individuals at one point in time. Here both are aggregated to the country level — that's ecological.",
+             "Case-Control":"❌ Case-control recruits individuals with and without disease. Here the units are entire countries, not individuals.",
+         },
+         "outcome_wrong":{
+             "Binary":"❌ The outcome is a mortality rate per 100,000 — a continuous rate variable, not a yes/no for each person.",
+             "Categorical (Nominal >2 levels)":"❌ A continuous rate is not an unordered categorical variable.",
+             "Ordinal":"❌ A mortality rate is a continuous measure, not ordered categories.",
+         },
+         "exposure_wrong":{"Binary (2 groups)":"❌ Alcohol consumption in liters per capita is continuous across 42 countries — more than 2 levels = categorical."},
+         "data":None},
     ]
 
-    design_options   = ["— Select —","Cohort","Case-Control","Cross-sectional","Case-Crossover"]
+    design_options   = ["— Select —","Cohort","Case-Control","Cross-sectional","Ecological","Case-Crossover"]
     outcome_options  = ["— Select —","Binary","Categorical (Nominal >2 levels)","Ordinal","Rate (person-time)"]
     exposure_options = ["— Select —","Binary (2 groups)","Categorical (>2 groups)"]
 
@@ -3866,8 +3906,12 @@ elif current_page == "practice_design":
                 st.markdown(f"**Design:** {sc['correct_design']} — {sc['design_hint']}")
                 st.markdown(f"**Outcome:** {sc['correct_outcome']} — {sc['outcome_hint']}")
                 st.markdown(f"**Exposure:** {sc['correct_exposure']} — {sc['exposure_hint']}")
+                if sc.get("data") is None and all_correct:
+                    st.warning("""
+⚠️ **Ecological fallacy reminder:** The correlation of r = 0.74 between country-level alcohol consumption and cirrhosis mortality is compelling — but it cannot tell us whether *individuals* who drink more have higher cirrhosis risk. Countries with high alcohol consumption may differ from low-consumption countries in many other ways (diet, healthcare access, genetic factors, reporting quality). The ecological association could be entirely driven by these confounders. Always be cautious about inferring individual-level risk from group-level data.
+                    """)
 
-            if all_correct and "data" in sc:
+            if all_correct and "data" in sc and sc["data"] is not None:
                 st.markdown("---"); st.markdown("### 📋 Now run the analysis")
                 st.markdown(sc["data"]["context"]); d = sc["data"]
                 if d["type"] in ["contingency","contingency_wide"]:

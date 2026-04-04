@@ -1248,8 +1248,167 @@ Can take any value within a range, including decimals. Measured, not counted.
 > - Time-to-event with censoring → Cox proportional hazards regression (HR)
                     """)
 
+                    # ── Confounding Adjustment Section ──────────────────────
+                    st.divider()
+                    st.markdown("### 🔀 Adjusting for Confounding in This Design")
+                    st.markdown("Choose the stage at which you want to control confounding:")
+
+                    conf_stage = st.radio(
+                        "Control at:",
+                        ["Design stage (before data collection)", "Analysis stage (after data collection)"],
+                        key=f"conf_stage_{design_identified}",
+                        horizontal=True
+                    )
+
+                    if conf_stage == "Design stage (before data collection)":
+                        st.markdown("#### 🏗️ Design-Stage Confounding Control")
+
+                        design_conf_methods = {
+                            "RCT": [
+                                ("🎲 Randomization", "BEST METHOD for RCTs",
+                                 "Randomly assign participants to treatment or control. Randomization distributes both measured AND unmeasured confounders equally across groups — the only method that controls for unknown confounders. With sufficient sample size, all confounders balance by chance.",
+                                 "#166534", "#f0fdf4"),
+                                ("🔲 Stratified randomization", "When known confounders must be balanced",
+                                 "Randomize within strata of an important confounder (e.g., randomize men and women separately). Ensures equal distribution of that confounder even in small samples. Also called 'block randomization by stratum.'",
+                                 "#1d4ed8", "#eff6ff"),
+                                ("🎭 Blinding", "Reduces performance and detection bias",
+                                 "Single-blind: participants unaware of assignment. Double-blind: both participants and assessors unaware. Prevents differential behavior and outcome measurement based on exposure status.",
+                                 "#7c3aed", "#fdf4ff"),
+                            ],
+                            "Cohort": [
+                                ("🚧 Restriction", "Limit study to one level of the confounder",
+                                 "If age is a confounder, restrict to a narrow age range (e.g., 40–50 year olds only). Simple and effective — but reduces sample size and limits generalizability. Cannot control for confounders you haven't thought of.",
+                                 "#166534", "#f0fdf4"),
+                                ("🤝 Matching", "Match exposed and unexposed on confounder values",
+                                 "For each exposed person, find an unexposed person with the same value of the confounder (e.g., same age, sex). Controls confounding by design. Requires matched analysis (conditional logistic regression or McNemar's test). Cannot match on too many variables (matching failure).",
+                                 "#1d4ed8", "#eff6ff"),
+                                ("🔲 Stratified sampling", "Sample equal proportions from confounder strata",
+                                 "Ensure equal representation of confounder levels in exposed and unexposed groups at recruitment. Less common than restriction or matching.",
+                                 "#7c3aed", "#fdf4ff"),
+                            ],
+                            "Case-Control": [
+                                ("🤝 Matching", "Most common design-stage method in case-control studies",
+                                 "Match each case to one or more controls on the confounder (e.g., same age ±2 years, same sex). Eliminates the matched variable as a confounder — it cannot differ between cases and controls by design. CRITICAL: matched design requires matched analysis (conditional logistic regression). Unmatched analysis of matched data gives biased results.",
+                                 "#166534", "#f0fdf4"),
+                                ("🚧 Restriction", "Restrict cases and controls to one level of confounder",
+                                 "Recruit only women, or only non-smokers. Controls that confounder completely but limits generalizability and may reduce the number of eligible cases.",
+                                 "#1d4ed8", "#eff6ff"),
+                            ],
+                            "Cross-Sectional": [
+                                ("🚧 Restriction", "Limit enrollment to one level of the confounder",
+                                 "Enroll only one age group, one sex, one occupation. Controls that confounder but limits external validity.",
+                                 "#166534", "#f0fdf4"),
+                                ("🔲 Stratified sampling", "Ensure balanced confounder distribution",
+                                 "Sample equal proportions from each stratum of the confounder. Less common in cross-sectional surveys.",
+                                 "#1d4ed8", "#eff6ff"),
+                            ],
+                            "Case-Crossover": [
+                                ("🧍 Self-matching (inherent to design)", "Each case is their own control — time-invariant confounders are automatically controlled",
+                                 "The case-crossover design inherently controls for all stable between-person confounders (sex, genetics, baseline health, socioeconomic status, smoking history) because each person is compared only to themselves. This is the primary advantage of the design.",
+                                 "#166534", "#f0fdf4"),
+                            ],
+                            "Ecological": [
+                                ("⚠️ Limited design-stage options", "Ecological studies have very limited ability to control confounding",
+                                 "Since data are aggregate (group-level), individual-level confounding cannot be controlled by design. You can restrict to groups that are similar on key confounders (e.g., only high-income countries), but this limits generalizability and still cannot address unmeasured ecological confounders.",
+                                 "#991b1b", "#fef2f2"),
+                            ],
+                        }
+
+                        methods = design_conf_methods.get(design_identified, [])
+                        for icon_title, subtitle, explanation, color, bg in methods:
+                            st.markdown(f"""
+<div style="background:{bg};border-left:4px solid {color};border-radius:0 8px 8px 0;
+     padding:14px 16px;margin:8px 0;">
+  <div style="font-weight:700;font-size:14px;color:{color};">{icon_title}</div>
+  <div style="font-size:12px;font-weight:600;color:{color};opacity:0.8;margin:2px 0 6px 0;">{subtitle}</div>
+  <div style="font-size:13px;color:#374151;line-height:1.6;">{explanation}</div>
+</div>""", unsafe_allow_html=True)
+
+                    else:  # Analysis stage
+                        st.markdown("#### 📊 Analysis-Stage Confounding Control")
+                        st.markdown("These methods are applied after data collection and work for all observational designs.")
+
+                        analysis_methods = [
+                            ("📊 Stratified Analysis (Mantel-Haenszel)",
+                             "Stratify data by the confounder and calculate a pooled, confounder-adjusted estimate",
+                             """**How it works:** Divide your data into strata of the confounder (e.g., smokers and non-smokers separately). Calculate the measure of association within each stratum. Pool the stratum-specific estimates using Mantel-Haenszel weighting.
+
+**How to detect confounding:** Compare crude estimate to MH-adjusted estimate. If they differ by >10%, the variable is a meaningful confounder.
+
+**How to detect effect modification:** Compare stratum-specific estimates to each other. If they differ substantially, there is effect modification — report separately, don't pool.
+
+**Best for:** Binary confounders or confounders with few levels. Becomes unwieldy with many confounders (stratification table explosion).
+
+**In EpiLab:** The Stratified Analysis tool in Measures of Association → Section 3 demonstrates this with three preset scenarios.""",
+                             "#1d4ed8"),
+                            ("📈 Multivariable Regression",
+                             "Include confounders as covariates in a regression model alongside the exposure",
+                             """**How it works:** Add confounders as additional predictors in the regression model. The coefficient for your exposure is then adjusted for all included confounders simultaneously.
+
+**Which model:**
+- Binary outcome → Logistic regression (OR) or log-binomial regression (RR/PR)
+- Continuous outcome → Linear regression (β coefficient)
+- Count/rate outcome → Poisson regression (IRR)
+- Time-to-event → Cox proportional hazards regression (HR)
+
+**Advantages:** Can adjust for many confounders simultaneously. Can include continuous confounders without categorizing. Standard in modern epidemiology.
+
+**Limitation:** Only controls for measured confounders. Residual confounding from unmeasured variables remains. Model must be correctly specified.""",
+                             "#166534"),
+                            ("⚖️ Propensity Score Methods",
+                             "Model the probability of exposure, then use scores to create comparable groups",
+                             """**How it works:** Build a model predicting the probability of being exposed given all measured covariates. This propensity score summarizes all confounders into one number.
+
+**Uses:**
+- *Matching:* Match exposed and unexposed with similar propensity scores
+- *Weighting (IPTW):* Weight observations by inverse of propensity — creates a pseudo-population where exposure is independent of confounders
+- *Stratification:* Stratify by propensity score quintiles
+
+**Best for:** Situations with many confounders relative to sample size, or when you want to mimic randomization in observational data.
+
+**Limitation:** Only balances measured confounders — unmeasured confounders still cause bias.""",
+                             "#7c3aed"),
+                            ("🔢 Standardization",
+                             "Apply a standard population's weights to remove the effect of a confounder",
+                             """**How it works (direct):** Apply your population's age-specific rates to a standard population's age structure. The resulting standardized rate is what your population's rate would be if it had the standard age structure.
+
+**How it works (indirect):** Apply a reference population's age-specific rates to your population's age structure to calculate expected events. SMR = Observed/Expected.
+
+**Best for:** Controlling confounding by age (or other categorical variables) in rate comparisons across populations.
+
+**Limitation:** Can only standardize for variables with known stratum-specific rates. Does not adjust for individual-level confounders in the same way regression does.""",
+                             "#b45309"),
+                            ("🔬 Instrumental Variable Analysis",
+                             "Advanced: use a variable that affects exposure but not outcome directly",
+                             """**How it works:** Find an instrument — a variable that (1) is associated with the exposure, (2) only affects the outcome through the exposure, and (3) is not associated with confounders. Use it to estimate a causal effect.
+
+**Classic examples:** Mendelian randomization uses genetic variants as instruments. Distance to a specialist as instrument for receiving specialist care.
+
+**Best for:** Unmeasured confounding — when you cannot measure the confounders. The instrument must meet strict assumptions.
+
+**Limitation:** Valid instruments are rare and hard to find. Weak instruments introduce bias. Assumptions are often untestable.""",
+                             "#4b5563"),
+                        ]
+
+                        for title, subtitle, explanation, color in analysis_methods:
+                            with st.expander(f"**{title}** — {subtitle}"):
+                                st.markdown(explanation)
+
+                        st.info("""
+**Choosing between methods:**
+- **1–2 categorical confounders:** Stratification (Mantel-Haenszel) is transparent and easy to explain
+- **3+ confounders or continuous confounders:** Multivariable regression
+- **Many confounders, want to mimic RCT:** Propensity score matching or IPTW
+- **Age confounding in rate comparisons:** Standardization (direct or indirect)
+- **Unmeasured confounding is a concern:** Instrumental variable analysis (if instrument available)
+
+**What no method can do:** Control for confounders that were never measured. This is why *a priori* identification of confounders using DAGs before data collection is essential.
+                        """)
+
                 else:
                     st.info("This combination is unusual — check your data type selections.")
+
+
 
 
 

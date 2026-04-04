@@ -2786,7 +2786,7 @@ The test hasn't changed — only the population it's applied to.
         """)
 
         st.markdown("""
-**Why does this happen?** In a low-prevalence population, there are very few true cases but many disease-free people. Even a very specific test will generate many false positives just because the large pool of non-cases provides many opportunities for false alarms. This is the mathematical basis for why mass screening of low-risk populations often produces more harm (unnecessary follow-up, anxiety, procedures) than benefit.
+**Why does this happen?** In a low-prevalence population, there are very few true cases but an enormous number of disease-free people. Even a test with high specificity — meaning its false positive *rate* is low — will produce a large absolute *number* of false positives when applied to millions of non-cases. A 95% specific test still incorrectly flags 5% of non-cases as positive; in a population of 1,000,000 non-cases, that's 50,000 false positives regardless of how few true cases exist. The problem is not the test's performance — it's the mismatch between the test's false positive rate and the vast size of the non-case pool. This is the mathematical basis for why mass screening of low-risk populations often produces more harm (unnecessary follow-up, anxiety, procedures) than benefit.
         """)
 
     st.markdown("---")

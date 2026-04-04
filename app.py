@@ -257,10 +257,11 @@ def rr_or_explanation_expander(a, b, c, d, row_names, col_names, rr, or_val,
 
 NAV_STRUCTURE = [
     ("MODULE 1 — Study Design & Causation", [
+        ("foundations",         "🏛️", "Foundations",                "Prevention, natural history, PICO"),
         ("study_designs",       "🔬", "Study Designs",             "Cohort, case-control, RCT, crossover"),
         ("bias",                "⚠️", "Bias",                       "Selection, recall, misclassification"),
         ("confounding",         "🔀", "Confounding & Effect Mod.",  "Control methods, stratification, DAGs"),
-        ("causal_inference",    "🔗", "Causal Inference",           "Bradford Hill criteria"),
+        ("causal_inference",    "🔗", "Causal Inference",           "Bradford Hill, Rothman's pies"),
     ]),
     ("MODULE 2 — Foundations", [
         ("disease_frequency",   "📊", "Disease Frequency",          "Incidence, prevalence, epidemic curves"),
@@ -292,6 +293,7 @@ if "current_page" not in st.session_state:
     st.session_state["current_page"] = "study_designs"
 
 ALL_PAGES = [
+    ("🏛️ Foundations",                   "foundations"),
     ("📐 Study Designs",                "study_designs"),
     ("⚠️ Bias",                          "bias"),
     ("🔀 Confounding & Effect Mod.",     "confounding"),
@@ -331,9 +333,548 @@ current_page = st.session_state.get("current_page", "study_designs")
 
 
 # ==================================================
+# MODULE 1: FOUNDATIONS
+# ==================================================
+if current_page == "foundations":
+    st.title("🏛️ Foundations of Epidemiology")
+    st.markdown("Core frameworks that underpin all of epidemiology — how disease develops, how we prevent it, how we study it, and what counts as a cause.")
+
+    found_section = st.radio("Section:", [
+        "1️⃣ Natural History & Levels of Prevention",
+        "2️⃣ Chain of Infection & Infectious Disease",
+        "3️⃣ Herd Immunity & R₀",
+        "4️⃣ Outbreak Investigation — The 10 Steps",
+        "5️⃣ PICO Framework",
+    ], horizontal=True)
+    st.divider()
+
+    # ── SECTION 1: NATURAL HISTORY & LEVELS OF PREVENTION ──
+    if found_section == "1️⃣ Natural History & Levels of Prevention":
+        st.subheader("Natural History of Disease")
+        st.markdown("""
+The **natural history of disease** describes the progression of a disease process in an individual over time without medical intervention. Understanding it tells us *when* and *how* to intervene most effectively.
+        """)
+
+        nh_html = """
+<div style="overflow-x:auto;margin:16px 0;">
+<div style="display:flex;align-items:stretch;gap:0;min-width:600px;">
+  <div style="flex:1;background:#f0fdf4;border:2px solid #16a34a;border-radius:10px 0 0 10px;padding:14px 12px;text-align:center;">
+    <div style="font-size:22px;">🌱</div>
+    <div style="font-weight:700;font-size:12px;color:#166534;margin:4px 0;">STAGE 1</div>
+    <div style="font-weight:700;font-size:13px;color:#166534;">Susceptibility</div>
+    <div style="font-size:11px;color:#14532d;margin-top:6px;line-height:1.5;">No disease present. Risk factors accumulate. Host, agent, and environment interact.<br><br><b>Intervention point:</b><br>Primary prevention</div>
+  </div>
+  <div style="width:28px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;font-size:18px;color:#64748b;">→</div>
+  <div style="flex:1;background:#fffbeb;border:2px solid #d97706;padding:14px 12px;text-align:center;">
+    <div style="font-size:22px;">🔬</div>
+    <div style="font-weight:700;font-size:12px;color:#92400e;margin:4px 0;">STAGE 2</div>
+    <div style="font-weight:700;font-size:13px;color:#92400e;">Subclinical Disease</div>
+    <div style="font-size:11px;color:#78350f;margin-top:6px;line-height:1.5;">Pathological changes underway. No symptoms yet. Disease detectable by screening tests.<br><br><b>Intervention point:</b><br>Secondary prevention</div>
+  </div>
+  <div style="width:28px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;font-size:18px;color:#64748b;">→</div>
+  <div style="flex:1;background:#fef2f2;border:2px solid #dc2626;padding:14px 12px;text-align:center;">
+    <div style="font-size:22px;">🤒</div>
+    <div style="font-weight:700;font-size:12px;color:#991b1b;margin:4px 0;">STAGE 3</div>
+    <div style="font-weight:700;font-size:13px;color:#991b1b;">Clinical Disease</div>
+    <div style="font-size:11px;color:#7f1d1d;margin-top:6px;line-height:1.5;">Signs and symptoms appear. Patient seeks care. Diagnosis made.<br><br><b>Intervention point:</b><br>Secondary & tertiary prevention</div>
+  </div>
+  <div style="width:28px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;font-size:18px;color:#64748b;">→</div>
+  <div style="flex:1;background:#f5f3ff;border:2px solid #7c3aed;border-radius:0 10px 10px 0;padding:14px 12px;text-align:center;">
+    <div style="font-size:22px;">♿</div>
+    <div style="font-weight:700;font-size:12px;color:#5b21b6;margin:4px 0;">STAGE 4</div>
+    <div style="font-weight:700;font-size:13px;color:#5b21b6;">Resolution</div>
+    <div style="font-size:11px;color:#4c1d95;margin-top:6px;line-height:1.5;">Recovery, disability, or death. Chronic disease = prolonged stage 3/4.<br><br><b>Intervention point:</b><br>Tertiary prevention</div>
+  </div>
+</div>
+<div style="margin-top:8px;text-align:center;font-size:11px;color:#718096;">
+  ← The <b>incubation period</b> (infectious) or <b>latency period</b> (chronic) spans stages 1→2
+</div>
+</div>"""
+        st.markdown(nh_html, unsafe_allow_html=True)
+
+        st.divider()
+        st.subheader("Levels of Prevention")
+        st.markdown("Prevention is categorized by *when* in the natural history it acts — before disease, during subclinical stages, or after diagnosis.")
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown("#### 🟢 Primary Prevention")
+            st.markdown("""
+**Goal:** Prevent disease from occurring at all.
+
+**Acts during:** Susceptibility stage — before any pathological change.
+
+**Mechanisms:**
+- Remove or reduce risk factors
+- Strengthen host resistance
+- Alter the environment
+
+**Examples:**
+- Vaccination (before exposure)
+- Seat belts, helmets
+- Tobacco cessation programs
+- Water fluoridation
+- Healthy diet and exercise promotion
+- Occupational safety standards
+
+**Epidemiologic measure:** Incidence — did we prevent new cases?
+            """)
+
+        with col2:
+            st.markdown("#### 🟡 Secondary Prevention")
+            st.markdown("""
+**Goal:** Detect and treat disease early, before symptoms appear or before it progresses.
+
+**Acts during:** Subclinical stage — disease is present but not yet symptomatic.
+
+**Mechanisms:**
+- Screening programs
+- Early diagnosis
+- Prompt treatment to halt progression
+
+**Examples:**
+- Mammography for breast cancer
+- Pap smear for cervical cancer
+- Blood pressure screening
+- Newborn metabolic screening
+- HIV testing in high-risk populations
+
+**Key concept:** Effectiveness requires that early treatment changes the outcome — screening is only valuable if catching disease earlier improves prognosis.
+
+**Epidemiologic measure:** Prevalence detection, lead-time bias
+            """)
+
+        with col3:
+            st.markdown("#### 🔴 Tertiary Prevention")
+            st.markdown("""
+**Goal:** Reduce disability and improve function in those who already have established disease.
+
+**Acts during:** Clinical disease and resolution stages.
+
+**Mechanisms:**
+- Treatment to prevent complications
+- Rehabilitation
+- Disease management programs
+- Palliative care
+
+**Examples:**
+- Cardiac rehab after heart attack
+- Insulin management for diabetics
+- Physical therapy after stroke
+- Cancer pain management
+- Support groups for chronic illness
+
+**Epidemiologic measure:** Case fatality rate, disability-adjusted life years (DALYs), quality of life
+
+**Quaternary prevention:** Protect patients from unnecessary or harmful interventions (overdiagnosis, overtreatment) — increasingly recognized as a fourth level.
+            """)
+
+        st.divider()
+        with st.expander("⚠️ Lead-Time Bias — The Hidden Trap of Screening"):
+            st.markdown("""
+**Lead-time bias** occurs when screening appears to extend survival, but only because disease is detected earlier — not because treatment is more effective.
+
+**Example:** Without screening, a cancer is detected at symptoms and patient lives 2 more years (total disease duration: 10 years). With screening, cancer detected 3 years earlier — patient lives 5 more years from diagnosis. But total lifespan is unchanged. It *looks* like survival improved (5 > 2 years), but no extra time was gained — we just moved the diagnosis earlier.
+
+**The fix:** Use mortality rates (not survival time) to evaluate screening effectiveness, or compare age-standardized disease-specific mortality in screened vs. unscreened populations.
+            """)
+
+        with st.expander("📋 Levels of Prevention — Quick Reference"):
+            st.markdown("""
+| Level | Stage | Goal | Example | Key Measure |
+|---|---|---|---|---|
+| **Primary** | Susceptibility | Prevent disease occurrence | Vaccination, seat belts | Incidence |
+| **Secondary** | Subclinical | Early detection & treatment | Mammography, Pap smear | Prevalence detected, CFR |
+| **Tertiary** | Clinical/Resolution | Reduce disability & complications | Cardiac rehab, diabetes management | DALYs, QoL, CFR |
+| **Quaternary** | Any | Prevent over-medicalization | Avoiding unnecessary surgery | Iatrogenic harm rates |
+            """)
+
+    # ── SECTION 2: CHAIN OF INFECTION ──
+    elif found_section == "2️⃣ Chain of Infection & Infectious Disease":
+        st.subheader("The Chain of Infection")
+        st.markdown("""
+Infectious disease transmission requires an unbroken **chain of infection** — six linked components. Breaking any single link prevents transmission. This framework guides outbreak investigation and infection control.
+        """)
+
+        chain_html = """
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:16px 0;overflow-x:auto;">
+<div style="display:flex;align-items:center;gap:0;min-width:700px;justify-content:center;">
+
+  <div style="text-align:center;width:110px;">
+    <div style="background:#fef2f2;border:2px solid #dc2626;border-radius:50%;width:80px;height:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:28px;">🦠</div>
+    <div style="font-weight:700;font-size:11px;color:#dc2626;margin-top:6px;">1. AGENT</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">Pathogen causing disease<br>(bacteria, virus, prion)</div>
+  </div>
+  <div style="font-size:20px;color:#94a3b8;padding:0 4px;margin-bottom:20px;">→</div>
+
+  <div style="text-align:center;width:110px;">
+    <div style="background:#fff7ed;border:2px solid #ea580c;border-radius:50%;width:80px;height:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:28px;">🏠</div>
+    <div style="font-weight:700;font-size:11px;color:#ea580c;margin-top:6px;">2. RESERVOIR</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">Where agent lives & multiplies<br>(human, animal, soil, water)</div>
+  </div>
+  <div style="font-size:20px;color:#94a3b8;padding:0 4px;margin-bottom:20px;">→</div>
+
+  <div style="text-align:center;width:110px;">
+    <div style="background:#fefce8;border:2px solid #ca8a04;border-radius:50%;width:80px;height:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:28px;">🚪</div>
+    <div style="font-weight:700;font-size:11px;color:#ca8a04;margin-top:6px;">3. PORTAL OF EXIT</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">How agent leaves reservoir<br>(respiratory, fecal, blood)</div>
+  </div>
+  <div style="font-size:20px;color:#94a3b8;padding:0 4px;margin-bottom:20px;">→</div>
+
+  <div style="text-align:center;width:110px;">
+    <div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:50%;width:80px;height:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:28px;">✈️</div>
+    <div style="font-weight:700;font-size:11px;color:#16a34a;margin-top:6px;">4. MODE OF TRANSMISSION</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">How agent travels<br>(droplet, contact, vector)</div>
+  </div>
+  <div style="font-size:20px;color:#94a3b8;padding:0 4px;margin-bottom:20px;">→</div>
+
+  <div style="text-align:center;width:110px;">
+    <div style="background:#eff6ff;border:2px solid #2563eb;border-radius:50%;width:80px;height:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:28px;">🚪</div>
+    <div style="font-weight:700;font-size:11px;color:#2563eb;margin-top:6px;">5. PORTAL OF ENTRY</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">How agent enters host<br>(respiratory, GI, skin break)</div>
+  </div>
+  <div style="font-size:20px;color:#94a3b8;padding:0 4px;margin-bottom:20px;">→</div>
+
+  <div style="text-align:center;width:110px;">
+    <div style="background:#fdf4ff;border:2px solid #9333ea;border-radius:50%;width:80px;height:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:28px;">🧑</div>
+    <div style="font-weight:700;font-size:11px;color:#9333ea;margin-top:6px;">6. SUSCEPTIBLE HOST</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">Individual who can be infected<br>(lacking immunity)</div>
+  </div>
+
+</div>
+<div style="text-align:center;margin-top:10px;font-size:11px;color:#718096;">Breaking any single link prevents transmission ✂️</div>
+</div>"""
+        st.markdown(chain_html, unsafe_allow_html=True)
+
+        st.divider()
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### Modes of Transmission")
+            st.markdown("""
+**Direct transmission:**
+- *Direct contact:* Physical touching, sexual contact, biting
+- *Droplet spread:* Large droplets (>5μm) travel short distances (<1m) — influenza, COVID-19
+- *Direct inoculation:* Needlestick, animal bite
+
+**Indirect transmission:**
+- *Airborne:* Droplet nuclei (<5μm) suspended in air, travel >1m — TB, measles, chickenpox
+- *Vehicle-borne:* Contaminated food, water, blood products — Salmonella, hepatitis A
+- *Vector-borne:* Biological (agent replicates in vector — malaria, dengue) or mechanical (agent carried without replication — housefly + feces)
+- *Fomite:* Contaminated inanimate objects — C. diff on hospital surfaces
+
+**Vertical transmission:** Mother to child — in utero, during delivery, breastfeeding (HIV, CMV, syphilis)
+            """)
+
+        with col2:
+            st.markdown("#### Breaking the Chain — Intervention Points")
+            st.markdown("""
+| Link | Intervention examples |
+|---|---|
+| **Agent** | Antivirals, antibiotics, pasteurization |
+| **Reservoir** | Animal control, treating infected individuals |
+| **Portal of exit** | Respiratory precautions, wound coverage |
+| **Transmission** | Hand hygiene, masks, condoms, vector control |
+| **Portal of entry** | PPE, food safety, safe injection practices |
+| **Host** | Vaccination, chemoprophylaxis, nutrition |
+
+**Most effective interventions** target multiple links simultaneously. Vaccination addresses the host *and* reduces the reservoir when coverage is high enough to achieve herd immunity.
+            """)
+
+        st.divider()
+        with st.expander("🦟 Vector-Borne Disease — Biological vs. Mechanical"):
+            st.markdown("""
+**Biological vector:** The pathogen undergoes development or multiplication inside the vector before transmission. The vector is essential to the disease cycle.
+- Mosquito → malaria (Plasmodium matures in mosquito)
+- Tick → Lyme disease (Borrelia multiplies in tick)
+- Sandfly → leishmaniasis
+
+**Mechanical vector:** The vector physically carries the pathogen without it replicating or developing. The vector is just transport.
+- Housefly carrying Salmonella from feces to food
+- Cockroach contaminating food surfaces
+
+**Why it matters for control:** Biological vectors require control of the vector itself (insecticides, bed nets, habitat modification). Mechanical transmission is controlled more by environmental hygiene and food safety.
+            """)
+
+    # ── SECTION 3: HERD IMMUNITY & R₀ ──
+    elif found_section == "3️⃣ Herd Immunity & R₀":
+        st.subheader("Herd Immunity & the Basic Reproduction Number (R₀)")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("### R₀ — Basic Reproduction Number")
+            st.markdown("""
+**Definition:** The average number of secondary cases generated by one infectious individual in a completely susceptible population, in the absence of intervention.
+
+**R₀ = β × κ × D**
+Where:
+- **β** = probability of transmission per contact
+- **κ** = contact rate (contacts per unit time)
+- **D** = duration of infectiousness
+
+**Interpretation:**
+- R₀ < 1 → epidemic dies out
+- R₀ = 1 → endemic equilibrium
+- R₀ > 1 → epidemic grows
+
+**Examples:**
+| Disease | R₀ estimate |
+|---|---|
+| Measles | 12–18 |
+| Chickenpox | 8–12 |
+| COVID-19 (original) | 2–3 |
+| Influenza (seasonal) | 1.2–1.4 |
+| Ebola | 1.5–2.5 |
+| Smallpox | 5–7 |
+
+**Important distinction:** R₀ is a property of the pathogen-population interaction, not of the pathogen alone. The same virus can have different R₀ in different settings (population density, contact patterns, immunity levels).
+            """)
+
+        with col2:
+            st.markdown("### Herd Immunity")
+            st.markdown("""
+**Definition:** Indirect protection of susceptible individuals when a sufficient proportion of the population is immune — immune individuals act as a barrier to transmission, breaking chains of infection.
+
+**Herd immunity threshold (HIT):**
+
+**HIT = 1 − (1/R₀)**
+
+Examples:
+| Disease | R₀ | HIT |
+|---|---|---|
+| Measles | 15 | 93% |
+| Polio | 6 | 83% |
+| COVID-19 | 3 | 67% |
+| Influenza | 1.3 | 23% |
+
+**Sources of herd immunity:**
+- Vaccination (the only ethical route to herd immunity for most diseases)
+- Natural infection (costly — requires widespread disease)
+- Combination of both
+
+**Key nuance:** HIT assumes random mixing. In real populations with clustered susceptibles (vaccine refusers in communities), local outbreaks can occur even with overall population immunity above the HIT.
+            """)
+
+        st.divider()
+
+        # Interactive R₀ calculator
+        st.markdown("### 🔢 Interactive R₀ & Herd Immunity Calculator")
+        col_a, col_b = st.columns(2)
+        with col_a:
+            r0_val = st.slider("R₀ value", 1.0, 20.0, 3.0, 0.1, key="r0_slider")
+            hit = (1 - 1/r0_val) * 100
+            st.metric("Herd Immunity Threshold", f"{round(hit, 1)}%")
+            st.caption(f"Need ≥{round(hit,1)}% immune to stop epidemic spread")
+        with col_b:
+            current_immunity = st.slider("Current population immunity (%)", 0, 100, 60, 1, key="immunity_slider")
+            effective_r = r0_val * (1 - current_immunity/100)
+            st.metric("Effective R (Rₑ)", round(effective_r, 2),
+                      delta="epidemic growing" if effective_r > 1 else "epidemic declining")
+            if effective_r > 1:
+                st.error(f"Rₑ = {round(effective_r,2)} > 1 — epidemic will grow. Need {round(hit-current_immunity,1)}% more immune.")
+            elif effective_r < 1:
+                st.success(f"Rₑ = {round(effective_r,2)} < 1 — epidemic will decline. Herd immunity achieved.")
+            else:
+                st.warning("Rₑ ≈ 1 — endemic equilibrium.")
+
+        with st.expander("🔢 The math behind effective R"):
+            st.markdown(f"""
+**Effective reproduction number (Rₑ):** R₀ × (proportion susceptible)
+= {r0_val} × (1 − {current_immunity/100}) = **{round(effective_r, 3)}**
+
+When {current_immunity}% of the population is immune, only {100-current_immunity}% are susceptible.
+Each infectious person can only transmit to susceptible contacts, so the effective number of secondary cases is reduced from R₀ = {r0_val} to Rₑ = {round(effective_r, 2)}.
+
+**Herd immunity threshold:** 1 − 1/R₀ = 1 − 1/{r0_val} = **{round(hit,1)}%**
+            """)
+
+        st.divider()
+        with st.expander("⚠️ Limitations and Misconceptions"):
+            st.markdown("""
+**R₀ is not fixed:** It changes with behavior, interventions, population density, and viral evolution. Delta and Omicron variants of COVID-19 had much higher R₀ than the original strain.
+
+**Herd immunity is not binary:** It's a threshold, and population immunity is heterogeneous. Even above the HIT, local clusters of susceptibles can sustain outbreaks.
+
+**Vaccine-induced vs. infection-induced immunity:** Both count toward herd immunity, but infection-induced immunity comes at the cost of disease, death, and long-term complications. Vaccination is the ethical path to herd immunity.
+
+**Waning immunity:** As immunity wanes (through time or new variants), effective R rises. Booster programs exist to maintain Rₑ < 1.
+            """)
+
+    # ── SECTION 4: OUTBREAK INVESTIGATION 10 STEPS ──
+    elif found_section == "4️⃣ Outbreak Investigation — The 10 Steps":
+        st.subheader("The 10-Step Outbreak Investigation")
+        st.markdown("""
+When a cluster of cases is reported, epidemiologists follow a systematic process. The steps are not strictly sequential — several happen simultaneously — but the framework ensures nothing is missed.
+        """)
+
+        STEPS = [
+            ("1", "Prepare for Field Work", "#1e40af", "🧳",
+             "Before going anywhere: review the literature on the suspected disease, consult with experts, assemble supplies and lab materials, arrange logistics, ensure legal and ethical authority to investigate.",
+             "Key questions: What is already known about this disease? What lab tests are needed? Who has authority to implement control measures?"),
+            ("2", "Establish the Existence of an Outbreak", "#1d4ed8", "📊",
+             "Determine whether the number of cases exceeds the expected (baseline) level. Compare reported cases to historical rates for the same time, place, and population.",
+             "An epidemic threshold is usually defined as cases exceeding the mean + 2 standard deviations of the historical baseline. Not all clusters are outbreaks — some are artifacts of improved surveillance or reporting."),
+            ("3", "Verify the Diagnosis", "#2563eb", "🔬",
+             "Confirm that cases represent the disease suspected. Review clinical findings, lab results, and case histories. Prevent false alarms from lab error, reporting artifacts, or misdiagnosis.",
+             "Contact the lab, review pathology, interview clinicians. Ensure the diagnostic criteria are applied consistently across cases."),
+            ("4", "Construct a Working Case Definition", "#3b82f6", "📋",
+             "Define who counts as a case. A case definition has four components: person (who), place (where), time (when), and clinical criteria (what symptoms/lab findings).",
+             """**Case definition levels:**
+- **Confirmed:** Laboratory-confirmed disease
+- **Probable:** Clinical criteria met + epidemiological link
+- **Suspected:** Some clinical criteria, no lab or epi link
+
+Case definitions should be sensitive early in an outbreak (to find cases) and refined later as the picture clarifies. A definition that is too narrow misses cases; too broad includes non-cases."""),
+            ("5", "Find Cases Systematically — Case Finding", "#60a5fa", "🔍",
+             "Actively search for additional cases beyond those already reported. Passive surveillance misses cases. Active case finding uses lab records, hospital records, school absenteeism data, and direct community outreach.",
+             "Ask every case: 'Do you know anyone else who is ill?' Review emergency department logs, lab submissions, and pharmacy records for syndromic patterns."),
+            ("6", "Describe the Outbreak — Descriptive Epidemiology", "#7c3aed", "📈",
+             "Characterize cases by person, place, and time. Draw an epidemic curve. Map cases geographically. Describe demographics of cases (age, sex, occupation, behaviors).",
+             """**The epidemic curve** tells you:
+- *Shape:* Point source vs. propagated vs. mixed
+- *Timing:* When did the outbreak peak?
+- *Incubation period:* Width of the curve approximates the incubation range
+- *Are new cases still occurring?* Is the outbreak ongoing?"""),
+            ("7", "Develop Hypotheses", "#9333ea", "💡",
+             "Based on descriptive data, generate hypotheses about the source, mode of transmission, and risk factors. What do cases have in common? Where were they? What did they eat or do?",
+             "Hypotheses should be specific and testable. 'The contaminated chicken salad served at Table 3 at the Saturday event caused illness' is a testable hypothesis. 'Something at the event caused illness' is not."),
+            ("8", "Evaluate Hypotheses — Analytic Epidemiology", "#a855f7", "🧮",
+             "Test hypotheses using analytic study designs. In a defined cohort (e.g., event attendees), calculate attack rates and RRs for each potential vehicle. In a community outbreak, conduct a case-control study.",
+             """**Cohort approach:** All attendees form the cohort. Calculate food-specific attack rates (AR exposed vs. AR unexposed) and RR for each food item. The food with the highest RR and lowest p-value is the likely vehicle.
+
+**Case-control approach:** Cases (ill people) vs. controls (well people). Calculate OR for each exposure. Used when the at-risk population cannot be enumerated."""),
+            ("9", "Implement Control Measures", "#dc2626", "🛑",
+             "Control measures should begin as soon as possible — do not wait for a complete investigation. Implement measures targeted at the most likely source while investigation continues.",
+             """**Control by chain of infection link:**
+- Source: recall contaminated product, close restaurant, treat reservoir
+- Transmission: handwashing advisories, isolation, quarantine
+- Host: prophylaxis, vaccination, advisories to at-risk populations
+
+Document all control measures and their timing for the outbreak report."""),
+            ("10", "Communicate Findings", "#16a34a", "📣",
+             "Write an outbreak investigation report. Communicate findings to public health authorities, the media (if appropriate), affected communities, and the scientific literature.",
+             "The report should include: background, methods, results (epidemic curve, attack rates, OR/RR tables), conclusions, and recommendations. Timely communication prevents additional cases and builds public trust."),
+        ]
+
+        for step in STEPS:
+            num, title, color, icon, desc, detail = step
+            with st.expander(f"{icon} **Step {num}: {title}**"):
+                st.markdown(f"**{desc}**")
+                st.markdown(detail)
+
+        st.divider()
+        with st.expander("📋 Quick Reference — The 10 Steps"):
+            steps_table = "| Step | Name | Key Action |\n|---|---|---|\n"
+            for step in STEPS:
+                num, title, color, icon, desc, detail = step
+                first_sentence = desc.split(".")[0] + "."
+                steps_table += f"| **{num}** | {title} | {first_sentence} |\n"
+            st.markdown(steps_table)
+
+    # ── SECTION 5: PICO ──
+    elif found_section == "5️⃣ PICO Framework":
+        st.subheader("The PICO Framework — Structuring Research Questions")
+        st.markdown("""
+A well-formed research question is the foundation of a good study. The **PICO framework** breaks any clinical or epidemiologic question into four components that map directly onto study design decisions.
+        """)
+
+        pico_html = """
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
+  <div style="background:#eff6ff;border-left:5px solid #2563eb;border-radius:6px;padding:16px;">
+    <div style="font-size:32px;font-weight:900;color:#1d4ed8;">P</div>
+    <div style="font-weight:700;font-size:16px;color:#1e40af;margin-bottom:6px;">Population / Patient</div>
+    <div style="font-size:13px;color:#1e3a8a;line-height:1.6;">
+      Who are you studying? Define the target population by relevant characteristics.<br><br>
+      <b>Questions to ask:</b> What age group? What disease or condition? What setting (community, hospital)? What exposure history?<br><br>
+      <b>Example:</b> "Adults aged 40–65 with newly diagnosed Type 2 diabetes in primary care settings"
+    </div>
+  </div>
+  <div style="background:#f0fdf4;border-left:5px solid #16a34a;border-radius:6px;padding:16px;">
+    <div style="font-size:32px;font-weight:900;color:#16a34a;">I</div>
+    <div style="font-weight:700;font-size:16px;color:#166534;margin-bottom:6px;">Intervention / Exposure</div>
+    <div style="font-size:13px;color:#14532d;line-height:1.6;">
+      What is the exposure, intervention, or risk factor of interest?<br><br>
+      <b>Questions to ask:</b> What is the treatment or exposure? What is the dose/intensity? What is the timing?<br><br>
+      <b>Example:</b> "Structured dietary counseling program (12 sessions over 6 months)"
+    </div>
+  </div>
+  <div style="background:#fffbeb;border-left:5px solid #d97706;border-radius:6px;padding:16px;">
+    <div style="font-size:32px;font-weight:900;color:#d97706;">C</div>
+    <div style="font-weight:700;font-size:16px;color:#92400e;margin-bottom:6px;">Comparison / Control</div>
+    <div style="font-size:13px;color:#78350f;line-height:1.6;">
+      What is the alternative? What are you comparing the intervention/exposure to?<br><br>
+      <b>Questions to ask:</b> Usual care? No treatment? A different exposure level? A different drug?<br><br>
+      <b>Example:</b> "Standard written dietary advice (one session at diagnosis)"
+    </div>
+  </div>
+  <div style="background:#fdf4ff;border-left:5px solid #9333ea;border-radius:6px;padding:16px;">
+    <div style="font-size:32px;font-weight:900;color:#9333ea;">O</div>
+    <div style="font-weight:700;font-size:16px;color:#6b21a8;margin-bottom:6px;">Outcome</div>
+    <div style="font-size:13px;color:#581c87;line-height:1.6;">
+      What are you measuring? What change are you hoping to detect?<br><br>
+      <b>Questions to ask:</b> Primary outcome? Secondary outcomes? How measured? Over what time period?<br><br>
+      <b>Example:</b> "HbA1c reduction at 12 months; secondary: body weight, medication adherence"
+    </div>
+  </div>
+</div>"""
+        st.markdown(pico_html, unsafe_allow_html=True)
+
+        st.info("""
+**Full PICO question from the example:**
+"In adults aged 40–65 with newly diagnosed Type 2 diabetes in primary care (P), does structured dietary counseling over 6 months (I), compared to standard written advice (C), reduce HbA1c at 12 months (O)?"
+
+This question immediately suggests: **RCT** (if assigning intervention) or **cohort study** (if observational). The outcome (HbA1c) suggests continuous measurement. The comparison group is defined. The population is specific enough to guide sampling.
+        """)
+
+        st.divider()
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### PICO → Study Design")
+            st.markdown("""
+| PICO component | Study design implication |
+|---|---|
+| **I = assigned intervention** | RCT |
+| **I = observed exposure** | Cohort or case-control |
+| **O = rare disease** | Case-control |
+| **O = incidence over time** | Cohort |
+| **O = prevalence** | Cross-sectional |
+| **P = defined event attendees** | Cohort (outbreak) |
+| **C = no comparison** | Descriptive only |
+            """)
+
+        with col2:
+            st.markdown("#### PICO Extensions")
+            st.markdown("""
+**PICOT** — adds **T (Time):** Over what follow-up period?
+
+**PICOS** — adds **S (Study design):** What design is appropriate?
+
+**PECO** — used in environmental/observational epi:
+- P = Population
+- E = Exposure (not intervention)
+- C = Comparison
+- O = Outcome
+
+**Systematic reviews use PICO** to define eligibility criteria — studies are included only if their P, I, C, and O match the review's question.
+            """)
+
+        with st.expander("✏️ PICO Builder — Write Your Own"):
+            st.markdown("Use the fields below to structure a research question:")
+            p = st.text_input("P — Population/Patient:", placeholder="e.g., HIV-positive adults on ART in sub-Saharan Africa", key="pico_p")
+            i = st.text_input("I — Intervention/Exposure:", placeholder="e.g., daily high-dose vitamin D supplementation", key="pico_i")
+            c = st.text_input("C — Comparison:", placeholder="e.g., placebo", key="pico_c")
+            o = st.text_input("O — Outcome:", placeholder="e.g., CD4 count at 6 months; tuberculosis incidence", key="pico_o")
+            if p and i and c and o:
+                st.success(f"**Your PICO question:**\n\nIn {p} ({p and 'P'}), does {i} ({i and 'I'}), compared to {c} ({c and 'C'}), affect {o} ({o and 'O'})?")
+                st.markdown(f"> *\"In {p}, does {i}, compared to {c}, affect {o}?\"*")
+
+    st.markdown("---")
+    st.markdown("*Strong epidemiologists ask the right question before choosing the right method.*")
+
+
+# ==================================================
 # MODULE 1: STUDY DESIGNS
 # ==================================================
-if current_page == "study_designs":
+elif current_page == "study_designs":
     st.title("📐 Study Designs")
     st.markdown("Epidemiologic study design determines what measure of association you can calculate, what biases are possible, and how strong the evidence for causation can be.")
 
@@ -2016,7 +2557,11 @@ elif current_page == "causal_inference":
     st.title("🔗 Causal Inference")
     st.markdown("Association does not equal causation. Causal inference is the process of evaluating whether an observed statistical association reflects a true cause-and-effect relationship.")
 
-    ci_section = st.radio("Section:", ["1️⃣ Bradford Hill Criteria", "2️⃣ Criteria Application Exercise"], horizontal=True)
+    ci_section = st.radio("Section:", [
+        "1️⃣ Bradford Hill Criteria",
+        "2️⃣ Criteria Application Exercise",
+        "3️⃣ Rothman's Sufficient-Component Cause Model"
+    ], horizontal=True)
     st.divider()
 
     if ci_section == "1️⃣ Bradford Hill Criteria":
@@ -2086,6 +2631,194 @@ A large prospective cohort (n = 68,000, 10-year follow-up) finds physically inac
                     if extra:
                         st.error(f"**Not clearly supported by the evidence given:** {', '.join(extra)}")
                 st.info(f"**Explanation:** {sc['explanation']}")
+
+    elif ci_section == "3️⃣ Rothman's Sufficient-Component Cause Model":
+        st.subheader("Rothman's Sufficient-Component Cause Model (The Causal Pies)")
+        st.markdown("""
+Kenneth Rothman's **sufficient-component cause model** — often called the "causal pies" — provides a rigorous conceptual framework for thinking about causation in epidemiology. It moves beyond the simple "A causes B" framing to capture how disease actually arises from the joint action of multiple factors.
+        """)
+
+        st.markdown("### Core Concepts")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("""
+**Component cause**
+Any factor that plays a role in producing disease. A component cause alone is not sufficient to cause disease — it must act with other components. Smoking is a component cause of lung cancer, not a sufficient cause by itself (most smokers never get lung cancer).
+
+**Sufficient cause**
+A complete causal mechanism — a minimal set of component causes that, together, inevitably produces disease. "Sufficient" means that given all components, disease is certain. "Minimal" means removing any one component would make it insufficient.
+
+**Necessary cause**
+A component that appears in *every* sufficient cause of a disease — without it, disease cannot occur. HIV is a necessary cause of AIDS. HPV is a necessary cause of cervical cancer.
+
+**Note:** Most exposures in epidemiology are component causes, not necessary causes.
+            """)
+        with col2:
+            st.markdown("""
+**The pie analogy**
+Each "pie" represents one sufficient cause — a complete causal mechanism. Each "slice" of the pie is a component cause. The pie is complete (sufficient) only when all slices are present.
+
+**Key implications:**
+- Disease can have multiple sufficient causes (multiple pies)
+- The same component can appear in more than one sufficient cause
+- Removing any one component from a sufficient cause prevents that pathway
+- We never observe sufficient causes directly — we only observe component causes
+
+**Why this matters for epi:**
+- A factor with modest RR may be the "last piece" in many pies → high PAR%
+- A factor with large RR may complete few pies → low PAR% if rare
+- Interaction = two factors appear together in the same pie
+- This model explains why effect modification (interaction) is the rule, not the exception
+            """)
+
+        st.divider()
+        st.markdown("### 🥧 The Pies — Visual Model")
+
+        pies_html = """
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:16px 0;">
+  <div style="text-align:center;margin-bottom:8px;font-size:13px;color:#4b5563;">
+    Three sufficient causes (pies) for <b>Lung Cancer</b> — each represents a complete causal mechanism
+  </div>
+  <div style="display:flex;gap:40px;justify-content:center;flex-wrap:wrap;">
+
+    <!-- PIE 1 -->
+    <div style="text-align:center;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:6px;font-size:13px;">Sufficient Cause I</div>
+      <svg viewBox="0 0 160 160" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+        <!-- Smoking slice: ~120 deg (large) -->
+        <path d="M80,80 L80,10 A70,70 0 0,1 140.6,45 Z" fill="#ef4444" stroke="white" stroke-width="2"/>
+        <!-- Asbestos: ~80 deg -->
+        <path d="M80,80 L140.6,45 A70,70 0 0,1 140.6,115 Z" fill="#f97316" stroke="white" stroke-width="2"/>
+        <!-- Radon: ~80 deg -->
+        <path d="M80,80 L140.6,115 A70,70 0 0,1 19.4,115 Z" fill="#eab308" stroke="white" stroke-width="2"/>
+        <!-- U (unknown): ~80 deg -->
+        <path d="M80,80 L19.4,115 A70,70 0 0,1 80,10 Z" fill="#94a3b8" stroke="white" stroke-width="2"/>
+        <!-- Labels -->
+        <text x="112" y="55" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Smoking</text>
+        <text x="128" y="85" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Asbestos</text>
+        <text x="85" y="128" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Radon</text>
+        <text x="38" y="85" font-size="9" fill="white" font-weight="bold" text-anchor="middle">U</text>
+      </svg>
+      <div style="font-size:11px;color:#555;margin-top:4px;">Smoking + Asbestos + Radon + Unknown</div>
+    </div>
+
+    <!-- PIE 2 -->
+    <div style="text-align:center;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:6px;font-size:13px;">Sufficient Cause II</div>
+      <svg viewBox="0 0 160 160" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+        <!-- Smoking: ~160 deg (dominant) -->
+        <path d="M80,80 L80,10 A70,70 0 1,1 10.1,97 Z" fill="#ef4444" stroke="white" stroke-width="2"/>
+        <!-- Air pollution: ~100 deg -->
+        <path d="M80,80 L10.1,97 A70,70 0 0,1 80,10 Z" fill="#8b5cf6" stroke="white" stroke-width="2"/>
+        <text x="100" y="75" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Smoking</text>
+        <text x="38" y="115" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Air pollution</text>
+        <text x="48" y="128" font-size="9" fill="white" font-weight="bold" text-anchor="middle">+ U</text>
+      </svg>
+      <div style="font-size:11px;color:#555;margin-top:4px;">Smoking + Air Pollution + Unknown</div>
+    </div>
+
+    <!-- PIE 3 -->
+    <div style="text-align:center;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:6px;font-size:13px;">Sufficient Cause III</div>
+      <svg viewBox="0 0 160 160" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
+        <!-- No smoking - genetic, asbestos, radiation -->
+        <path d="M80,80 L80,10 A70,70 0 0,1 150,80 Z" fill="#06b6d4" stroke="white" stroke-width="2"/>
+        <path d="M80,80 L150,80 A70,70 0 0,1 45,148 Z" fill="#f97316" stroke="white" stroke-width="2"/>
+        <path d="M80,80 L45,148 A70,70 0 0,1 10,80 Z" fill="#10b981" stroke="white" stroke-width="2"/>
+        <path d="M80,80 L10,80 A70,70 0 0,1 80,10 Z" fill="#94a3b8" stroke="white" stroke-width="2"/>
+        <text x="118" y="45" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Genetic</text>
+        <text x="118" y="120" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Asbestos</text>
+        <text x="42" y="120" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Radiation</text>
+        <text x="35" y="68" font-size="9" fill="white" font-weight="bold" text-anchor="middle">U</text>
+      </svg>
+      <div style="font-size:11px;color:#555;margin-top:4px;">Genetic + Asbestos + Radiation + Unknown (no smoking!)</div>
+    </div>
+
+  </div>
+  <div style="margin-top:14px;background:#eff6ff;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;text-align:center;">
+    <b>Smoking appears in Pies I and II but NOT Pie III.</b> It is a component cause but not a necessary cause.
+    Removing smoking eliminates those two pathways — but not all lung cancer. This is why smoking cessation reduces but does not eliminate lung cancer.
+  </div>
+</div>"""
+        st.markdown(pies_html, unsafe_allow_html=True)
+
+        st.divider()
+        st.markdown("### Epidemiologic Implications")
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("""
+#### Strength of Association ≠ Importance
+
+A component that completes many sufficient causes has a high PAR% even if its RR is modest — because removing it prevents disease through many pathways.
+
+A component with a very high RR (e.g., a rare genetic mutation) may complete few sufficient causes and have a low PAR% despite looking "strong."
+
+**The PAR% reflects how many pies contain a given component.**
+
+#### Why Interactions Are Expected
+
+Two factors "interact" (show effect modification) when they appear in the same sufficient cause. Rothman's model predicts that interactions should be the *norm* rather than the exception — because disease rarely arises from single causes.
+
+**Biologic interaction** = two factors in the same causal pie.
+**Statistical interaction** = departure from additive or multiplicative effects.
+            """)
+
+        with col2:
+            st.markdown("""
+#### The Unknown Slices (U)
+
+Every pie in the diagram contains "U" — unknown components. This is Rothman's acknowledgment that:
+- We never identify all component causes
+- PAR%s for known factors rarely sum to 100%
+- The "missing" variance reflects unmeasured or undiscovered components
+
+This is why residual confounding is always present and why effect estimates in observational studies are always tentative.
+
+#### Prevention Implications
+
+**You only need to remove ONE component from a sufficient cause to prevent disease through that pathway.**
+
+This means:
+- Even modest exposures are worth targeting if they appear in many pies
+- You don't need to address all causes simultaneously
+- Removing a common component (like smoking) disrupts many complete mechanisms at once
+
+**This is the theoretical basis for PAR% as a public health metric.**
+            """)
+
+        st.divider()
+        with st.expander("🔢 Quantifying Interaction — Synergy and Antagonism"):
+            st.markdown("""
+**Additive interaction (the epidemiologic standard):**
+When two factors act in the same sufficient cause (same pie), their joint effect exceeds the sum of their individual effects on the additive scale.
+
+**Synergy (positive interaction):**
+RR(AB) > RR(A alone) + RR(B alone) − 1
+
+Example: Asbestos alone → RR = 5; Smoking alone → RR = 10; Asbestos + Smoking → RR = 50
+Expected additive: 5 + 10 − 1 = 14. Observed: 50. Strong synergy → both appear in same sufficient cause.
+
+**Antagonism (negative interaction):**
+The joint effect is less than the sum of individual effects. Less common — may reflect competing mechanisms.
+
+**Why additive, not multiplicative?**
+Rothman argues that the biologically meaningful scale for interaction is additive (excess cases), not multiplicative (ratio). Two factors that simply multiply each other's effects are acting independently on separate sufficient causes.
+            """)
+
+        with st.expander("📋 Key Terms — Rothman's Model"):
+            st.markdown("""
+| Term | Definition |
+|---|---|
+| **Component cause** | A factor that contributes to one or more sufficient causes but alone cannot produce disease |
+| **Sufficient cause** | A minimal set of component causes that inevitably produces disease |
+| **Necessary cause** | A component that appears in every sufficient cause — disease cannot occur without it |
+| **Causal pie** | Visual metaphor: each pie = one sufficient cause; each slice = one component |
+| **Induction period** | Time between the action of a component cause and the initiation of disease |
+| **Latency period** | Time between disease initiation and disease detection |
+| **Biologic synergy** | Two components appear in the same pie — joint effect exceeds additive expectation |
+| **U (unknown)** | Unknown component causes that complete sufficient causes — always present |
+            """)
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")
@@ -2866,7 +3599,8 @@ elif current_page == "screening":
         "1️⃣ Core Concepts",
         "2️⃣ Interactive 2×2 Calculator",
         "3️⃣ Prevalence Effect on PPV",
-        "4️⃣ Likelihood Ratios"
+        "4️⃣ Likelihood Ratios",
+        "5️⃣ Wilson & Jungner Criteria"
     ], horizontal=True)
     st.divider()
 
@@ -3193,6 +3927,97 @@ This is Bayesian reasoning applied to clinical medicine. It's more powerful than
 - Interpretation: Probability of lung cancer drops from 8% to 0.4% — highly reassuring; can pursue other diagnoses
             """)
 
+
+    elif screen_section == "5️⃣ Wilson & Jungner Criteria":
+        st.subheader("Wilson & Jungner Criteria for Screening Programs")
+        st.markdown("""
+In 1968, Wilson and Jungner published a landmark WHO report establishing the criteria that a disease and its screening test must meet before a population-wide screening program is justified. These remain the gold standard framework for evaluating screening programs today.
+        """)
+
+        WJ_CRITERIA = [
+            ("1", "The condition should be an important health problem",
+             "Important means significant burden — high prevalence, serious consequences, or major impact on mortality/quality of life. Rare conditions with minor consequences don't justify population-wide screening programs.",
+             "Breast cancer, colorectal cancer, cervical cancer, neonatal PKU, hypertension"),
+            ("2", "The natural history of the condition should be adequately understood",
+             "You need to know how disease progresses through its natural history stages to identify when screening is most effective and what early-stage disease looks like. Without this knowledge, you can't know whether early detection changes outcomes.",
+             "We must know that there is a detectable preclinical phase that screening can identify"),
+            ("3", "There should be a recognizable latent or early symptomatic stage",
+             "Screening only works if there is a window of time when disease is present but asymptomatic, AND detectable. If disease progresses too rapidly from onset to symptoms, screening has no opportunity to intervene before harm occurs.",
+             "Cervical intraepithelial neoplasia (CIN) before invasive cervical cancer; ductal carcinoma in situ (DCIS) before invasive breast cancer"),
+            ("4", "There should be a suitable test or examination",
+             "The test must be: acceptable to the screened population, sufficiently sensitive to detect disease in the preclinical stage, sufficiently specific to avoid excessive false positives, safe, and feasible at scale.",
+             "Pap smear for cervical cancer; PSA for prostate cancer (controversial — specificity concerns); mammography for breast cancer"),
+            ("5", "The test should be acceptable to the population",
+             "If the target population won't accept the test — due to discomfort, embarrassment, cultural barriers, or perceived risk — uptake will be poor and the program will fail regardless of test performance. Acceptability includes both the test itself and the follow-up procedures required after a positive result.",
+             "Colonoscopy has lower acceptability than FIT (fecal immunochemical test) for colorectal cancer screening"),
+            ("6", "There should be an accepted treatment for patients with recognized disease",
+             "Screening is only ethical if an effective treatment exists. Identifying disease early and then having nothing beneficial to offer — or offering treatment that causes harm without benefit — violates the principle of beneficence. Early detection without effective treatment only extends the period of anxiety, not survival.",
+             "The controversy over prostate cancer screening partly reflects uncertain benefit of early treatment for low-risk disease"),
+            ("7", "Facilities for diagnosis and treatment should be available",
+             "Screening creates downstream demand for diagnostic workup (biopsy, imaging, specialist review) and treatment. If these facilities are unavailable or inaccessible, positive screens lead to anxiety without resolution. Healthcare system capacity must be considered before launching a program.",
+             "Introducing mammography screening in a setting without surgical or radiotherapy capacity is counterproductive"),
+            ("8", "There should be an agreed policy on whom to treat as patients",
+             "The criteria for who gets treated after a positive screen must be clear and consistently applied. Ambiguous treatment thresholds lead to inconsistent care and either over-treatment of indolent disease or under-treatment of serious disease.",
+             "PSA thresholds for prostate biopsy; colposcopy referral thresholds after abnormal Pap smear"),
+            ("9", "The cost of case-finding should be economically balanced in relation to possible expenditure on medical care as a whole",
+             "A cost-effectiveness analysis should show that the screening program provides value relative to other uses of healthcare resources. Costs include the test itself, false positive workup, treatment of screen-detected cases, and management of overdiagnosed cases.",
+             "Cost per QALY (quality-adjusted life year) gained is the standard metric for evaluating screening cost-effectiveness"),
+            ("10", "Case-finding should be a continuing process and not a 'once and for all' project",
+             "Screening programs require ongoing surveillance, quality assurance, and re-screening at appropriate intervals. A one-time screen misses cases that develop after the screening date. Regular re-screening at evidence-based intervals is required.",
+             "Cervical cancer screening every 3–5 years; mammography every 1–2 years depending on age and risk"),
+        ]
+
+        for num, criterion, explanation, example in WJ_CRITERIA:
+            with st.expander(f"**Criterion {num}:** {criterion}"):
+                st.markdown(f"**Why it matters:** {explanation}")
+                st.info(f"**Example:** {example}")
+
+        st.divider()
+
+        # Modern application
+        st.markdown("#### Applying Wilson & Jungner — Cervical Cancer Screening")
+        st.markdown("""
+Cervical cancer screening (Pap smear / HPV test) is often cited as the most successful screening program in history. It satisfies all 10 criteria:
+
+| Criterion | How cervical screening meets it |
+|---|---|
+| 1. Important health problem | Leading cause of cancer death in women in low-resource settings |
+| 2. Natural history understood | HPV → CIN → invasive cancer over 10–20 years is well characterized |
+| 3. Latent stage | CIN (precancerous lesion) is detectable years before invasion |
+| 4. Suitable test | Pap smear (sensitivity 55–80%) + HPV co-testing (sensitivity >90%) |
+| 5. Acceptable | Accepted by most women; efforts underway to improve uptake in underserved groups |
+| 6. Effective treatment | CIN treated by LEEP/cryotherapy; early invasive cancer curable by surgery |
+| 7. Facilities available | Colposcopy and treatment available in most healthcare settings |
+| 8. Treatment policy agreed | Clear guidelines for CIN 1 vs. CIN 2/3 management |
+| 9. Cost-effective | One of the most cost-effective cancer interventions known |
+| 10. Ongoing program | Re-screening every 3–5 years based on age and risk |
+        """)
+
+        st.warning("""
+**Where Wilson & Jungner criteria are NOT met — PSA screening for prostate cancer:**
+- Criterion 4: PSA has poor specificity (many false positives → unnecessary biopsies)
+- Criterion 6: Treatment benefit for low-risk, screen-detected prostate cancer is uncertain
+- Criterion 8: No consensus on treatment thresholds — leads to significant overtreatment
+- Criterion 9: High cost from false positive workups; overdiagnosis of indolent disease
+
+This is why PSA screening recommendations are inconsistent across countries and guidelines.
+        """)
+
+        with st.expander("📋 Wilson & Jungner Criteria — Quick Reference"):
+            st.markdown("""
+| # | Criterion | Key question |
+|---|---|---|
+| 1 | Important health problem | Is the disease burden sufficient to justify screening? |
+| 2 | Natural history understood | Do we know how disease progresses? |
+| 3 | Latent/early stage exists | Is there a detectable pre-symptomatic window? |
+| 4 | Suitable test | Is the test sensitive, specific, safe, and feasible? |
+| 5 | Acceptable to population | Will people accept the test? |
+| 6 | Effective treatment exists | Does early detection improve outcomes? |
+| 7 | Facilities available | Can we follow up positive screens? |
+| 8 | Treatment policy agreed | Do we know who to treat and how? |
+| 9 | Cost-effective | Is the benefit worth the cost? |
+| 10 | Ongoing program | Is re-screening at intervals feasible? |
+            """)
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")
@@ -5691,6 +6516,142 @@ Applies reference population's age-specific rates to study group's age structure
 
 **Confounding by Age**
 Apparent rate difference due to different age structures, not true disease burden. Standardization removes this. The most common confounder in disease frequency comparisons across populations.
+        """)
+
+    with st.expander("🎯 Reliability & Validity"):
+        st.markdown("""
+**Validity**
+Whether a measure captures what it intends to measure. A valid measure has minimal systematic error (bias). Distinct from reliability.
+
+**Face Validity**
+The measure *looks* like it measures the concept. Weakest form of validity. Example: asking "do you exercise?" has face validity for physical activity.
+
+**Content Validity**
+The measure covers all relevant dimensions of the construct. Example: a diet questionnaire asking only about fat has poor content validity for "overall diet quality."
+
+**Criterion Validity**
+How well the measure correlates with a gold standard.
+- *Concurrent validity:* Measured at the same time as the gold standard
+- *Predictive validity:* An earlier measure predicts a future outcome
+
+**Construct Validity**
+The measure behaves as theoretically expected — correlates with related constructs and doesn't correlate with unrelated ones.
+
+**Internal Validity**
+Study results accurately reflect the true relationship in the study population. Threatened by bias and confounding.
+
+**External Validity (Generalizability)**
+Study findings apply to populations and settings beyond the study. Requires internal validity first.
+
+**Reliability**
+Whether a measure produces consistent results under the same conditions. A reliable measure has minimal random error.
+
+**Test-Retest Reliability**
+Same measure applied to same subjects at two time points. Assumes the underlying construct hasn't changed.
+
+**Inter-Rater Reliability**
+Agreement between different observers measuring the same thing. Measured with **Kappa (κ)**.
+
+**Intra-Rater Reliability**
+Consistency of the same observer measuring the same thing at different times.
+
+**Internal Consistency**
+For multi-item scales: do all items measure the same construct? Measured with **Cronbach's alpha (α)**. Acceptable: α ≥ 0.70.
+
+**Kappa (κ)**
+Measure of inter-rater agreement beyond chance. κ = (P_observed − P_expected) ÷ (1 − P_expected). Benchmarks: <0.20 = slight; 0.21–0.40 = fair; 0.41–0.60 = moderate; 0.61–0.80 = substantial; >0.80 = almost perfect.
+
+**Cronbach's Alpha (α)**
+Measure of internal consistency for multi-item scales. Ranges 0–1. α ≥ 0.70 acceptable; α ≥ 0.90 excellent.
+
+**The Reliability-Validity Relationship**
+A measure can be reliable without being valid (consistently wrong). A measure cannot be valid without being reliable (random scatter cannot consistently hit the truth). Reliability is necessary but not sufficient for validity.
+
+**Connection to Misclassification**
+Low reliability → random measurement error → non-differential misclassification → bias toward null.
+Invalid measurement → systematic error differing by group → differential misclassification → bias in either direction.
+        """)
+
+    with st.expander("🏛️ Foundations — Prevention, Infection & Causation"):
+        st.markdown("""
+**Natural History of Disease**
+The progression of disease in an individual over time without intervention. Four stages: (1) Susceptibility — no disease, risk factors accumulate; (2) Subclinical — pathological changes underway, no symptoms, detectable by screening; (3) Clinical — signs and symptoms present; (4) Resolution — recovery, disability, or death.
+
+**Primary Prevention**
+Preventing disease before it occurs. Acts during the susceptibility stage. Examples: vaccination, seat belts, smoking cessation, water fluoridation. Measured by incidence reduction.
+
+**Secondary Prevention**
+Early detection and treatment before symptoms appear. Acts during the subclinical stage. Examples: mammography, Pap smear, blood pressure screening. Requires a detectable preclinical phase and effective early treatment.
+
+**Tertiary Prevention**
+Reducing disability and complications in those with established disease. Acts during clinical and resolution stages. Examples: cardiac rehabilitation, diabetes management, physical therapy after stroke.
+
+**Quaternary Prevention**
+Protecting patients from unnecessary or harmful interventions — overdiagnosis, overtreatment, and iatrogenic harm. Increasingly recognized as a fourth level.
+
+**Lead-Time Bias**
+When screening appears to extend survival only because disease is detected earlier, not because treatment is more effective. Total lifespan is unchanged — the clock starts earlier. Use mortality rates (not survival time) to evaluate screening effectiveness.
+
+**Chain of Infection**
+Six-link framework for infectious disease transmission: (1) Agent, (2) Reservoir, (3) Portal of Exit, (4) Mode of Transmission, (5) Portal of Entry, (6) Susceptible Host. Breaking any one link prevents transmission.
+
+**Reservoir**
+Where an infectious agent normally lives and multiplies. Can be human, animal (zoonosis), or environmental (soil, water).
+
+**Portal of Exit / Portal of Entry**
+How an agent leaves the reservoir and enters a new host. Common portals: respiratory tract, gastrointestinal tract, skin breaks, blood, mucous membranes.
+
+**Mode of Transmission**
+How an agent travels from reservoir to host. Direct (contact, droplet, vertical) or indirect (airborne, vehicle-borne, vector-borne, fomite).
+
+**Airborne vs. Droplet Transmission**
+Droplet: large particles (>5μm), travel <1m, fall quickly (influenza, COVID-19). Airborne: droplet nuclei (<5μm), remain suspended, travel >1m (TB, measles, chickenpox).
+
+**Vector-Borne Transmission**
+Biological vector: pathogen replicates inside vector (malaria, dengue, Lyme). Mechanical vector: pathogen transported without replication (housefly + Salmonella).
+
+**R₀ (Basic Reproduction Number)**
+Average number of secondary cases from one infectious individual in a fully susceptible population with no intervention. R₀ = β × κ × D (transmission probability × contact rate × duration of infectiousness). R₀ < 1 → epidemic dies out; R₀ > 1 → epidemic grows.
+
+**Effective Reproduction Number (Rₑ)**
+R₀ adjusted for current population immunity: Rₑ = R₀ × (proportion susceptible). Rₑ < 1 → epidemic declining; Rₑ > 1 → epidemic growing.
+
+**Herd Immunity**
+Indirect protection of susceptibles when enough of the population is immune to break transmission chains. Herd Immunity Threshold (HIT) = 1 − 1/R₀. Above the HIT, Rₑ < 1 and epidemic declines.
+
+**Incubation Period**
+Time from exposure (infection) to onset of symptoms. Range of incubation periods approximates the width of the epidemic curve in a point-source outbreak.
+
+**Latency Period**
+Time between infection/initiation and detectable disease. In chronic disease, the latency period (subclinical stage) can span years to decades.
+
+**Wilson & Jungner Criteria (1968)**
+Ten WHO criteria for justifying a population-wide screening program: (1) important health problem, (2) natural history understood, (3) latent/early stage exists, (4) suitable test, (5) test acceptable to population, (6) effective treatment exists, (7) facilities available, (8) treatment policy agreed, (9) cost-effective, (10) ongoing program. All 10 must be met.
+
+**PICO Framework**
+Structured approach to forming research questions: P = Population/Patient, I = Intervention/Exposure, C = Comparison/Control, O = Outcome. Maps directly onto study design choice. Variants: PICOT (adds Time), PECO (uses Exposure instead of Intervention for observational studies).
+
+**Rothman's Sufficient-Component Cause Model (Causal Pies)**
+A causal framework where disease results from the joint action of multiple component causes forming a sufficient cause. Each "pie" is a complete causal mechanism; each "slice" is a component cause. Key concepts:
+- **Component cause:** A factor that contributes to ≥1 sufficient cause but alone cannot produce disease
+- **Sufficient cause:** A minimal set of components that inevitably produces disease
+- **Necessary cause:** Appears in every sufficient cause — disease cannot occur without it
+- **U (unknown):** Unknown components always present — explains why PAR%s don't sum to 100%
+
+**Biologic Synergy (Rothman)**
+Two component causes that appear in the same sufficient cause. Their joint effect exceeds the sum of their individual effects on the additive scale. Synergy is expected, not exceptional, under Rothman's model.
+
+**Induction Period**
+Time between the action of a component cause and the completion of the sufficient cause (initiation of disease). Different from latency period (disease initiation to detection).
+
+**PAR% and the Causal Pies**
+PAR% reflects how many sufficient causes contain a given component — how many "pies" it appears in. A common exposure with modest RR can have high PAR% because it completes many pathways. Removing it disrupts all those pathways simultaneously.
+
+**Outbreak Investigation — The 10 Steps**
+Systematic framework: (1) Prepare for field work, (2) Establish outbreak exists, (3) Verify diagnosis, (4) Construct case definition, (5) Find cases systematically, (6) Describe by person/place/time, (7) Develop hypotheses, (8) Test hypotheses analytically, (9) Implement control measures, (10) Communicate findings. Steps 9 and 10 begin as early as possible — do not wait for complete investigation.
+
+**Case Definition**
+Criteria defining who counts as a case in an outbreak investigation. Components: person (who), place (where), time (when), clinical criteria (what). Levels: Confirmed (lab-proven), Probable (clinical + epi link), Suspected (some clinical criteria). Sensitive early in outbreak; refined as investigation proceeds.
         """)
 
     st.divider()

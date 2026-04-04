@@ -3291,73 +3291,14 @@ elif current_page == "hypothesis_testing":
     st.markdown("Build your understanding of hypothesis testing, interpreting p-values, and statistical power.")
 
     ht_section = st.radio("Choose a section:", [
-        "1️⃣ Hypothesis Builder",
-        "2️⃣ One vs. Two Tailed Tests",
-        "3️⃣ What Does Rejecting the Null Actually Mean?",
+        "1️⃣ One vs. Two Tailed Tests",
+        "2️⃣ What Does Rejecting the Null Actually Mean?",
+        "3️⃣ Hypothesis Builder",
         "4️⃣ Statistical Power & Sample Size"
     ], horizontal=True, key="ht_section")
     st.divider()
 
-    if ht_section == "1️⃣ Hypothesis Builder":
-        st.subheader("Hypothesis Builder")
-        with st.expander("📖 Quick Reference: Null vs. Alternative Hypothesis"):
-            st.markdown("""
-**H₀ (Null):** No association, no difference. Always written as an equality (RR = 1, μ₁ = μ₂). What you're trying to find evidence against.
-
-**H₁ (Alternative):** States an association or effect exists.
-- **Two-tailed (≠):** You're not predicting direction — just that a difference exists. 5% split across both tails. Default.
-- **One-tailed (< or >):** Predicting a specific direction before data collection. All 5% in one tail. Only use when strong prior evidence justifies direction.
-
-**Key principle:** You never *prove* H₀ true. You either reject it (p < 0.05) or fail to reject it (p ≥ 0.05).
-            """)
-
-        HYP_SCENARIOS = [
-            {"id": "h1", "title": "Scenario A: Exercise & Blood Pressure",
-             "description": "A researcher tests whether a 12-week aerobic program reduces systolic BP in hypertensive adults. She expects it to **decrease** BP based on prior research.",
-             "null_options": ["The program has no effect on systolic BP (μ_before = μ_after)","The program reduces BP (μ_before > μ_after)","BP changes in either direction (μ_before ≠ μ_after)"],
-             "alt_options": ["The program reduces systolic BP (μ_before > μ_after)","The program has no effect","BP changes in either direction (μ_before ≠ μ_after)"],
-             "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "one-tailed",
-             "null_feedback": "✅ Correct. H₀ states no effect — BP before = BP after.",
-             "null_wrong_feedback": "❌ H₀ must state no effect — BP before = BP after.",
-             "alt_feedback": "✅ Correct. Specific directional prediction (reduction) → one-tailed.",
-             "alt_wrong_feedback": "❌ The researcher expects a decrease. That directional prediction makes this one-tailed.",
-             "tails_connection": "🎯 **Your H₁ specifies a direction** — one-tailed. All 5% of error tolerance goes toward detecting a reduction. Better at detecting that direction, but blind to increases."},
-            {"id": "h2", "title": "Scenario B: New Drug & Liver Enzymes",
-             "description": "A company tests whether a new cholesterol drug changes liver enzyme elevation rates vs. placebo. **No prior evidence** about direction.",
-             "null_options": ["Drug and placebo have the same enzyme elevation rate (p_drug = p_placebo)","Drug increases enzyme elevation (p_drug > p_placebo)","Drug changes enzyme levels (p_drug ≠ p_placebo)"],
-             "alt_options": ["Drug causes enzyme elevation at a different rate (p_drug ≠ p_placebo)","Drug increases enzyme elevation (p_drug > p_placebo)","Drug has no effect"],
-             "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "two-tailed",
-             "null_feedback": "✅ Correct. H₀ states no difference.", "null_wrong_feedback": "❌ H₀ must state no difference.",
-             "alt_feedback": "✅ Correct. No directional prediction → two-tailed (≠).", "alt_wrong_feedback": "❌ No prior directional basis → two-tailed.",
-             "tails_connection": "🎯 **Your H₁ uses ≠** — two-tailed. 5% split: 2.5% each tail. Can detect effect in either direction."},
-            {"id": "h3", "title": "Scenario C: Screen Time & Obesity",
-             "description": "A chi-square test examines whether obesity prevalence differs between high/low screen time groups. **No prior directional hypothesis.**",
-             "null_options": ["No association between screen time and obesity (PR = 1)","High screen time increases obesity (PR > 1)","Association exists (PR ≠ 1)"],
-             "alt_options": ["There is an association (PR ≠ 1)","High screen time increases obesity (PR > 1)","No association"],
-             "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "two-tailed",
-             "null_feedback": "✅ Correct. H₀: no association.", "null_wrong_feedback": "❌ H₀ must state no association.",
-             "alt_feedback": "✅ Correct. No directional prediction + chi-square is always two-tailed.", "alt_wrong_feedback": "❌ No directional prediction, and chi-square tests are **always two-tailed**.",
-             "tails_connection": "🎯 **Chi-square tests are always two-tailed** regardless of how hypotheses are written. They measure discrepancy without regard to direction."},
-        ]
-
-        for sc in HYP_SCENARIOS:
-            st.divider(); st.markdown(f"**{sc['title']}**"); st.markdown(sc["description"])
-            sid = sc["id"]
-            st.markdown("**Step 1: Select the correct null hypothesis (H₀):**")
-            null_choice = st.radio("H₀:", sc["null_options"], key=f"h0_{sid}", index=None, label_visibility="collapsed")
-            if null_choice is not None:
-                if sc["null_options"].index(null_choice) == sc["correct_null_idx"]: st.success(sc["null_feedback"])
-                else: st.error(sc["null_wrong_feedback"])
-            st.markdown("**Step 2: Select the correct alternative hypothesis (H₁):**")
-            alt_choice = st.radio("H₁:", sc["alt_options"], key=f"h1_{sid}", index=None, label_visibility="collapsed")
-            if alt_choice is not None:
-                if sc["alt_options"].index(alt_choice) == sc["correct_alt_idx"]: st.success(sc["alt_feedback"])
-                else: st.error(sc["alt_wrong_feedback"])
-            if null_choice is not None and alt_choice is not None:
-                if (sc["null_options"].index(null_choice) == sc["correct_null_idx"] and sc["alt_options"].index(alt_choice) == sc["correct_alt_idx"]):
-                    st.info(sc["tails_connection"])
-
-    elif ht_section == "2️⃣ One vs. Two Tailed Tests":
+    if ht_section == "1️⃣ One vs. Two Tailed Tests":
         st.subheader("One-Tailed vs. Two-Tailed Tests")
         st.markdown("""
 **Two-tailed (default):** You're testing whether any difference exists, regardless of direction. Your 5% tolerance for Type I error is split — 2.5% in each tail.
@@ -3369,7 +3310,7 @@ elif current_page == "hypothesis_testing":
 **Chi-square tests are always two-tailed** — the chi-square statistic is always positive (it measures squared deviations), so there's no "direction" concept. The p-value from chi-square is always two-tailed.
         """)
 
-    elif ht_section == "3️⃣ What Does Rejecting the Null Actually Mean?":
+    elif ht_section == "2️⃣ What Does Rejecting the Null Actually Mean?":
         st.subheader("What Does Rejecting the Null Actually Mean?")
         with st.expander("🔵 What the p-value IS", expanded=True):
             st.markdown("""
@@ -3410,6 +3351,156 @@ The 0.05 threshold means we accept a 5% chance of rejecting a true H₀ (Type I 
 
 The CI gives more information — it shows the range of plausible effect sizes, not just whether to reject H₀.
             """)
+
+    elif ht_section == "3️⃣ Hypothesis Builder":
+        st.subheader("Hypothesis Builder")
+        st.markdown("For each scenario, select the correct null hypothesis, alternative hypothesis, and whether the test should be one- or two-tailed. Feedback appears immediately after each selection.")
+        with st.expander("📖 Quick Reference: Null vs. Alternative Hypothesis"):
+            st.markdown("""
+**H₀ (Null):** No association, no difference. Always written as an equality (RR = 1, μ₁ = μ₂). What you're trying to find evidence against.
+
+**H₁ (Alternative):** States an association or effect exists.
+- **Two-tailed (≠):** You're not predicting direction — just that a difference exists. 5% split across both tails. Default.
+- **One-tailed (< or >):** Predicting a specific direction before data collection. All 5% in one tail. Only use when strong prior evidence justifies direction.
+
+**Key principle:** You never *prove* H₀ true. You either reject it (p < 0.05) or fail to reject it (p ≥ 0.05).
+
+**Chi-square reminder:** Always two-tailed regardless of the research question.
+            """)
+
+        HYP_SCENARIOS = [
+            {
+                "id": "h1", "title": "Scenario A: Aerobic Exercise & Blood Pressure",
+                "description": "A researcher tests whether a 12-week aerobic program reduces systolic BP in hypertensive adults. She expects it to **decrease** BP based on extensive prior research.",
+                "null_options": ["The program has no effect on systolic BP (μ_before = μ_after)", "The program reduces BP (μ_before > μ_after)", "BP changes in either direction (μ_before ≠ μ_after)"],
+                "alt_options": ["The program reduces systolic BP (μ_before > μ_after)", "The program has no effect", "BP changes in either direction (μ_before ≠ μ_after)"],
+                "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "one-tailed",
+                "null_feedback": "✅ Correct. H₀ states no effect — BP before = BP after.",
+                "null_wrong_feedback": "❌ H₀ must state no effect — an equality. BP before = BP after.",
+                "alt_feedback": "✅ Correct. Specific directional prediction (reduction) → one-tailed H₁.",
+                "alt_wrong_feedback": "❌ The researcher has strong prior evidence for a decrease. That directional prediction makes H₁ one-tailed (μ_before > μ_after).",
+                "tails_connection": "🎯 **One-tailed** — H₁ specifies a direction (reduction). All 5% of error tolerance is focused on detecting a decrease. More sensitive in that direction, but blind to BP increases.",
+            },
+            {
+                "id": "h2", "title": "Scenario B: New Cholesterol Drug & Liver Enzymes",
+                "description": "A pharmaceutical company tests whether a new cholesterol-lowering drug changes liver enzyme elevation rates vs. placebo. **No prior evidence** about whether it raises or lowers enzymes.",
+                "null_options": ["Drug and placebo have the same enzyme elevation rate (p_drug = p_placebo)", "Drug increases enzyme elevation (p_drug > p_placebo)", "Drug changes enzyme levels in either direction (p_drug ≠ p_placebo)"],
+                "alt_options": ["Drug changes enzyme elevation rate in either direction (p_drug ≠ p_placebo)", "Drug increases enzyme elevation (p_drug > p_placebo)", "Drug has no effect on enzymes"],
+                "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "two-tailed",
+                "null_feedback": "✅ Correct. H₀ states no difference — equal rates in both groups.",
+                "null_wrong_feedback": "❌ H₀ must state no difference. Equal rates = equality.",
+                "alt_feedback": "✅ Correct. No prior directional basis → two-tailed H₁ (≠).",
+                "alt_wrong_feedback": "❌ No prior evidence about direction. Without a directional prediction established before data collection, H₁ must be two-tailed (≠).",
+                "tails_connection": "🎯 **Two-tailed** — H₁ uses ≠. 5% split: 2.5% in each tail. Can detect an increase or a decrease in enzyme rates.",
+            },
+            {
+                "id": "h3", "title": "Scenario C: Screen Time & Obesity (Chi-Square)",
+                "description": "A cross-sectional survey tests whether obesity prevalence differs between high and low screen time groups using a chi-square test. No prior directional hypothesis.",
+                "null_options": ["No association between screen time and obesity (PR = 1 / independent)", "High screen time is associated with higher obesity (PR > 1)", "Screen time and obesity are associated (PR ≠ 1)"],
+                "alt_options": ["There is an association between screen time and obesity (PR ≠ 1)", "High screen time causes higher obesity (PR > 1)", "No association between screen time and obesity"],
+                "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "two-tailed",
+                "null_feedback": "✅ Correct. H₀: no association — independence.",
+                "null_wrong_feedback": "❌ H₀ must state no association — independence between screen time and obesity.",
+                "alt_feedback": "✅ Correct. No directional prediction, and chi-square is always two-tailed.",
+                "alt_wrong_feedback": "❌ No directional prediction was made. Also, chi-square tests are **always two-tailed** — they measure total discrepancy without regard to direction.",
+                "tails_connection": "🎯 **Two-tailed (chi-square)** — Chi-square tests are always two-tailed regardless of how the hypotheses are framed. The statistic measures squared deviations, so direction is irrelevant.",
+            },
+            {
+                "id": "h4", "title": "Scenario D: Vaccine Efficacy Against Influenza",
+                "description": "Epidemiologists test a new influenza vaccine in a randomized trial. Based on the known immunological mechanism and prior flu vaccine data, they **expect protection** (reduction in incidence).",
+                "null_options": ["Vaccine and placebo groups have equal influenza incidence (IRR = 1)", "Vaccine reduces influenza incidence (IRR < 1)", "Vaccine changes incidence in either direction (IRR ≠ 1)"],
+                "alt_options": ["Vaccine reduces influenza incidence (IRR < 1)", "Vaccine increases influenza incidence (IRR > 1)", "Vaccine changes incidence in either direction (IRR ≠ 1)"],
+                "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "one-tailed",
+                "null_feedback": "✅ Correct. H₀: no effect — equal incidence rates (IRR = 1).",
+                "null_wrong_feedback": "❌ H₀ must be an equality — IRR = 1 (no difference in incidence between groups).",
+                "alt_feedback": "✅ Correct. Known protective mechanism → directional prediction → one-tailed (IRR < 1).",
+                "alt_wrong_feedback": "❌ The known mechanism and prior data support a directional prediction (protection). H₁ should specify IRR < 1 — one-tailed.",
+                "tails_connection": "🎯 **One-tailed** — strong biological prior supports protection (IRR < 1). All 5% error tolerance goes toward detecting a reduction in incidence. If the vaccine somehow increased incidence, this test would not detect it.",
+            },
+            {
+                "id": "h5", "title": "Scenario E: Sugar-Sweetened Beverages & Type 2 Diabetes",
+                "description": "A prospective cohort study examines whether daily consumption of sugar-sweetened beverages (SSBs) is associated with incident Type 2 Diabetes over 10 years. The research question is open — the team wants to detect any association.",
+                "null_options": ["No association between SSB consumption and T2D incidence (RR = 1)", "SSB consumption increases T2D incidence (RR > 1)", "SSB consumption is associated with T2D in either direction (RR ≠ 1)"],
+                "alt_options": ["SSB consumption is associated with T2D incidence in either direction (RR ≠ 1)", "SSB consumption increases T2D incidence (RR > 1)", "SSB consumption has no association with T2D"],
+                "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "two-tailed",
+                "null_feedback": "✅ Correct. H₀: no association — RR = 1.",
+                "null_wrong_feedback": "❌ H₀ must state no association. RR = 1 is the null value for a risk ratio.",
+                "alt_feedback": "✅ Correct. Open research question with no pre-specified direction → two-tailed.",
+                "alt_wrong_feedback": "❌ Although biologically we might suspect SSBs increase T2D risk, the research question is framed openly ('any association'). Without a pre-specified directional hypothesis, use two-tailed (RR ≠ 1).",
+                "tails_connection": "🎯 **Two-tailed** — the team wants to detect any association. Even when one direction seems likely, if it wasn't formally pre-specified, the default is two-tailed to avoid inflating Type I error.",
+            },
+            {
+                "id": "h6", "title": "Scenario F: Night Shift Work & Breast Cancer",
+                "description": "A case-control study uses an odds ratio to test whether night shift work is associated with breast cancer in female nurses. The investigators have no strong prior evidence about direction.",
+                "null_options": ["Night shift work and breast cancer are not associated (OR = 1)", "Night shift work increases breast cancer odds (OR > 1)", "Night shift work is associated with breast cancer in either direction (OR ≠ 1)"],
+                "alt_options": ["Night shift work is associated with breast cancer in either direction (OR ≠ 1)", "Night shift work increases breast cancer odds (OR > 1)", "Night shift work decreases breast cancer odds (OR < 1)"],
+                "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "two-tailed",
+                "null_feedback": "✅ Correct. H₀: no association — OR = 1.",
+                "null_wrong_feedback": "❌ H₀ must state no association. The null value for an OR is 1.",
+                "alt_feedback": "✅ Correct. No strong prior directional evidence → two-tailed (OR ≠ 1).",
+                "alt_wrong_feedback": "❌ Without strong pre-existing directional evidence, H₁ should be two-tailed (OR ≠ 1). The association could theoretically go in either direction.",
+                "tails_connection": "🎯 **Two-tailed** — no prior directional hypothesis. OR ≠ 1 detects any association regardless of direction.",
+            },
+            {
+                "id": "h7", "title": "Scenario G: Smoking Cessation Program & Quit Rates",
+                "description": "A public health team evaluates a new smoking cessation app vs. standard counseling. They believe the app will **improve** quit rates based on a pilot study. They pre-register their directional hypothesis before the trial begins.",
+                "null_options": ["App and counseling have equal 6-month quit rates (p_app = p_counseling)", "App has higher quit rates than counseling (p_app > p_counseling)", "Quit rates differ between groups in either direction (p_app ≠ p_counseling)"],
+                "alt_options": ["App has higher quit rates than standard counseling (p_app > p_counseling)", "App has lower quit rates than standard counseling (p_app < p_counseling)", "Quit rates differ in either direction (p_app ≠ p_counseling)"],
+                "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "one-tailed",
+                "null_feedback": "✅ Correct. H₀: equal quit rates — no difference.",
+                "null_wrong_feedback": "❌ H₀ must state equality — equal quit rates in both groups.",
+                "alt_feedback": "✅ Correct. Pre-registered directional hypothesis (app improves rates) → one-tailed.",
+                "alt_wrong_feedback": "❌ The team pre-registered a directional hypothesis (app > counseling) based on pilot data. Pre-registration of direction is what justifies a one-tailed test.",
+                "tails_connection": "🎯 **One-tailed** — the directional hypothesis was pre-registered before data collection, which is what legitimizes a one-tailed test. Using one-tailed after seeing the data would be p-hacking.",
+            },
+            {
+                "id": "h8", "title": "Scenario H: Lead Exposure & IQ in Children",
+                "description": "A cohort study examines whether prenatal lead exposure affects IQ scores at age 7. The team expects lead to **reduce** IQ based on established neurotoxicology literature.",
+                "null_options": ["Prenatal lead exposure has no effect on IQ at age 7 (μ_exposed = μ_unexposed)", "Lead exposure reduces IQ (μ_exposed < μ_unexposed)", "Lead exposure affects IQ in either direction (μ_exposed ≠ μ_unexposed)"],
+                "alt_options": ["Lead exposure reduces IQ at age 7 (μ_exposed < μ_unexposed)", "Lead exposure has no effect on IQ", "Lead exposure affects IQ in either direction (μ_exposed ≠ μ_unexposed)"],
+                "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "one-tailed",
+                "null_feedback": "✅ Correct. H₀: no difference in mean IQ between exposed and unexposed.",
+                "null_wrong_feedback": "❌ H₀ must be an equality — no difference in mean IQ between groups.",
+                "alt_feedback": "✅ Correct. Established neurotoxicology literature strongly supports directional prediction (reduction) → one-tailed.",
+                "alt_wrong_feedback": "❌ The established literature on lead neurotoxicity strongly supports a directional prediction (lower IQ). This justifies a one-tailed H₁: μ_exposed < μ_unexposed.",
+                "tails_connection": "🎯 **One-tailed** — decades of neurotoxicology research establish that lead reduces cognitive function. Strong prior evidence in one direction justifies one-tailed testing when specified before data collection.",
+            },
+        ]
+
+        for sc in HYP_SCENARIOS:
+            st.divider()
+            st.markdown(f"**{sc['title']}**")
+            st.markdown(sc["description"])
+            sid = sc["id"]
+            st.markdown("**Step 1: Select the correct null hypothesis (H₀):**")
+            null_choice = st.radio("H₀:", sc["null_options"], key=f"h0_{sid}", index=None, label_visibility="collapsed")
+            if null_choice is not None:
+                if sc["null_options"].index(null_choice) == sc["correct_null_idx"]:
+                    st.success(sc["null_feedback"])
+                else:
+                    st.error(sc["null_wrong_feedback"])
+            st.markdown("**Step 2: Select the correct alternative hypothesis (H₁):**")
+            alt_choice = st.radio("H₁:", sc["alt_options"], key=f"h1_{sid}", index=None, label_visibility="collapsed")
+            if alt_choice is not None:
+                if sc["alt_options"].index(alt_choice) == sc["correct_alt_idx"]:
+                    st.success(sc["alt_feedback"])
+                else:
+                    st.error(sc["alt_wrong_feedback"])
+            st.markdown("**Step 3: Should this be a one-tailed or two-tailed test?**")
+            tails_choice = st.radio("Tails:", ["one-tailed", "two-tailed"], key=f"tails_{sid}", index=None, label_visibility="collapsed")
+            if tails_choice is not None:
+                if tails_choice == sc["correct_tails"]:
+                    st.success(f"✅ Correct — **{sc['correct_tails']}**.")
+                else:
+                    st.error(f"❌ This should be **{sc['correct_tails']}**.")
+            if null_choice is not None and alt_choice is not None and tails_choice is not None:
+                all_correct = (
+                    sc["null_options"].index(null_choice) == sc["correct_null_idx"] and
+                    sc["alt_options"].index(alt_choice) == sc["correct_alt_idx"] and
+                    tails_choice == sc["correct_tails"]
+                )
+                if all_correct:
+                    st.info(sc["tails_connection"])
 
     elif ht_section == "4️⃣ Statistical Power & Sample Size":
         st.subheader("Statistical Power & Sample Size")

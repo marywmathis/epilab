@@ -2751,8 +2751,10 @@ elif current_page == "screening":
         st.subheader("How Prevalence Changes PPV")
         st.markdown("One of the most important — and counterintuitive — facts in screening: **a test with excellent sensitivity and specificity can still have very poor PPV when disease prevalence is low.**")
 
-        sens_fixed = st.slider("Test Sensitivity (fixed)", 0.50, 0.99, 0.90, 0.01, format="%0.0f%%", key="sens_slider")
-        spec_fixed = st.slider("Test Specificity (fixed)", 0.50, 0.99, 0.95, 0.01, format="%0.0f%%", key="spec_slider")
+        sens_fixed = st.slider("Test Sensitivity (fixed)", 50, 99, 90, 1, format="%d%%", key="sens_slider")
+        spec_fixed = st.slider("Test Specificity (fixed)", 50, 99, 95, 1, format="%d%%", key="spec_slider")
+        sens_fixed = sens_fixed / 100
+        spec_fixed = spec_fixed / 100
 
         prevalences = [0.001, 0.005, 0.01, 0.02, 0.05, 0.10, 0.20, 0.30, 0.50]
         ppv_vals = []

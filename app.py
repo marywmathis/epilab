@@ -845,7 +845,8 @@ elif current_page == "confounding":
         "1️⃣ Confounding",
         "2️⃣ Controlling Confounding",
         "3️⃣ Effect Modification",
-        "4️⃣ Interactive: Stratified Analysis"
+        "4️⃣ Interactive: Stratified Analysis",
+        "5️⃣ DAG Library"
     ], horizontal=True)
     st.divider()
 
@@ -1337,6 +1338,407 @@ Where: **a** = {exp_lbl} with {out_lbl}, **b** = {exp_lbl} without, **c** = {une
 **Sum of denominator terms:** {round(mh_den_check,3)}
 **RR_MH = {round(mh_num_check,3)} ÷ {round(mh_den_check,3)} = {mh_rr}**
                 """)
+
+    elif conf_section == "5️⃣ DAG Library":
+        st.subheader("DAG Library — Causal Structures in Epidemiology")
+        st.markdown("""
+A **Directed Acyclic Graph (DAG)** is a visual tool for representing causal assumptions. Nodes are variables, arrows show causal directions, and the structure determines what you should — and should **not** — adjust for in your analysis.
+
+Understanding DAG structures is essential for deciding which variables to control for and which to leave alone.
+        """)
+
+        DAG_TYPES = [
+            "Confounder",
+            "Mediator",
+            "Collider",
+            "Moderator / Effect Modifier",
+            "M-Bias",
+            "Proxy / Surrogate",
+        ]
+        dag_choice = st.selectbox("Select a DAG structure:", DAG_TYPES, key="dag_choice")
+        st.divider()
+
+        def dag_box(label, sublabel, color_bg, color_border):
+            return f"""<div style="display:inline-flex;flex-direction:column;align-items:center;
+                justify-content:center;padding:12px 18px;background:{color_bg};
+                border:2px solid {color_border};border-radius:10px;min-width:110px;
+                text-align:center;font-size:13px;font-weight:700;line-height:1.3;">
+                {label}<br><span style="font-size:10px;font-weight:400;color:#666;">{sublabel}</span>
+                </div>"""
+
+        def dag_arrow(label="", color="#555", vertical=False):
+            if vertical:
+                return f"""<div style="display:flex;flex-direction:column;align-items:center;
+                    padding:2px 0;color:{color};font-size:11px;">
+                    <div style="width:2px;height:30px;background:{color};"></div>
+                    <div style="font-size:16px;line-height:1;color:{color};">▼</div>
+                    {"<div style='font-size:10px;color:#888;'>"+label+"</div>" if label else ""}
+                    </div>"""
+            else:
+                return f"""<div style="display:flex;align-items:center;gap:2px;padding:0 6px;color:{color};font-size:11px;">
+                    <div style="height:2px;width:40px;background:{color};"></div>
+                    <div style="font-size:16px;line-height:1;">▶</div>
+                    {"<div style='font-size:10px;color:#888;'>"+label+"</div>" if label else ""}
+                    </div>"""
+
+        if dag_choice == "Confounder":
+            st.markdown("#### Confounder Structure")
+            st.markdown("""
+A **confounder** is a common cause of both the exposure and the outcome. It creates a **backdoor path** — an indirect, non-causal route connecting exposure to outcome that biases the association.
+
+**The three criteria for confounding:**
+1. Associated with the exposure (in the source population)
+2. Independently associated with the outcome
+3. NOT on the causal pathway between exposure and outcome
+            """)
+
+            dag_html = f"""
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
+  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Confounder DAG: Smoking confounds Coffee → Heart Disease</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+    <div>{dag_box("Smoking","Confounder","#fff3e0","#ef6c00")}</div>
+    <div style="display:flex;gap:80px;margin-top:4px;">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;">
+        <div style="width:2px;height:24px;background:#ef6c00;margin-right:55px;"></div>
+        <div style="font-size:14px;color:#ef6c00;margin-right:50px;">↙</div>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-start;">
+        <div style="width:2px;height:24px;background:#ef6c00;margin-left:55px;"></div>
+        <div style="font-size:14px;color:#ef6c00;margin-left:50px;">↘</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;margin-top:4px;">
+      {dag_box("Coffee","Exposure","#e3f2fd","#1565c0")}
+      <div style="display:flex;flex-direction:column;align-items:center;">
+        <div style="height:2px;width:60px;background:#dc2626;"></div>
+        <div style="font-size:14px;color:#dc2626;">▶</div>
+        <div style="font-size:10px;color:#dc2626;font-style:italic;">spurious</div>
+      </div>
+      {dag_box("Heart Disease","Outcome","#fce4ec","#c62828")}
+    </div>
+  </div>
+  <div style="margin-top:16px;font-size:11px;color:#718096;background:#fff;border-radius:6px;padding:8px 12px;display:inline-block;">
+    🔴 <b>Backdoor path:</b> Coffee ← Smoking → Heart Disease &nbsp;|&nbsp; ✅ <b>Fix:</b> Adjust for Smoking to block this path
+  </div>
+</div>"""
+            st.markdown(dag_html, unsafe_allow_html=True)
+
+            st.success("✅ **What to do:** Adjust for the confounder (stratify, regression, matching). This blocks the backdoor path and isolates the true causal effect.")
+            st.error("❌ **What NOT to do:** Adjust for a variable on the causal pathway — that would be over-adjustment (see Mediator).")
+
+            with st.expander("🔢 How backdoor paths work"):
+                st.markdown("""
+A **backdoor path** is any path from exposure to outcome that begins with an arrow **into** the exposure. These paths create spurious associations.
+
+**In this example:**
+- Coffee ← Smoking → Heart Disease is a backdoor path
+- Even if coffee has NO effect on heart disease, this path creates a correlation
+- Conditioning (adjusting) for Smoking **blocks** this path
+
+**D-separation:** Two variables are d-separated (conditionally independent) if all paths between them are blocked. Adjusting for the confounder d-separates exposure from outcome via that path.
+                """)
+
+        elif dag_choice == "Mediator":
+            st.markdown("#### Mediator Structure")
+            st.markdown("""
+A **mediator** (or intermediate variable) lies **on the causal pathway** between exposure and outcome. It is how (the mechanism by which) the exposure causes the outcome.
+
+**Example:** Physical activity → Lower blood pressure → Reduced CVD risk
+- Lower blood pressure is the mediator — it's *how* exercise reduces CVD risk
+            """)
+
+            dag_html = f"""
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
+  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Mediator DAG: Physical Activity → Blood Pressure → CVD</div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:0;">
+    {dag_box("Physical Activity","Exposure","#e3f2fd","#1565c0")}
+    <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px;">
+      <div style="height:2px;width:50px;background:#2e7d32;"></div>
+      <div style="font-size:14px;color:#2e7d32;">▶</div>
+      <div style="font-size:10px;color:#2e7d32;">causes</div>
+    </div>
+    {dag_box("↓ Blood Pressure","Mediator","#e8f5e9","#2e7d32")}
+    <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px;">
+      <div style="height:2px;width:50px;background:#c62828;"></div>
+      <div style="font-size:14px;color:#c62828;">▶</div>
+      <div style="font-size:10px;color:#c62828;">causes</div>
+    </div>
+    {dag_box("CVD Risk","Outcome","#fce4ec","#c62828")}
+  </div>
+  <div style="margin-top:12px;">
+    <div style="font-size:11px;color:#718096;font-style:italic;">Physical Activity also has a direct path to CVD (dashed line below)</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-top:8px;">
+      {dag_box("Physical Activity","Exposure","#e3f2fd","#1565c0")}
+      <div style="height:2px;width:200px;background:#1565c0;border-top:2px dashed #1565c0;"></div>
+      <div style="font-size:14px;color:#1565c0;">▶</div>
+      {dag_box("CVD Risk","Outcome","#fce4ec","#c62828")}
+    </div>
+  </div>
+  <div style="margin-top:16px;font-size:11px;color:#718096;background:#fff;border-radius:6px;padding:8px 12px;display:inline-block;">
+    🟢 <b>Total effect</b> = Direct effect + Indirect effect (through blood pressure)
+  </div>
+</div>"""
+            st.markdown(dag_html, unsafe_allow_html=True)
+
+            st.error("❌ **Critical mistake:** If you adjust for blood pressure when studying physical activity → CVD, you block the main causal pathway. Your estimate of the physical activity effect becomes biased (over-adjustment bias).")
+            st.success("✅ **What to do:** Decide your question first. Total effect? Don't adjust for mediator. Direct effect only? Use mediation analysis methods, not simple regression adjustment.")
+
+            with st.expander("📊 Total vs. Direct vs. Indirect Effects"):
+                st.markdown("""
+**Total effect:** Effect of exposure on outcome through ALL pathways (direct + indirect). Estimated by NOT adjusting for mediator.
+
+**Direct effect:** Effect of exposure on outcome NOT through the mediator. Requires special mediation analysis methods.
+
+**Indirect effect (mediated effect):** The portion of the total effect that operates through the mediator.
+
+**Why it matters:** If you want to know "does exercise reduce CVD risk?", adjust for nothing on the pathway. If you want to know "does exercise reduce CVD risk through mechanisms other than blood pressure?", you need formal mediation analysis — not simply adding blood pressure to a regression.
+                """)
+
+        elif dag_choice == "Collider":
+            st.markdown("#### Collider Structure")
+            st.markdown("""
+A **collider** is a variable that is caused by **both** the exposure and the outcome (arrows collide into it). Colliders are the most misunderstood structure in DAGs.
+
+**The key rule:** Colliders naturally **block** paths. But if you condition on (adjust for, stratify by, or select on) a collider, you **open** a spurious path between exposure and outcome — creating bias where none existed before.
+            """)
+
+            dag_html = f"""
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
+  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Collider DAG: Talent and Hard Work both cause Success</div>
+  <div style="display:flex;align-items:flex-end;justify-content:center;gap:0;">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      {dag_box("Talent","Exposure","#e3f2fd","#1565c0")}
+      <div style="display:flex;align-items:center;margin-top:4px;">
+        <div style="width:60px;height:2px;background:#7b1fa2;"></div>
+        <div style="font-size:14px;color:#7b1fa2;">↘</div>
+      </div>
+    </div>
+    <div style="margin-bottom:8px;">{dag_box("Success","Collider","#f3e5f5","#7b1fa2")}</div>
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      {dag_box("Hard Work","Exposure","#e8f5e9","#2e7d32")}
+      <div style="display:flex;align-items:center;margin-top:4px;">
+        <div style="font-size:14px;color:#7b1fa2;">↙</div>
+        <div style="width:60px;height:2px;background:#7b1fa2;"></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:16px;justify-content:center;font-size:11px;">
+    <div style="background:#e8f5e9;border-radius:6px;padding:8px 12px;color:#2e7d32;">
+      ✅ <b>Unadjusted:</b> Talent and Hard Work are independent (no association)
+    </div>
+    <div style="background:#fce4ec;border-radius:6px;padding:8px 12px;color:#c62828;">
+      ❌ <b>After conditioning on Success</b> (e.g., studying only successful people): Talent and Hard Work appear <i>negatively</i> correlated — the "talented people don't work hard" fallacy
+    </div>
+  </div>
+</div>"""
+            st.markdown(dag_html, unsafe_allow_html=True)
+
+            st.error("❌ **Collider bias:** Conditioning on a collider opens a spurious path. This happens when you: restrict your sample by outcome (selection bias), adjust for a variable caused by both exposure and outcome, or use a mediator that is also a collider.")
+            st.success("✅ **What to do:** Do NOT adjust for colliders. Identify them in your DAG before analysis. Berkson's bias and healthy worker effect are real-world examples of collider bias.")
+
+            with st.expander("🏥 Real-World Example: Berkson's Bias"):
+                st.markdown("""
+**Scenario:** Hospital study of smoking → lung cancer.
+
+**The collider:** Hospitalization — caused by both smoking (smoking-related illness) and lung cancer (cancer requiring treatment).
+
+When you study only hospitalized patients, you condition on hospitalization. This opens a spurious path between smoking and lung cancer that distorts the true association.
+
+**Result:** The OR estimated in hospital patients is different from (usually biased toward null compared to) the OR in the general population.
+
+**Fix:** Use population-based controls, not hospital-based controls, in case-control studies.
+                """)
+
+            with st.expander("📉 Example: The 'Attractive People Are Dumb' Fallacy"):
+                st.markdown("""
+Study participants are recruited from a modeling agency (conditioning on Success/Fame — a collider caused by both Attractiveness and Talent/Skills).
+
+In the general population: Attractiveness and Intelligence are uncorrelated.
+In this sample: They appear negatively correlated — because to get selected, you needed either one to compensate for lacking the other.
+
+This is collider bias. The agency is a collider (caused by both). Studying only agency models opens a spurious negative path between attractiveness and intelligence.
+                """)
+
+        elif dag_choice == "Moderator / Effect Modifier":
+            st.markdown("#### Moderator / Effect Modifier Structure")
+            st.markdown("""
+A **moderator** (or effect modifier) is a variable that changes the **magnitude or direction** of the association between exposure and outcome across its levels. Unlike confounding (which distorts), effect modification is a real biological or social phenomenon.
+
+**Key distinction:**
+- **Confounder** = bias to be removed
+- **Effect modifier** = finding to be reported
+            """)
+
+            dag_html = f"""
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
+  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Moderator DAG: Sex modifies the Aspirin → Heart Attack association</div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:0;">
+    {dag_box("Aspirin Use","Exposure","#e3f2fd","#1565c0")}
+    <div style="display:flex;flex-direction:column;align-items:center;padding:0 12px;position:relative;">
+      <div style="height:2px;width:80px;background:#c62828;"></div>
+      <div style="font-size:14px;color:#c62828;">▶</div>
+      <div style="font-size:10px;color:#555;font-style:italic;">effect size varies</div>
+    </div>
+    {dag_box("Heart Attack","Outcome","#fce4ec","#c62828")}
+  </div>
+  <div style="margin-top:12px;display:flex;justify-content:center;">
+    <div style="display:flex;flex-direction:column;align-items:center;">
+      {dag_box("Sex","Moderator","#fff8e1","#f9a825")}
+      <div style="font-size:20px;color:#f9a825;margin-top:4px;">↕</div>
+      <div style="font-size:10px;color:#f9a825;font-weight:600;">modifies the arrow strength</div>
+    </div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:16px;justify-content:center;font-size:12px;">
+    <div style="background:#e3f2fd;border-radius:6px;padding:8px 12px;">
+      <b>Men:</b> RR = 0.60 (40% risk reduction) ✅
+    </div>
+    <div style="background:#fce4ec;border-radius:6px;padding:8px 12px;">
+      <b>Women:</b> RR = 0.95 (no meaningful effect) ❌
+    </div>
+  </div>
+  <div style="margin-top:10px;font-size:11px;color:#718096;">A single pooled RR would be misleading for both sexes. Report stratum-specific estimates.</div>
+</div>"""
+            st.markdown(dag_html, unsafe_allow_html=True)
+
+            st.warning("⚠️ **Important:** The moderator arrow points TO the exposure-outcome path (it modifies the relationship), not directly to the outcome. This distinguishes it from a confounder (which is a common cause).")
+            st.success("✅ **What to do:** Stratify by the modifier and report separate estimates. A single adjusted estimate obscures a clinically important difference.")
+
+            with st.expander("📊 Additive vs. Multiplicative Effect Modification"):
+                st.markdown("""
+Effect modification can occur on different scales:
+
+**Multiplicative scale (ratio measures):** RR or OR differs across strata
+- RR in men = 0.6, RR in women = 0.95 → effect modification on multiplicative scale
+
+**Additive scale (difference measures):** Risk difference differs across strata
+- RD in men = -15%, RD in women = -2% → effect modification on additive scale
+
+**They don't always agree!** A variable can modify on one scale but not the other.
+
+**Which scale matters?** 
+- Public health decisions (who benefits most from an intervention?) → additive scale
+- Biological mechanism questions → multiplicative scale
+- Report both when possible
+                """)
+
+        elif dag_choice == "M-Bias":
+            st.markdown("#### M-Bias Structure")
+            st.markdown("""
+**M-bias** occurs when you adjust for a variable that is a collider on a path between two unmeasured common causes of the exposure and outcome. Adjusting for this collider opens a backdoor path that wasn't there before — introducing bias in a previously unbiased estimate.
+
+It's called M-bias because the DAG has an M shape.
+            """)
+
+            dag_html = f"""
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
+  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">M-Bias DAG Structure</div>
+  <div style="display:flex;justify-content:center;gap:40px;align-items:flex-start;">
+    {dag_box("U₁","Unmeasured cause of E","#f5f5f5","#9e9e9e")}
+    <div style="width:60px;"></div>
+    {dag_box("U₂","Unmeasured cause of Y","#f5f5f5","#9e9e9e")}
+  </div>
+  <div style="display:flex;justify-content:center;gap:0;margin:4px 0;font-size:18px;color:#9e9e9e;">
+    <div style="margin-right:20px;">↓ &nbsp; ↘</div>
+    <div style="margin-left:20px;">↙ &nbsp; ↓</div>
+  </div>
+  <div style="display:flex;justify-content:center;gap:80px;align-items:center;">
+    {dag_box("Exposure (E)","","#e3f2fd","#1565c0")}
+    {dag_box("M","Pre-treatment variable","#fff3e0","#e65100")}
+    {dag_box("Outcome (Y)","","#fce4ec","#c62828")}
+  </div>
+  <div style="margin-top:10px;display:flex;flex-direction:column;align-items:center;gap:4px;">
+    <div style="height:2px;width:120px;background:#c62828;"></div>
+    <div style="font-size:14px;color:#c62828;">▶</div>
+    <div style="font-size:10px;color:#c62828;">E → Y (true causal effect)</div>
+  </div>
+  <div style="margin-top:16px;display:flex;gap:16px;justify-content:center;font-size:11px;">
+    <div style="background:#e8f5e9;border-radius:6px;padding:8px 12px;color:#2e7d32;">
+      ✅ <b>Without adjusting for M:</b> E and Y association is unbiased (M blocks the U₁-U₂ path)
+    </div>
+    <div style="background:#fce4ec;border-radius:6px;padding:8px 12px;color:#c62828;">
+      ❌ <b>After adjusting for M:</b> Opens backdoor path E ← U₁ → M ← U₂ → Y, introducing bias
+    </div>
+  </div>
+</div>"""
+            st.markdown(dag_html, unsafe_allow_html=True)
+
+            st.error("❌ **M-bias trap:** Including a pre-treatment variable that looks 'harmless' can actually introduce bias if it's a collider on a path between unmeasured common causes. This is why you need a DAG — you can't detect this from the data alone.")
+            st.info("💡 **Practical implication:** Not all pre-treatment variables should be adjusted for. Draw your DAG first. If a variable is a collider on any path, do not adjust for it.")
+
+        elif dag_choice == "Proxy / Surrogate":
+            st.markdown("#### Proxy / Surrogate Variable Structure")
+            st.markdown("""
+A **proxy** (or surrogate) is a measured variable that stands in for an unmeasured variable of interest. Proxies are used when the true variable can't be directly measured.
+
+**Examples:**
+- Years of education as a proxy for socioeconomic status
+- BMI as a proxy for body fat
+- C-reactive protein as a proxy for systemic inflammation
+            """)
+
+            dag_html = f"""
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
+  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Proxy DAG: Education proxies for SES</div>
+  <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
+    {dag_box("SES (U)","Unmeasured","#f5f5f5","#9e9e9e")}
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="font-size:12px;color:#555;">causes</div>
+      <div style="height:2px;width:40px;background:#555;"></div>
+      <div style="font-size:14px;color:#555;">▶</div>
+    </div>
+    {dag_box("Education","Proxy (measured)","#fff3e0","#e65100")}
+  </div>
+  <div style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;">
+    {dag_box("SES (U)","Unmeasured","#f5f5f5","#9e9e9e")}
+    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
+      <div style="font-size:12px;color:#c62828;">also causes</div>
+      <div style="height:2px;width:40px;background:#c62828;"></div>
+      <div style="font-size:14px;color:#c62828;">▶</div>
+    </div>
+    {dag_box("Health Outcome","Outcome","#fce4ec","#c62828")}
+  </div>
+  <div style="margin-top:16px;font-size:11px;color:#718096;background:#fff;border-radius:6px;padding:8px 12px;display:inline-block;">
+    When you adjust for Education (proxy), you partially adjust for SES — but imperfect measurement means residual confounding remains
+  </div>
+</div>"""
+            st.markdown(dag_html, unsafe_allow_html=True)
+
+            st.warning("⚠️ **Proxy limitations:** Adjusting for a proxy only partially controls for the underlying variable. The weaker the proxy-variable relationship, the more residual confounding remains. This is why residual confounding is almost always present in observational studies.")
+
+            with st.expander("📊 Implications for interpretation"):
+                st.markdown("""
+**When a proxy is used as a confounder:**
+- You get partial adjustment, not full adjustment
+- The residual confounding biases your estimate toward the crude (unadjusted) estimate
+- Report this as a limitation: "We adjusted for education as a proxy for SES; residual confounding by unmeasured aspects of SES may remain"
+
+**When a proxy is used as an exposure:**
+- Measurement error in the exposure → non-differential misclassification → bias toward null
+- A stronger proxy (higher correlation with true variable) → less attenuation
+
+**Common proxies in epidemiology:**
+| True variable | Common proxy |
+|---|---|
+| Socioeconomic status | Education, income, occupation |
+| Diet quality | Food frequency questionnaire |
+| Physical activity | Step count, self-report |
+| Stress | Cortisol, self-report scale |
+| Inflammation | CRP, IL-6 |
+                """)
+
+        with st.expander("📋 Quick Reference: All DAG Structures"):
+            st.markdown("""
+| Structure | Definition | Arrows | Should you adjust? | Effect of adjusting |
+|---|---|---|---|---|
+| **Confounder** | Common cause of E and Y | C→E, C→Y | ✅ Yes | Removes bias |
+| **Mediator** | E causes M causes Y | E→M→Y | ❌ No (for total effect) | Over-adjustment bias |
+| **Collider** | Both E and Y cause C | E→C←Y | ❌ Never | Opens spurious path |
+| **Moderator** | Modifies strength of E→Y | M modifies E→Y | Report separately | Hides effect modification |
+| **M-Bias node** | Collider between unmeasured causes | U₁→M←U₂ | ❌ No | Introduces new bias |
+| **Proxy** | Measured substitute for unmeasured variable | U→Proxy | Partial ⚠️ | Partial confounding control |
+
+**The golden rule:** Draw your DAG **before** your analysis. Your adjustment set should block all backdoor paths without conditioning on colliders or mediators.
+            """)
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")

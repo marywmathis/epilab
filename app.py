@@ -1976,6 +1976,35 @@ elif current_page == "disease_frequency":
 **Incubation period:** Time from exposure to symptom onset. For a point-source outbreak, the range of onset times tells you the plausible incubation period for that pathogen.
             """)
 
+        with st.expander("📌 Secondary Attack Rate (SAR)"):
+            st.markdown("""
+**Definition:** The proportion of susceptible contacts of a case who develop disease within one incubation period of exposure.
+
+**Formula:** SAR = Secondary cases ÷ Susceptible contacts × 100
+
+**Critical rule:** The **index case is excluded** from both numerator and denominator. The index case was infected outside the setting — they cannot be a secondary case. The denominator is only the susceptible contacts who could have been infected by the index case.
+
+**Example:**
+- Index case (child) returns home from school with norovirus
+- Household has 4 other members (all susceptible)
+- 3 of the 4 develop illness within the incubation period
+- **SAR = 3 ÷ 4 × 100 = 75%**
+
+**How SAR differs from attack rate:**
+| Measure | Numerator | Denominator | Answers |
+|---|---|---|---|
+| Attack Rate (AR) | All cases | All at risk (incl. index) | How likely is exposure to cause disease? |
+| Secondary Attack Rate (SAR) | Secondary cases only | Susceptible contacts (excl. index) | How likely does the index case transmit to contacts? |
+
+**Uses of SAR:**
+- Estimates household or close-contact transmissibility
+- Compares effectiveness of isolation and prophylaxis
+- Contributes to estimating R₀ (basic reproduction number)
+- Higher SAR = more transmissible pathogen or more intimate setting
+
+**Example values:** Norovirus household SAR ≈ 30–80%; Measles SAR in unvaccinated households ≈ 75–90%; Seasonal influenza SAR ≈ 10–30%
+            """)
+
     elif df_section == "2️⃣ Interactive Calculator":
         st.subheader("Disease Frequency Calculator")
 
@@ -2613,7 +2642,12 @@ elif current_page == "screening":
     st.title("🔬 Screening & Diagnostic Tests")
     st.markdown("Evaluating the performance of a test requires understanding how sensitivity, specificity, and the prevalence of disease in the population interact.")
 
-    screen_section = st.radio("Section:", ["1️⃣ Core Concepts", "2️⃣ Interactive 2×2 Calculator", "3️⃣ Prevalence Effect on PPV"], horizontal=True)
+    screen_section = st.radio("Section:", [
+        "1️⃣ Core Concepts",
+        "2️⃣ Interactive 2×2 Calculator",
+        "3️⃣ Prevalence Effect on PPV",
+        "4️⃣ Likelihood Ratios"
+    ], horizontal=True)
     st.divider()
 
     if screen_section == "1️⃣ Core Concepts":
@@ -2788,6 +2822,157 @@ The test hasn't changed — only the population it's applied to.
         st.markdown("""
 **Why does this happen?** In a low-prevalence population, there are very few true cases but an enormous number of disease-free people. Even a test with high specificity — meaning its false positive *rate* is low — will produce a large absolute *number* of false positives when applied to millions of non-cases. A 95% specific test still incorrectly flags 5% of non-cases as positive; in a population of 1,000,000 non-cases, that's 50,000 false positives regardless of how few true cases exist. The problem is not the test's performance — it's the mismatch between the test's false positive rate and the vast size of the non-case pool. This is the mathematical basis for why mass screening of low-risk populations often produces more harm (unnecessary follow-up, anxiety, procedures) than benefit.
         """)
+
+    elif screen_section == "4️⃣ Likelihood Ratios":
+        st.subheader("Likelihood Ratios — Updating Probability with Test Results")
+        st.markdown("""
+Sensitivity, specificity, PPV, and NPV all describe test performance — but they don't directly answer the most important clinical question: **given this test result, how should I update my estimate of whether this patient has the disease?**
+
+Likelihood ratios (LRs) answer exactly this question. They are independent of prevalence in a way that lets you apply them to *any* patient with a known pre-test probability.
+        """)
+
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("#### LR+ (Positive Likelihood Ratio)")
+            st.markdown("""
+**Formula:** LR+ = Sensitivity ÷ (1 − Specificity)
+
+**Meaning:** How much more likely is a positive test result in someone WITH the disease compared to someone WITHOUT it?
+
+- LR+ = 1.0 → test adds no information
+- LR+ = 2 → positive result twice as likely in cases
+- LR+ = 10 → positive result 10× more likely in cases (strong evidence)
+- LR+ > 10 → often considered definitive positive evidence
+
+**Example:** Sensitivity = 96%, Specificity = 80%
+LR+ = 0.96 ÷ (1 − 0.80) = 0.96 ÷ 0.20 = **4.8**
+A positive test is 4.8× more likely in someone with disease than without.
+            """)
+
+        with col2:
+            st.markdown("#### LR− (Negative Likelihood Ratio)")
+            st.markdown("""
+**Formula:** LR− = (1 − Sensitivity) ÷ Specificity
+
+**Meaning:** How much more likely is a negative test result in someone WITH the disease compared to someone WITHOUT it?
+
+- LR− = 1.0 → test adds no information
+- LR− = 0.5 → negative result half as likely in cases
+- LR− = 0.1 → negative result 10× less likely in cases (strong ruling-out evidence)
+- LR− < 0.1 → often considered definitive negative evidence
+
+**Example:** Sensitivity = 96%, Specificity = 80%
+LR− = (1 − 0.96) ÷ 0.80 = 0.04 ÷ 0.80 = **0.05**
+A negative test is 20× more likely in someone without disease (nearly rules out).
+            """)
+
+        st.divider()
+        st.markdown("#### Converting Pre-Test to Post-Test Probability")
+        st.info("""
+LRs work with **odds**, not probabilities. The conversion steps are:
+
+**Step 1:** Convert pre-test probability to pre-test odds
+Pre-test odds = Pre-test probability ÷ (1 − Pre-test probability)
+
+**Step 2:** Multiply by the LR
+Post-test odds = Pre-test odds × LR
+
+**Step 3:** Convert post-test odds back to probability
+Post-test probability = Post-test odds ÷ (1 + Post-test odds)
+        """)
+
+        st.markdown("#### Interactive Example")
+        col_a, col_b, col_c = st.columns(3)
+        pre_prob = col_a.slider("Pre-test probability (%)", 1, 99, 8, 1, key="lr_pretest") / 100
+        lr_pos = col_b.slider("LR+ value", 1.0, 20.0, 4.8, 0.1, key="lr_pos_val")
+        lr_neg = col_c.slider("LR− value", 0.01, 1.0, 0.05, 0.01, key="lr_neg_val")
+
+        pre_odds = pre_prob / (1 - pre_prob)
+        post_odds_pos = pre_odds * lr_pos
+        post_prob_pos = post_odds_pos / (1 + post_odds_pos)
+        post_odds_neg = pre_odds * lr_neg
+        post_prob_neg = post_odds_neg / (1 + post_odds_neg)
+
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Pre-test probability", f"{round(pre_prob*100,1)}%")
+        col2.metric("Post-test probability (positive test)", f"{round(post_prob_pos*100,1)}%", delta=f"+{round((post_prob_pos-pre_prob)*100,1)}%")
+        col3.metric("Post-test probability (negative test)", f"{round(post_prob_neg*100,1)}%", delta=f"{round((post_prob_neg-pre_prob)*100,1)}%")
+
+        st.divider()
+        st.markdown("#### LR Benchmarks")
+        lr_table_html = """
+<div style="overflow-x:auto;">
+<table style="border-collapse:collapse;width:100%;font-size:13px;">
+  <tr style="background:#1e40af;color:white;">
+    <th style="padding:10px;text-align:left;">LR+ value</th>
+    <th style="padding:10px;text-align:left;">Interpretation</th>
+    <th style="padding:10px;text-align:left;">LR− value</th>
+    <th style="padding:10px;text-align:left;">Interpretation</th>
+  </tr>
+  <tr style="background:#f8fafc;">
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;">&gt; 10</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#166534;font-weight:600;">Large increase — often conclusive</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;">&lt; 0.1</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#166534;font-weight:600;">Large decrease — often conclusive</td>
+  </tr>
+  <tr>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;">5–10</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#1d4ed8;">Moderate increase</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;">0.1–0.2</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#1d4ed8;">Moderate decrease</td>
+  </tr>
+  <tr style="background:#f8fafc;">
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;">2–5</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#92400e;">Small increase</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;">0.2–0.5</td>
+    <td style="padding:8px;border-bottom:1px solid #e2e8f0;color:#92400e;">Small decrease</td>
+  </tr>
+  <tr>
+    <td style="padding:8px;">1–2</td>
+    <td style="padding:8px;color:#6b7280;">Minimal change</td>
+    <td style="padding:8px;">0.5–1.0</td>
+    <td style="padding:8px;color:#6b7280;">Minimal change</td>
+  </tr>
+</table>
+</div>"""
+        st.markdown(lr_table_html, unsafe_allow_html=True)
+
+        st.divider()
+        with st.expander("📊 Why LRs are more useful than PPV/NPV"):
+            st.markdown("""
+**PPV and NPV are prevalence-dependent** — they tell you how well a test performs in a specific population with a specific prevalence. If you test in a different population with different prevalence, PPV and NPV change.
+
+**LRs are prevalence-independent** — LR+ and LR− are fixed properties of the test (like sensitivity and specificity). You can apply them to *any* patient by knowing their individual pre-test probability.
+
+**Clinical workflow using LRs:**
+1. Estimate pre-test probability from patient history, demographics, and clinical findings
+2. Run the test
+3. Apply LR+ (if positive) or LR− (if negative) to update to post-test probability
+4. Decide whether post-test probability is above your treatment threshold or below your test-no-further threshold
+
+This is Bayesian reasoning applied to clinical medicine. It's more powerful than asking "what's the PPV in my population?" because it applies to individual patients with individual risk profiles.
+            """)
+
+        with st.expander("🔢 Show me the math — worked example"):
+            st.markdown("""
+**Patient:** 55-year-old male smoker, chronic cough. Pre-test probability of lung cancer = 8%.
+
+**CT Scan:** Sensitivity = 96%, Specificity = 80%
+- LR+ = 0.96 ÷ 0.20 = **4.8**
+- LR− = 0.04 ÷ 0.80 = **0.05**
+
+**If CT is positive:**
+- Pre-test odds = 0.08 ÷ 0.92 = 0.087
+- Post-test odds = 0.087 × 4.8 = 0.416
+- Post-test probability = 0.416 ÷ 1.416 = **29.4%**
+- Interpretation: Probability of lung cancer rises from 8% to 29% — warrants further workup (PET scan, biopsy)
+
+**If CT is negative:**
+- Post-test odds = 0.087 × 0.05 = 0.0043
+- Post-test probability = 0.0043 ÷ 1.0043 = **0.43%**
+- Interpretation: Probability of lung cancer drops from 8% to 0.4% — highly reassuring; can pursue other diagnoses
+            """)
+
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")

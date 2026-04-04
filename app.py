@@ -5174,6 +5174,12 @@ Participants recruited by **outcome status** — cases (have disease) and contro
 **Cross-Sectional Study**
 Exposure and outcome measured **at the same point in time** — a snapshot. Produces PR. Cannot establish temporal order.
 
+**Ecological Study**
+Unit of analysis is **groups or populations** (countries, cities, time periods), not individuals. Exposure and outcome are measured as group averages or rates. Useful for hypothesis generation and policy surveillance. Cannot establish individual-level causation.
+
+**Ecological Fallacy (Aggregation Bias)**
+The error of inferring individual-level relationships from group-level data. A correlation observed between country-level variables does not mean the same relationship holds within individuals. Classic example: countries with more TVs have lower infant mortality — TVs don't protect infants; wealth causes both.
+
 **Case-Crossover Study**
 Each case serves as **their own control** — exposure during a hazard period (just before event) vs. a control period (same person, no event). Eliminates between-person confounding. Best for transient exposures with acute effects. Produces OR.
 
@@ -5190,101 +5196,183 @@ A systematic error that distorts the true association between exposure and outco
 Who is included in the study is related to both exposure and outcome.
 
 **Berkson's Bias**
-Hospital patients are not representative of the general population — both the exposure and disease independently increase hospitalization probability.
+Hospital patients are not representative of the general population — both the exposure and disease independently increase hospitalization probability. A type of collider bias — conditioning on hospitalization (a collider) opens a spurious path between exposure and disease.
 
 **Healthy Worker Effect**
 Employed workers are systematically healthier than the general population. Causes SMR < 1 in occupational studies even without protective effects.
 
+**Healthy User Bias**
+People who use health-promoting interventions (vitamins, screening, medications) are systematically different from those who don't — they tend to be wealthier, more health-conscious, and healthier overall. Confounds observational studies of preventive interventions. Classic example: hormone therapy and cardiovascular disease in the WHI era.
+
 **Loss to Follow-Up Bias**
-Dropout related to both exposure and outcome distorts results.
+Dropout related to both exposure and outcome distorts results. **Differential loss** (more common in one exposure group) biases toward or away from null depending on direction. If the sickest exposed participants leave, the exposed group looks healthier than it is → RR biased toward null.
 
 **Information Bias (Misclassification)**
 Exposure or outcome is measured incorrectly.
 
 **Non-Differential Misclassification**
-Measurement error equal across groups. Biases toward null (attenuates the association).
+Measurement error equal across all groups (same error rate regardless of outcome or exposure status). Always biases the measure of association **toward null** (attenuates the association). A null finding in the presence of non-differential misclassification may not mean no effect.
 
 **Differential Misclassification**
-Measurement error differs between groups. Can bias in either direction.
+Measurement error differs between groups (error rate depends on outcome or exposure status). Can bias in either direction — toward or away from null.
 
 **Recall Bias**
-Cases remember past exposures more carefully than controls. Common in case-control studies. Biases OR away from null.
+Cases remember past exposures more carefully than controls after receiving a diagnosis. Differential misclassification. Common in case-control studies. Typically biases OR **away from null** (overestimates association).
+
+**Reverse Causation**
+The outcome actually causes the exposure, not the other way around. Common in cross-sectional studies where temporality cannot be established. Example: lower physical activity associated with depression — but depression may cause inactivity, not the reverse.
+
+**Confounding by Indication**
+The reason for receiving a treatment (the indication) is itself associated with the outcome, creating spurious associations. Classic example: sicker patients receive more aggressive treatment → treatment appears harmful in crude analyses. Controlled by adjusting for disease severity.
         """)
 
     with st.expander("🔀 Confounding & Effect Modification"):
         st.markdown("""
 **Confounding**
-A variable that distorts the apparent association between exposure and outcome. Must be: (1) associated with exposure, (2) independently associated with outcome, (3) not on the causal pathway.
+A variable that distorts the apparent association between exposure and outcome. Must be: (1) associated with exposure in the source population, (2) independently associated with outcome, (3) not on the causal pathway between exposure and outcome.
 
 **Confounder Control — Design:** Randomization, restriction, matching.
 
 **Confounder Control — Analysis:** Stratification (Mantel-Haenszel), multivariable regression, propensity scores.
 
+**Mantel-Haenszel Method**
+Stratified analysis technique that produces a pooled (weighted average) estimate of RR or OR across strata of a confounder. Compares the crude pooled estimate to stratum-specific estimates to assess confounding. If the Mantel-Haenszel adjusted estimate differs meaningfully from the crude estimate (>10%), the stratification variable is a confounder.
+
 **Residual Confounding**
-Confounding that remains after adjustment, due to imperfect measurement of confounders.
+Confounding that remains after adjustment, due to imperfect measurement of confounders or unmeasured confounders. Present in virtually all observational studies to some degree.
 
 **Effect Modification (Interaction)**
-The association between exposure and outcome differs across levels of a third variable. A real phenomenon to be reported, not a bias to be removed.
+The magnitude or direction of the association between exposure and outcome differs across levels of a third variable (the effect modifier). **A real biological or social phenomenon to be reported, not a bias to be removed.** The appropriate response is to present stratum-specific estimates, not a single adjusted estimate. Confounding is removed by adjustment; effect modification is revealed by stratification.
 
 **10% Rule**
-If adjusting for a variable changes RR/OR by >10%, it is a meaningful confounder.
+If adjusting for a variable changes RR/OR by >10%, it is a meaningful confounder worth controlling.
+
+**DAG (Directed Acyclic Graph)**
+A visual tool for representing causal assumptions. Nodes = variables, arrows = causal direction. Used to identify which variables to adjust for and which to leave alone.
+
+**Confounder (DAG)**
+A common cause of both exposure and outcome. Creates a backdoor path. Should be adjusted for.
+
+**Mediator (DAG)**
+A variable on the causal pathway between exposure and outcome (exposure causes mediator causes outcome). Adjusting for a mediator blocks the causal pathway — over-adjustment bias. Do NOT adjust for mediators when estimating total effect.
+
+**Collider (DAG)**
+A variable caused by both exposure and outcome (arrows collide into it). Colliders naturally block paths. Conditioning on a collider opens a spurious association between exposure and outcome — collider bias. Do NOT adjust for colliders.
+
+**Moderator (DAG)**
+A variable that modifies the strength of the exposure-outcome relationship. Synonymous with effect modifier.
+
+**M-Bias**
+Bias introduced by adjusting for a variable that is a collider between two unmeasured common causes of the exposure and outcome. Adjusting for such a variable opens a backdoor path that didn't previously exist.
+
+**Proxy Variable**
+A measured variable used as a substitute for an unmeasured variable of interest. Adjusting for a proxy provides only partial control for the underlying variable — residual confounding remains. Example: education as proxy for socioeconomic status.
         """)
 
     with st.expander("🔗 Causal Inference"):
         st.markdown("""
 **Bradford Hill Criteria (1965)**
-Nine criteria for evaluating causal evidence: strength, consistency, specificity, temporality, biological gradient, plausibility, coherence, experiment, analogy. Temporality is the only mandatory criterion.
+Nine criteria for evaluating whether an observed association is likely causal:
+1. **Strength** — stronger associations less likely due to unmeasured confounding
+2. **Consistency** — replicated across studies, populations, methods
+3. **Specificity** — exposure associated with specific disease, not many outcomes
+4. **Temporality** — exposure precedes outcome (the ONLY mandatory criterion)
+5. **Biological gradient** — dose-response relationship
+6. **Plausibility** — biologically plausible mechanism
+7. **Coherence** — consistent with known biology and natural history
+8. **Experiment** — removal of exposure reduces disease (natural experiment)
+9. **Analogy** — similar relationships established for analogous exposures
+
+**Temporality is the only mandatory criterion.** The others are supportive.
 
 **Counterfactual Framework**
-Causation requires asking: what would have happened to the same person if their exposure status had been different? The fundamental problem of causal inference is that we can never observe both potential outcomes for the same person.
+Causation requires asking: what would have happened to the same person if their exposure status had been different? The fundamental problem of causal inference is that we can never observe both potential outcomes for the same person at the same time.
+
+**Reverse Causation**
+See Bias section. The outcome causes the exposure — a particular threat in cross-sectional studies.
         """)
 
     with st.expander("📊 Disease Frequency Measures"):
         st.markdown("""
 **Prevalence**
-Proportion of population with condition at a point in time. Numerator: existing cases. No time unit.
+Proportion of population with condition at a point in time. Numerator: existing cases. No time unit. Denominator includes people who already have disease.
 
 **Cumulative Incidence (Attack Rate)**
-Proportion of disease-free population that develops disease during a specified period. Numerator: new cases. Denominator: disease-free at start.
+Proportion of disease-free population that develops disease during a specified period. Numerator: new cases only. Denominator: disease-free at start of period.
+
+**Attack Rate**
+Cumulative incidence in an outbreak context. Same formula, shorter time frame. Food-specific attack rates are used to identify the vehicle in foodborne outbreaks.
+
+**Secondary Attack Rate (SAR)**
+Proportion of susceptible contacts of an index case who develop disease within one incubation period. SAR = Secondary cases ÷ Susceptible contacts. The index case is excluded from both numerator and denominator. Measures household or close-contact transmissibility.
 
 **Incidence Rate (Incidence Density)**
-New cases per unit person-time at risk. Used when follow-up varies. Units: per 1,000 person-years.
+New cases per unit person-time at risk. Used when follow-up varies. Units: per 1,000 person-years. More precise than cumulative incidence when participants contribute different observation times.
 
 **Case Fatality Rate (CFR)**
-Deaths from disease ÷ total cases. Measures lethality, not frequency. A proportion, not a true rate.
+Deaths from disease ÷ total cases × 100. Measures disease lethality. Denominator is cases only (people with disease), not total population. A proportion, not a true rate.
 
-**Prevalence-Incidence Relationship**
-P ≈ I × D (Prevalence ≈ Incidence × Duration). Holds at steady state with low prevalence.
+**Mortality Rate**
+Deaths ÷ total population at risk. Denominator is the whole population, not just cases. Measures death burden in a population.
+
+**Prevalence-Incidence Relationship (P = I × D)**
+At steady state: Prevalence ≈ Incidence × Average Duration. Rearranges to estimate any one value if the other two are known. Higher incidence or longer duration both increase prevalence. In the ART era, HIV prevalence rises despite falling incidence because duration has increased dramatically.
 
 **Point-Source Epidemic**
-All cases exposed to same source at same time. Sharp epidemic curve; width ≈ one incubation period.
+All cases exposed to same source at same time. Sharp epidemic curve; width ≈ one incubation period. No secondary spread.
 
 **Propagated Epidemic**
-Person-to-person spread. Multiple waves in epidemic curve; each wave ≈ one incubation period apart.
+Person-to-person spread. Multiple waves in epidemic curve; each wave ≈ one incubation period apart. Cases spread across multiple settings over weeks.
+
+**Mixed Epidemic**
+Begins as a point source, followed by person-to-person transmission. Initial sharp peak followed by subsequent waves.
+
+**Incubation Period**
+Time from exposure to symptom onset. The range of onset times in a point-source outbreak approximates the plausible incubation period range for that pathogen.
         """)
 
     with st.expander("🔬 Screening & Diagnostic Tests"):
         st.markdown("""
 **Sensitivity**
-True positive rate: proportion of true cases that test positive. High sensitivity → few false negatives → rules OUT disease when negative. **SnNout.**
+True positive rate: proportion of true cases that test positive. High sensitivity → few false negatives → rules OUT disease when negative. **SnNout.** Fixed property of the test — does not change with prevalence.
 
 **Specificity**
-True negative rate: proportion of true non-cases that test negative. High specificity → few false positives → rules IN disease when positive. **SpPin.**
+True negative rate: proportion of true non-cases that test negative. High specificity → few false positives → rules IN disease when positive. **SpPin.** Fixed property of the test — does not change with prevalence.
 
 **PPV (Positive Predictive Value)**
-Probability that a positive test reflects true disease. Depends on prevalence — low in low-prevalence populations.
+Probability that a positive test reflects true disease. Depends on prevalence — low in low-prevalence populations even with an excellent test.
 
 **NPV (Negative Predictive Value)**
-Probability that a negative test reflects true absence of disease. Increases as prevalence decreases.
+Probability that a negative test reflects true absence of disease. Increases as prevalence decreases — negative tests are more reassuring when disease is rare. In high-prevalence populations, a negative test cannot as confidently rule out disease.
+
+**Accuracy**
+(TP + TN) ÷ N. Proportion of all tests correct. Misleading in low-prevalence settings — predicting everyone negative gives high accuracy but is clinically useless.
 
 **Sensitivity-Specificity Tradeoff**
-Lowering the test cutpoint increases sensitivity but decreases specificity. ROC curve plots this tradeoff.
+Lowering the test cutpoint increases sensitivity but decreases specificity (more positives, more false positives). ROC curve plots this tradeoff across all possible cutpoints.
 
 **Prevalence Effect on PPV**
-Same test, different population prevalence → different PPV. Even an excellent test has poor PPV when disease prevalence is very low.
+Same sensitivity and specificity, different prevalence → dramatically different PPV. Even a 99% specific test has poor PPV at 0.1% prevalence because the enormous pool of non-cases generates many false positives in absolute numbers.
+
+**LR+ (Positive Likelihood Ratio)**
+LR+ = Sensitivity ÷ (1 − Specificity). How much more likely is a positive result in someone WITH disease vs. WITHOUT. LR+ > 10 = strong evidence for disease. Unlike PPV, LR+ is independent of prevalence and can be applied to individual patients with known pre-test probability.
+
+**LR− (Negative Likelihood Ratio)**
+LR− = (1 − Sensitivity) ÷ Specificity. How much more likely is a negative result in someone WITH disease vs. WITHOUT. LR− < 0.1 = strong evidence against disease.
+
+**Pre-test Probability**
+Probability of disease before the test result is known. Based on clinical history, demographics, and epidemiology. The starting point for Bayesian test interpretation.
+
+**Post-test Probability**
+Probability of disease after incorporating the test result. Calculated as:
+Pre-test odds × LR = Post-test odds → convert back to probability.
+Post-test probability = Post-test odds ÷ (1 + Post-test odds).
+
+**Bayes' Theorem (clinical)**
+The formal framework for updating probability with new evidence. In clinical testing: Post-test odds = Pre-test odds × Likelihood Ratio.
         """)
 
-    with st.expander("📐 Study Design — Measures of Association"):
+    with st.expander("📐 Measures of Association"):
         st.markdown("""
 **Risk Ratio (RR)**
 Risk in exposed ÷ risk in unexposed. Cohort studies. RR = 1: no difference; RR > 1: higher risk; RR < 1: protective.
@@ -5293,88 +5381,96 @@ Risk in exposed ÷ risk in unexposed. Cohort studies. RR = 1: no difference; RR 
 Same formula as RR but used in cross-sectional studies where the outcome is prevalent (existing), not incident (new).
 
 **Odds Ratio (OR)**
-Odds of outcome in exposed ÷ odds in unexposed. Used in case-control studies. OR always farther from 1 than RR when outcome is common. When outcome rare (<10%), OR ≈ RR.
+Odds of outcome in exposed ÷ odds in unexposed. Used in case-control studies and logistic regression. OR always farther from 1 than RR when outcome is common. When outcome rare (<10%), OR ≈ RR (rare disease assumption).
 
 **Incidence Rate Ratio (IRR)**
-Rate in exposed ÷ rate in unexposed using person-time denominators. Used when follow-up time varies.
+Rate in exposed ÷ rate in unexposed using person-time denominators. Used when follow-up time varies across participants.
 
 **Hazard Ratio (HR)**
-Ratio of instantaneous event rates at any moment in time. Output of Cox proportional hazards regression. Used when follow-up varies and participants may be censored.
+Ratio of instantaneous event rates at any moment in time. Output of Cox proportional hazards regression. Used when follow-up varies and participants may be censored. Approximates RR under proportional hazards assumption.
 
 **Risk Difference (Attributable Risk)**
-Risk in exposed − risk in unexposed. Absolute excess risk.
+Risk in exposed − risk in unexposed. Absolute excess risk. More clinically meaningful than RR for public health decisions.
+
+**Confidence Interval (CI)**
+Range of plausible values for the true effect estimate. 95% CI: if the study were repeated many times, 95% of CIs would contain the true value. CI excluding null value (1 for ratios, 0 for differences) → p < 0.05.
         """)
 
     with st.expander("📉 Advanced Epi Measures"):
         st.markdown("""
 **Attributable Risk (AR) / Risk Difference**
-Risk in exposed − risk in unexposed. Absolute excess risk per 100 exposed.
+Risk in exposed − risk in unexposed. Absolute excess risk per 100 exposed. Answers: how many extra cases occur because of exposure?
 
 **Attributable Risk Percent (AR%)**
-AR ÷ risk in exposed × 100. Fraction of disease in the exposed group attributable to exposure.
+AR ÷ risk in exposed × 100. Fraction of disease in the exposed group attributable to exposure. Answers: of all disease in the exposed group, what proportion is due to exposure?
 
 **Population Attributable Risk Percent (PAR%)**
-Fraction of all disease in the total population attributable to exposure. Formula: Pe(RR−1) / [1+Pe(RR−1)] × 100. Accounts for both exposure prevalence and strength of association.
+Fraction of all disease in the **total population** attributable to exposure. Formula: Pe(RR−1) / [1+Pe(RR−1)] × 100. Accounts for both exposure prevalence (Pe) and strength of association (RR). Used for population-level prevention decisions. A common exposure with modest RR can have higher PAR% than a rare exposure with large RR.
+
+**AR% vs PAR%:** AR% applies to the exposed group; PAR% applies to the whole population. PAR% will always be ≤ AR%.
 
 **Standardized Mortality Ratio (SMR)**
-Observed deaths ÷ Expected deaths (expected = reference rates × study group age structure). SMR > 1: excess mortality. SMR < 1: lower mortality (possibly healthy worker effect).
+Observed deaths ÷ Expected deaths (expected = reference rates × study group age structure). SMR > 1: excess mortality. SMR < 1: lower mortality (often healthy worker effect). Used in indirect standardization.
 
 **Healthy Worker Effect**
 Workers healthier than general population → SMR < 1 in occupational cohorts even without true protection.
 
 **Number Needed to Treat (NNT)**
-How many need treatment for one additional person to benefit. NNT = 1 / Risk Difference.
+How many patients need treatment for one additional person to benefit. NNT = 1 ÷ |Risk Difference|. Smaller NNT = more effective intervention.
 
 **Number Needed to Harm (NNH)**
-How many need exposure for one additional person to be harmed. NNH = 1 / Risk Difference.
+How many patients need exposure for one additional person to be harmed. NNH = 1 ÷ |Risk Difference|. Same formula as NNT; direction of effect distinguishes benefit (NNT) from harm (NNH).
+
+**Hazard Ratio (HR)**
+See Measures of Association.
         """)
 
     with st.expander("🧪 Hypothesis Testing & Power"):
         st.markdown("""
 **Null Hypothesis (H₀)**
-Default: no association, no difference. Always an equality (RR = 1, μ₁ = μ₂).
+Default: no association, no difference. Always an equality (RR = 1, μ₁ = μ₂). What you are trying to find evidence against.
 
 **Alternative Hypothesis (H₁)**
-States an association exists. Two-tailed (≠) or one-tailed (< or >).
+States an association exists. Two-tailed (≠): no direction predicted. One-tailed (< or >): direction pre-specified.
 
 **p-value**
-Probability of observing a result as extreme as yours if H₀ were true. NOT the probability H₀ is true.
+Probability of observing a result as extreme as yours (or more extreme) if H₀ were true. NOT the probability H₀ is true. NOT the probability the result occurred by chance.
 
 **Type I Error (α)**
-Rejecting true H₀. False positive. Probability = 0.05.
+Rejecting true H₀. False positive. Controlled by setting α = 0.05. Analogy: convicting an innocent person.
 
 **Type II Error (β)**
-Failing to reject false H₀. False negative. Power = 1 − β.
+Failing to reject false H₀. False negative. Conventional target: β ≤ 0.20. Analogy: acquitting a guilty person.
 
 **Statistical Power**
-Probability of correctly detecting a real effect. Power = 1 − β. Conventional minimum: 80%.
+Probability of correctly detecting a real effect when it exists. Power = 1 − β. Conventional minimum: 80%. Increased by: larger sample size, larger true effect, lower measurement error, lower α.
 
 **Confidence Interval (CI)**
-Range of plausible values for the true effect. 95% CI excluding 1 → p < 0.05. More informative than p-value alone.
+See Measures of Association. 95% CI excluding null → p < 0.05. CI provides more information than p-value alone — shows range of plausible effect sizes.
 
 **Chi-Square (χ²)**
-Tests whether observed counts differ from expected under independence. Always two-tailed. Larger χ² → smaller p.
+Tests whether observed counts differ from expected under independence. Always two-tailed. Larger χ² → smaller p-value.
 
 **One-Tailed Test**
-Tests effect in one specific direction. All 5% in one tail. Only appropriate with strong prior directional hypothesis.
+Tests effect in one specific direction. All 5% error tolerance in one tail. Only appropriate when directional hypothesis was pre-specified before data collection based on strong prior evidence.
 
 **Two-Tailed Test**
-Tests any difference regardless of direction. Default in epidemiology. Chi-square always two-tailed.
+Tests any difference regardless of direction. Default in epidemiology. Chi-square is always two-tailed.
         """)
 
     with st.expander("📏 Standardization"):
         st.markdown("""
 **Crude Rate**
-Overall rate without adjusting for confounders. Can mislead when populations have different age structures.
+Overall rate without adjusting for confounders. Can mislead when populations have different age structures — apparent rate differences may be entirely due to different age distributions.
 
 **Direct Standardization**
-Applies each population's age-specific rates to a single standard population. Produces age-adjusted rate. Best for comparing two populations.
+Applies each population's age-specific rates to a single standard population. Produces age-adjusted rate. Best for comparing two populations when age-specific rates are stable.
 
 **Indirect Standardization**
-Applies reference population rates to study group's age structure. Produces SMR. Best when study group has small numbers making age-specific rates unstable.
+Applies reference population's age-specific rates to study group's age structure. Produces expected deaths → calculates SMR. Best when study group has small numbers making age-specific rates unstable.
 
 **Confounding by Age**
-Apparent rate difference due to different age structures, not true disease burden. Standardization removes this.
+Apparent rate difference due to different age structures, not true disease burden. Standardization removes this. The most common confounder in disease frequency comparisons across populations.
         """)
 
     st.divider()

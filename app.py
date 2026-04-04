@@ -1071,7 +1071,7 @@ Can take any value within a range, including decimals. Measured, not counted.
                      "Ordinal (ordered categories)",
                      "Discrete / Count",
                      "Continuous (interval or ratio)"],
-                    key="ds_outcome_type"
+                    key=f"ds_outcome_{design_identified}"
                 )
             with col_b:
                 exposure_type = st.selectbox(
@@ -1081,7 +1081,7 @@ Can take any value within a range, including decimals. Measured, not counted.
                      "Categorical (3+ groups, unordered)",
                      "Ordinal (ordered categories or dose levels)",
                      "Continuous"],
-                    key="ds_exposure_type"
+                    key=f"ds_exposure_{design_identified}"
                 )
 
             if outcome_type != "— Select —" and exposure_type != "— Select —":

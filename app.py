@@ -3332,17 +3332,142 @@ The 0.05 threshold means we accept a 5% chance of rejecting a true H₀ (Type I 
 | "p = 0.049 is meaningful, p = 0.051 is not" | The 0.05 cutoff is arbitrary |
 | "Smaller p = stronger association" | p reflects both sample size AND effect size |
             """)
-        with st.expander("🟡 Type I and Type II Errors"):
-            st.markdown("""
-|  | H₀ is TRUE | H₀ is FALSE |
-|---|---|---|
-| **Reject H₀** | ❌ Type I Error (α) | ✅ Correct (Power = 1−β) |
-| **Fail to reject H₀** | ✅ Correct | ❌ Type II Error (β) |
+        with st.expander("🟡 Type I and Type II Errors", expanded=True):
 
-**Type I (α):** False positive — rejecting a true H₀. Probability = α (0.05).
-**Type II (β):** False negative — failing to reject a false H₀.
-**Tradeoff:** Decreasing α reduces Type I errors but increases Type II without a larger sample size.
-            """)
+            # Visual 2x2 grid
+            visual_html = """
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:8px 0 20px 0;">
+
+  <!-- Column headers -->
+  <div style="display:grid;grid-template-columns:180px 1fr 1fr;gap:4px;margin-bottom:4px;">
+    <div></div>
+    <div style="text-align:center;background:#1e40af;color:white;border-radius:8px 8px 0 0;
+         padding:10px;font-weight:700;font-size:13px;">
+      🌍 Reality: H₀ is TRUE<br>
+      <span style="font-weight:400;font-size:11px;opacity:0.85;">(no real effect exists)</span>
+    </div>
+    <div style="text-align:center;background:#166534;color:white;border-radius:8px 8px 0 0;
+         padding:10px;font-weight:700;font-size:13px;">
+      🌍 Reality: H₀ is FALSE<br>
+      <span style="font-weight:400;font-size:11px;opacity:0.85;">(a real effect exists)</span>
+    </div>
+  </div>
+
+  <!-- Row 1: Reject H₀ -->
+  <div style="display:grid;grid-template-columns:180px 1fr 1fr;gap:4px;margin-bottom:4px;">
+    <div style="background:#374151;color:white;border-radius:8px 0 0 0;
+         padding:12px;font-weight:700;font-size:13px;display:flex;align-items:center;">
+      🔬 Your decision:<br>Reject H₀<br>
+      <span style="font-weight:400;font-size:10px;opacity:0.8;">("significant result")</span>
+    </div>
+    <div style="background:#fef2f2;border:3px solid #dc2626;border-radius:0 8px 0 0;padding:16px;text-align:center;">
+      <div style="font-size:28px;margin-bottom:6px;">🚨</div>
+      <div style="font-weight:800;font-size:15px;color:#dc2626;">TYPE I ERROR</div>
+      <div style="font-weight:600;font-size:12px;color:#dc2626;margin:4px 0;">False Positive (α)</div>
+      <div style="font-size:12px;color:#7f1d1d;margin-top:8px;line-height:1.5;">
+        You declared an effect that <b>doesn't exist</b>.<br>
+        You were fooled by chance.
+      </div>
+      <div style="background:#dc2626;color:white;border-radius:6px;padding:6px 10px;
+           font-size:11px;margin-top:10px;font-weight:600;">
+        Probability = α (usually 0.05)
+      </div>
+      <div style="font-size:11px;color:#991b1b;margin-top:8px;font-style:italic;">
+        "A fire alarm goes off — but there's no fire."
+      </div>
+    </div>
+    <div style="background:#f0fdf4;border:3px solid #16a34a;border-radius:0;padding:16px;text-align:center;">
+      <div style="font-size:28px;margin-bottom:6px;">✅</div>
+      <div style="font-weight:800;font-size:15px;color:#166534;">CORRECT DECISION</div>
+      <div style="font-weight:600;font-size:12px;color:#166534;margin:4px 0;">True Positive (Power = 1−β)</div>
+      <div style="font-size:12px;color:#14532d;margin-top:8px;line-height:1.5;">
+        You correctly detected a real effect.<br>
+        This is what studies aim for.
+      </div>
+      <div style="background:#16a34a;color:white;border-radius:6px;padding:6px 10px;
+           font-size:11px;margin-top:10px;font-weight:600;">
+        Probability = Power (1−β)
+      </div>
+      <div style="font-size:11px;color:#166534;margin-top:8px;font-style:italic;">
+        "Fire alarm goes off — and there IS a fire."
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Fail to reject H₀ -->
+  <div style="display:grid;grid-template-columns:180px 1fr 1fr;gap:4px;">
+    <div style="background:#374151;color:white;border-radius:0 0 0 8px;
+         padding:12px;font-weight:700;font-size:13px;display:flex;align-items:center;">
+      🔬 Your decision:<br>Fail to reject H₀<br>
+      <span style="font-weight:400;font-size:10px;opacity:0.8;">("not significant")</span>
+    </div>
+    <div style="background:#f0fdf4;border:3px solid #16a34a;border-radius:0;padding:16px;text-align:center;">
+      <div style="font-size:28px;margin-bottom:6px;">✅</div>
+      <div style="font-weight:800;font-size:15px;color:#166534;">CORRECT DECISION</div>
+      <div style="font-weight:600;font-size:12px;color:#166534;margin:4px 0;">True Negative</div>
+      <div style="font-size:12px;color:#14532d;margin-top:8px;line-height:1.5;">
+        No effect exists, and you didn't find one.<br>
+        The null was correct — and you kept it.
+      </div>
+      <div style="background:#16a34a;color:white;border-radius:6px;padding:6px 10px;
+           font-size:11px;margin-top:10px;font-weight:600;">
+        Probability = 1−α (specificity)
+      </div>
+      <div style="font-size:11px;color:#166534;margin-top:8px;font-style:italic;">
+        "No alarm — and there's no fire."
+      </div>
+    </div>
+    <div style="background:#fffbeb;border:3px solid #d97706;border-radius:0 0 8px 0;padding:16px;text-align:center;">
+      <div style="font-size:28px;margin-bottom:6px;">😴</div>
+      <div style="font-weight:800;font-size:15px;color:#92400e;">TYPE II ERROR</div>
+      <div style="font-weight:600;font-size:12px;color:#92400e;margin:4px 0;">False Negative (β)</div>
+      <div style="font-size:12px;color:#78350f;margin-top:8px;line-height:1.5;">
+        A real effect exists, but you <b>missed it</b>.<br>
+        Study was underpowered or effect too small.
+      </div>
+      <div style="background:#d97706;color:white;border-radius:6px;padding:6px 10px;
+           font-size:11px;margin-top:10px;font-weight:600;">
+        Probability = β (usually target ≤ 0.20)
+      </div>
+      <div style="font-size:11px;color:#92400e;margin-top:8px;font-style:italic;">
+        "No alarm — but there IS a fire."
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Key takeaways row -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+  <div style="background:#fef2f2;border-left:4px solid #dc2626;border-radius:6px;padding:12px 14px;">
+    <div style="font-weight:700;color:#dc2626;margin-bottom:6px;">🚨 Type I Error (α = false positive)</div>
+    <div style="font-size:12px;color:#7f1d1d;line-height:1.6;">
+      • Claiming an effect that doesn't exist<br>
+      • Probability controlled by setting α = 0.05<br>
+      • Reduced by: lower α threshold, replication<br>
+      • <b>Analogy:</b> Convicting an innocent person<br>
+      • Common in: underpowered studies fishing for p &lt; 0.05, multiple comparisons
+    </div>
+  </div>
+  <div style="background:#fffbeb;border-left:4px solid #d97706;border-radius:6px;padding:12px 14px;">
+    <div style="font-weight:700;color:#92400e;margin-bottom:6px;">😴 Type II Error (β = false negative)</div>
+    <div style="font-size:12px;color:#78350f;line-height:1.6;">
+      • Missing a real effect (insufficient power)<br>
+      • Probability = β; Power = 1 − β<br>
+      • Reduced by: larger sample size, larger effect size<br>
+      • <b>Analogy:</b> Acquitting a guilty person<br>
+      • Common in: small studies, weak exposures, noisy measurements
+    </div>
+  </div>
+</div>
+
+<div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:6px;padding:12px 14px;margin-top:12px;font-size:12px;color:#1e40af;line-height:1.6;">
+  <b>⚖️ The tradeoff:</b> You cannot simultaneously minimize both errors without increasing sample size.
+  Reducing α (stricter threshold) → fewer Type I errors but <i>more</i> Type II errors (easier to miss real effects).
+  The only way to reduce both is to collect more data or improve measurement precision.
+</div>
+"""
+            st.markdown(visual_html, unsafe_allow_html=True)
         with st.expander("🟢 CI Connection"):
             st.markdown("""
 **95% CI and p-value always agree:**

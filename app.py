@@ -4019,11 +4019,55 @@ elif current_page == "practice_advanced":
          "description":"2,800 adults 65+ followed up to 10 years. Follow-up varies due to deaths and losses. A Cox proportional hazards model was fitted.",
          "correct_measure":"Hazard Ratio (HR)",
          "measure_hint":"Varying follow-up, censoring, and Cox model = HR.",
-         "measure_wrong":{"Population Attributable Risk (PAR)":"❌ PAR requires exposure prevalence and RR. Cox regression = HR.","Standardized Mortality Ratio (SMR)":"❌ SMR requires observed vs. expected. Cox regression = HR.","Attributable Risk & AR%":"❌ AR% requires complete fixed follow-up. Censored + Cox = HR.","Number Needed to Harm / Treat (NNH/NNT)":"❌ NNT requires fixed time point. Censored data + Cox = HR."},
+         "measure_wrong":{"Population Attributable Risk (PAR)":"❌ PAR requires exposure prevalence and RR. Cox regression = HR.","Standardized Mortality Ratio (SMR)":"❌ SMR requires observed vs. expected. Cox regression = HR.","Attributable Risk & AR%":"❌ AR% requires complete fixed follow-up. Censored + Cox = HR.","Number Needed to Harm / Treat (NNH/NNT)":"❌ NNT requires fixed time point. Censored data + Cox = HR.","Incidence Rate Ratio (IRR)":"❌ IRR uses person-time rates. Cox regression produces a Hazard Ratio, not an IRR."},
          "data":{"type":"hr","context":"Interpret the HR from the Cox model.","hr":0.61,"ci_low":0.48,"ci_high":0.78,"exposed_label":"Physically active","outcome_label":"hip fracture"}},
+        {"id":"adv_6","title":"Scenario 6: Long-Term PPI Use & Chronic Kidney Disease",
+         "description":"A large cohort study finds that 3.2% of daily proton pump inhibitor (PPI) users developed chronic kidney disease (CKD) over 5 years, compared to 1.1% of non-users. A nephrologist asks: for every how many patients prescribed long-term PPIs will one additional case of CKD occur that would not have occurred otherwise?",
+         "correct_measure":"Number Needed to Harm / Treat (NNH/NNT)",
+         "measure_hint":"'For every how many patients exposed will one additional harm occur' = **NNH**. This is the harm-direction version of NNT. NNH = 1 ÷ |Risk Difference|.",
+         "measure_wrong":{
+             "Population Attributable Risk (PAR)":"❌ PAR estimates the population-level preventable fraction. This asks for a per-patient harm count — NNH.",
+             "Standardized Mortality Ratio (SMR)":"❌ SMR compares observed to expected deaths vs. a reference population. This is a per-patient clinical harm question — NNH.",
+             "Attributable Risk & AR%":"❌ AR% tells what fraction of disease in the exposed group is attributable to the exposure. The nephrologist wants an intuitive per-patient figure — NNH.",
+             "Hazard Ratio (HR)":"❌ HR compares event rates over time using Cox regression. Here we have simple 5-year cumulative risks — NNH.",
+             "Incidence Rate Ratio (IRR)":"❌ IRR uses person-time denominators. Here we have fixed 5-year cumulative proportions — NNH.",
+         },
+         "data":{"type":"nnt","context":"Calculate NNH — how many patients need long-term PPI exposure before one additional CKD case occurs.",
+                 "r_treatment":0.032,"r_control":0.011,
+                 "treatment_label":"Long-term PPI use","control_label":"No PPI use","outcome_label":"chronic kidney disease"}},
+        {"id":"adv_7","title":"Scenario 7: Air Pollution & Asthma Hospitalizations",
+         "description":"A cohort of 6,200 children in an urban area is monitored for asthma-related hospitalizations. Children are classified as living in high vs. low PM2.5 exposure zones. Because families move in and out of the city during the study, each child contributes a different amount of observation time. The research team calculates rates using person-years at risk.",
+         "correct_measure":"Incidence Rate Ratio (IRR)",
+         "measure_hint":"**Varying follow-up time** + rates expressed per person-years = IRR. When participants contribute different amounts of observation time, you must use person-time denominators and compare incidence rates — not cumulative risks.",
+         "measure_wrong":{
+             "Population Attributable Risk (PAR)":"❌ PAR requires exposure prevalence in the population and an RR or IRR — it's calculated from IRR, not instead of it.",
+             "Standardized Mortality Ratio (SMR)":"❌ SMR compares one group's observed events to expected events from a reference population's rates. Here we're comparing two internal groups with varying follow-up — IRR.",
+             "Attributable Risk & AR%":"❌ AR% uses cumulative risks over a fixed period. When follow-up varies, rates per person-time are needed — IRR.",
+             "Number Needed to Harm / Treat (NNH/NNT)":"❌ NNH/NNT require a fixed-time risk difference. Varying follow-up requires person-time rates — IRR.",
+             "Hazard Ratio (HR)":"❌ HR comes from Cox proportional hazards regression. A simple comparison of person-time rates between two exposure groups produces an IRR, not an HR.",
+         },
+         "data":{"type":"rate","context":"Calculate the IRR comparing asthma hospitalization rates between high and low PM2.5 exposure zones.",
+                 "row_names":["High PM2.5 zone","Low PM2.5 zone"],"cases":[148,62],"person_time":[9800,11200]}},
+        {"id":"adv_8","title":"Scenario 8: Sedentary Behavior & Type 2 Diabetes — How Much Is Preventable?",
+         "description":"A national health survey finds that 38% of adults are highly sedentary (>8 hours sitting per day). A meta-analysis estimates that highly sedentary adults have 1.4× the risk of Type 2 Diabetes compared to less sedentary adults. A public health team wants to know: if the entire population reduced their sedentary time, what fraction of all T2D cases could theoretically be prevented? Compare this to smoking & lung cancer (Pe = 0.14, RR = 15.0) to understand how exposure prevalence and effect size interact.",
+         "correct_measure":"Population Attributable Risk (PAR)",
+         "measure_hint":"'What fraction of all disease in the population is attributable to this exposure?' = **PAR%**. PAR combines how common the exposure is (Pe) with how strongly it causes disease (RR) to estimate population-level preventable burden.",
+         "measure_wrong":{
+             "Standardized Mortality Ratio (SMR)":"❌ SMR compares observed to expected deaths vs. a reference population. Population-level preventable fraction = PAR.",
+             "Attributable Risk & AR%":"❌ AR% estimates the fraction within the **exposed group** only. PAR% estimates across the **entire population** — accounting for how common sedentary behavior is.",
+             "Number Needed to Harm / Treat (NNH/NNT)":"❌ NNH/NNT express per-person benefit or harm. Population-level preventable fraction = PAR.",
+             "Hazard Ratio (HR)":"❌ HR compares instantaneous event rates. Population-level preventable fraction = PAR.",
+             "Incidence Rate Ratio (IRR)":"❌ IRR compares incidence rates between groups. To estimate what fraction of population disease is attributable to an exposure, use PAR.",
+         },
+         "data":{"type":"par_compare",
+                 "context":"Calculate PAR% for sedentary behavior, then compare to smoking & lung cancer to see how Pe and RR interact.",
+                 "scenarios":[
+                     {"label":"Sedentary behavior & T2D","Pe":0.38,"RR":1.4},
+                     {"label":"Smoking & Lung Cancer","Pe":0.14,"RR":15.0},
+                 ]}},
     ]
 
-    measure_options = ["— Select —","Population Attributable Risk (PAR)","Standardized Mortality Ratio (SMR)","Attributable Risk & AR%","Number Needed to Harm / Treat (NNH/NNT)","Hazard Ratio (HR)"]
+    measure_options = ["— Select —","Population Attributable Risk (PAR)","Standardized Mortality Ratio (SMR)","Attributable Risk & AR%","Number Needed to Harm / Treat (NNH/NNT)","Hazard Ratio (HR)","Incidence Rate Ratio (IRR)"]
 
     if "adv_reset_count" not in st.session_state: st.session_state["adv_reset_count"] = 0
     if "adv_scenario_order" not in st.session_state:
@@ -4084,6 +4128,77 @@ elif current_page == "practice_advanced":
                         PAR_pct = (Pe*(RR-1))/(1+Pe*(RR-1))*100
                         st.metric("PAR%", f"{round(PAR_pct,1)}%")
                         st.success(f"{round(PAR_pct,1)}% of all cases attributable to this exposure.")
+
+                elif d["type"] == "par_compare":
+                    st.markdown("Calculate PAR% for each scenario, then compare them.")
+                    if st.button("Calculate Both PAR%s", key=f"run_{sid}_{rc5}"):
+                        results = []
+                        for sc2 in d["scenarios"]:
+                            Pe = sc2["Pe"]; RR = sc2["RR"]
+                            par = (Pe*(RR-1))/(1+Pe*(RR-1))*100
+                            results.append((sc2["label"], Pe, RR, par))
+                        cols = st.columns(len(results))
+                        for i, (label, Pe, RR, par) in enumerate(results):
+                            cols[i].metric(f"PAR% — {label}", f"{round(par,1)}%")
+                            cols[i].caption(f"Pe = {round(Pe*100,0):.0f}%, RR = {RR}")
+                        st.divider()
+                        par1, par2 = results[0][3], results[1][3]
+                        st.info(f"""
+**Key insight — Pe × RR interaction:**
+
+**{results[0][0]}:** Pe = {round(results[0][1]*100,0):.0f}%, RR = {results[0][2]} → PAR% = {round(par1,1)}%
+**{results[1][0]}:** Pe = {round(results[1][1]*100,0):.0f}%, RR = {results[1][2]} → PAR% = {round(par2,1)}%
+
+Smoking has a far stronger individual effect (RR = {results[1][2]}) but sedentary behavior is much more common (Pe = {round(results[0][1]*100,0):.0f}% vs {round(results[1][1]*100,0):.0f}%). Yet PAR% for smoking is still higher because the RR of {results[1][2]} dominates.
+
+**The lesson:** PAR% depends on BOTH how common the exposure is AND how strongly it causes disease. A very common exposure with a modest RR can have a surprisingly large PAR% — and a rare exposure with a huge RR can have a smaller PAR% than you'd expect.
+                        """)
+                        with st.expander("🔢 Show me the math"):
+                            for label, Pe, RR, par in results:
+                                st.markdown(f"""
+**{label}**
+PAR% = [Pe × (RR − 1)] ÷ [1 + Pe × (RR − 1)] × 100
+= [{Pe} × ({RR} − 1)] ÷ [1 + {Pe} × ({RR} − 1)] × 100
+= **{round(par,1)}%**
+                                """)
+
+                elif d["type"] == "rate":
+                    df_d = pd.DataFrame({
+                        "Group": d["row_names"],
+                        "Cases": d["cases"],
+                        "Person-Time (years)": d["person_time"],
+                        "Rate per 100,000": [round(d["cases"][i]/d["person_time"][i]*100000, 1) for i in range(len(d["cases"]))]
+                    })
+                    st.table(df_d)
+                    if st.button("Calculate IRR", key=f"run_{sid}_{rc5}"):
+                        c1, c2 = d["cases"]; pt1, pt2 = d["person_time"]
+                        irr = (c1/pt1)/(c2/pt2)
+                        se_log_irr = math.sqrt((1/c1)+(1/c2))
+                        ci_low_irr = math.exp(math.log(irr)-1.96*se_log_irr)
+                        ci_high_irr = math.exp(math.log(irr)+1.96*se_log_irr)
+                        col1, col2, col3 = st.columns(3)
+                        col1.metric(f"Rate ({d['row_names'][0]})", f"{round(c1/pt1*100000,1)}/100k py")
+                        col2.metric(f"Rate ({d['row_names'][1]})", f"{round(c2/pt2*100000,1)}/100k py")
+                        col3.metric("IRR", round(irr, 3))
+                        st.write(f"95% CI: ({round(ci_low_irr,3)}, {round(ci_high_irr,3)})")
+                        if ci_low_irr <= 1 <= ci_high_irr:
+                            st.warning("CI includes 1.0 — not statistically significant.")
+                        else:
+                            direction = "higher" if irr > 1 else "lower"
+                            st.success(f"IRR = {round(irr,2)} — Rate in {d['row_names'][0]} is {round(irr,2)}× {direction} than in {d['row_names'][1]}.")
+                        draw_ci("IRR", irr, ci_low_irr, ci_high_irr)
+                        with st.expander("🔢 Show me the math — IRR"):
+                            st.markdown(f"""
+**IRR = Rate₁ ÷ Rate₂**
+
+Rate ({d['row_names'][0]}) = {c1} cases ÷ {pt1} person-years = {round(c1/pt1*100000,1)} per 100,000 person-years
+
+Rate ({d['row_names'][1]}) = {c2} cases ÷ {pt2} person-years = {round(c2/pt2*100000,1)} per 100,000 person-years
+
+IRR = {round(c1/pt1,6)} ÷ {round(c2/pt2,6)} = **{round(irr,3)}**
+
+95% CI: exp(ln(IRR) ± 1.96 × √(1/cases₁ + 1/cases₂)) = **({round(ci_low_irr,3)}, {round(ci_high_irr,3)})**
+                            """)
                 elif d["type"] == "smr":
                     col1,col2 = st.columns(2)
                     col1.metric("Observed Deaths", d["observed"]); col2.metric("Expected Deaths", d["expected"])

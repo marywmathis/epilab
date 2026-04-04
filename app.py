@@ -986,24 +986,272 @@ Just because countries with higher fat intake have higher breast cancer rates do
 
     elif section == "2️⃣ Design Selector":
         st.subheader("Design Selector")
-        st.markdown("Work through the decision tree to identify the correct study design.")
-        q1 = st.radio("1. Is this an experimental study where the researcher assigns exposure?", ["— Select —","Yes — researcher assigns","No — observational"], key="ds_q1")
+        st.markdown("""
+Work through the decision tree to identify the correct study design, characterize your data types, and determine the appropriate statistical test.
+        """)
+
+        # ── Step 1: Experimental vs Observational ──
+        q1 = st.radio("**Step 1.** Is this an experimental study where the researcher assigns exposure?",
+                       ["— Select —", "Yes — researcher assigns", "No — observational"], key="ds_q1")
+
+        design_identified = None
+
         if q1 == "Yes — researcher assigns":
-            st.success("**Randomized Controlled Trial (RCT)** — the researcher controls exposure assignment. If randomized, this is an RCT (or quasi-experimental if not randomized).")
+            st.success("**Design: Randomized Controlled Trial (RCT)** — researcher controls exposure assignment. Randomization distributes known and unknown confounders.")
+            design_identified = "RCT"
+
         elif q1 == "No — observational":
-            q2 = st.radio("2. What is the unit of analysis?", ["— Select —","Individuals","Groups or populations (countries, cities, time periods)"], key="ds_q2")
+            q2 = st.radio("**Step 2.** What is the unit of analysis?",
+                           ["— Select —", "Individuals", "Groups or populations (countries, cities, time periods)"], key="ds_q2")
             if q2 == "Groups or populations (countries, cities, time periods)":
-                st.success("**Ecological Study** — exposure and outcome are measured at the group level, not for individuals. Useful for hypothesis generation and policy surveillance, but cannot establish individual-level causation. Beware the ecological fallacy.")
+                st.success("**Design: Ecological Study** — exposure and outcome measured at the group level. Cannot establish individual-level causation. Beware the ecological fallacy.")
+                design_identified = "Ecological"
             elif q2 == "Individuals":
-                q3 = st.radio("3. How were participants sampled?", ["— Select —","By exposure status","By outcome (disease) status","Neither — random sample or whole population at one time","Cases only (each compared to themselves at another time)"], key="ds_q3")
-                if q3 == "By exposure status":
-                    st.success("**Cohort Study** — grouped by exposure, then followed to outcome. Can be prospective (going forward) or retrospective (historical records), but always exposure → outcome in logic.")
-                elif q3 == "By outcome (disease) status":
-                    st.success("**Case-Control Study** — cases (have disease) and controls (don't) are identified, then past exposure is assessed. Always retrospective in logic.")
+                q3 = st.radio("**Step 3.** How were participants sampled?",
+                               ["— Select —",
+                                "By exposure status (then followed to outcome)",
+                                "By outcome / disease status (then looked back at exposure)",
+                                "Neither — random sample or whole population at one time",
+                                "Cases only — each compared to themselves at a different time"],
+                               key="ds_q3")
+                if q3 == "By exposure status (then followed to outcome)":
+                    st.success("**Design: Cohort Study** — grouped by exposure, then followed to outcome. Prospective (going forward) or retrospective (historical records), but always exposure → outcome in logic.")
+                    design_identified = "Cohort"
+                elif q3 == "By outcome / disease status (then looked back at exposure)":
+                    st.success("**Design: Case-Control Study** — cases (have disease) and controls (don't) identified, then past exposure assessed. Always retrospective in logic.")
+                    design_identified = "Case-Control"
                 elif q3 == "Neither — random sample or whole population at one time":
-                    st.success("**Cross-Sectional Study** — exposure and outcome measured simultaneously. No temporal ordering possible.")
-                elif q3 == "Cases only (each compared to themselves at another time)":
-                    st.success("**Case-Crossover Study** — each case serves as their own control. Exposure during a hazard period is compared to exposure during a control period for the same person.")
+                    st.success("**Design: Cross-Sectional Study** — exposure and outcome measured simultaneously. No temporal ordering possible.")
+                    design_identified = "Cross-Sectional"
+                elif q3 == "Cases only — each compared to themselves at a different time":
+                    st.success("**Design: Case-Crossover Study** — each case serves as their own control. Exposure during a hazard period vs. a control period for the same person.")
+                    design_identified = "Case-Crossover"
+
+        # ── Data Type & Statistical Test Section ──
+        if design_identified:
+            st.divider()
+            st.markdown("### 📊 Step 2 — Characterize Your Data")
+            st.markdown("The statistical test you use depends on the **measurement level** of your outcome and exposure. Work through the questions below.")
+
+            # Data type explainer
+            with st.expander("📖 Data Type Reference — Click to review before answering"):
+                st.markdown("""
+**Nominal (Categorical, Unordered)**
+Categories with no inherent order. Cannot do arithmetic on them.
+- Binary: two categories (disease yes/no, exposed yes/no, male/female)
+- Multinomial: three or more unordered categories (blood type A/B/AB/O, race/ethnicity)
+- Examples: diagnosis present/absent, vaccination status, cause of death
+
+**Ordinal**
+Categories with a meaningful order but unequal or unknown intervals between levels.
+- You know the rank, not the distance between ranks
+- Examples: pain scale (mild/moderate/severe), education level (some HS / HS / college / graduate), cancer stage (I/II/III/IV), Likert scales
+
+**Discrete (Count)**
+Whole numbers representing counts of things. Cannot be fractional.
+- Examples: number of hospitalizations, number of sexual partners, parity (number of births), number of cigarettes per day
+- Follows Poisson or negative binomial distribution
+
+**Continuous**
+Can take any value within a range, including decimals. Measured, not counted.
+- Interval: equal intervals, but no true zero (temperature in °C, calendar year)
+- Ratio: equal intervals AND a true zero (blood pressure, BMI, age, income, height, weight)
+- Examples: systolic BP (mmHg), BMI, HbA1c (%), serum cholesterol (mg/dL)
+
+**Key rule:** Continuous data can always be collapsed into ordinal or nominal categories (e.g., BMI → obese/not obese), but you lose information. Nominal data cannot be made continuous.
+                """)
+
+            col_a, col_b = st.columns(2)
+            with col_a:
+                outcome_type = st.selectbox(
+                    "**Outcome (dependent variable) data type:**",
+                    ["— Select —",
+                     "Binary (yes/no, present/absent)",
+                     "Nominal (3+ unordered categories)",
+                     "Ordinal (ordered categories)",
+                     "Discrete / Count",
+                     "Continuous (interval or ratio)"],
+                    key="ds_outcome_type"
+                )
+            with col_b:
+                exposure_type = st.selectbox(
+                    "**Exposure (independent variable) data type:**",
+                    ["— Select —",
+                     "Binary (2 groups)",
+                     "Categorical (3+ groups, unordered)",
+                     "Ordinal (ordered categories or dose levels)",
+                     "Continuous"],
+                    key="ds_exposure_type"
+                )
+
+            if outcome_type != "— Select —" and exposure_type != "— Select —":
+                st.divider()
+                st.markdown("### 🧮 Recommended Measure of Association & Statistical Test")
+
+                # ── Lookup table: design + outcome + exposure → measure + test ──
+                def get_recommendation(design, outcome, exposure):
+                    # Normalize
+                    o = outcome.split(" ")[0].lower()   # binary / nominal / ordinal / discrete / continuous
+                    e = exposure.split(" ")[0].lower()  # binary / categorical / ordinal / continuous
+
+                    recs = []
+
+                    if design in ["Cohort", "RCT"]:
+                        if o == "binary":
+                            if e == "binary":
+                                recs = [
+                                    ("Risk Ratio (RR)", "Ratio of cumulative incidence (or IR if varying follow-up → IRR)", "#1d4ed8"),
+                                    ("Chi-square test", "Tests independence of exposure and outcome in a 2×2 table", "#166534"),
+                                    ("Log-binomial regression", "Multivariable RR with covariate adjustment", "#4b5563"),
+                                    ("Poisson regression", "Alternative to log-binomial; more stable convergence", "#4b5563"),
+                                ]
+                            elif e in ["categorical", "ordinal"]:
+                                recs = [
+                                    ("RR per category", "Calculate RR for each exposure level vs. reference", "#1d4ed8"),
+                                    ("Chi-square test (trend)", "Cochran-Armitage for ordered exposure categories", "#166534"),
+                                    ("Logistic/log-binomial regression", "Handles multiple categories + adjustment", "#4b5563"),
+                                ]
+                            elif e == "continuous":
+                                recs = [
+                                    ("RR per unit increase", "From Poisson or log-binomial regression", "#1d4ed8"),
+                                    ("Dose-response analysis", "Test biological gradient (Bradford Hill)", "#166534"),
+                                    ("Logistic regression (if OR acceptable)", "More common in practice despite OR vs. RR issue", "#4b5563"),
+                                ]
+                        elif o == "continuous":
+                            if e == "binary":
+                                recs = [
+                                    ("Mean difference", "Difference in means between exposed and unexposed", "#1d4ed8"),
+                                    ("Independent samples t-test", "Compares two group means; assumes normality", "#166534"),
+                                    ("Mann-Whitney U test", "Non-parametric alternative if distribution is skewed", "#4b5563"),
+                                    ("Linear regression", "Adjusts for confounders; gives beta coefficient", "#4b5563"),
+                                ]
+                            elif e in ["categorical", "ordinal"]:
+                                recs = [
+                                    ("ANOVA (Analysis of Variance)", "Compares means across 3+ groups", "#1d4ed8"),
+                                    ("Kruskal-Wallis test", "Non-parametric alternative to ANOVA", "#4b5563"),
+                                    ("Linear regression with dummies", "Multivariable adjustment", "#4b5563"),
+                                ]
+                            elif e == "continuous":
+                                recs = [
+                                    ("Pearson correlation (r)", "Strength and direction of linear association", "#1d4ed8"),
+                                    ("Spearman correlation (ρ)", "Non-parametric; for non-normal or ordinal data", "#4b5563"),
+                                    ("Linear regression", "Predicts outcome from exposure; β = change per unit E", "#166534"),
+                                ]
+                        elif o == "discrete":
+                            recs = [
+                                ("Incidence Rate Ratio (IRR)", "Ratio of event rates using person-time", "#1d4ed8"),
+                                ("Poisson regression", "Models count outcomes; assumes variance = mean", "#166534"),
+                                ("Negative binomial regression", "If overdispersion present (variance > mean)", "#4b5563"),
+                            ]
+                        elif o == "ordinal":
+                            recs = [
+                                ("Proportional odds ratio", "From ordinal logistic regression", "#1d4ed8"),
+                                ("Mann-Whitney U / Kruskal-Wallis", "Non-parametric comparison of ordered outcomes", "#4b5563"),
+                                ("Ordinal logistic regression", "Multivariable adjustment; proportional odds model", "#166534"),
+                            ]
+
+                    elif design == "Case-Control":
+                        if o == "binary":
+                            if e == "binary":
+                                recs = [
+                                    ("Odds Ratio (OR)", "Cross-product ratio from 2×2 table. OR is the only valid measure from case-control data.", "#1d4ed8"),
+                                    ("Chi-square test / Fisher's exact", "Fisher's when any cell < 5", "#166534"),
+                                    ("Unconditional logistic regression", "Unmatched case-control; multivariable OR", "#4b5563"),
+                                    ("Conditional logistic regression", "Matched case-control design", "#4b5563"),
+                                ]
+                            elif e in ["categorical", "ordinal"]:
+                                recs = [
+                                    ("OR per category", "Reference category vs. each exposure level", "#1d4ed8"),
+                                    ("Chi-square for trend", "Cochran-Armitage for dose-response in case-control", "#166634"),
+                                    ("Logistic regression", "Handles multiple categories + confounders", "#4b5563"),
+                                ]
+                            elif e == "continuous":
+                                recs = [
+                                    ("OR per unit increase", "From logistic regression with continuous exposure", "#1d4ed8"),
+                                    ("Logistic regression", "Treat exposure as continuous predictor", "#166534"),
+                                    ("Quartile/quintile analysis", "Categorize continuous exposure for dose-response", "#4b5563"),
+                                ]
+
+                    elif design == "Cross-Sectional":
+                        if o == "binary":
+                            if e == "binary":
+                                recs = [
+                                    ("Prevalence Ratio (PR)", "Ratio of prevalences. Preferred over OR for cross-sectional data with common outcomes.", "#1d4ed8"),
+                                    ("Chi-square test", "Tests independence", "#166534"),
+                                    ("Modified Poisson regression", "Gives PR directly; more appropriate than logistic regression for prevalent outcomes", "#4b5563"),
+                                    ("Logistic regression (gives OR)", "Often used but gives OR not PR — important distinction when outcome is common", "#9a3412"),
+                                ]
+                            elif e in ["categorical", "ordinal"]:
+                                recs = [
+                                    ("PR per category", "Modified Poisson regression for each exposure level", "#1d4ed8"),
+                                    ("Chi-square test", "Overall test of independence across categories", "#166534"),
+                                ]
+                            elif e == "continuous":
+                                recs = [
+                                    ("PR per unit increase", "From modified Poisson regression", "#1d4ed8"),
+                                    ("Logistic regression (OR)", "More common in practice", "#4b5563"),
+                                ]
+                        elif o == "continuous":
+                            recs = [
+                                ("Mean difference or Pearson r", "Depending on exposure type", "#1d4ed8"),
+                                ("Linear regression", "Adjusts for confounders", "#166534"),
+                            ]
+
+                    elif design == "Case-Crossover":
+                        recs = [
+                            ("Odds Ratio (OR)", "Conditional logistic regression; each case is own control", "#1d4ed8"),
+                            ("Conditional logistic regression", "Matched analysis required — each case matched to their own control periods", "#166534"),
+                        ]
+
+                    elif design == "Ecological":
+                        recs = [
+                            ("Pearson correlation (r)", "Between group-level exposure and outcome rates", "#1d4ed8"),
+                            ("Linear regression", "Predicts group outcome rate from group exposure level", "#4b5563"),
+                            ("⚠️ Cannot infer individual risk", "Ecological fallacy — group-level associations may not hold at individual level", "#991b1b"),
+                        ]
+
+                    return recs
+
+                recs = get_recommendation(design_identified, outcome_type, exposure_type)
+
+                if recs:
+                    for measure, explanation, color in recs:
+                        st.markdown(f"""
+<div style="display:flex;gap:12px;align-items:flex-start;padding:10px 14px;
+     background:#f8fafc;border-left:4px solid #{color[1:] if color.startswith('#') else color};
+     border-radius:0 6px 6px 0;margin:6px 0;">
+  <div style="min-width:0;flex:1;">
+    <div style="font-weight:700;font-size:14px;color:{color};">{measure}</div>
+    <div style="font-size:12px;color:#4b5563;margin-top:2px;">{explanation}</div>
+  </div>
+</div>""", unsafe_allow_html=True)
+
+                    # Special notes
+                    st.divider()
+                    st.markdown("#### 📌 Important Notes for Your Design")
+
+                    if design_identified == "Case-Control":
+                        st.warning("**Case-control studies can only produce OR** — never RR or PR. This is because the proportion of cases to controls is set by the researcher (sampling fraction), so absolute risks cannot be calculated from these data.")
+                    if design_identified == "Cross-Sectional" and "Binary" in outcome_type:
+                        st.info("**PR vs. OR in cross-sectional studies:** When outcome prevalence exceeds 10%, OR diverges substantially from PR. Modified Poisson regression directly estimates PR and is the preferred approach. Logistic regression (which gives OR) is commonly used but technically incorrect for prevalent outcomes.")
+                    if design_identified == "Ecological":
+                        st.error("**Ecological fallacy reminder:** Statistical associations at the population level cannot be used to draw conclusions about individuals. Always state this limitation explicitly in ecological study reports.")
+                    if design_identified in ["Cohort", "RCT"] and "Continuous" in outcome_type and "Binary" in exposure_type:
+                        st.info("**Normality check:** t-tests assume approximately normal distribution of the outcome (or large sample). For skewed outcomes or small samples, use Mann-Whitney U. For very large samples (n > 100/group), t-tests are robust to non-normality due to the Central Limit Theorem.")
+
+                    # Multivariable note
+                    st.markdown("""
+> **Multivariable adjustment:** All measures above have regression equivalents that allow adjustment for confounders. The regression model for each outcome type:
+> - Binary outcome → Logistic regression (OR) or log-binomial/Poisson (RR/PR)
+> - Continuous outcome → Linear regression (β coefficient = mean difference per unit exposure)
+> - Count/rate outcome → Poisson or negative binomial regression (IRR)
+> - Time-to-event with censoring → Cox proportional hazards regression (HR)
+                    """)
+
+                else:
+                    st.info("This combination is unusual — check your data type selections.")
+
+
 
     elif section == "3️⃣ RCT & Evidence Hierarchy":
         st.subheader("Evidence Hierarchy")

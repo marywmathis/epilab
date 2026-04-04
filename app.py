@@ -346,7 +346,7 @@ if current_page == "study_designs":
 
     if section == "1️⃣ Design Overview":
         st.subheader("The Core Question: How Did Sampling Begin?")
-        st.info("The single most important question in identifying a study design is: **where did the researcher start sampling from?** Exposure? Outcome? Neither?")
+        st.info("The single most important question in identifying a study design is: **where did the researcher start sampling from?** Exposure? Outcome? Neither? Individual or group?")
 
         col_a, col_b, col_c = st.columns(3)
         with col_a:
@@ -379,6 +379,33 @@ if current_page == "study_designs":
             st.markdown("*Best for: prevalence estimates, hypothesis generation*")
 
         st.divider()
+
+        # Ecological study
+        st.markdown("#### 🌍 Ecological Study")
+        ecol1, ecol2, ecol3 = st.columns(3)
+        with ecol1:
+            st.markdown("**Unit of analysis:** Groups or populations — not individuals")
+            st.markdown("**Logic:** Compare average exposure and average outcome rates across groups (countries, cities, time periods)")
+            st.markdown("**Examples:** Country-level fat intake vs. breast cancer rates; air pollution index vs. city-wide asthma hospitalizations")
+        with ecol2:
+            st.markdown("**Timeline:**")
+            st.markdown("```\nGroup A: Exposure rate → Outcome rate\nGroup B: Exposure rate → Outcome rate\nGroup C: Exposure rate → Outcome rate\n         ↓\n   Compare across groups\n```")
+            st.markdown("*Data come from registries, surveillance systems, or administrative records*")
+        with ecol3:
+            st.markdown("**Best for:** Hypothesis generation, policy surveillance, studying exposures that vary at the population level (water fluoridation, legislation)")
+            st.markdown("**Not for:** Establishing individual-level causation")
+            st.error("⚠️ **Ecological fallacy** — group-level associations may not hold at the individual level")
+            st.markdown("Produces: **Correlation coefficient / Rate ratio**")
+
+        st.warning("""
+**⚠️ The Ecological Fallacy (Aggregation Bias)**
+
+Just because countries with higher fat intake have higher breast cancer rates does NOT mean individuals who eat more fat have higher breast cancer risk. The association at the group level may be driven by confounding variables that also vary between countries (wealth, screening rates, reproductive factors), not by fat intake itself.
+
+**Classic example:** Countries with more TVs per capita have lower infant mortality — TVs don't protect infants. Wealth causes both.
+        """)
+
+        st.divider()
         st.markdown("#### 🟪 Case-Crossover")
         ccol1, ccol2, ccol3 = st.columns(3)
         with ccol1:
@@ -406,12 +433,13 @@ if current_page == "study_designs":
 
         with st.expander("📊 Study Design Comparison Table"):
             comparison_df = pd.DataFrame({
-                "Design": ["Cohort","Case-Control","Cross-Sectional","Case-Crossover","RCT"],
-                "Sampling starts from": ["Exposure","Outcome","Population sample","Cases only","Random assignment"],
-                "Temporal direction": ["Forward (or backward using records)","Backward","Simultaneous","Both (same person)","Forward"],
-                "Measure produced": ["RR / IRR","OR","PR","OR","RR / HR / RD"],
-                "Best for": ["Common exposures, multiple outcomes","Rare diseases, long latency","Prevalence, hypothesis generation","Transient exposures, acute effects","Causal evidence, interventions"],
-                "Main weakness": ["Expensive if prospective; loss to follow-up","Recall bias; hard to select controls","No temporality","Only transient exposures","Expensive; ethical limits; external validity"]
+                "Design": ["Cohort","Case-Control","Cross-Sectional","Ecological","Case-Crossover","RCT"],
+                "Unit of analysis": ["Individual","Individual","Individual","Group / Population","Individual (self-matched)","Individual"],
+                "Sampling starts from": ["Exposure","Outcome","Population sample","Population aggregates","Cases only","Random assignment"],
+                "Temporal direction": ["Forward (or records)","Backward","Simultaneous","Varies","Both (same person)","Forward"],
+                "Measure produced": ["RR / IRR","OR","PR","Correlation / Rate ratio","OR","RR / HR / RD"],
+                "Best for": ["Common exposures, multiple outcomes","Rare diseases, long latency","Prevalence, hypothesis generation","Policy surveillance, hypothesis generation","Transient exposures, acute effects","Causal evidence, interventions"],
+                "Main weakness": ["Expensive; loss to follow-up","Recall bias; control selection","No temporality","Ecological fallacy — can't infer individual risk","Only transient exposures","Expensive; ethical limits; external validity"]
             })
             st.table(comparison_df)
 
@@ -422,15 +450,19 @@ if current_page == "study_designs":
         if q1 == "Yes — researcher assigns":
             st.success("**Randomized Controlled Trial (RCT)** — the researcher controls exposure assignment. If randomized, this is an RCT (or quasi-experimental if not randomized).")
         elif q1 == "No — observational":
-            q2 = st.radio("2. How were participants sampled?", ["— Select —","By exposure status","By outcome (disease) status","Neither — random sample or whole population at one time","Cases only (each compared to themselves at another time)"], key="ds_q2")
-            if q2 == "By exposure status":
-                st.success("**Cohort Study** — grouped by exposure, then followed to outcome. Can be prospective (going forward) or retrospective (historical records), but always exposure → outcome in logic.")
-            elif q2 == "By outcome (disease) status":
-                st.success("**Case-Control Study** — cases (have disease) and controls (don't) are identified, then past exposure is assessed. Always retrospective in logic.")
-            elif q2 == "Neither — random sample or whole population at one time":
-                st.success("**Cross-Sectional Study** — exposure and outcome measured simultaneously. No temporal ordering possible.")
-            elif q2 == "Cases only (each compared to themselves at another time)":
-                st.success("**Case-Crossover Study** — each case serves as their own control. Exposure during a hazard period is compared to exposure during a control period for the same person.")
+            q2 = st.radio("2. What is the unit of analysis?", ["— Select —","Individuals","Groups or populations (countries, cities, time periods)"], key="ds_q2")
+            if q2 == "Groups or populations (countries, cities, time periods)":
+                st.success("**Ecological Study** — exposure and outcome are measured at the group level, not for individuals. Useful for hypothesis generation and policy surveillance, but cannot establish individual-level causation. Beware the ecological fallacy.")
+            elif q2 == "Individuals":
+                q3 = st.radio("3. How were participants sampled?", ["— Select —","By exposure status","By outcome (disease) status","Neither — random sample or whole population at one time","Cases only (each compared to themselves at another time)"], key="ds_q3")
+                if q3 == "By exposure status":
+                    st.success("**Cohort Study** — grouped by exposure, then followed to outcome. Can be prospective (going forward) or retrospective (historical records), but always exposure → outcome in logic.")
+                elif q3 == "By outcome (disease) status":
+                    st.success("**Case-Control Study** — cases (have disease) and controls (don't) are identified, then past exposure is assessed. Always retrospective in logic.")
+                elif q3 == "Neither — random sample or whole population at one time":
+                    st.success("**Cross-Sectional Study** — exposure and outcome measured simultaneously. No temporal ordering possible.")
+                elif q3 == "Cases only (each compared to themselves at another time)":
+                    st.success("**Case-Crossover Study** — each case serves as their own control. Exposure during a hazard period is compared to exposure during a control period for the same person.")
 
     elif section == "3️⃣ RCT & Evidence Hierarchy":
         st.subheader("Evidence Hierarchy")

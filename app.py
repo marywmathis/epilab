@@ -4574,6 +4574,308 @@ An epidemiologist plots an epidemic curve for a foodborne illness outbreak at a 
 **Contrast with propagated:** A propagated epidemic curve would show multiple waves, each approximately one incubation period apart, with cases spreading over days to weeks.
             """
         },
+        {
+            "id": "ss6",
+            "title": "Scenario 6: Propagated vs. Point-Source Epidemic Curve",
+            "description": """
+A city health department investigates an outbreak of influenza-like illness. The epidemic curve shows:
+- First cases appear in week 1 (likely index cases)
+- A second, larger wave of cases appears approximately 2–3 weeks later
+- A third smaller wave appears 2–3 weeks after that
+- Cases continue spreading for 8 weeks total before declining
+- Cases are occurring in multiple households, schools, and workplaces across the city
+            """,
+            "question": "What transmission pattern does this epidemic curve suggest?",
+            "options": [
+                "Propagated — person-to-person spread over successive incubation periods",
+                "Point-source — single common exposure event",
+                "Mixed — point source followed by person-to-person spread",
+                "Endemic — stable background rate of disease"
+            ],
+            "correct": "Propagated — person-to-person spread over successive incubation periods",
+            "explanation": """
+**Classic propagated epidemic curve features:**
+1. ✅ Multiple waves of cases, each approximately one incubation period apart
+2. ✅ Extended time course (weeks to months)
+3. ✅ Cases spread geographically across households, schools, workplaces
+4. ✅ Consistent with influenza's ~2–3 day incubation and respiratory transmission
+
+**The pattern reflects chains of transmission:**
+- Wave 1: Index cases infect close contacts
+- Wave 2: Those contacts infect the next generation (~1 incubation period later)
+- Wave 3: The third generation of cases — classic propagated pattern
+
+**How to distinguish from point-source:**
+- Point-source: single sharp peak, all cases within one incubation period, no geographic spread
+- Propagated: successive waves, spread over many incubation periods, multiple settings affected
+- Mixed: starts sharp (point source), then secondary waves emerge (person-to-person)
+
+**Public health implication:** Propagated outbreaks require interrupting transmission chains — isolation, contact tracing, vaccination — rather than simply removing a contaminated food source.
+            """,
+            "follow_up": "The incubation period for influenza is 1–4 days. Approximately how far apart should the peaks of successive waves be?",
+            "follow_up_options": [
+                "1–4 days apart — approximately one incubation period between generations",
+                "2–3 weeks apart — one generation of spread takes weeks",
+                "The peaks should all occur simultaneously",
+                "Peak spacing is unrelated to incubation period"
+            ],
+            "correct_follow_up": "1–4 days apart — approximately one incubation period between generations",
+            "follow_up_explanation": "Each new wave represents a new generation of cases — people infected by the previous generation. The time between waves equals approximately one incubation period, because it takes that long for newly infected people to become symptomatic. This is why epidemic curve wave spacing is used to estimate incubation periods in novel outbreaks."
+        },
+        {
+            "id": "ss7",
+            "title": "Scenario 7: Attack Rate vs. Case Fatality Rate",
+            "description": """
+During an Ebola outbreak in a remote village of 400 residents:
+- 60 residents develop Ebola disease over the course of the outbreak
+- 42 of the 60 cases die from the disease
+- The remaining 340 residents were exposed but did not develop illness
+
+A public health team reports two key metrics to characterize the outbreak severity.
+            """,
+            "question": "What is the case fatality rate (CFR) for this outbreak?",
+            "options": [
+                "70% (42 ÷ 60 × 100) — deaths among those who developed disease",
+                "10.5% (42 ÷ 400 × 100) — deaths among all village residents",
+                "15% (60 ÷ 400 × 100) — cases among all village residents",
+                "85% (340 ÷ 400 × 100) — survivors among all residents"
+            ],
+            "correct": "70% (42 ÷ 60 × 100) — deaths among those who developed disease",
+            "explanation": """
+**Case Fatality Rate (CFR):** Deaths ÷ Cases × 100 = 42 ÷ 60 × 100 = **70%**
+
+CFR measures the **probability of death given disease** — it uses only people who developed the disease as the denominator. It is a measure of disease severity (virulence), not exposure risk.
+
+**Attack Rate (AR):** Cases ÷ Population at risk × 100 = 60 ÷ 400 × 100 = **15%**
+
+AR measures the **probability of developing disease given exposure** — it uses the full at-risk population as denominator. It reflects how transmissible or how potent the exposure is.
+
+**The critical distinction:**
+| Measure | Numerator | Denominator | Answers |
+|---|---|---|---|
+| Attack Rate | Cases | Population at risk | How likely is exposure to cause disease? |
+| CFR | Deaths | Cases (ill people only) | How deadly is the disease once you have it? |
+| Mortality Rate | Deaths | Population at risk | How likely is the population to die? |
+
+Ebola's CFR of 70% in this outbreak reflects its extreme virulence. The attack rate of 15% reflects the transmission dynamics in this specific setting.
+            """,
+            "follow_up": "What is the mortality rate (deaths per population at risk) for this outbreak?",
+            "follow_up_options": [
+                "10.5% (42 ÷ 400 × 100) — proportion of the whole village who died",
+                "70% (42 ÷ 60 × 100) — that's the CFR, not mortality rate",
+                "15% (60 ÷ 400 × 100) — that's the attack rate",
+                "42% (42 ÷ 100 × 100) — incorrect denominator"
+            ],
+            "correct_follow_up": "10.5% (42 ÷ 400 × 100) — proportion of the whole village who died",
+            "follow_up_explanation": "Mortality rate uses the full population at risk as the denominator — it answers 'what fraction of people in the exposed population died?' CFR (70%) is higher than mortality rate (10.5%) because CFR is conditional on being a case. Mortality rate accounts for the fact that most exposed people (340/400) never developed disease at all."
+        },
+        {
+            "id": "ss8",
+            "title": "Scenario 8: Secondary Attack Rate",
+            "description": """
+A norovirus outbreak begins when one child (the index case) returns from school with gastroenteritis. Over the next week, 3 of the 4 other household members develop the same illness.
+
+Meanwhile, in a separate household nearby, a different child is the index case. Their household has 5 members besides the index case; 2 develop illness.
+            """,
+            "question": "What is the secondary attack rate (SAR) in Household 1?",
+            "options": [
+                "75% (3 ÷ 4 × 100) — cases among susceptible household contacts",
+                "80% (4 ÷ 5 × 100) — cases including the index case",
+                "60% (3 ÷ 5 × 100) — cases among all household members",
+                "25% (1 ÷ 4 × 100) — those who didn't get sick"
+            ],
+            "correct": "75% (3 ÷ 4 × 100) — cases among susceptible household contacts",
+            "explanation": """
+**Secondary Attack Rate (SAR):** Secondary cases ÷ Susceptible contacts × 100
+
+**Household 1:** 3 secondary cases ÷ 4 susceptible contacts = **75%**
+
+The index case is **excluded** from both numerator and denominator. SAR measures transmission from the index case to contacts — so the denominator is only the people who could have been infected by the index case (susceptible contacts).
+
+**Household 2 SAR:** 2 ÷ 5 = **40%**
+
+**Why SAR matters:**
+- SAR estimates the probability that a susceptible contact of a case will become infected
+- Higher SAR = more transmissible pathogen or more intimate contact setting
+- Used to estimate R₀ (basic reproduction number) in household studies
+- Helps evaluate the effectiveness of isolation and prophylaxis interventions
+
+**Comparison:** Norovirus is highly transmissible in household settings (SAR often 30–80%). The SAR difference between households reflects the stochastic nature of transmission and potentially household crowding or hygiene practices.
+            """,
+            "follow_up": "Why is the index case excluded from the SAR denominator?",
+            "follow_up_options": [
+                "Because the index case was infected outside the household — they cannot be a secondary case",
+                "Because the index case is always immune after recovery",
+                "To make the SAR calculation simpler",
+                "The index case should be included — the denominator should be all household members"
+            ],
+            "correct_follow_up": "Because the index case was infected outside the household — they cannot be a secondary case",
+            "follow_up_explanation": "The secondary attack rate specifically measures household transmission from the index case. The index case was infected from an external source (school), not from within the household. Including them would conflate community transmission with household transmission. The SAR denominator is only those at risk of becoming secondary cases — the household contacts who were susceptible when the index case arrived home."
+        },
+        {
+            "id": "ss9",
+            "title": "Scenario 9: Prevalence–Incidence Relationship (P = I × D)",
+            "description": """
+A disease epidemiologist is reviewing data from a national surveillance system:
+
+- Incidence of Type 1 diabetes: **22 new cases per 100,000 per year**
+- Prevalence of Type 1 diabetes: **220 per 100,000**
+
+A colleague notes that the prevalence seems unexpectedly high. The epidemiologist wants to use the steady-state relationship between prevalence, incidence, and duration to check the implied average disease duration.
+            """,
+            "question": "Using P ≈ I × D, what is the implied average duration of Type 1 diabetes in this population?",
+            "options": [
+                "10 years (220 ÷ 22 = 10)",
+                "242 years (220 + 22)",
+                "0.1 years (22 ÷ 220)",
+                "4,840 years (220 × 22)"
+            ],
+            "correct": "10 years (220 ÷ 22 = 10)",
+            "explanation": """
+**The prevalence-incidence relationship:**
+
+At steady state: **P ≈ I × D**
+
+Rearranging: **D = P ÷ I** = 220 ÷ 22 = **10 years**
+
+This means the average person with Type 1 diabetes in this population has had the disease for approximately 10 years — which seems low for a lifelong condition. This might suggest:
+- Significant mortality reducing the prevalent pool (people dying with the disease)
+- Recent changes in incidence (P lags behind recent incidence changes)
+- Migration of cases out of the population
+
+**When P = I × D is valid:**
+- Disease incidence is stable over time (steady state)
+- Average duration is relatively stable
+- The population is closed (no major in/out migration)
+
+**Using the formula in reverse:** If you know prevalence and average duration, you can estimate incidence even without direct case surveillance — useful in settings with incomplete reporting.
+
+**Key insight:** Prevalence is a function of BOTH how fast new cases occur (incidence) AND how long people stay in the prevalent pool (duration). A disease can have high prevalence with low incidence if it lasts a long time (e.g., HIV on treatment). A disease can have low prevalence with high incidence if it resolves quickly or causes rapid death.
+            """,
+            "follow_up": "HIV incidence is 0.4/1,000/year in a population. With modern ART, average duration is now 40 years. What prevalence does P = I × D predict?",
+            "follow_up_options": [
+                "16 per 1,000 (0.4 × 40)",
+                "40.4 per 1,000 (0.4 + 40)",
+                "100 per 1,000 (0.4 × 40 / some factor)",
+                "0.01 per 1,000 (0.4 ÷ 40)"
+            ],
+            "correct_follow_up": "16 per 1,000 (0.4 × 40)",
+            "follow_up_explanation": "P ≈ I × D = 0.4/1,000/year × 40 years = 16/1,000. This illustrates a critical point about HIV in the ART era: even as incidence has declined, prevalence has risen because people are living much longer with HIV. This is why HIV prevalence continues to increase in many settings despite falling incidence — longer duration dominates. Policy implications: more people need sustained treatment, but fewer new infections are occurring."
+        },
+        {
+            "id": "ss10",
+            "title": "Scenario 10: Likelihood Ratios — Changing Pre-Test Probability",
+            "description": """
+A 55-year-old male smoker presents with a chronic cough. You are considering lung cancer.
+
+**Pre-test probability of lung cancer:** 8% (based on age, smoking history, symptoms)
+
+**Chest CT scan performance:**
+- Sensitivity = 96%
+- Specificity = 80%
+- LR+ = sensitivity ÷ (1 − specificity) = 0.96 ÷ 0.20 = **4.8**
+- LR− = (1 − sensitivity) ÷ specificity = 0.04 ÷ 0.80 = **0.05**
+
+The CT comes back **positive**.
+            """,
+            "question": "What does an LR+ of 4.8 tell you about this positive CT result?",
+            "options": [
+                "A positive CT is 4.8× more likely in someone with lung cancer than in someone without it",
+                "The patient has a 4.8% chance of having lung cancer",
+                "4.8% of positive tests are true positives",
+                "The test increases sensitivity by a factor of 4.8"
+            ],
+            "correct": "A positive CT is 4.8× more likely in someone with lung cancer than in someone without it",
+            "explanation": """
+**Likelihood Ratio (LR) interpretation:**
+
+**LR+ = P(positive test | disease) ÷ P(positive test | no disease)**
+= Sensitivity ÷ (1 − Specificity) = 0.96 ÷ 0.20 = **4.8**
+
+LR+ = 4.8 means: *a positive test result is 4.8 times more likely to occur in a person who has the disease than in a person who doesn't.*
+
+**Converting to post-test probability using Bayes:**
+- Pre-test odds = 0.08 ÷ 0.92 = **0.087**
+- Post-test odds = pre-test odds × LR+ = 0.087 × 4.8 = **0.416**
+- Post-test probability = 0.416 ÷ (1 + 0.416) = **29%**
+
+The positive CT raises the probability of lung cancer from **8% to 29%**.
+
+**LR− interpretation:** If the CT had been negative, post-test odds = 0.087 × 0.05 = 0.0043, post-test probability = **0.4%**. A negative CT nearly rules out lung cancer in this patient.
+
+**LR benchmarks:**
+| LR value | Interpretation |
+|---|---|
+| > 10 | Large, often conclusive change |
+| 5–10 | Moderate increase |
+| 2–5 | Small but sometimes important |
+| 1 | No change in probability |
+| 0.1–0.5 | Small decrease |
+| < 0.1 | Large decrease, nearly rules out |
+            """,
+            "follow_up": "If the pre-test probability were 50% instead of 8% (high-risk screening setting), what would the post-test probability be after a positive CT (LR+ = 4.8)?",
+            "follow_up_options": [
+                "82.8% — pre-test odds 1.0 × 4.8 = post-test odds 4.8 → probability 4.8/5.8",
+                "50% × 4.8 = 240% — not possible",
+                "96% — the sensitivity of the test",
+                "54.8% — adding LR to pre-test probability"
+            ],
+            "correct_follow_up": "82.8% — pre-test odds 1.0 × 4.8 = post-test odds 4.8 → probability 4.8/5.8",
+            "follow_up_explanation": "Pre-test probability 50% → pre-test odds = 0.5/0.5 = 1.0. Post-test odds = 1.0 × 4.8 = 4.8. Post-test probability = 4.8/(1+4.8) = 82.8%. The same LR+ of 4.8 takes a low-risk patient from 8% to 29%, but takes a high-risk patient from 50% to 83%. This demonstrates why LRs must always be applied to a specific pre-test probability — the same test result has completely different clinical meaning depending on who was tested."
+        },
+        {
+            "id": "ss11",
+            "title": "Scenario 11: When NPV Matters Most",
+            "description": """
+A primary care physician sees two patients in one day. Both receive a negative mammogram result.
+
+**Patient A:** 65-year-old woman with a strong family history of breast cancer (first-degree relative diagnosed at 42), carries a BRCA1 mutation. Pre-test probability of breast cancer: **15%**.
+
+**Patient B:** 35-year-old woman with no family history, no risk factors, routine screening. Pre-test probability of breast cancer: **0.4%**.
+
+**Mammogram performance:**
+- Sensitivity = 85%, Specificity = 90%
+- NPV varies by prevalence
+            """,
+            "question": "For which patient is the negative mammogram result more reassuring (higher NPV)?",
+            "options": [
+                "Patient B (low pre-test probability) — NPV is higher when disease is rare",
+                "Patient A (high pre-test probability) — the test worked harder to find cancer",
+                "The same for both — NPV depends only on sensitivity and specificity",
+                "Cannot determine without knowing the exact number of patients tested"
+            ],
+            "correct": "Patient B (low pre-test probability) — NPV is higher when disease is rare",
+            "explanation": """
+**Calculating NPV for each patient (per 10,000 tested):**
+
+**Patient A (prevalence = 15%):**
+- True cases: 1,500; Disease-free: 8,500
+- True negatives: 8,500 × 0.90 = 7,650
+- False negatives: 1,500 × 0.15 = 225 (missed cancers)
+- NPV = 7,650 ÷ (7,650 + 225) = **97.1%**
+
+**Patient B (prevalence = 0.4%):**
+- True cases: 40; Disease-free: 9,960
+- True negatives: 9,960 × 0.90 = 8,964
+- False negatives: 40 × 0.15 = 6
+- NPV = 8,964 ÷ (8,964 + 6) = **99.9%**
+
+**The negative result is far more reassuring for Patient B.**
+
+For Patient A, despite a negative mammogram, there is still a **2.9% chance she has breast cancer** that was missed. This is not negligible given her BRCA1 status — additional imaging (MRI) is warranted.
+
+**Key principle:** NPV is highest when disease prevalence is low. In high-prevalence populations, a negative test cannot as confidently rule out disease because there are more true cases, and some will inevitably be missed (false negatives).
+            """,
+            "follow_up": "What is the correct clinical action for Patient A after a negative mammogram?",
+            "follow_up_options": [
+                "Additional imaging (breast MRI) — NPV of 97.1% means a 2.9% miss rate is clinically unacceptable for a BRCA1 carrier",
+                "Reassure and return in 2 years — the mammogram was negative",
+                "Repeat the mammogram immediately",
+                "Biopsy all BRCA1 carriers regardless of imaging results"
+            ],
+            "correct_follow_up": "Additional imaging (breast MRI) — NPV of 97.1% means a 2.9% miss rate is clinically unacceptable for a BRCA1 carrier",
+            "follow_up_explanation": "For a BRCA1 carrier with 15% pre-test probability, a 2.9% post-negative-test probability of missed cancer is clinically significant. Current guidelines recommend annual MRI in addition to mammography for BRCA1/2 carriers — MRI has higher sensitivity (>90%) for this population. This scenario illustrates why 'negative' doesn't mean 'all clear' in high-risk populations, and why understanding NPV is essential for clinical decision-making."
+        },
     ]
 
     if "ss_rc" not in st.session_state:

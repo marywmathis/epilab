@@ -3085,75 +3085,118 @@ Each "pie" represents one sufficient cause — a complete causal mechanism. Each
         st.markdown("### 🥧 The Pies — Visual Model")
 
         pies_html = """
-<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:16px 0;">
-  <div style="text-align:center;margin-bottom:8px;font-size:13px;color:#4b5563;">
+<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:16px 0;background:#fff;">
+
+  <div style="text-align:center;margin-bottom:16px;font-size:13px;color:#4b5563;">
     Three sufficient causes (pies) for <b>Lung Cancer</b> — each represents a complete causal mechanism
   </div>
-  <div style="display:flex;gap:40px;justify-content:center;flex-wrap:wrap;">
 
-    <!-- PIE 1 -->
-    <div style="text-align:center;">
-      <div style="font-weight:700;color:#1d4ed8;margin-bottom:6px;font-size:13px;">Sufficient Cause I</div>
-      <svg viewBox="0 0 160 160" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
-        <!-- Smoking slice: ~120 deg (large) -->
-        <path d="M80,80 L80,10 A70,70 0 0,1 140.6,45 Z" fill="#ef4444" stroke="white" stroke-width="2"/>
-        <!-- Asbestos: ~80 deg -->
-        <path d="M80,80 L140.6,45 A70,70 0 0,1 140.6,115 Z" fill="#f97316" stroke="white" stroke-width="2"/>
-        <!-- Radon: ~80 deg -->
-        <path d="M80,80 L140.6,115 A70,70 0 0,1 19.4,115 Z" fill="#eab308" stroke="white" stroke-width="2"/>
-        <!-- U (unknown): ~80 deg -->
-        <path d="M80,80 L19.4,115 A70,70 0 0,1 80,10 Z" fill="#94a3b8" stroke="white" stroke-width="2"/>
-        <!-- Labels -->
-        <text x="112" y="55" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Smoking</text>
-        <text x="128" y="85" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Asbestos</text>
-        <text x="85" y="128" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Radon</text>
-        <text x="38" y="85" font-size="9" fill="white" font-weight="bold" text-anchor="middle">U</text>
+  <!-- LETTER KEY -->
+  <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:5px;background:#fef2f2;border:1px solid #fca5a5;border-radius:20px;padding:4px 12px;">
+      <span style="background:#ef4444;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">A</span>
+      <span style="font-size:12px;color:#1a202c;">Smoking <em style="font-size:10px;color:#dc2626;">(appears in I &amp; II — not necessary)</em></span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;background:#fff7ed;border:1px solid #fdba74;border-radius:20px;padding:4px 12px;">
+      <span style="background:#f97316;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">B</span>
+      <span style="font-size:12px;color:#1a202c;">Asbestos exposure</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;background:#fefce8;border:1px solid #fde047;border-radius:20px;padding:4px 12px;">
+      <span style="background:#eab308;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">C</span>
+      <span style="font-size:12px;color:#1a202c;">Radon exposure</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;background:#f5f3ff;border:1px solid #c4b5fd;border-radius:20px;padding:4px 12px;">
+      <span style="background:#8b5cf6;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">D</span>
+      <span style="font-size:12px;color:#1a202c;">Air pollution</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;background:#ecfdf5;border:1px solid #6ee7b7;border-radius:20px;padding:4px 12px;">
+      <span style="background:#10b981;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">E</span>
+      <span style="font-size:12px;color:#1a202c;">Ionizing radiation</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;background:#ecfeff;border:1px solid #67e8f9;border-radius:20px;padding:4px 12px;">
+      <span style="background:#06b6d4;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">F</span>
+      <span style="font-size:12px;color:#1a202c;">Genetic susceptibility</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:20px;padding:4px 12px;">
+      <span style="background:#94a3b8;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">U</span>
+      <span style="font-size:12px;color:#1a202c;">Unknown component(s)</span>
+    </div>
+  </div>
+
+  <!-- THREE PIES -->
+  <div style="display:flex;gap:32px;justify-content:center;flex-wrap:wrap;align-items:flex-start;">
+
+    <!-- PIE I -->
+    <div style="text-align:center;width:200px;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:8px;font-size:14px;">Sufficient Cause I</div>
+      <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <!-- A: Smoking ~120 deg (12 o'clock → 4 o'clock) -->
+        <path d="M100,100 L100,10 A90,90 0 0,1 177.9,55 Z" fill="#ef4444" stroke="white" stroke-width="2.5"/>
+        <!-- B: Asbestos ~80 deg (4 o'clock → ~6:40) -->
+        <path d="M100,100 L177.9,55 A90,90 0 0,1 177.9,145 Z" fill="#f97316" stroke="white" stroke-width="2.5"/>
+        <!-- C: Radon ~80 deg (~6:40 → ~9:20) -->
+        <path d="M100,100 L177.9,145 A90,90 0 0,1 22.1,145 Z" fill="#eab308" stroke="white" stroke-width="2.5"/>
+        <!-- U: Unknown ~80 deg (~9:20 → 12 o'clock) -->
+        <path d="M100,100 L22.1,145 A90,90 0 0,1 100,10 Z" fill="#94a3b8" stroke="white" stroke-width="2.5"/>
+        <!-- Letter labels centered in each slice -->
+        <text x="142" y="62"  font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">A</text>
+        <text x="162" y="105" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">B</text>
+        <text x="105" y="162" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">C</text>
+        <text x="44"  y="105" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">U</text>
       </svg>
-      <div style="font-size:11px;color:#555;margin-top:4px;">Smoking + Asbestos + Radon + Unknown</div>
+      <div style="font-size:11px;color:#555;margin-top:6px;line-height:1.5;">A + B + C + U</div>
     </div>
 
-    <!-- PIE 2 -->
-    <div style="text-align:center;">
-      <div style="font-weight:700;color:#1d4ed8;margin-bottom:6px;font-size:13px;">Sufficient Cause II</div>
-      <svg viewBox="0 0 160 160" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
-        <!-- Smoking: ~160 deg (dominant) -->
-        <path d="M80,80 L80,10 A70,70 0 1,1 10.1,97 Z" fill="#ef4444" stroke="white" stroke-width="2"/>
-        <!-- Air pollution: ~100 deg -->
-        <path d="M80,80 L10.1,97 A70,70 0 0,1 80,10 Z" fill="#8b5cf6" stroke="white" stroke-width="2"/>
-        <text x="100" y="75" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Smoking</text>
-        <text x="38" y="115" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Air pollution</text>
-        <text x="48" y="128" font-size="9" fill="white" font-weight="bold" text-anchor="middle">+ U</text>
+    <!-- PIE II -->
+    <div style="text-align:center;width:200px;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:8px;font-size:14px;">Sufficient Cause II</div>
+      <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <!-- A: Smoking ~200 deg (dominant, 12 → ~8:40) -->
+        <path d="M100,100 L100,10 A90,90 0 1,1 11.5,131 Z" fill="#ef4444" stroke="white" stroke-width="2.5"/>
+        <!-- D: Air pollution ~100 deg (~8:40 → 12) -->
+        <path d="M100,100 L11.5,131 A90,90 0 0,1 100,10 Z" fill="#8b5cf6" stroke="white" stroke-width="2.5"/>
+        <!-- Letter labels -->
+        <text x="120" y="90"  font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">A</text>
+        <text x="44"  y="130" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">D+U</text>
       </svg>
-      <div style="font-size:11px;color:#555;margin-top:4px;">Smoking + Air Pollution + Unknown</div>
+      <div style="font-size:11px;color:#555;margin-top:6px;line-height:1.5;">A + D + U</div>
     </div>
 
-    <!-- PIE 3 -->
-    <div style="text-align:center;">
-      <div style="font-weight:700;color:#1d4ed8;margin-bottom:6px;font-size:13px;">Sufficient Cause III</div>
-      <svg viewBox="0 0 160 160" width="160" height="160" xmlns="http://www.w3.org/2000/svg">
-        <!-- No smoking - genetic, asbestos, radiation -->
-        <path d="M80,80 L80,10 A70,70 0 0,1 150,80 Z" fill="#06b6d4" stroke="white" stroke-width="2"/>
-        <path d="M80,80 L150,80 A70,70 0 0,1 45,148 Z" fill="#f97316" stroke="white" stroke-width="2"/>
-        <path d="M80,80 L45,148 A70,70 0 0,1 10,80 Z" fill="#10b981" stroke="white" stroke-width="2"/>
-        <path d="M80,80 L10,80 A70,70 0 0,1 80,10 Z" fill="#94a3b8" stroke="white" stroke-width="2"/>
-        <text x="118" y="45" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Genetic</text>
-        <text x="118" y="120" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Asbestos</text>
-        <text x="42" y="120" font-size="9" fill="white" font-weight="bold" text-anchor="middle">Radiation</text>
-        <text x="35" y="68" font-size="9" fill="white" font-weight="bold" text-anchor="middle">U</text>
+    <!-- PIE III -->
+    <div style="text-align:center;width:200px;">
+      <div style="font-weight:700;color:#1d4ed8;margin-bottom:8px;font-size:14px;">Sufficient Cause III</div>
+      <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+        <!-- F: Genetic ~90 deg (12 → 3) -->
+        <path d="M100,100 L100,10 A90,90 0 0,1 190,100 Z" fill="#06b6d4" stroke="white" stroke-width="2.5"/>
+        <!-- B: Asbestos ~90 deg (3 → 6) -->
+        <path d="M100,100 L190,100 A90,90 0 0,1 100,190 Z" fill="#f97316" stroke="white" stroke-width="2.5"/>
+        <!-- E: Radiation ~90 deg (6 → 9) -->
+        <path d="M100,100 L100,190 A90,90 0 0,1 10,100 Z" fill="#10b981" stroke="white" stroke-width="2.5"/>
+        <!-- U: Unknown ~90 deg (9 → 12) -->
+        <path d="M100,100 L10,100 A90,90 0 0,1 100,10 Z" fill="#94a3b8" stroke="white" stroke-width="2.5"/>
+        <!-- Letter labels -->
+        <text x="155" y="55"  font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">F</text>
+        <text x="155" y="148" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">B</text>
+        <text x="45"  y="148" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">E</text>
+        <text x="45"  y="55"  font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">U</text>
       </svg>
-      <div style="font-size:11px;color:#555;margin-top:4px;">Genetic + Asbestos + Radiation + Unknown (no smoking!)</div>
+      <div style="font-size:11px;color:#555;margin-top:6px;line-height:1.5;">F + B + E + U <em>(no smoking)</em></div>
     </div>
 
   </div>
-  <div style="margin-top:14px;background:#eff6ff;border-radius:8px;padding:10px 14px;font-size:12px;color:#1e40af;text-align:center;">
-    <b>Smoking appears in Pies I and II but NOT Pie III.</b> It is a component cause but not a necessary cause.
-    Removing smoking eliminates those two pathways — but not all lung cancer. This is why smoking cessation reduces but does not eliminate lung cancer.
+
+  <!-- Callout -->
+  <div style="margin-top:20px;background:#eff6ff;border-radius:8px;padding:12px 16px;font-size:12px;color:#1e40af;text-align:center;line-height:1.6;">
+    <b>A (Smoking) appears in Sufficient Causes I and II but NOT III.</b><br>
+    Smoking is a <em>component</em> cause, not a <em>necessary</em> cause — lung cancer can occur without it (Sufficient Cause III).<br>
+    Removing A eliminates pathways I and II but leaves pathway III intact. This is why smoking cessation reduces but does not eliminate lung cancer.
   </div>
+
 </div>"""
         import streamlit.components.v1 as _rothman_comp
         _rothman_comp.html(
-            f"<!DOCTYPE html><html><body style='margin:0;padding:0;background:transparent;'>{pies_html}</body></html>",
-            height=340,
+            f"<!DOCTYPE html><html><body style='margin:0;padding:0;background:#fff;'>{pies_html}</body></html>",
+            height=560,
             scrolling=False
         )
 

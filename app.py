@@ -6970,15 +6970,16 @@ You are an Epidemic Intelligence Service (EIS) officer. Three outbreaks have bee
         "Step 5 — Control, report & prevent recurrence",
     ]
 
-    def next_step_button(current_step, all_steps, state_key, label="Next Step"):
+    def next_step_button(current_step, all_steps, idx_key, label="Next Step"):
+        """Advance using a separate index state key (avoids Streamlit widget-key conflict)."""
         idx = all_steps.index(current_step) if current_step in all_steps else -1
         if idx >= 0 and idx < len(all_steps) - 1:
             next_label = all_steps[idx + 1]
             st.markdown("---")
             col_nb1, col_nb2, col_nb3 = st.columns([3, 2, 3])
             with col_nb2:
-                if st.button(f"➡️ {label}", key=f"next_{state_key}_{idx}", use_container_width=True):
-                    st.session_state[state_key] = next_label
+                if st.button(f"➡️ {label}", key=f"next_{idx_key}_{idx}", use_container_width=True):
+                    st.session_state[idx_key] = idx + 1
                     st.rerun()
             st.caption(f"Next: **{next_label}**")
         elif idx == len(all_steps) - 1:
@@ -7112,7 +7113,7 @@ A university student health center has reported an unusual cluster of gastrointe
             "Step 3 — Epidemic curve & descriptive epidemiology",
             "Step 4 — Generate & test hypotheses (attack rates)",
             "Step 5 — Control measures & resolution",
-        ], key="ob1_step", horizontal=False)
+        ], key="ob1_step_radio", index=st.session_state.get("ob1_idx", 0), horizontal=False)
         st.divider()
 
         # ── STEP 1 ──
@@ -7171,7 +7172,7 @@ The student health center has seen 47 students with vomiting and diarrhea in 48 
 
         # ── STEP 2 ──
 
-            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+            next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 2 — Construct a case definition":
             st.subheader("Step 2 — Who counts as a case?")
@@ -7234,7 +7235,7 @@ You currently have:
 
         # ── STEP 3 ──
 
-            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+            next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 3 — Epidemic curve & descriptive epidemiology":
             st.subheader("Step 3 — Describe the outbreak: Person, Place, Time")
@@ -7372,7 +7373,7 @@ You have now interviewed 89 students who ate Tuesday dinner. 47 meet your case d
 
         # ── STEP 4 ──
 
-            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+            next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 4 — Generate & test hypotheses (attack rates)":
             st.subheader("Step 4 — Calculate attack rates and test your hypothesis")
@@ -7569,7 +7570,7 @@ The vehicles are not the most *popular* foods — they're the foods where eating
 
         # ── STEP 5 ──
 
-            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+            next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 5 — Control measures & resolution":
             st.subheader("Step 5 — Implement control measures")
@@ -7655,7 +7656,7 @@ The vehicles are not the most *popular* foods — they're the foods where eating
                     """)
 
 
-            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+            next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
     # ════════════════════════════════════════════════════════════════
     # SCENARIO 2: MEASLES
@@ -7687,7 +7688,7 @@ A parent calls the county health department: their 7-year-old is home from schoo
             "Step 3 — Contact tracing & case finding",
             "Step 4 — Control measures",
             "Step 5 — Could this have been prevented?",
-        ], key="ob2_step", horizontal=False)
+        ], key="ob2_step_radio", index=st.session_state.get("ob2_idx", 0), horizontal=False)
         st.divider()
 
         if ob2_step == "Step 1 — Verify diagnosis & chain of infection":
@@ -7735,7 +7736,7 @@ This is why outbreak control is so difficult: by the time measles is diagnosed (
                 """)
 
 
-            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
+            next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 2 — Herd immunity & the math behind the outbreak":
             st.subheader("Step 2 — Why did this outbreak happen? The herd immunity calculation")
@@ -7797,7 +7798,7 @@ This exponential growth pattern continues until susceptibles are exhausted or va
                 """)
 
 
-            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
+            next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 3 — Contact tracing & case finding":
             st.subheader("Step 3 — Who was exposed? Contact tracing at scale")
@@ -7863,7 +7864,7 @@ You now have 7 confirmed cases. The index case attended school for 3 days during
                     st.error("❌ 'Wait and see' allows further transmission during the incubation period. Exclusion or post-exposure vaccination is the appropriate public health intervention.")
 
 
-            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
+            next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 4 — Control measures":
             st.subheader("Step 4 — Emergency vaccination and outbreak control")
@@ -7920,7 +7921,7 @@ You now have 7 confirmed cases. The index case attended school for 3 days during
                 st.error("❌ Waiting for a specific case count threshold before acting allows exponential growth to occur. Act early with targeted measures.")
 
 
-            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
+            next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 5 — Could this have been prevented?":
             st.subheader("Step 5 — Prevention and policy implications")
@@ -7979,7 +7980,7 @@ The outbreak is now controlled after an emergency vaccination clinic raised cove
                 """)
 
 
-            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
+            next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
     # ════════════════════════════════════════════════════════════════
     # SCENARIO 3: SALMONELLA
@@ -8011,7 +8012,7 @@ It's Sunday evening. The county health department receives 4 calls from individu
             "Step 3 — Food-specific attack rates (calculate)",
             "Step 4 — Environmental investigation",
             "Step 5 — Control, report & prevent recurrence",
-        ], key="ob3_step", horizontal=False)
+        ], key="ob3_step_radio", index=st.session_state.get("ob3_idx", 0), horizontal=False)
         st.divider()
 
         if ob3_step == "Step 1 — Build the case definition & line list":
@@ -8087,7 +8088,7 @@ You need to systematically characterize who is sick before you can analyze the d
                 st.error("❌ Biological plausibility matters: Salmonella's primary vehicles are poultry, eggs, and egg-containing dishes. The line list shows these items prominently in cases.")
 
 
-            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
+            next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 2 — Epidemic curve & incubation period estimation":
             st.subheader("Step 2 — Epidemic curve and incubation period")
@@ -8155,7 +8156,7 @@ This technique is used in investigations where the exposure time is unknown.
                 """)
 
 
-            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
+            next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 3 — Food-specific attack rates (calculate)":
             st.subheader("Step 3 — Calculate food-specific attack rates")
@@ -8244,7 +8245,7 @@ An RR of {correct_rr} means students who ate the chicken salad were {correct_rr}
                         st.info("Check your arithmetic — divide sick ÷ total (not sick + well) to get the attack rate.")
 
 
-            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
+            next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 4 — Environmental investigation":
             st.subheader("Step 4 — Environmental investigation and source tracing")
@@ -8306,7 +8307,7 @@ This is how local foodborne investigations become national — the church potluc
                     st.error("❌ When a commercially distributed product is the source, the investigation extends beyond the local outbreak. Other communities may be at risk from the same supplier.")
 
 
-            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
+            next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 5 — Control, report & prevent recurrence":
             st.subheader("Step 5 — Control, reporting, and prevention")
@@ -8369,7 +8370,7 @@ This is how local foodborne investigations become national — the church potluc
                 """)
 
 
-            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
+            next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
     elif ob_scenario == "— Choose an outbreak —":
         st.info("Select a scenario above to begin your investigation.")

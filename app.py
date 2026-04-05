@@ -3688,18 +3688,18 @@ An **epidemic curve (epi curve)** is a histogram of case counts by time of sympt
             },
             "☢️ Point Source: E. coli O157 at a County Fair": {
                 "type": "point",
-                "description": "**Scenario:** Health department investigates 38 cases of bloody diarrhea linked to a county fair petting zoo. Onset times cluster 48–96 hours after the fair date.",
-                "peak": 72, "spread": 12, "total": 38,
-                "x_label": "Hours after fair visit",
+                "description": "**Scenario:** Health department investigates 38 cases of bloody diarrhea linked to a county fair petting zoo. Onset times cluster 2–6 days after the fair date (typical E. coli O157:H7 incubation: 1–10 days, average 3–4 days).",
+                "peak": 3.5, "spread": 1.2, "total": 38,
+                "x_label": "Days after fair visit",
                 "color": "#e53935",
                 "key_features": [
-                    "Single peak centered ~72 hours post-exposure",
-                    "Incubation period of 48–96 hours consistent with **E. coli O157:H7** (vs. 2–6h for toxin)",
-                    "Longer, flatter peak than toxin-mediated outbreaks — wider incubation range",
-                    "No ongoing source — cases plateau and decline after removing fair exposure",
+                    "Single peak centered ~day 3–4 post-exposure — consistent with E. coli O157:H7 average incubation of 3–4 days",
+                    "Incubation range of 1–10 days produces a wider, flatter peak than toxin-mediated outbreaks (2–6 hours)",
+                    "Cases begin day 1, peak day 3–4, tail off through day 8 — all within one incubation period range",
+                    "No secondary person-to-person wave — point source ends when fair exposure ends",
                 ],
-                "next_step": "Identify specific petting zoo animal contacts or shared water sources. Use **case-control study** with fair attendees as controls.",
-                "contrast": "The longer incubation (days, not hours) distinguishes bacterial infection from preformed toxin — same point-source shape, different time scale.",
+                "next_step": "Identify the specific exposure — petting zoo animal contact, contaminated water, food handling. Conduct **case-control study** with fair attendees as controls. Collect stool cultures from cases.",
+                "contrast": "Compare to Staph toxin (all cases within 2–6 hours). E. coli O157 has the same point-source shape but stretched over days, not hours — reflecting live bacterial replication vs. preformed toxin.",
             },
             # --- PROPAGATED ---
             "🔗 Propagated: Norovirus on a Cruise Ship": {
@@ -3821,7 +3821,8 @@ An **epidemic curve (epi curve)** is a histogram of case counts by time of sympt
                 peak    = preset["peak"]
                 spread  = preset["spread"]
                 total   = preset["total"]
-                n_steps = peak * 3 + 1
+                # Extend to peak*3 or at minimum 12 steps to show full tail
+                n_steps = max(12, int(round(peak * 3)) + 1)
                 steps   = list(range(n_steps))
                 raw     = [_math.exp(-0.5 * ((h - peak) / spread) ** 2) for h in steps]
                 scale   = total / max(sum(raw), 0.001)
@@ -3958,7 +3959,7 @@ An **epidemic curve (epi curve)** is a histogram of case counts by time of sympt
                 f'<line x1="{pad_l}" y1="{pad_t}" x2="{pad_l}" y2="{pad_t+plot_h}" stroke="#bbb" stroke-width="1.5"/>'
                 f'<line x1="{pad_l}" y1="{pad_t+plot_h}" x2="{pad_l+plot_w}" y2="{pad_t+plot_h}" stroke="#bbb" stroke-width="1.5"/>'
                 f'<text x="{pad_l - 36}" y="{pad_t + plot_h//2}" text-anchor="middle" font-size="11" fill="#666" '
-                f'transform="rotate(-90,{pad_l-36},{pad_t + plot_h//2})">Cases</text>'
+                f'transform="rotate(-90,{pad_l-36},{pad_t + plot_h//2})">Number of Cases</text>'
                 f'<text x="{pad_l + plot_w//2}" y="{chart_h + 14}" text-anchor="middle" font-size="11" fill="#666">{x_label}</text>'
             )
 

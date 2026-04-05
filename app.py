@@ -3150,7 +3150,12 @@ Each "pie" represents one sufficient cause — a complete causal mechanism. Each
     Removing smoking eliminates those two pathways — but not all lung cancer. This is why smoking cessation reduces but does not eliminate lung cancer.
   </div>
 </div>"""
-        st.markdown(pies_html, unsafe_allow_html=True)
+        import streamlit.components.v1 as _rothman_comp
+        _rothman_comp.html(
+            f"<!DOCTYPE html><html><body style='margin:0;padding:0;background:transparent;'>{pies_html}</body></html>",
+            height=340,
+            scrolling=False
+        )
 
         st.divider()
         st.markdown("### Epidemiologic Implications")

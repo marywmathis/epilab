@@ -143,7 +143,7 @@ Think of it this way: if exposure had **no effect at all** on outcome, you'd exp
 
 The largest single discrepancy came from the **{top_cell}** cell, which had {int(top_o)} cases observed vs. {round(top_e, 1)} expected — {top_direction} than the null would predict. This one cell alone drove {int(top_pct)}% of the total χ² value.
 
-The resulting p-value of {p_str}{tail_note} means: if there were truly no association, a chi-square this large or larger would occur **{p_str} of the time** by chance. {'That is rare enough to reject H₀.' if p_val < 0.05 else 'That is not rare enough to reject H₀ at α = 0.05.'}
+The resulting p-value of {p_str}{tail_note} means: **conditional on the null hypothesis being true** (no association), a chi-square statistic this large or larger would arise by chance {p_str} of the time. This is not the probability that the null is true — it is the probability of the data given the null. {'That is rare enough to reject H₀.' if p_val < 0.05 else 'That is not rare enough to reject H₀ at α = 0.05.'}
         """)
         st.markdown("---")
         st.markdown("**Step 1: Your observed counts (O)**")
@@ -247,7 +247,7 @@ def rr_or_explanation_expander(a, b, c, d, row_names, col_names, rr, or_val,
 
 **Odds Ratio (OR)** uses the **cross-product** (a×d) ÷ (b×c).
 
-**When do {pabbr} and OR agree?** When the outcome is rare (<10%), OR ≈ {pabbr}. As the outcome becomes more common, OR diverges further from 1.
+**When do {pabbr} and OR agree?** As a rough teaching heuristic, when outcome prevalence is low (often cited as <10%), OR approximates {pabbr} reasonably well. As outcomes become more common, OR diverges increasingly from 1 — there is no sharp cutoff, and the approximation degrades gradually.
         """)
 
 
@@ -387,7 +387,7 @@ The **natural history of disease** describes the progression of a disease proces
   </div>
 </div>
 <div style="margin-top:8px;text-align:center;font-size:11px;color:#718096;">
-  ← The <b>incubation period</b> (infectious) or <b>latency period</b> (chronic) spans stages 1→2
+  ← The <b>incubation period</b> begins after infection and ends at symptom onset (within stage 2). The <b>latency period</b> in chronic disease (exposure to detectable pathology) does not map cleanly onto a single stage boundary.
 </div>
 </div>"""
         st.markdown(nh_html, unsafe_allow_html=True)
@@ -553,7 +553,8 @@ Infectious disease transmission requires an unbroken **chain of infection** — 
             st.markdown("""
 **Direct transmission:**
 - *Direct contact:* Physical touching, sexual contact, biting
-- *Droplet spread:* Large droplets (>5μm) travel short distances (<1m) — influenza, COVID-19
+- *Droplet spread:* Large droplets (>5μm) travel short distances (<1m) — classically influenza
+- *Short-range aerosol/respiratory particle transmission:* A spectrum of particle sizes; inhalation at close range and in poorly ventilated spaces is now recognized as the primary route for COVID-19, which does not fit neatly into the historic droplet/airborne binary
 - *Direct inoculation:* Needlestick, animal bite
 
 **Indirect transmission:**
@@ -617,16 +618,18 @@ Where:
 - R₀ > 1 → epidemic grows
 
 **Examples:**
-| Disease | R₀ estimate |
+| Disease | R₀ estimate (approximate, context-dependent) |
 |---|---|
 | Measles | 12–18 |
 | Chickenpox | 8–12 |
-| COVID-19 (original) | 2–3 |
+| COVID-19 (original Wuhan strain) | 2–3 |
 | Influenza (seasonal) | 1.2–1.4 |
 | Ebola | 1.5–2.5 |
 | Smallpox | 5–7 |
 
-**Important distinction:** R₀ is a property of the pathogen-population interaction, not of the pathogen alone. The same virus can have different R₀ in different settings (population density, contact patterns, immunity levels).
+**Important:** These are approximate ranges from specific studies and populations — treat them as illustrative order-of-magnitude estimates, not fixed biological constants. R₀ values shift with population density, contact patterns, immunity levels, and pathogen evolution (e.g., Omicron R₀ estimates ranged from 8–15, far above the original strain).
+
+**Important distinction:** R₀ is a property of the pathogen-population interaction, not of the pathogen alone. The same virus can have different R₀ in different settings.
             """)
 
         with col2:
@@ -647,8 +650,8 @@ Examples:
 | Influenza | 1.3 | 23% |
 
 **Sources of herd immunity:**
-- Vaccination (the only ethical route to herd immunity for most diseases)
-- Natural infection (costly — requires widespread disease)
+- Vaccination (the preferred and safest route — confers immunity without disease burden)
+- Natural infection (contributes to population immunity but at the cost of disease, death, and long-term complications)
 - Combination of both
 
 **Key nuance:** HIT assumes random mixing. In real populations with clustered susceptibles (vaccine refusers in communities), local outbreaks can occur even with overall population immunity above the HIT.
@@ -694,7 +697,7 @@ Each infectious person can only transmit to susceptible contacts, so the effecti
 
 **Herd immunity is not binary:** It's a threshold, and population immunity is heterogeneous. Even above the HIT, local clusters of susceptibles can sustain outbreaks.
 
-**Vaccine-induced vs. infection-induced immunity:** Both count toward herd immunity, but infection-induced immunity comes at the cost of disease, death, and long-term complications. Vaccination is the ethical path to herd immunity.
+**Vaccine-induced vs. infection-induced immunity:** Both contribute to population immunity and both count toward the herd immunity threshold. Vaccination is the preferred and safest route — it confers protection without the disease burden, mortality, and long-term complications of natural infection. Policy discussions sometimes consider the contribution of prior infection to population immunity, particularly when vaccination coverage is incomplete.
 
 **Waning immunity:** As immunity wanes (through time or new variants), effective R rises. Booster programs exist to maintain Rₑ < 1.
             """)
@@ -712,7 +715,7 @@ When a cluster of cases is reported, epidemiologists follow a systematic process
              "Key questions: What is already known about this disease? What lab tests are needed? Who has authority to implement control measures?"),
             ("2", "Establish the Existence of an Outbreak", "#1d4ed8", "📊",
              "Determine whether the number of cases exceeds the expected (baseline) level. Compare reported cases to historical rates for the same time, place, and population.",
-             "An epidemic threshold is usually defined as cases exceeding the mean + 2 standard deviations of the historical baseline. Not all clusters are outbreaks — some are artifacts of improved surveillance or reporting."),
+             "An epidemic threshold is one way to flag unusual case counts — one common approach uses mean + 2 standard deviations of historical baseline data, though different surveillance systems use different methods (percentile ranks, moving averages, CUSUM). Not all clusters are true outbreaks — some are artifacts of improved surveillance or reporting."),
             ("3", "Verify the Diagnosis", "#2563eb", "🔬",
              "Confirm that cases represent the disease suspected. Review clinical findings, lab results, and case histories. Prevent false alarms from lab error, reporting artifacts, or misdiagnosis.",
              "Contact the lab, review pathology, interview clinicians. Ensure the diagnostic criteria are applied consistently across cases."),
@@ -1050,7 +1053,7 @@ Categories with a meaningful order but unequal or unknown intervals between leve
 **Discrete (Count)**
 Whole numbers representing counts of things. Cannot be fractional.
 - Examples: number of hospitalizations, number of sexual partners, parity (number of births), number of cigarettes per day
-- Follows Poisson or negative binomial distribution
+- Often modeled using Poisson or negative binomial regression (modeling assumption, not an inherent property of the data — actual count distributions vary)
 
 **Continuous**
 Can take any value within a range, including decimals. Measured, not counted.
@@ -2922,7 +2925,7 @@ A **proxy** (or surrogate) is a measured variable that stands in for an unmeasur
                 st.markdown("""
 **When a proxy is used as a confounder:**
 - You get partial adjustment, not full adjustment
-- The residual confounding biases your estimate toward the crude (unadjusted) estimate
+- Incomplete adjustment may leave the estimate biased — often, but not always, somewhere between the crude and fully adjusted estimate. The direction and magnitude depend on the strength and direction of the remaining confounding.
 - Report this as a limitation: "We adjusted for education as a proxy for SES; residual confounding by unmeasured aspects of SES may remain"
 
 **When a proxy is used as an exposure:**
@@ -4261,7 +4264,7 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
         _comp4.html(four_panel_html, height=700, scrolling=False)
 
         st.markdown("""
-**Reading the baseline:** The dotted gray line represents the **expected endemic level** — how many cases occur in any given time period without an unusual event. Cases above the baseline represent excess cases attributable to the outbreak or epidemic. An **epidemic threshold** (red dashes, shown in the endemic panel) is often set at 2 standard deviations above the historical mean — when cases cross this line, formal outbreak investigation begins.
+**Reading the baseline:** The dotted gray line represents the **expected endemic level** — how many cases occur in any given time period without an unusual event. Cases above the baseline represent excess cases attributable to the outbreak or epidemic. An **epidemic threshold** (red dashes, shown in the endemic panel) represents one possible alert level — a common teaching heuristic uses 2 standard deviations above the historical mean, though real surveillance systems use varied approaches. When cases cross the threshold, formal outbreak investigation is triggered.
         """)
 
     st.markdown("---")
@@ -5217,7 +5220,7 @@ elif current_page == "hypothesis_testing":
 
 **In practice:** Use two-tailed as the default. One-tailed requires a strong, pre-specified directional hypothesis. Using one-tailed post-hoc (after seeing the data) inflates Type I error.
 
-**Chi-square tests are always two-tailed** — the chi-square statistic is always positive (it measures squared deviations), so there's no "direction" concept. The p-value from chi-square is always two-tailed.
+**Chi-square tests are nondirectional** — the chi-square statistic is always non-negative (it measures total squared departure from independence), so the test cannot distinguish which group has higher rates. The p-value comes from the right tail of the chi-square distribution. It is more precise to call this a nondirectional test rather than "two-tailed," since the mechanics differ from a two-sided t-test.
         """)
 
     elif ht_section == "2️⃣ What Does Rejecting the Null Actually Mean?":
@@ -5436,9 +5439,9 @@ The CI gives more information — it shows the range of plausible effect sizes, 
                 "correct_null_idx": 0, "correct_alt_idx": 0, "correct_tails": "two-tailed",
                 "null_feedback": "✅ Correct. H₀: no association — independence.",
                 "null_wrong_feedback": "❌ H₀ must state no association — independence between screen time and obesity.",
-                "alt_feedback": "✅ Correct. No directional prediction, and chi-square is always two-tailed.",
-                "alt_wrong_feedback": "❌ No directional prediction was made. Also, chi-square tests are **always two-tailed** — they measure total discrepancy without regard to direction.",
-                "tails_connection": "🎯 **Two-tailed (chi-square)** — Chi-square tests are always two-tailed regardless of how the hypotheses are framed. The statistic measures squared deviations, so direction is irrelevant.",
+                "alt_feedback": "✅ Correct. No directional prediction, and chi-square is nondirectional — it tests total departure from independence without distinguishing which group has higher rates.",
+                "alt_wrong_feedback": "❌ No directional prediction was made. Also, chi-square is a nondirectional test — it measures total departure from independence without regard to which direction the difference goes.",
+                "tails_connection": "🎯 **Nondirectional (chi-square)** — Chi-square tests departure from independence without regard to direction. The statistic is always non-negative (squared deviations), so the concept of 'one-tailed vs. two-tailed' does not apply in the same way as for t-tests.",
             },
             {
                 "id": "h4", "title": "Scenario D: Vaccine Efficacy Against Influenza",
@@ -6218,7 +6221,7 @@ elif current_page == "practice_confounding":
          "question":"What type of bias is present, and in which direction does it push the RR?",
          "options":["Non-differential misclassification — biases RR toward null (underestimates true association)","Differential misclassification — biases RR away from null (overestimates)","Confounding by age — RR direction unpredictable","Berkson's bias — biases toward null","Recall bias — biases away from null"],
          "correct":"Non-differential misclassification — biases RR toward null (underestimates true association)",
-         "explanation":"Misclassification is non-differential because the error rate (15%) is the same in those who develop CVD and those who don't — it doesn't depend on the outcome. Non-differential misclassification of exposure always biases the measure of association toward the null (RR toward 1.0). Some truly active people are classified as inactive, diluting the 'active' group with inactive people. The estimated RR will be closer to 1 than the truth — potentially masking a real protective effect.",
+         "explanation":"Misclassification is non-differential because the error rate (15%) is the same in those who develop CVD and those who don't — it doesn't depend on the outcome. Non-differential misclassification of a binary exposure typically attenuates simple measures of association toward the null (RR toward 1.0) — this attenuation is the most common and expected pattern. Some truly active people are classified as inactive, diluting the 'active' group. The estimated RR will generally be closer to 1 than the truth — potentially masking a real protective effect. Note: this attenuation toward null is well-established for simple binary exposure misclassification in standard 2×2 analyses, though more complex settings can produce exceptions.",
          "follow_up":"If the study finds RR = 1.05 (not significant), what should you conclude?",
          "follow_up_options":["Physical activity may still be protective — non-differential misclassification attenuates the true RR toward null","Physical activity definitely has no effect on CVD","The result is a false positive due to misclassification","Misclassification causes overestimation, so the true RR is even higher than 1.05"],
          "correct_follow_up":"Physical activity may still be protective — non-differential misclassification attenuates the true RR toward null",
@@ -7106,7 +7109,7 @@ Risk in exposed ÷ risk in unexposed. Cohort studies. RR = 1: no difference; RR 
 Same formula as RR but used in cross-sectional studies where the outcome is prevalent (existing), not incident (new).
 
 **Odds Ratio (OR)**
-Odds of outcome in exposed ÷ odds in unexposed. Used in case-control studies and logistic regression. OR always farther from 1 than RR when outcome is common. When outcome rare (<10%), OR ≈ RR (rare disease assumption).
+Odds of outcome in exposed ÷ odds in unexposed. Used in case-control studies and logistic regression. OR is always farther from 1 than RR for the same data when the outcome is common. When the outcome is uncommon (as a rough heuristic, often <10%), OR approximates RR reasonably well — but there is no hard cutoff, and the approximation degrades gradually as prevalence increases.
 
 **Incidence Rate Ratio (IRR)**
 Rate in exposed ÷ rate in unexposed using person-time denominators. Used when follow-up time varies across participants.
@@ -7180,7 +7183,7 @@ Tests whether observed counts differ from expected under independence. Always tw
 Tests effect in one specific direction. All 5% error tolerance in one tail. Only appropriate when directional hypothesis was pre-specified before data collection based on strong prior evidence.
 
 **Two-Tailed Test**
-Tests any difference regardless of direction. Default in epidemiology. Chi-square is always two-tailed.
+Tests any difference regardless of direction. Default in epidemiology. Chi-square is nondirectional — it tests total departure from independence without distinguishing direction.
         """)
 
     with st.expander("📏 Standardization"):
@@ -7248,7 +7251,7 @@ Measure of internal consistency for multi-item scales. Ranges 0–1. α ≥ 0.70
 A measure can be reliable without being valid (consistently wrong). A measure cannot be valid without being reliable (random scatter cannot consistently hit the truth). Reliability is necessary but not sufficient for validity.
 
 **Connection to Misclassification**
-Low reliability → random measurement error → non-differential misclassification → bias toward null.
+Low reliability → random measurement error → often non-differential misclassification in categorical variables (or random error in continuous ones). Non-differential misclassification of a binary exposure typically attenuates simple associations toward the null, though this is not guaranteed in all model structures or data configurations.
 Invalid measurement → systematic error differing by group → differential misclassification → bias in either direction.
         """)
 
@@ -7285,7 +7288,7 @@ How an agent leaves the reservoir and enters a new host. Common portals: respira
 How an agent travels from reservoir to host. Direct (contact, droplet, vertical) or indirect (airborne, vehicle-borne, vector-borne, fomite).
 
 **Airborne vs. Droplet Transmission**
-Droplet: large particles (>5μm), travel <1m, fall quickly (influenza, COVID-19). Airborne: droplet nuclei (<5μm), remain suspended, travel >1m (TB, measles, chickenpox).
+Droplet: large particles (>5μm), travel <1m, fall quickly (classically influenza). Airborne: droplet nuclei (<5μm), remain suspended, travel >1m (TB, measles, chickenpox). Note: COVID-19 is now understood to transmit primarily via respiratory particles across a spectrum of sizes — short-range inhalation in poorly ventilated spaces is the dominant route, making the historic droplet/airborne binary inadequate for describing it.
 
 **Vector-Borne Transmission**
 Biological vector: pathogen replicates inside vector (malaria, dengue, Lyme). Mechanical vector: pathogen transported without replication (housefly + Salmonella).

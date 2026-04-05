@@ -6948,6 +6948,44 @@ You are an Epidemic Intelligence Service (EIS) officer. Three outbreaks have bee
 
     import math as _omath
 
+    OB1_STEPS = [
+        "Step 1 — Verify the diagnosis & establish the outbreak",
+        "Step 2 — Construct a case definition",
+        "Step 3 — Epidemic curve & descriptive epidemiology",
+        "Step 4 — Generate & test hypotheses (attack rates)",
+        "Step 5 — Control measures & resolution",
+    ]
+    OB2_STEPS = [
+        "Step 1 — Verify diagnosis & chain of infection",
+        "Step 2 — Herd immunity & the math behind the outbreak",
+        "Step 3 — Contact tracing & case finding",
+        "Step 4 — Control measures",
+        "Step 5 — Could this have been prevented?",
+    ]
+    OB3_STEPS = [
+        "Step 1 — Build the case definition & line list",
+        "Step 2 — Epidemic curve & incubation period estimation",
+        "Step 3 — Food-specific attack rates (calculate)",
+        "Step 4 — Environmental investigation",
+        "Step 5 — Control, report & prevent recurrence",
+    ]
+
+    def next_step_button(current_step, all_steps, state_key, label="Next Step"):
+        idx = all_steps.index(current_step) if current_step in all_steps else -1
+        if idx >= 0 and idx < len(all_steps) - 1:
+            next_label = all_steps[idx + 1]
+            st.markdown("---")
+            col_nb1, col_nb2, col_nb3 = st.columns([3, 2, 3])
+            with col_nb2:
+                if st.button(f"➡️ {label}", key=f"next_{state_key}_{idx}", use_container_width=True):
+                    st.session_state[state_key] = next_label
+                    st.rerun()
+            st.caption(f"Next: **{next_label}**")
+        elif idx == len(all_steps) - 1:
+            st.markdown("---")
+            st.success("🎉 **Scenario complete!** Select a new outbreak above, or jump back to any step to review.")
+
+
     # ── Compendium reference ──────────────────────────────────────────────────
     with st.expander("📋 Field Reference — Compendium of Acute Foodborne GI Diseases (keep open while investigating)"):
         st.markdown("Use this table to match incubation period, symptoms, and food vehicle to the most likely agent.")
@@ -7132,6 +7170,9 @@ The student health center has seen 47 students with vomiting and diarrhea in 48 
                     """)
 
         # ── STEP 2 ──
+
+            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+
         elif ob1_step == "Step 2 — Construct a case definition":
             st.subheader("Step 2 — Who counts as a case?")
             st.markdown("""
@@ -7192,6 +7233,9 @@ You currently have:
                         st.info("This definition will work for now. Note your choices — they affect who gets counted as a case.")
 
         # ── STEP 3 ──
+
+            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+
         elif ob1_step == "Step 3 — Epidemic curve & descriptive epidemiology":
             st.subheader("Step 3 — Describe the outbreak: Person, Place, Time")
             st.markdown("""
@@ -7327,6 +7371,9 @@ You have now interviewed 89 students who ate Tuesday dinner. 47 meet your case d
 
 
         # ── STEP 4 ──
+
+            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+
         elif ob1_step == "Step 4 — Generate & test hypotheses (attack rates)":
             st.subheader("Step 4 — Calculate attack rates and test your hypothesis")
             st.markdown("""
@@ -7492,17 +7539,38 @@ The vehicles are not the most *popular* foods — they're the foods where eating
             if q4a != "— Select —":
                 st.divider()
                 st.markdown("#### 🧮 Calculate the overall attack rate for this outbreak")
-                total_sick_input = st.number_input("Total sick (cases):", min_value=0, max_value=200, value=0, key="ob1_ar1")
-                total_exposed_input = st.number_input("Total who ate Tuesday dinner:", min_value=0, max_value=500, value=0, key="ob1_ar2")
+                st.markdown("The outbreak brief told you: **47 cases** among **89 students** who ate Tuesday dinner.")
+                col_ar1, col_ar2 = st.columns(2)
+                with col_ar1:
+                    total_sick_input = st.number_input("Total sick (cases):", min_value=0, max_value=200, value=0, key="ob1_ar1")
+                with col_ar2:
+                    total_exposed_input = st.number_input("Total who ate Tuesday dinner:", min_value=0, max_value=500, value=0, key="ob1_ar2")
+
                 if total_exposed_input > 0 and total_sick_input > 0:
                     overall_ar = round(total_sick_input / total_exposed_input * 100, 1)
                     st.metric("Overall attack rate", f"{overall_ar}%")
-                    if abs(overall_ar - 52.8) < 3:
-                        st.success(f"✅ Correct — {total_sick_input}/{total_exposed_input} = {overall_ar}%. Just over half of diners became ill — very high for a foodborne outbreak, consistent with a widely distributed contaminated item.")
-                    elif total_sick_input == 47 and total_exposed_input == 89:
-                        st.success("✅ Correct — 47/89 = 52.8%. A 53% attack rate is high, consistent with a widely consumed contaminated item.")
+
+                    correct_sick, correct_total = 47, 89
+                    correct_ar = round(correct_sick / correct_total * 100, 1)
+
+                    if total_sick_input == correct_sick and total_exposed_input == correct_total:
+                        st.success(f"✅ **Correct — {total_sick_input}/{total_exposed_input} = {overall_ar}%.** Just over half of all diners became ill. An attack rate above 50% is unusually high for a foodborne outbreak and is consistent with a widely consumed contaminated item (like a salad bar item served to most attendees).")
+                    elif total_sick_input != correct_sick and total_exposed_input == correct_total:
+                        st.error(f"❌ The denominator (89 diners) is correct, but check the numerator. The case count from the outbreak brief is {correct_sick}, not {total_sick_input}. AR = {correct_sick}/{correct_total} = {correct_ar}%.")
+                    elif total_sick_input == correct_sick and total_exposed_input != correct_total:
+                        st.error(f"❌ The case count ({correct_sick}) is correct, but check the denominator. The attack rate uses all people who were exposed to the meal — all {correct_total} students who ate Tuesday dinner, not just those who got sick. AR = {correct_sick}/{correct_total} = {correct_ar}%.")
+                    elif total_exposed_input < total_sick_input:
+                        st.error("❌ The denominator (total exposed) cannot be smaller than the numerator (total sick). The denominator is everyone who ate the meal — sick AND well.")
+                    else:
+                        st.warning(f"⚠️ Not quite. From the scenario: {correct_sick} cases among {correct_total} students who ate Tuesday dinner. AR = {correct_sick}/{correct_total} = **{correct_ar}%**. Check which numbers you used.")
+                elif total_sick_input > 0 or total_exposed_input > 0:
+                    st.info("Enter both values to calculate the attack rate.")
+
 
         # ── STEP 5 ──
+
+            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+
         elif ob1_step == "Step 5 — Control measures & resolution":
             st.subheader("Step 5 — Implement control measures")
             st.info("💡 **Steps 9–10 of 10:** Implement control measures → Communicate findings")
@@ -7586,6 +7654,9 @@ The vehicles are not the most *popular* foods — they're the foods where eating
 - **Key control:** Exclude ill food handlers for 48h after symptom resolution; hand hygiene (soap and water — alcohol gel less effective); bleach disinfection of surfaces
                     """)
 
+
+            next_step_button(ob1_step, OB1_STEPS, "ob1_step")
+
     # ════════════════════════════════════════════════════════════════
     # SCENARIO 2: MEASLES
     # ════════════════════════════════════════════════════════════════
@@ -7663,6 +7734,9 @@ This is why outbreak control is so difficult: by the time measles is diagnosed (
 ⚠️ **Airborne transmission critical point:** Measles is one of the most contagious pathogens known. Unlike respiratory droplets that fall within 1 meter, measles virus remains suspended in the air for up to 2 hours. A susceptible person entering the same room AFTER the index case has left can still be infected. This makes standard droplet precautions insufficient.
                 """)
 
+
+            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
+
         elif ob2_step == "Step 2 — Herd immunity & the math behind the outbreak":
             st.subheader("Step 2 — Why did this outbreak happen? The herd immunity calculation")
 
@@ -7721,6 +7795,9 @@ With Rₑ = **{effective_r}**, project the wave pattern:
 
 This exponential growth pattern continues until susceptibles are exhausted or vaccination coverage increases above the HIT of {hit}%.
                 """)
+
+
+            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
 
         elif ob2_step == "Step 3 — Contact tracing & case finding":
             st.subheader("Step 3 — Who was exposed? Contact tracing at scale")
@@ -7785,6 +7862,9 @@ You now have 7 confirmed cases. The index case attended school for 3 days during
                 elif q3b != "— Select —":
                     st.error("❌ 'Wait and see' allows further transmission during the incubation period. Exclusion or post-exposure vaccination is the appropriate public health intervention.")
 
+
+            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
+
         elif ob2_step == "Step 4 — Control measures":
             st.subheader("Step 4 — Emergency vaccination and outbreak control")
 
@@ -7838,6 +7918,9 @@ You now have 7 confirmed cases. The index case attended school for 3 days during
                 """)
             elif q4a != "— Select —":
                 st.error("❌ Waiting for a specific case count threshold before acting allows exponential growth to occur. Act early with targeted measures.")
+
+
+            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
 
         elif ob2_step == "Step 5 — Could this have been prevented?":
             st.subheader("Step 5 — Prevention and policy implications")
@@ -7894,6 +7977,9 @@ The outbreak is now controlled after an emergency vaccination clinic raised cove
 - **Elimination:** United States achieved measles elimination in 2000; maintained with high vaccination coverage
 - **Re-emergence:** Outbreaks occur in clusters of unvaccinated individuals; imported cases seed outbreaks in communities below HIT
                 """)
+
+
+            next_step_button(ob2_step, OB2_STEPS, "ob2_step")
 
     # ════════════════════════════════════════════════════════════════
     # SCENARIO 3: SALMONELLA
@@ -8000,6 +8086,9 @@ You need to systematically characterize who is sick before you can analyze the d
             elif q1a != "— Select —":
                 st.error("❌ Biological plausibility matters: Salmonella's primary vehicles are poultry, eggs, and egg-containing dishes. The line list shows these items prominently in cases.")
 
+
+            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
+
         elif ob3_step == "Step 2 — Epidemic curve & incubation period estimation":
             st.subheader("Step 2 — Epidemic curve and incubation period")
             st.markdown("The meal was served at **12:30 PM Sunday**. Below are the onset times for all 23 confirmed cases.")
@@ -8064,6 +8153,9 @@ If you didn't know when the meal occurred, you could estimate it: find the media
 
 This technique is used in investigations where the exposure time is unknown.
                 """)
+
+
+            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
 
         elif ob3_step == "Step 3 — Food-specific attack rates (calculate)":
             st.subheader("Step 3 — Calculate food-specific attack rates")
@@ -8151,6 +8243,9 @@ An RR of {correct_rr} means students who ate the chicken salad were {correct_rr}
                     else:
                         st.info("Check your arithmetic — divide sick ÷ total (not sick + well) to get the attack rate.")
 
+
+            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
+
         elif ob3_step == "Step 4 — Environmental investigation":
             st.subheader("Step 4 — Environmental investigation and source tracing")
             st.markdown("""
@@ -8209,6 +8304,9 @@ This is how local foodborne investigations become national — the church potluc
                     """)
                 elif q4b != "— Select —":
                     st.error("❌ When a commercially distributed product is the source, the investigation extends beyond the local outbreak. Other communities may be at risk from the same supplier.")
+
+
+            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
 
         elif ob3_step == "Step 5 — Control, report & prevent recurrence":
             st.subheader("Step 5 — Control, reporting, and prevention")
@@ -8269,6 +8367,9 @@ This is how local foodborne investigations become national — the church potluc
 - **Prevention:** Cook poultry to 165°F; avoid cross-contamination; refrigerate properly; hand hygiene
 - **Surveillance:** Nationally notifiable; PulseNet provides molecular fingerprinting for outbreak detection
                 """)
+
+
+            next_step_button(ob3_step, OB3_STEPS, "ob3_step")
 
     elif ob_scenario == "— Choose an outbreak —":
         st.info("Select a scenario above to begin your investigation.")

@@ -6971,8 +6971,11 @@ You are an Epidemic Intelligence Service (EIS) officer. Three outbreaks have bee
     ]
 
     def next_step_button(current_step, all_steps, idx_key, label="Next Step"):
-        """Advance using a separate index state key (avoids Streamlit widget-key conflict)."""
-        idx = all_steps.index(current_step) if current_step in all_steps else -1
+        """Advance step using a plain (non-widget-bound) index in session state."""
+        # Initialize if not set
+        if idx_key not in st.session_state:
+            st.session_state[idx_key] = 0
+        idx = all_steps.index(current_step) if current_step in all_steps else 0
         if idx >= 0 and idx < len(all_steps) - 1:
             next_label = all_steps[idx + 1]
             st.markdown("---")
@@ -7074,12 +7077,23 @@ You are an Epidemic Intelligence Service (EIS) officer. Three outbreaks have bee
 *Longer incubation; fever common; HUS/complications possible*
             """)
 
+    # Track scenario to reset step indices when scenario changes
+    if "ob_prev_scenario" not in st.session_state:
+        st.session_state["ob_prev_scenario"] = ""
+
     ob_scenario = st.selectbox("Select an outbreak to investigate:", [
         "— Choose an outbreak —",
         "🍽️ Scenario 1: Norovirus at a University Dining Hall",
         "📚 Scenario 2: Measles in an Under-Vaccinated Elementary School",
         "🥘 Scenario 3: Salmonellosis at a Community Church Potluck",
     ], key="ob_scenario_select")
+
+    # Reset step index when scenario changes
+    if ob_scenario != st.session_state["ob_prev_scenario"]:
+        st.session_state["ob1_idx"] = 0
+        st.session_state["ob2_idx"] = 0
+        st.session_state["ob3_idx"] = 0
+        st.session_state["ob_prev_scenario"] = ob_scenario
 
     st.divider()
 
@@ -7113,7 +7127,7 @@ A university student health center has reported an unusual cluster of gastrointe
             "Step 3 — Epidemic curve & descriptive epidemiology",
             "Step 4 — Generate & test hypotheses (attack rates)",
             "Step 5 — Control measures & resolution",
-        ], key="ob1_step_radio", index=st.session_state.get("ob1_idx", 0), horizontal=False)
+        ], index=st.session_state.get("ob1_idx", 0), horizontal=False)
         st.divider()
 
         # ── STEP 1 ──
@@ -7688,7 +7702,7 @@ A parent calls the county health department: their 7-year-old is home from schoo
             "Step 3 — Contact tracing & case finding",
             "Step 4 — Control measures",
             "Step 5 — Could this have been prevented?",
-        ], key="ob2_step_radio", index=st.session_state.get("ob2_idx", 0), horizontal=False)
+        ], index=st.session_state.get("ob2_idx", 0), horizontal=False)
         st.divider()
 
         if ob2_step == "Step 1 — Verify diagnosis & chain of infection":
@@ -8012,7 +8026,7 @@ It's Sunday evening. The county health department receives 4 calls from individu
             "Step 3 — Food-specific attack rates (calculate)",
             "Step 4 — Environmental investigation",
             "Step 5 — Control, report & prevent recurrence",
-        ], key="ob3_step_radio", index=st.session_state.get("ob3_idx", 0), horizontal=False)
+        ], index=st.session_state.get("ob3_idx", 0), horizontal=False)
         st.divider()
 
         if ob3_step == "Step 1 — Build the case definition & line list":

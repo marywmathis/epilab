@@ -7292,21 +7292,39 @@ You have now interviewed 89 students who ate Tuesday dinner. 47 meet your case d
 
             if q3a != "— Select —":
                 st.divider()
+                st.markdown("""
+> **Note before you answer:** Look carefully at both the gaps *and* the type of variable. The east seating section gap (61% vs. 18%) is actually larger than the salad bar gap (87% vs. 41%). Think about *why* one makes more epidemiologic sense as a vehicle than the other.
+                """)
                 q3b = st.radio("**Decision 3B:** What does the descriptive data suggest as the most likely vehicle?", [
                     "— Select —",
                     "Hot entrée — 71% of cases ate it",
                     "Salad bar — 87% of cases ate it vs. only 41% of non-cases",
                     "Dessert bar — similar rates in cases and non-cases",
-                    "East seating section — cases concentrated there",
+                    "East seating section — cases concentrated there (61% vs. 18%)",
                 ], key="ob1_q3b")
                 if q3b == "Salad bar — 87% of cases ate it vs. only 41% of non-cases":
                     st.success("""
-✅ **Correct.** The key is the *difference* between cases and non-cases, not the absolute percentage. 87% of cases vs. 41% of non-cases ate the salad bar — a 46 percentage point difference. The hot entrée (71% vs. 68%) shows almost no difference. Descriptive data generates the hypothesis; you'll test it with attack rates in Step 4.
+✅ **Correct.** The salad bar is the right hypothesis — and it's worth understanding *why*, because the east section gap is actually larger (43 points vs. 46 points for the salad bar).
+
+**The critical distinction is biological plausibility and causal logic:**
+- **Salad bar** is a *food vehicle* — it can be directly contaminated and ingested. This is a biologically plausible route of transmission for norovirus. The difference in exposure rates between cases and non-cases is large and epidemiologically meaningful.
+- **East seating section** is a *place*, not a vehicle. Eating in the east section doesn't cause illness — it's almost certainly a confounder or proxy. The most likely explanation: the salad bar was located near or in the east section, so students who sat there were also more likely to eat from it. The seating section correlates with the exposure but is not the cause.
+
+**The lesson:** When both a food item and a place show large gaps, ask whether the place association is explained by differential access to the food. Always prefer the biologically plausible vehicle over a geographical correlate. You'll confirm this with attack rate calculations in Step 4.
+                    """)
+                elif q3b == "East seating section — cases concentrated there (61% vs. 18%)":
+                    st.warning("""
+⚠️ **Good observation, but not the vehicle.** You correctly noticed that the east section gap (61% vs. 18%) is the largest in the table — that's careful reading. But a seating section is a *place*, not a food vehicle. Place cannot directly transmit norovirus.
+
+**The better interpretation:** The east section concentration is almost certainly a proxy for salad bar exposure — the salad bar was likely positioned near or in the east section, so students who sat there disproportionately ate from it. In epi terms, seating section is a *confounder* or *surrogate marker* of the actual exposure (salad bar), not the cause.
+
+**The rule:** When you see a strong association with a place, ask whether the place correlates with a food exposure. Always prioritize the biologically plausible food vehicle over a geographical correlate. The attack rate analysis in Step 4 will test the food hypothesis directly.
                     """)
                 elif q3b == "Hot entrée — 71% of cases ate it":
-                    st.error("❌ 71% of cases AND 68% of non-cases ate the hot entrée — almost identical rates. This suggests no association. Focus on exposures where the gap between cases and non-cases is large.")
-                elif q3b != "— Select —":
-                    st.error("❌ Look for the largest gap between case and non-case exposure rates. The salad bar shows an 87% vs. 41% difference — the strongest signal in the descriptive data.")
+                    st.error("❌ 71% of cases AND 68% of non-cases ate the hot entrée — almost identical rates, meaning no meaningful difference in exposure. When cases and non-cases ate something at nearly the same rate, that item is unlikely to be the vehicle.")
+                elif q3b == "Dessert bar — similar rates in cases and non-cases":
+                    st.error("❌ The dessert bar shows 44% vs. 42% — nearly identical rates. No association with illness. The vehicle will show a large gap between cases and non-cases.")
+
 
         # ── STEP 4 ──
         elif ob1_step == "Step 4 — Generate & test hypotheses (attack rates)":
@@ -7352,25 +7370,123 @@ For each food item, calculate:
             st.dataframe(results_df, use_container_width=True, hide_index=True)
 
             st.divider()
-            q4a = st.radio("**Decision 4A:** Based on the attack rates, which food item is the most likely vehicle?", [
+            st.markdown("### 🔍 Analyze the table — work through these before drawing conclusions")
+            st.markdown("*Answer each question in order. Each one builds on the last.*")
+
+            # ── ANALYSIS Q1: Null RR ──
+            aq1 = st.radio(
+                "**Analysis 1:** What RR value would indicate that a food item has NO association with illness?",
+                ["— Select —", "RR = 0", "RR = 1.0", "RR = 0.5", "RR > 2"],
+                key="ob1_aq1"
+            )
+            if aq1 == "RR = 1.0":
+                st.success("✅ Correct. RR = 1.0 means the attack rate is identical in those who ate vs. those who didn't — eating that food conveys no additional risk. Look at rolls/bread (RR = 1.0) and soft-serve ice cream (RR = 0.95) — near-null RRs, no association.")
+            elif aq1 != "— Select —":
+                st.error("❌ RR = 1.0 is the null value — it means the attack rate in exposed equals the attack rate in unexposed. RR > 1 means increased risk; RR < 1 means decreased risk; RR = 1 means no difference.")
+
+            if aq1 == "RR = 1.0":
+                st.divider()
+                # ── ANALYSIS Q2: Why AR unexposed matters ──
+                aq2 = st.radio(
+                    "**Analysis 2:** Hot entrée (pasta) has AR exposed = 52.4% — that seems high. Why is it NOT a strong vehicle candidate?",
+                    ["— Select —",
+                     "Because only 63 students ate it",
+                     "Because AR unexposed is 53.8% — nearly identical — so eating it made no difference",
+                     "Because pasta can't carry norovirus",
+                     "Because the RR should be calculated differently for hot foods"],
+                    key="ob1_aq2"
+                )
+                if aq2 == "Because AR unexposed is 53.8% — nearly identical — so eating it made no difference":
+                    st.success("""
+✅ Exactly right. This is the single most important concept in foodborne outbreak analysis: **a high AR exposed means nothing without a low AR unexposed.**
+
+Hot entrée: 52.4% of those who ate it got sick. But 53.8% of those who *didn't* eat it also got sick. RR = 0.97 — essentially 1. Whether you ate the pasta or not made no difference to your risk.
+
+This happens when a food is just popular — many people eat it, so many sick people ate it, but many well people did too. Absolute counts mislead; the ratio is what matters.
+                    """)
+                elif aq2 != "— Select —":
+                    st.error("❌ The issue is the AR unexposed — what happened to people who DIDN'T eat it. If the unexposed get sick at the same rate as the exposed, eating it made no difference.")
+
+                if aq2 == "Because AR unexposed is 53.8% — nearly identical — so eating it made no difference":
+                    st.divider()
+                    # ── ANALYSIS Q3: Rank the two candidates ──
+                    aq3 = st.radio(
+                        "**Analysis 3:** Two items show a large gap between AR exposed and AR unexposed: salad bar (mixed greens) and Caesar dressing. Which has the stronger signal and why?",
+                        ["— Select —",
+                         "Salad bar — more people ate it (47 vs. 43), so the sample is larger",
+                         "Caesar dressing — AR exposed 88.4% vs. AR unexposed 19.6%, RR 4.51 vs. salad bar RR 6.1. Wait — salad bar has the higher RR",
+                         "Caesar dressing — slightly lower AR exposed but far lower AR unexposed than salad bar (19.6% vs. 14.3%), giving RR 4.51 vs. 6.1. Salad bar actually has the higher RR",
+                         "They are identical — both are strong candidates and you cannot distinguish them"],
+                        key="ob1_aq3"
+                    )
+                    if aq3 == "Caesar dressing — slightly lower AR exposed but far lower AR unexposed than salad bar (19.6% vs. 14.3%), giving RR 4.51 vs. 6.1. Salad bar actually has the higher RR":
+                        st.success("""
+✅ Sharp reading — the salad bar actually has the higher RR (6.1 vs. 4.51). Both are strong signals. So why do investigators ultimately point to the dressing rather than the greens?
+
+This is where **biological plausibility and ingredient overlap** enter the analysis: nearly every student who took mixed greens also added Caesar dressing, but some students took dressing alone (on other items or as a dip). The dressing is the more *specific* item — it narrows the hypothesis. Caesar dressing made with raw egg is a well-established norovirus vehicle when handled by an ill food worker.
+
+**The method:** Use RR to identify candidates, then use ingredient overlap and biological plausibility to narrow to the specific vehicle. You'll confirm in Step 5 when the environmental swabs come back.
+                        """)
+                    elif aq3 == "Caesar dressing — AR exposed 88.4% vs. AR unexposed 19.6%, RR 4.51 vs. salad bar RR 6.1. Wait — salad bar has the higher RR":
+                        st.success("""
+✅ You caught the correction mid-answer — that's exactly right. Salad bar RR = 6.1, Caesar dressing RR = 4.51. The greens have the stronger statistical signal.
+
+The reason investigators focus on the dressing anyway comes down to ingredient specificity and biological plausibility — Caesar dressing made with raw egg, handled by an ill worker, is the more actionable specific vehicle. Greens and dressing were nearly always consumed together, making statistical separation difficult.
+
+This illustrates an important limitation of attack rate analysis: when two items are almost always eaten together, it can be hard to separate their individual contributions statistically.
+                        """)
+                    elif aq3 != "— Select —":
+                        st.error("❌ Look carefully at both RRs in the table. Compare salad bar greens (RR = 6.1) vs. Caesar dressing (RR = 4.51). Which is numerically higher? Then think about why investigators might still focus on the dressing despite that.")
+
+                    if aq3 != "— Select —" and aq3 != "— Select —":
+                        st.divider()
+                        # ── ANALYSIS Q4: What makes a strong vehicle overall ──
+                        aq4 = st.radio(
+                            "**Analysis 4:** Using the table, which of the following best describes the pattern of a STRONG vehicle vs. a NON-vehicle?",
+                            ["— Select —",
+                             "Strong vehicle: high AR exposed AND high AR unexposed / Non-vehicle: low AR in both",
+                             "Strong vehicle: high AR exposed AND low AR unexposed (RR >> 1) / Non-vehicle: similar AR in both groups (RR ≈ 1)",
+                             "Strong vehicle: high absolute case count / Non-vehicle: low absolute case count",
+                             "Strong vehicle: item eaten by more than 50% of attendees / Non-vehicle: eaten by fewer"],
+                            key="ob1_aq4"
+                        )
+                        if aq4 == "Strong vehicle: high AR exposed AND low AR unexposed (RR >> 1) / Non-vehicle: similar AR in both groups (RR ≈ 1)":
+                            st.success("""
+✅ This is the core rule of foodborne outbreak analysis — and now you can see it clearly in the table:
+
+| Item | AR exposed | AR unexposed | RR | Verdict |
+|---|---|---|---|---|
+| Salad bar | 87.2% | 14.3% | **6.1** | ✅ Strong vehicle |
+| Caesar dressing | 88.4% | 19.6% | **4.51** | ✅ Strong vehicle |
+| Hot entrée | 52.4% | 53.8% | **0.97** | ❌ Not a vehicle |
+| Rolls/bread | 52.8% | 52.8% | **1.0** | ❌ Not a vehicle |
+| Soft-serve | 51.3% | 54.0% | **0.95** | ❌ Not a vehicle |
+
+The vehicles are not the most *popular* foods — they're the foods where eating them made a *difference*. Now identify the most likely specific vehicle below.
+                            """)
+                        elif aq4 != "— Select —":
+                            st.error("❌ Absolute counts and overall popularity are misleading. The defining pattern of a vehicle: people who ate it got sick at a much higher rate than people who didn't eat it. High AR exposed + low AR unexposed = high RR = strong vehicle signal.")
+
+            st.divider()
+            q4a = st.radio("**Decision 4A:** Based on your analysis, which food item is the most likely specific vehicle?", [
                 "— Select —",
                 "Hot entrée (pasta) — most students ate it",
-                "Caesar salad dressing — high AR exposed, low AR unexposed, RR > 5",
-                "Salad bar (mixed greens) — high AR, but Caesar dressing was on top of it",
+                "Caesar salad dressing — strong RR, biologically plausible, more specific than greens",
+                "Salad bar (mixed greens) — highest RR in the table",
                 "Soft-serve ice cream — high absolute case count",
             ], key="ob1_q4a")
 
-            if q4a == "Caesar salad dressing — high AR exposed, low AR unexposed, RR > 5":
+            if q4a == "Caesar salad dressing — strong RR, biologically plausible, more specific than greens":
                 st.success("""
-✅ **Correct.** Caesar dressing has the strongest signal: high AR among those exposed, very low AR among those unexposed, and the highest RR. While mixed greens also show association, the dressing was on top of every green salad — the dressing (likely containing raw egg) is the more specific vehicle. This is exactly how investigators narrow from a broad food category to the specific contaminated item.
+✅ **Correct.** Caesar dressing is the most actionable specific vehicle. Both dressing and greens show strong signals — but the dressing is the more specific item (raw egg, handled by an ill food worker) and is the more testable hypothesis for environmental sampling and food handler investigation. Investigators narrow from a food category (salad bar) to the specific contaminated item (dressing) — this is how outbreak reports cite vehicles.
                 """)
-            elif q4a == "Salad bar (mixed greens) — high AR, but Caesar dressing was on top of it":
+            elif q4a == "Salad bar (mixed greens) — highest RR in the table":
                 st.warning("""
-⚠️ **Partially correct.** The salad bar does show a strong signal. But Caesar dressing has a slightly higher RR and is the more specific vehicle — nearly everyone who had greens also had dressing, but not everyone who had dressing had greens. Drilling down to the specific ingredient is the goal.
+⚠️ **Statistically defensible, but not the most specific answer.** The salad bar greens do have the highest RR (6.1). However, greens and Caesar dressing were consumed together by nearly everyone who visited the salad bar. The dressing is the more specific vehicle — it narrows the hypothesis to a single contaminated item that has a clear biological mechanism (raw egg + ill food handler). In practice, investigators report the most specific vehicle they can identify.
                 """)
             elif q4a != "— Select —":
                 st.error("""
-❌ **Incorrect.** The RR is the key metric — it compares the attack rate in those who ate the item to those who didn't. High absolute case counts can be misleading if many non-cases also ate that food. The vehicle with the highest RR AND lowest AR unexposed is the strongest candidate.
+❌ Work through the analysis questions above if you haven't already. The key: identify items with high AR exposed AND low AR unexposed (high RR). High absolute case counts or overall popularity are not the right criteria.
                 """)
 
             if q4a != "— Select —":

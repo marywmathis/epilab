@@ -278,6 +278,7 @@ NAV_STRUCTURE = [
         ("practice_advanced",   "🎯", "Advanced Measures",          "Select the right measure"),
         ("practice_confounding","🎯", "Confounding & Bias",         "Identify and reason through bias"),
         ("practice_screening",  "🎯", "Screening & Frequency",      "PPV, attack rates, epi curves"),
+        ("outbreak_lab",        "🔍", "Outbreak Lab",               "Investigate 3 real-style outbreaks"),
     ]),
     ("Reference", [
         ("glossary",            "📖", "Glossary",                   "All key terms and formulas"),
@@ -308,6 +309,7 @@ ALL_PAGES = [
     ("🎯 Practice: Advanced Measures",   "practice_advanced"),
     ("🎯 Practice: Confounding & Bias",  "practice_confounding"),
     ("🎯 Practice: Screening & Freq.",   "practice_screening"),
+    ("🔍 Outbreak Lab",                  "outbreak_lab"),
     ("📖 Glossary",                      "glossary"),
 ]
 PAGE_LABELS = [p[0] for p in ALL_PAGES]
@@ -6933,6 +6935,1110 @@ For Patient A, despite a negative mammogram, there is still a **2.9% chance she 
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")
+
+
+# ==================================================
+# OUTBREAK LAB
+# ==================================================
+elif current_page == "outbreak_lab":
+    st.title("🔍 Outbreak Lab")
+    st.markdown("""
+You are an Epidemic Intelligence Service (EIS) officer. Three outbreaks have been reported. Work through the clues, make decisions, calculate the numbers, and solve each investigation. Every decision maps to the **10-step outbreak investigation framework**.
+    """)
+
+    import math as _omath
+
+    ob_scenario = st.selectbox("Select an outbreak to investigate:", [
+        "— Choose an outbreak —",
+        "🍽️ Scenario 1: Norovirus at a University Dining Hall",
+        "📚 Scenario 2: Measles in an Under-Vaccinated Elementary School",
+        "🥘 Scenario 3: Salmonellosis at a Community Church Potluck",
+    ], key="ob_scenario_select")
+
+    st.divider()
+
+    # ════════════════════════════════════════════════════════════════
+    # SCENARIO 1: NOROVIRUS
+    # ════════════════════════════════════════════════════════════════
+    if ob_scenario == "🍽️ Scenario 1: Norovirus at a University Dining Hall":
+
+        col_brief, col_stats = st.columns([2,1])
+        with col_brief:
+            st.markdown("""
+### 🎯 Your Mission
+A university student health center has reported an unusual cluster of gastrointestinal illness among students who ate in the main dining hall last Tuesday evening. Students report vomiting, diarrhea, and nausea starting 18–36 hours after the meal. Your job: identify the vehicle, control the outbreak, and prevent further spread.
+            """)
+        with col_stats:
+            st.markdown("""
+<div style="background:#fef2f2;border-radius:8px;padding:14px;font-size:13px;">
+<b>📋 Outbreak Brief</b><br><br>
+🤒 <b>Cases reported:</b> 47<br>
+🏥 <b>Hospitalizations:</b> 3<br>
+💀 <b>Deaths:</b> 0<br>
+📍 <b>Location:</b> University campus<br>
+⏱️ <b>Exposure date:</b> Tuesday dinner<br>
+🦠 <b>Suspected agent:</b> Unknown
+</div>
+            """, unsafe_allow_html=True)
+
+        ob1_step = st.radio("Jump to step:", [
+            "Step 1 — Verify the diagnosis & establish the outbreak",
+            "Step 2 — Construct a case definition",
+            "Step 3 — Epidemic curve & descriptive epidemiology",
+            "Step 4 — Generate & test hypotheses (attack rates)",
+            "Step 5 — Control measures & resolution",
+        ], key="ob1_step", horizontal=False)
+        st.divider()
+
+        # ── STEP 1 ──
+        if ob1_step == "Step 1 — Verify the diagnosis & establish the outbreak":
+            st.subheader("Step 1 — Does an outbreak actually exist?")
+            st.markdown("""
+The student health center has seen 47 students with vomiting and diarrhea in 48 hours. The usual Tuesday volume is 2–3 GI cases per week.
+
+**Lab results so far:** 6 stool samples submitted. Results pending. Students report symptoms began 18–36 hours after Tuesday dinner.
+
+**Clinical picture:** Sudden onset nausea, vomiting (projectile in some), watery diarrhea (non-bloody), low-grade fever, muscle aches. Symptoms resolving in 24–48 hours.
+            """)
+            st.info("💡 **Step 1 of 10:** Prepare for field work + Establish the outbreak exists")
+
+            q1 = st.radio("**Decision 1A:** Based on the information above, does an outbreak exist?", [
+                "— Select —",
+                "Yes — 47 cases vs. expected 2–3/week clearly exceeds baseline",
+                "No — wait for lab results before declaring an outbreak",
+                "Maybe — need to interview students first",
+            ], key="ob1_q1")
+
+            if q1 == "Yes — 47 cases vs. expected 2–3/week clearly exceeds baseline":
+                st.success("""
+✅ **Correct.** An outbreak exists when case counts significantly exceed the expected baseline. 47 cases in 48 hours vs. 2–3/week = approximately 16× the baseline rate. You don't need lab confirmation to establish that an outbreak is occurring — epidemiologic evidence is sufficient to begin the investigation.
+                """)
+                st.markdown("**10-step connection:** Step 2 — *Establish the existence of an outbreak*")
+
+            elif q1 == "No — wait for lab results before declaring an outbreak":
+                st.error("""
+❌ **Incorrect.** Waiting for lab results before acting is a common error that allows outbreaks to grow. Epidemiologic criteria (cases exceeding expected baseline by time, place, and person) are sufficient to declare and investigate an outbreak. Lab confirmation identifies the agent — it doesn't define whether an outbreak is occurring.
+                """)
+
+            elif q1 == "Maybe — need to interview students first":
+                st.warning("""
+⚠️ **Partially correct.** Interviewing is essential, but you have enough information right now to establish that case counts exceed the baseline. You can declare an outbreak AND begin interviews simultaneously — these are not sequential steps.
+                """)
+
+            if q1 != "— Select —":
+                st.divider()
+                q1b = st.radio("**Decision 1B:** What agent does the clinical picture most suggest?", [
+                    "— Select —",
+                    "Staphylococcus aureus toxin (onset 2–6 hours)",
+                    "Norovirus (onset 12–48 hours, rapid spread, projectile vomiting)",
+                    "Salmonella (onset 6–72 hours, bloody diarrhea common)",
+                    "E. coli O157 (onset 1–10 days, bloody diarrhea, HUS risk)",
+                ], key="ob1_q1b")
+
+                if q1b == "Norovirus (onset 12–48 hours, rapid spread, projectile vomiting)":
+                    st.success("""
+✅ **Correct.** The 18–36 hour incubation, projectile vomiting, brief duration (24–48h), and high attack rate in a congregate setting are the classic norovirus signature. Staph toxin would present in 2–6 hours. Salmonella typically produces more diarrhea than vomiting. E. coli O157 rarely causes projectile vomiting and has a longer incubation.
+                    """)
+                elif q1b != "— Select —":
+                    st.error("""
+❌ **Incorrect.** Review the incubation periods: Staph toxin = 2–6h (preformed toxin). Norovirus = 12–48h. Salmonella = 6–72h (longer, more diarrhea-predominant). E. coli O157 = 1–10 days (bloody diarrhea, HUS risk). The 18–36h onset + projectile vomiting + brief illness duration = norovirus pattern.
+                    """)
+
+        # ── STEP 2 ──
+        elif ob1_step == "Step 2 — Construct a case definition":
+            st.subheader("Step 2 — Who counts as a case?")
+            st.markdown("""
+You need a **case definition** before you can count cases, calculate attack rates, or analyze the data. A case definition has four components: **person, place, time, and clinical criteria**.
+
+You currently have:
+- Person: Students (and potentially staff) at the university
+- Place: Main dining hall, Tuesday dinner service
+- Time: Symptoms began between Tuesday evening and Thursday morning
+- Clinical: Vomiting and/or diarrhea (3+ loose stools/24h) after eating at the dining hall
+            """)
+            st.info("💡 **Step 4 of 10:** Construct a working case definition")
+
+            q2a = st.radio("**Decision 2A:** How sensitive should your initial case definition be?", [
+                "— Select —",
+                "Narrow (confirmed lab-positive only) — precise but will miss most cases",
+                "Broad (any GI symptoms after Tuesday dinner) — sensitive, captures more cases early",
+                "Moderate (vomiting OR ≥3 loose stools within 72h of Tuesday dinner) — balances sensitivity and specificity",
+            ], key="ob1_q2a")
+
+            if q2a == "Moderate (vomiting OR ≥3 loose stools within 72h of Tuesday dinner) — balances sensitivity and specificity":
+                st.success("""
+✅ **Correct.** Early in an investigation, case definitions should be broad enough to capture cases without being so loose they include unrelated illness. Starting with a moderate definition — vomiting OR ≥3 loose stools within the plausible incubation window — is standard practice. You refine it as more information emerges.
+                """)
+            elif q2a == "Broad (any GI symptoms after Tuesday dinner) — sensitive, captures more cases early":
+                st.warning("""
+⚠️ **Acceptable but not ideal.** Being broadly sensitive early is reasonable, but "any GI symptoms" risks including students with pre-existing conditions, mild unrelated illness, or anxiety responses. A minimum symptom threshold (vomiting OR ≥3 loose stools) improves specificity without losing too many true cases.
+                """)
+            elif q2a == "Narrow (confirmed lab-positive only) — precise but will miss most cases":
+                st.error("""
+❌ **Incorrect.** Lab-confirmed cases only would capture maybe 5–10% of the true outbreak. Most norovirus cases are never lab-confirmed. Requiring confirmation before counting cases would make your attack rates meaningless and delay control measures by days to weeks.
+                """)
+
+            if q2a != "— Select —":
+                st.divider()
+                st.markdown("#### ✏️ Build Your Case Definition")
+                st.markdown("Using the components below, construct the full working case definition:")
+
+                cc_who = st.selectbox("Person:", ["Any person", "Student or staff member", "Student only"], key="ob1_cc1")
+                cc_where = st.selectbox("Place:", ["Anywhere on campus", "Who ate in the main dining hall", "Who ate any campus meal"], key="ob1_cc2")
+                cc_when = st.selectbox("Time:", ["At any point this semester", "On Tuesday evening (Nov 5)", "Between Nov 4–7"], key="ob1_cc3")
+                cc_clinical = st.selectbox("Clinical:", [
+                    "With any GI complaint",
+                    "With vomiting OR ≥3 loose stools within 72 hours of the meal",
+                    "With lab-confirmed norovirus",
+                ], key="ob1_cc4")
+
+                if cc_who and cc_where and cc_when and cc_clinical:
+                    st.info(f"""
+**Your case definition:**
+"{cc_who} {cc_where} {cc_when} with {cc_clinical.lower().replace('with ', '')}."
+                    """)
+                    if "Student or staff" in cc_who and "main dining hall" in cc_where and "Tuesday" in cc_when and "72 hours" in cc_clinical:
+                        st.success("✅ This is a strong working case definition — specific enough to be meaningful, sensitive enough to capture cases, time-bounded to the exposure window.")
+                    elif "lab-confirmed" in cc_clinical:
+                        st.error("❌ Lab confirmation requirement will miss most cases and delay your investigation.")
+                    else:
+                        st.info("This definition will work for now. Note your choices — they affect who gets counted as a case.")
+
+        # ── STEP 3 ──
+        elif ob1_step == "Step 3 — Epidemic curve & descriptive epidemiology":
+            st.subheader("Step 3 — Describe the outbreak: Person, Place, Time")
+            st.markdown("""
+You have now interviewed 89 students who ate Tuesday dinner. 47 meet your case definition. Below is what you know about the distribution of cases.
+            """)
+            st.info("💡 **Step 6 of 10:** Describe the outbreak in terms of person, place, and time")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("#### 📊 Cases by hour of symptom onset")
+                onset_data = {
+                    "Wed 6am": 2, "Wed 9am": 5, "Wed 12pm": 9,
+                    "Wed 3pm": 12, "Wed 6pm": 11, "Wed 9pm": 5,
+                    "Thu 12am": 2, "Thu 3am": 1
+                }
+                import pandas as pd
+                onset_df = pd.DataFrame(list(onset_data.items()), columns=["Time of onset", "Cases"])
+                st.bar_chart(onset_df.set_index("Time of onset"))
+                st.caption("Tuesday dinner served 5:00–8:00 PM")
+
+            with col2:
+                st.markdown("#### 👥 Person characteristics")
+                st.markdown("""
+| Characteristic | Cases (n=47) | Non-cases (n=42) |
+|---|---|---|
+| Mean age | 19.8 years | 20.1 years |
+| Female | 55% | 52% |
+| Freshman | 62% | 58% |
+| Ate salad bar | 87% | 41% |
+| Ate hot entrée | 71% | 68% |
+| Ate dessert bar | 44% | 42% |
+| Sat in east section | 61% | 18% |
+                """)
+
+            st.divider()
+            q3a = st.radio("**Decision 3A:** Based on the epidemic curve, what transmission pattern does this represent?", [
+                "— Select —",
+                "Propagated (person-to-person) — multiple waves",
+                "Point source — single sharp peak, all cases within one incubation period",
+                "Endemic — stable background rate",
+                "Mixed — initial point source with secondary spread",
+            ], key="ob1_q3a")
+
+            if q3a == "Point source — single sharp peak, all cases within one incubation period":
+                st.success("""
+✅ **Correct.** The curve shows a single peak rising Wednesday afternoon and declining by Thursday — all cases within a 24-hour window, consistent with a single common exposure (Tuesday dinner). The 18–36 hour incubation from Tuesday dinner to Wednesday onset is consistent with norovirus. No secondary wave = no ongoing person-to-person spread yet.
+                """)
+            elif q3a == "Propagated (person-to-person) — multiple waves":
+                st.error("❌ A propagated curve would show multiple waves separated by one incubation period. This curve has one peak — consistent with a single common exposure.")
+            elif q3a != "— Select —":
+                st.error("❌ The single sharp peak rising and falling within 24 hours, with all cases tracing to a single meal, is a classic point-source pattern.")
+
+            if q3a != "— Select —":
+                st.divider()
+                q3b = st.radio("**Decision 3B:** What does the descriptive data suggest as the most likely vehicle?", [
+                    "— Select —",
+                    "Hot entrée — 71% of cases ate it",
+                    "Salad bar — 87% of cases ate it vs. only 41% of non-cases",
+                    "Dessert bar — similar rates in cases and non-cases",
+                    "East seating section — cases concentrated there",
+                ], key="ob1_q3b")
+                if q3b == "Salad bar — 87% of cases ate it vs. only 41% of non-cases":
+                    st.success("""
+✅ **Correct.** The key is the *difference* between cases and non-cases, not the absolute percentage. 87% of cases vs. 41% of non-cases ate the salad bar — a 46 percentage point difference. The hot entrée (71% vs. 68%) shows almost no difference. Descriptive data generates the hypothesis; you'll test it with attack rates in Step 4.
+                    """)
+                elif q3b == "Hot entrée — 71% of cases ate it":
+                    st.error("❌ 71% of cases AND 68% of non-cases ate the hot entrée — almost identical rates. This suggests no association. Focus on exposures where the gap between cases and non-cases is large.")
+                elif q3b != "— Select —":
+                    st.error("❌ Look for the largest gap between case and non-case exposure rates. The salad bar shows an 87% vs. 41% difference — the strongest signal in the descriptive data.")
+
+        # ── STEP 4 ──
+        elif ob1_step == "Step 4 — Generate & test hypotheses (attack rates)":
+            st.subheader("Step 4 — Calculate attack rates and test your hypothesis")
+            st.markdown("""
+You have completed interviews with all 89 students who ate Tuesday dinner. Now you'll calculate food-specific attack rates and risk ratios to identify the vehicle.
+            """)
+            st.info("💡 **Steps 7–8 of 10:** Develop hypotheses → Test hypotheses analytically")
+
+            st.markdown("#### 🧮 Interactive Attack Rate Calculator")
+            st.markdown("""
+For each food item, calculate:
+- **Attack rate (exposed)** = sick among those who ate ÷ total who ate × 100
+- **Attack rate (unexposed)** = sick among those who didn't eat ÷ total who didn't eat × 100
+- **Risk Ratio (RR)** = AR exposed ÷ AR unexposed
+            """)
+
+            food_data = {
+                "Salad bar (mixed greens)": {"ate_sick": 41, "ate_well": 6, "notate_sick": 6, "notate_well": 36},
+                "Caesar salad dressing": {"ate_sick": 38, "ate_well": 5, "notate_sick": 9, "notate_well": 37},
+                "Hot entrée (pasta)": {"ate_sick": 33, "ate_well": 30, "notate_sick": 14, "notate_well": 12},
+                "Rolls/bread": {"ate_sick": 28, "ate_well": 25, "notate_sick": 19, "notate_well": 17},
+                "Soft-serve ice cream": {"ate_sick": 20, "ate_well": 19, "notate_sick": 27, "notate_well": 23},
+            }
+
+            results = []
+            for food, d in food_data.items():
+                ate_total = d["ate_sick"] + d["ate_well"]
+                notate_total = d["notate_sick"] + d["notate_well"]
+                ar_exp = round(d["ate_sick"] / ate_total * 100, 1) if ate_total > 0 else 0
+                ar_unexp = round(d["notate_sick"] / notate_total * 100, 1) if notate_total > 0 else 0
+                rr = round(ar_exp / ar_unexp, 2) if ar_unexp > 0 else float("inf")
+                results.append({
+                    "Food item": food,
+                    "Ate (sick/total)": f"{d['ate_sick']}/{ate_total}",
+                    "AR exposed (%)": ar_exp,
+                    "Did not eat (sick/total)": f"{d['notate_sick']}/{notate_total}",
+                    "AR unexposed (%)": ar_unexp,
+                    "RR": rr
+                })
+
+            results_df = pd.DataFrame(results)
+            st.dataframe(results_df, use_container_width=True, hide_index=True)
+
+            st.divider()
+            q4a = st.radio("**Decision 4A:** Based on the attack rates, which food item is the most likely vehicle?", [
+                "— Select —",
+                "Hot entrée (pasta) — most students ate it",
+                "Caesar salad dressing — high AR exposed, low AR unexposed, RR > 5",
+                "Salad bar (mixed greens) — high AR, but Caesar dressing was on top of it",
+                "Soft-serve ice cream — high absolute case count",
+            ], key="ob1_q4a")
+
+            if q4a == "Caesar salad dressing — high AR exposed, low AR unexposed, RR > 5":
+                st.success("""
+✅ **Correct.** Caesar dressing has the strongest signal: high AR among those exposed, very low AR among those unexposed, and the highest RR. While mixed greens also show association, the dressing was on top of every green salad — the dressing (likely containing raw egg) is the more specific vehicle. This is exactly how investigators narrow from a broad food category to the specific contaminated item.
+                """)
+            elif q4a == "Salad bar (mixed greens) — high AR, but Caesar dressing was on top of it":
+                st.warning("""
+⚠️ **Partially correct.** The salad bar does show a strong signal. But Caesar dressing has a slightly higher RR and is the more specific vehicle — nearly everyone who had greens also had dressing, but not everyone who had dressing had greens. Drilling down to the specific ingredient is the goal.
+                """)
+            elif q4a != "— Select —":
+                st.error("""
+❌ **Incorrect.** The RR is the key metric — it compares the attack rate in those who ate the item to those who didn't. High absolute case counts can be misleading if many non-cases also ate that food. The vehicle with the highest RR AND lowest AR unexposed is the strongest candidate.
+                """)
+
+            if q4a != "— Select —":
+                st.divider()
+                st.markdown("#### 🧮 Calculate the overall attack rate for this outbreak")
+                total_sick_input = st.number_input("Total sick (cases):", min_value=0, max_value=200, value=0, key="ob1_ar1")
+                total_exposed_input = st.number_input("Total who ate Tuesday dinner:", min_value=0, max_value=500, value=0, key="ob1_ar2")
+                if total_exposed_input > 0 and total_sick_input > 0:
+                    overall_ar = round(total_sick_input / total_exposed_input * 100, 1)
+                    st.metric("Overall attack rate", f"{overall_ar}%")
+                    if abs(overall_ar - 52.8) < 3:
+                        st.success(f"✅ Correct — {total_sick_input}/{total_exposed_input} = {overall_ar}%. Just over half of diners became ill — very high for a foodborne outbreak, consistent with a widely distributed contaminated item.")
+                    elif total_sick_input == 47 and total_exposed_input == 89:
+                        st.success("✅ Correct — 47/89 = 52.8%. A 53% attack rate is high, consistent with a widely consumed contaminated item.")
+
+        # ── STEP 5 ──
+        elif ob1_step == "Step 5 — Control measures & resolution":
+            st.subheader("Step 5 — Implement control measures")
+            st.info("💡 **Steps 9–10 of 10:** Implement control measures → Communicate findings")
+
+            st.markdown("""
+**Lab results are in:** Norovirus GII.4 detected in 5 of 6 stool samples. Environmental swabs positive on the salad bar sneeze guard and Caesar dressing pump handle.
+
+**Food handler interview reveals:** One dining hall employee worked a full shift Tuesday despite vomiting that morning. This employee prepared and handled the Caesar dressing.
+
+**Current situation:** 47 cases, 3 hospitalizations (rehydration only, all recovered). No deaths. Two new cases reported Thursday from students who did not eat Tuesday but had contact with ill roommates.
+            """)
+
+            q5a = st.radio("**Decision 5A:** The two new Thursday cases (contact with ill roommates) indicate what?", [
+                "— Select —",
+                "The outbreak is over — these are unrelated",
+                "Person-to-person transmission has begun — secondary spread",
+                "The Caesar dressing is still being served — still point-source exposure",
+            ], key="ob1_q5a")
+
+            if q5a == "Person-to-person transmission has begun — secondary spread":
+                st.success("""
+✅ **Correct.** Norovirus is highly contagious person-to-person (fecal-oral, vomit aerosol). These two cases represent a secondary wave beginning. The outbreak has shifted from pure point-source to mixed. Control measures must now address both the food source and person-to-person transmission.
+                """)
+            elif q5a != "— Select —":
+                st.error("❌ Two cases in direct contact with ill students, without dining hall exposure, indicates person-to-person transmission has begun. This is a critical inflection point requiring expanded control measures.")
+
+            if q5a != "— Select —":
+                st.divider()
+                st.markdown("#### Select ALL appropriate control measures (check all that apply):")
+                cm1 = st.checkbox("Remove Caesar dressing from service immediately", key="ob1_cm1")
+                cm2 = st.checkbox("Close the entire university", key="ob1_cm2")
+                cm3 = st.checkbox("Exclude ill food handlers from work until 48h symptom-free", key="ob1_cm3")
+                cm4 = st.checkbox("Reinforce hand hygiene among all dining staff", key="ob1_cm4")
+                cm5 = st.checkbox("Issue guidance to ill students on isolation and hygiene", key="ob1_cm5")
+                cm6 = st.checkbox("Enhance cleaning and disinfection of dining surfaces", key="ob1_cm6")
+                cm7 = st.checkbox("Test all food items in the dining hall", key="ob1_cm7")
+
+                if st.button("Submit control measures", key="ob1_cm_submit"):
+                    score = sum([cm1, cm3, cm4, cm5, cm6])
+                    if cm2:
+                        st.error("❌ Closing the university is not proportionate and would not be recommended at this case count. Targeted interventions are appropriate.")
+                    if not cm1:
+                        st.error("❌ Removing the identified vehicle (Caesar dressing) is the single most important immediate step.")
+                    if score >= 4 and cm1 and not cm2:
+                        st.success(f"""
+✅ **Well done.** You selected {score+1}/5 appropriate measures. The key actions are: (1) remove the vehicle, (2) exclude ill food handlers, (3) reinforce hand hygiene, (4) isolate ill students and advise hygiene, (5) enhance disinfection. Testing all food items is low-yield at this stage — focus resources on the identified vehicle and secondary spread.
+                        """)
+                    elif cm1:
+                        st.info(f"You selected {score+1} measures. Consider also: {'excluding ill food handlers, ' if not cm3 else ''}{'reinforcing hand hygiene, ' if not cm4 else ''}{'guidance to ill students, ' if not cm5 else ''}{'enhanced disinfection' if not cm6 else ''}")
+
+            st.divider()
+            with st.expander("📋 Resolution & What You Applied"):
+                st.markdown("""
+**Outcome:** The Caesar dressing was prepared using raw shell eggs contaminated with norovirus from the ill food handler. 47 primary cases. 8 secondary cases in the following 4 days. All recovered. No deaths.
+
+**The 10 steps you applied:**
+| Step | What you did |
+|---|---|
+| 1. Prepare | Reviewed clinical picture, incubation period, agent characteristics |
+| 2. Establish outbreak | Compared 47 cases to baseline of 2–3/week → clear excess |
+| 3. Verify diagnosis | Clinical criteria consistent with norovirus; lab confirmation |
+| 4. Case definition | Person (student/staff) + place (dining hall) + time (72h of Tuesday dinner) + clinical (vomiting or ≥3 stools) |
+| 5. Case finding | Interviewed all 89 Tuesday diners |
+| 6. Descriptive epi | Epidemic curve (point source), person characteristics, place (salad bar cluster) |
+| 7. Hypothesis | Caesar dressing as vehicle based on differential exposure rates |
+| 8. Test hypothesis | Attack rates and RR confirmed Caesar dressing (RR > 5) |
+| 9. Control | Removed vehicle, excluded ill worker, hygiene reinforcement, isolation guidance |
+| 10. Communicate | Report to student health, dining services, and state health department |
+                """)
+
+                with st.expander("🦠 What is norovirus?"):
+                    st.markdown("""
+**Norovirus** is the leading cause of foodborne illness in the United States, responsible for approximately 19–21 million illnesses annually. Key features:
+- **Transmission:** Fecal-oral (food, water, contaminated surfaces), person-to-person, vomit aerosol
+- **Incubation:** 12–48 hours (typically 24–36h)
+- **Symptoms:** Projectile vomiting, watery non-bloody diarrhea, nausea, low-grade fever, myalgias
+- **Duration:** 1–3 days (self-limited)
+- **Infectious dose:** Extremely low — as few as 18 viral particles can cause infection
+- **Environmental stability:** Survives on surfaces for days; resistant to many standard disinfectants (requires bleach-based products)
+- **High-risk settings:** Cruise ships, nursing homes, hospitals, schools, catered events
+- **Key control:** Exclude ill food handlers for 48h after symptom resolution; hand hygiene (soap and water — alcohol gel less effective); bleach disinfection of surfaces
+                    """)
+
+    # ════════════════════════════════════════════════════════════════
+    # SCENARIO 2: MEASLES
+    # ════════════════════════════════════════════════════════════════
+    elif ob_scenario == "📚 Scenario 2: Measles in an Under-Vaccinated Elementary School":
+
+        col_brief, col_stats = st.columns([2,1])
+        with col_brief:
+            st.markdown("""
+### 🎯 Your Mission
+A parent calls the county health department: their 7-year-old is home from school with a rash and high fever. The child returned from an international trip 12 days ago. Over the next 3 days, 6 more children at the same school report similar symptoms. The school has a 72% MMR vaccination rate. Your job: confirm the diagnosis, stop transmission, and determine whether the outbreak could have been prevented.
+            """)
+        with col_stats:
+            st.markdown("""
+<div style="background:#fef3c7;border-radius:8px;padding:14px;font-size:13px;">
+<b>📋 Outbreak Brief</b><br><br>
+🤒 <b>Cases reported:</b> 7 (growing)<br>
+🏥 <b>Hospitalizations:</b> 1<br>
+💀 <b>Deaths:</b> 0<br>
+📍 <b>Location:</b> Elementary school<br>
+🧒 <b>Population:</b> 450 students<br>
+💉 <b>MMR coverage:</b> 72%
+</div>
+            """, unsafe_allow_html=True)
+
+        ob2_step = st.radio("Jump to step:", [
+            "Step 1 — Verify diagnosis & chain of infection",
+            "Step 2 — Herd immunity & the math behind the outbreak",
+            "Step 3 — Contact tracing & case finding",
+            "Step 4 — Control measures",
+            "Step 5 — Could this have been prevented?",
+        ], key="ob2_step", horizontal=False)
+        st.divider()
+
+        if ob2_step == "Step 1 — Verify diagnosis & chain of infection":
+            st.subheader("Step 1 — Confirm measles and trace the chain")
+            st.markdown("""
+**Index case (Patient Zero):** 7-year-old, unvaccinated, returned from international travel 12 days ago. Presents with: 3-day prodrome of high fever (104°F), cough, coryza (runny nose), conjunctivitis. Then: classic maculopapular rash starting at hairline, spreading downward. Koplik spots (white spots on buccal mucosa) noted by clinician.
+
+**Lab:** IgM measles antibody positive (state lab). PCR confirmatory test sent to CDC.
+
+**Exposure timeline:** Returned from trip → attended school for 3 days before rash appeared (highly infectious during prodrome).
+            """)
+
+            q1 = st.radio("**Decision 1A:** How long was the index case potentially infectious at school before diagnosis?", [
+                "— Select —",
+                "0 days — measles is only infectious after rash appears",
+                "3 days — infectious during the prodrome (4 days before to 4 days after rash onset)",
+                "Only on the day of rash — maximum infectiousness",
+                "10 days — for the full incubation period",
+            ], key="ob2_q1a")
+
+            if q1 == "3 days — infectious during the prodrome (4 days before to 4 days after rash onset)":
+                st.success("""
+✅ **Correct.** Measles is infectious from 4 days before to 4 days after rash onset — the prodrome period when the child appears to have "just a cold" is the most dangerous period for transmission. The index case attended school for 3 days during this window, potentially exposing every susceptible student they encountered.
+
+This is why outbreak control is so difficult: by the time measles is diagnosed (rash + Koplik spots), the infectious period is already partially over and secondary cases are incubating.
+                """)
+            elif q1 != "— Select —":
+                st.error("❌ Measles is infectious from 4 days BEFORE rash onset through 4 days AFTER — the prodrome cough/fever/runny nose phase is peak infectiousness. Waiting for the rash to diagnose means exposure has already occurred.")
+
+            if q1 != "— Select —":
+                st.divider()
+                st.markdown("""
+**Chain of infection — measles:**
+| Link | Details |
+|---|---|
+| **Agent** | Measles virus (Paramyxovirus, RNA) |
+| **Reservoir** | Humans only (no animal reservoir) |
+| **Portal of exit** | Respiratory tract (cough, sneeze) |
+| **Transmission** | Airborne — virus survives in air for up to 2 hours after infectious person leaves the room |
+| **Portal of entry** | Respiratory tract |
+| **Susceptible host** | Unvaccinated or immunocompromised |
+                """)
+                st.warning("""
+⚠️ **Airborne transmission critical point:** Measles is one of the most contagious pathogens known. Unlike respiratory droplets that fall within 1 meter, measles virus remains suspended in the air for up to 2 hours. A susceptible person entering the same room AFTER the index case has left can still be infected. This makes standard droplet precautions insufficient.
+                """)
+
+        elif ob2_step == "Step 2 — Herd immunity & the math behind the outbreak":
+            st.subheader("Step 2 — Why did this outbreak happen? The herd immunity calculation")
+
+            st.markdown("""
+The school has 72% MMR vaccination rate. Let's calculate whether this is enough to prevent an outbreak using the herd immunity threshold.
+            """)
+
+            st.markdown("#### 🧮 Calculate the herd immunity threshold")
+            r0_measles = st.slider("R₀ for measles in this school setting:", 10, 18, 15, key="ob2_r0")
+            hit = round((1 - 1/r0_measles) * 100, 1)
+            current_immunity = 72
+            effective_r = round(r0_measles * (1 - current_immunity/100), 2)
+
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("Herd Immunity Threshold", f"{hit}%")
+            with col2:
+                st.metric("Current MMR coverage", "72%", delta=f"{round(72-hit,1)}% below threshold")
+            with col3:
+                st.metric("Effective R (Rₑ)", effective_r, delta="epidemic growing" if effective_r > 1 else "epidemic declining")
+
+            if effective_r > 1:
+                st.error(f"""
+**Why the outbreak is happening:** With R₀ = {r0_measles} and only 72% immune, Rₑ = {effective_r}. Each case is generating {effective_r} new cases on average. The school is {round(hit-72,1)} percentage points below the herd immunity threshold — a significant immunity gap that allows the virus to spread efficiently.
+                """)
+
+            st.divider()
+            q2a = st.radio("**Decision 2A:** The school has 450 students. How many susceptible students are there?", [
+                "— Select —",
+                "28 students (only those with documented vaccine exemptions)",
+                f"126 students (28% of 450 = those not vaccinated)",
+                "72 students (the number not vaccinated this year)",
+                "It depends on prior infection history — vaccine records alone are insufficient",
+            ], key="ob2_q2a")
+
+            if q2a == "It depends on prior infection history — vaccine records alone are insufficient":
+                st.success("""
+✅ **Correct — and the most sophisticated answer.** Susceptibility = unvaccinated + vaccine failures (2–5% of vaccinated) + immunocompromised vaccinated individuals + those with unknown status. 28% unvaccinated = at minimum 126 susceptibles, but true susceptibility is higher when you account for primary vaccine failure (~2–5% of MMR recipients). This is why the effective R can remain >1 even with seemingly high coverage.
+                """)
+            elif q2a == "126 students (28% of 450 = those not vaccinated)":
+                st.warning("""
+⚠️ **Partially correct.** 28% × 450 = 126 unvaccinated students is the minimum count of susceptibles. But some vaccinated students have primary vaccine failure (2–5%), so the true susceptible pool is larger. Additionally, students with unknown or undocumented status add uncertainty.
+                """)
+            elif q2a != "— Select —":
+                st.error("❌ Susceptibility is not simply the number who didn't get vaccinated this year. It includes those with no prior vaccination, vaccine failures, undocumented status, and immunocompromised individuals regardless of vaccination.")
+
+            if q2a != "— Select —":
+                st.divider()
+                st.markdown("#### 📈 Epidemic curve projection")
+                st.markdown(f"""
+With Rₑ = **{effective_r}**, project the wave pattern:
+- **Generation 1** (index case): 1 case
+- **Generation 2** (~10 days later): ~{round(effective_r)} cases
+- **Generation 3** (~20 days later): ~{round(effective_r**2)} cases
+- **Generation 4** (~30 days later): ~{round(effective_r**3)} cases
+
+This exponential growth pattern continues until susceptibles are exhausted or vaccination coverage increases above the HIT of {hit}%.
+                """)
+
+        elif ob2_step == "Step 3 — Contact tracing & case finding":
+            st.subheader("Step 3 — Who was exposed? Contact tracing at scale")
+            st.markdown("""
+You now have 7 confirmed cases. The index case attended school for 3 days during the infectious period. Your team needs to identify all contacts and determine their immune status.
+            """)
+            st.info("💡 **Step 5 of 10:** Find cases systematically — active case finding")
+
+            st.markdown("""
+**Exposure settings to investigate:**
+1. **Classrooms** — same class as index case (25 students + teacher)
+2. **School bus** — 42 students rode the same bus
+3. **Cafeteria** — shared lunch period with ~180 students
+4. **Gymnasium** — PE class (30 students) in a poorly ventilated space
+5. **Hallways and common areas** — indirect exposure, hard to quantify
+            """)
+
+            q3a = st.radio("**Decision 3A:** For each exposure setting, should you classify contacts as high, medium, or low risk?", [
+                "— Select —",
+                "All contacts are equal — anyone in the school is at equal risk",
+                "Duration and proximity determine risk — classroom and gym (prolonged, enclosed) = highest",
+                "Only direct face-to-face contact counts — hallway contacts are not at risk",
+            ], key="ob2_q3a")
+
+            if q3a == "Duration and proximity determine risk — classroom and gym (prolonged, enclosed) = highest":
+                st.success("""
+✅ **Correct.** For airborne transmission, risk is proportional to duration of exposure and ventilation quality. Prolonged shared air space (classroom, gym) = highest risk. Cafeteria (shorter exposure, more people, better ventilation) = moderate. Hallways (brief exposure) = lower risk, but not zero since measles can survive 2 hours in air.
+                """)
+            elif q3a != "— Select —":
+                st.error("❌ For airborne pathogens, exposure duration and ventilation are critical determinants of risk. Not all contacts are equal.")
+
+            if q3a != "— Select —":
+                st.divider()
+                st.markdown("#### 📋 Contact tracing matrix")
+                contact_data = pd.DataFrame({
+                    "Setting": ["Same classroom", "School bus", "Cafeteria (same period)", "Gymnasium (PE)", "General school"],
+                    "Contacts identified": [25, 42, 180, 30, 173],
+                    "Vaccination status known": [24, 38, 120, 28, 90],
+                    "Confirmed vaccinated": [19, 30, 89, 22, 62],
+                    "Unvaccinated/unknown": [6, 12, 91, 8, 111],
+                })
+                st.dataframe(contact_data, use_container_width=True, hide_index=True)
+
+                total_unvax = int(contact_data["Unvaccinated/unknown"].sum())
+                total_contacts = int(contact_data["Contacts identified"].sum())
+                st.metric("Total contacts identified", total_contacts)
+                st.metric("Unvaccinated or unknown status", total_unvax,
+                          delta="require post-exposure vaccination or exclusion")
+
+                q3b = st.radio("**Decision 3B:** What should happen to unvaccinated contacts?", [
+                    "— Select —",
+                    "Nothing unless they develop symptoms",
+                    "Exclude from school for 21 days OR vaccinate within 72h of exposure",
+                    "Require quarantine at home until PCR tested",
+                    "Vaccinate everyone regardless of prior status",
+                ], key="ob2_q3b")
+
+                if q3b == "Exclude from school for 21 days OR vaccinate within 72h of exposure":
+                    st.success("""
+✅ **Correct.** This is the standard public health response for unvaccinated measles contacts. MMR given within 72 hours of exposure can prevent or attenuate illness. If vaccination is refused or >72 hours have passed, exclusion from school for 21 days (one incubation period) prevents further exposure. This is a legally authorized public health measure.
+                    """)
+                elif q3b != "— Select —":
+                    st.error("❌ 'Wait and see' allows further transmission during the incubation period. Exclusion or post-exposure vaccination is the appropriate public health intervention.")
+
+        elif ob2_step == "Step 4 — Control measures":
+            st.subheader("Step 4 — Emergency vaccination and outbreak control")
+
+            st.markdown("""
+**Current status:** 12 confirmed cases (Day 10 of outbreak). The outbreak is in its second generation. 3 hospitalizations (pneumonia complication in one immunocompromised child). 228 unvaccinated or unknown-status contacts identified.
+
+**Available interventions:**
+1. Emergency vaccination clinic at school (MMR)
+2. School closure (partial or full)
+3. Exclusion of unvaccinated students
+4. Enhanced surveillance for new cases
+5. Healthcare provider alert (notify ER, clinics to report suspect cases)
+            """)
+
+            st.markdown("#### 🧮 Calculate vaccination coverage needed")
+            current_cov = st.slider("Current school MMR coverage:", 60, 95, 72, key="ob2_vax_slider")
+            r0_val = 15
+            hit_val = round((1 - 1/r0_val) * 100, 1)
+            gap = round(hit_val - current_cov, 1)
+            students_needed = round((gap/100) * 450)
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("HIT for measles (R₀=15)", f"{hit_val}%")
+                st.metric("Current coverage", f"{current_cov}%")
+            with col2:
+                st.metric("Coverage gap", f"{gap}%", delta=f"Need {students_needed} more students vaccinated")
+                reff = round(r0_val * (1 - current_cov/100), 2)
+                st.metric("Current Rₑ", reff, delta="outbreak growing" if reff > 1 else "outbreak slowing")
+
+            if current_cov >= hit_val:
+                st.success(f"✅ At {current_cov}% coverage, Rₑ = {reff} < 1. Herd immunity achieved — outbreak will decline.")
+            else:
+                st.warning(f"⚠️ At {current_cov}% coverage, Rₑ = {reff} > 1. Outbreak will continue to grow until coverage reaches {hit_val}%.")
+
+            st.divider()
+            q4a = st.radio("**Decision 4A:** Should the school be closed?", [
+                "— Select —",
+                "Yes, immediately close for 2 weeks",
+                "No — targeted exclusion of unvaccinated students is more proportionate and maintains education",
+                "Only close if cases exceed 25",
+            ], key="ob2_q4a")
+
+            if q4a == "No — targeted exclusion of unvaccinated students is more proportionate and maintains education":
+                st.success("""
+✅ **Correct.** Excluding only unvaccinated students (who are at risk and can transmit) allows vaccinated students to continue education without interruption. Full school closure is a higher-level intervention reserved for when targeted exclusion fails or when a large proportion of students are susceptible. Proportionality is a core principle of public health intervention.
+                """)
+            elif q4a == "Yes, immediately close for 2 weeks":
+                st.warning("""
+⚠️ **Premature.** School closure is a high-impact intervention that disrupts education for vaccinated students who are not at risk. Start with targeted exclusion of unvaccinated contacts. Full closure may become necessary if the outbreak grows and targeted exclusion proves insufficient.
+                """)
+            elif q4a != "— Select —":
+                st.error("❌ Waiting for a specific case count threshold before acting allows exponential growth to occur. Act early with targeted measures.")
+
+        elif ob2_step == "Step 5 — Could this have been prevented?":
+            st.subheader("Step 5 — Prevention and policy implications")
+            st.markdown("""
+The outbreak is now controlled after an emergency vaccination clinic raised coverage to 95%. Final case count: 23 cases, 4 hospitalizations, 0 deaths. 228 unvaccinated students excluded for varying periods.
+            """)
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("#### Final outbreak summary")
+                st.markdown("""
+- **Total cases:** 23
+- **Hospitalizations:** 4 (pneumonia x2, encephalitis x1, otitis media x1)
+- **Deaths:** 0
+- **School days missed by unvaccinated students:** 2,850 total (228 students × avg 12.5 days)
+- **Cost of emergency response:** Estimated $280,000 (staff, vaccines, investigation)
+                """)
+            with col2:
+                st.markdown("#### What would have prevented this")
+                st.markdown("""
+- **Vaccination coverage at 93%+:** Would have kept Rₑ < 1; one infectious case would not have sparked an outbreak
+- **School vaccination requirement enforcement:** 28% unvaccinated is far above the level compatible with herd immunity
+- **Pre-travel health consultation:** Index family could have been counseled on measles risk in destination country
+- **Clinician recognition:** Earlier diagnosis (Koplik spots, prodrome) would have shortened exposure window
+                """)
+
+            st.divider()
+            q5a = st.radio("**Decision 5A:** What policy change would most prevent future outbreaks?", [
+                "— Select —",
+                "Require vaccination of all staff but allow student exemptions to continue",
+                "Enforce existing vaccination requirements and restrict non-medical exemptions",
+                "Provide education campaigns — choice is sufficient",
+                "Conduct annual screenings but take no policy action",
+            ], key="ob2_q5a")
+
+            if q5a == "Enforce existing vaccination requirements and restrict non-medical exemptions":
+                st.success("""
+✅ **Correct.** Mathematical modeling and real-world data both show that states with easier non-medical (philosophical/religious) exemptions have higher rates of vaccine-preventable disease outbreaks. Enforcement of existing requirements and restriction of non-medical exemptions is the most evidence-based policy intervention to maintain herd immunity.
+                """)
+            elif q5a != "— Select —":
+                st.error("❌ Voluntary measures have consistently proven insufficient to maintain measles herd immunity (93%+). Policy enforcement is the most effective tool.")
+
+            with st.expander("🦠 What is measles?"):
+                st.markdown("""
+**Measles** is one of the most contagious pathogens ever described. Key features:
+- **R₀:** 12–18 in unvaccinated populations (one of the highest known)
+- **Herd immunity threshold:** ~93–95%
+- **Transmission:** Airborne — survives in air for up to 2 hours after patient leaves
+- **Incubation:** 8–12 days to symptom onset; 14–18 days to rash
+- **Infectious period:** 4 days before to 4 days after rash onset
+- **Prodrome:** Fever, cough, coryza, conjunctivitis (the "3 Cs") — Koplik spots pathognomonic
+- **Complications:** Pneumonia (leading cause of measles death), encephalitis, SSPE (rare, fatal, years later)
+- **Vaccine:** MMR — 97% effective after 2 doses
+- **Elimination:** United States achieved measles elimination in 2000; maintained with high vaccination coverage
+- **Re-emergence:** Outbreaks occur in clusters of unvaccinated individuals; imported cases seed outbreaks in communities below HIT
+                """)
+
+    # ════════════════════════════════════════════════════════════════
+    # SCENARIO 3: SALMONELLA
+    # ════════════════════════════════════════════════════════════════
+    elif ob_scenario == "🥘 Scenario 3: Salmonellosis at a Community Church Potluck":
+
+        col_brief, col_stats = st.columns([2,1])
+        with col_brief:
+            st.markdown("""
+### 🎯 Your Mission
+It's Sunday evening. The county health department receives 4 calls from individuals reporting severe diarrhea, fever, and abdominal cramps after attending a church potluck dinner earlier that day. By Monday morning, 23 people have called with similar symptoms. All attended the same event. The pastor reports approximately 120 people were present. Your job: identify the vehicle, establish the case definition, calculate attack rates, and implement control.
+            """)
+        with col_stats:
+            st.markdown("""
+<div style="background:#f0fdf4;border-radius:8px;padding:14px;font-size:13px;">
+<b>📋 Outbreak Brief</b><br><br>
+🤒 <b>Cases reported:</b> 23 (and growing)<br>
+🏥 <b>Hospitalizations:</b> 2<br>
+💀 <b>Deaths:</b> 0<br>
+📍 <b>Location:</b> Community church<br>
+👥 <b>Event attendees:</b> ~120<br>
+🕐 <b>Meal time:</b> Sunday 12:30 PM
+</div>
+            """, unsafe_allow_html=True)
+
+        ob3_step = st.radio("Jump to step:", [
+            "Step 1 — Build the case definition & line list",
+            "Step 2 — Epidemic curve & incubation period estimation",
+            "Step 3 — Food-specific attack rates (calculate)",
+            "Step 4 — Environmental investigation",
+            "Step 5 — Control, report & prevent recurrence",
+        ], key="ob3_step", horizontal=False)
+        st.divider()
+
+        if ob3_step == "Step 1 — Build the case definition & line list":
+            st.subheader("Step 1 — Case definition and line list construction")
+            st.markdown("""
+You need to systematically characterize who is sick before you can analyze the data. The **line list** is the epidemiologist's most important tool — one row per case, one column per variable.
+            """)
+            st.info("💡 **Step 4 of 10:** Construct a working case definition")
+
+            st.markdown("#### ✏️ Interactive case definition builder")
+            col1, col2 = st.columns(2)
+            with col1:
+                cd_person = st.selectbox("Person:", [
+                    "Any person in the county",
+                    "Any person who attended the First Baptist Church potluck",
+                    "Any church member",
+                ], key="ob3_cd_person")
+                cd_time = st.selectbox("Time:", [
+                    "Any time in November",
+                    "Symptom onset between Sunday noon and Tuesday midnight",
+                    "Only Sunday attendees who got sick same day",
+                ], key="ob3_cd_time")
+            with col2:
+                cd_clinical = st.selectbox("Clinical criteria:", [
+                    "Any GI symptom",
+                    "Diarrhea (≥3 loose stools/24h) AND/OR fever (≥38°C) within 72h of meal",
+                    "Lab-confirmed Salmonella only",
+                ], key="ob3_cd_clinical")
+                cd_lab = st.selectbox("Lab classification:", [
+                    "Confirmed (Salmonella isolated from stool)",
+                    "Probable (clinical criteria met, no lab)",
+                    "Use both confirmed AND probable",
+                ], key="ob3_cd_lab")
+
+            if cd_person and cd_time and cd_clinical and cd_lab:
+                case_def = f"{cd_person}, with {cd_clinical.lower()}, {cd_time.lower()}"
+                st.info(f"**Your case definition:** {case_def}")
+
+                if "potluck" in cd_person and "72h" in cd_clinical and "Tuesday" in cd_time:
+                    st.success("✅ Strong case definition — anchored to the exposure event, time-limited, uses appropriate clinical threshold.")
+                elif "lab-confirmed" in cd_clinical:
+                    st.error("❌ Lab-only case definitions miss the majority of cases and delay investigation. Use clinical criteria with lab as confirmation.")
+
+            st.divider()
+            st.markdown("#### 📋 Sample line list (first 10 cases)")
+            line_list = pd.DataFrame({
+                "Case #": range(1, 11),
+                "Age": [34, 67, 8, 45, 52, 23, 71, 39, 14, 58],
+                "Sex": ["F","M","M","F","F","M","F","M","F","M"],
+                "Onset time": ["Sun 8pm","Sun 6pm","Sun 9pm","Mon 2am","Mon 1am","Sun 7pm","Mon 4am","Sun 11pm","Mon 3am","Mon 6am"],
+                "Diarrhea": ["✅","✅","✅","✅","✅","✅","✅","✅","✅","✅"],
+                "Fever": ["✅","✅","❌","✅","✅","❌","✅","✅","❌","✅"],
+                "Vomiting": ["✅","❌","✅","❌","✅","✅","❌","✅","✅","❌"],
+                "Chicken salad": ["✅","✅","❌","✅","✅","✅","✅","✅","❌","✅"],
+                "Deviled eggs": ["✅","✅","✅","✅","❌","✅","✅","❌","✅","✅"],
+                "Potato salad": ["✅","❌","✅","✅","✅","❌","✅","✅","✅","✅"],
+            })
+            st.dataframe(line_list, use_container_width=True, hide_index=True)
+
+            q1a = st.radio("**Decision 1A:** What does the line list immediately suggest about the most likely vehicle?", [
+                "— Select —",
+                "Potato salad — appears frequently",
+                "Chicken salad or deviled eggs — egg/poultry = Salmonella, and most cases ate one or both",
+                "Vomiting pattern suggests norovirus, not Salmonella",
+                "Cannot tell from this limited data",
+            ], key="ob3_q1a")
+
+            if q1a == "Chicken salad or deviled eggs — egg/poultry = Salmonella, and most cases ate one or both":
+                st.success("""
+✅ **Correct.** Salmonella is most commonly associated with poultry, eggs, and egg-containing dishes (chicken salad, deviled eggs, mayonnaise-based salads). The line list shows most cases ate chicken salad and/or deviled eggs. This generates the primary hypothesis to test with attack rates. Note also that fever + diarrhea (non-bloody at this stage) is consistent with non-typhoidal Salmonella.
+                """)
+            elif q1a != "— Select —":
+                st.error("❌ Biological plausibility matters: Salmonella's primary vehicles are poultry, eggs, and egg-containing dishes. The line list shows these items prominently in cases.")
+
+        elif ob3_step == "Step 2 — Epidemic curve & incubation period estimation":
+            st.subheader("Step 2 — Epidemic curve and incubation period")
+            st.markdown("The meal was served at **12:30 PM Sunday**. Below are the onset times for all 23 confirmed cases.")
+            st.info("💡 **Step 6 of 10:** Describe in terms of time — epidemic curve")
+
+            onset_hours = [6, 7, 8, 8, 9, 9, 10, 10, 11, 12, 12, 13, 13, 14, 15, 16, 17, 18, 20, 22, 25, 28, 30]
+            onset_labels = [f"+{h}h" for h in onset_hours]
+
+            import collections
+            onset_counts = collections.Counter(onset_hours)
+            curve_df = pd.DataFrame([{"Hours after meal": h, "Cases": onset_counts.get(h, 0)} for h in range(0, 32)])
+            curve_df = curve_df[curve_df["Cases"] > 0]
+            st.bar_chart(curve_df.set_index("Hours after meal"))
+            st.caption("X-axis: hours after meal (12:30 PM Sunday). Each bar = cases with that onset hour.")
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown(f"""
+**Summary statistics:**
+- First case: +6 hours after meal
+- Last case: +30 hours after meal
+- **Peak:** +10–14 hours
+- **Median incubation:** ~12 hours
+- **Range:** 6–30 hours
+                """)
+            with col2:
+                st.markdown("""
+**Salmonella incubation reference:**
+- Typical: 6–72 hours
+- Most common: 12–36 hours
+- Median: ~18 hours
+- Range varies by inoculum dose
+                """)
+
+            q2a = st.radio("**Decision 2A:** What does this epidemic curve confirm?", [
+                "— Select —",
+                "Propagated outbreak — cases still occurring 30 hours later indicates person-to-person spread",
+                "Point-source outbreak — all cases within one incubation period of a single exposure",
+                "Endemic pattern — stable ongoing transmission",
+                "Mixed — early point source followed by secondary cases",
+            ], key="ob3_q2a")
+
+            if q2a == "Point-source outbreak — all cases within one incubation period of a single exposure":
+                st.success("""
+✅ **Correct.** All 23 cases occurred within 6–30 hours of a single exposure event (the potluck meal). The shape — single peak, rapid rise and fall — is a classic point-source curve. The "tail" of cases at +25–30 hours represents natural variation in incubation time, not a new wave.
+
+The incubation range (6–30h) is consistent with Salmonella, narrowing the list of potential agents before lab confirmation.
+                """)
+            elif q2a != "— Select —":
+                st.error("❌ All cases cluster within 30 hours of a single meal — this is a point-source pattern. For secondary spread (propagated), you would expect a gap of approximately one incubation period before a new wave appears.")
+
+            if q2a != "— Select —":
+                st.divider()
+                st.markdown("#### 🧮 Use the curve to estimate the exposure time")
+                st.markdown("""
+**Forensic timing:** The median incubation for Salmonella is ~12–18 hours. Working backward from the peak onset (10–14 hours post-meal), the median case had an incubation of ~12 hours.
+
+If you didn't know when the meal occurred, you could estimate it: find the median onset time, subtract the expected median incubation period for the suspected agent.
+
+**Median onset:** approximately +12 hours after 12:30 PM = ~12:30 AM Monday
+**Subtract median incubation (12h):** ~12:30 PM Sunday → consistent with the known meal time ✅
+
+This technique is used in investigations where the exposure time is unknown.
+                """)
+
+        elif ob3_step == "Step 3 — Food-specific attack rates (calculate)":
+            st.subheader("Step 3 — Calculate food-specific attack rates")
+            st.markdown("""
+You have completed telephone interviews with 98 of the 120 attendees (82% response rate). 23 meet the case definition.
+
+For each food item, the table below shows how many attendees ate it, and of those, how many became sick.
+            """)
+            st.info("💡 **Steps 7–8 of 10:** Develop hypotheses → Test hypotheses analytically")
+
+            food_items_3 = {
+                "Chicken salad": (18, 4, 5, 71),
+                "Deviled eggs": (17, 5, 6, 70),
+                "Potato salad (mayo-based)": (15, 15, 8, 60),
+                "Green bean casserole": (8, 52, 15, 23),
+                "Macaroni and cheese": (6, 54, 17, 21),
+                "Lemonade": (12, 48, 11, 27),
+                "Chocolate cake": (10, 50, 13, 25),
+            }
+
+            st.markdown("#### 🧮 Complete the table — calculate AR and RR for each food item")
+            st.markdown("*AR = (Sick among those who ate) ÷ (Total who ate) × 100. RR = AR exposed ÷ AR unexposed.*")
+
+            results3 = []
+            for food, (ate_sick, ate_well, notate_sick, notate_well) in food_items_3.items():
+                ate_total = ate_sick + ate_well
+                notate_total = notate_sick + notate_well
+                ar_exp = round(ate_sick / ate_total * 100, 1)
+                ar_unexp = round(notate_sick / notate_total * 100, 1)
+                rr = round(ar_exp / ar_unexp, 2) if ar_unexp > 0 else float("inf")
+                results3.append({
+                    "Food": food,
+                    "Ate: sick/total": f"{ate_sick}/{ate_total}",
+                    "AR exposed %": ar_exp,
+                    "Didn't eat: sick/total": f"{notate_sick}/{notate_total}",
+                    "AR unexposed %": ar_unexp,
+                    "RR": rr
+                })
+
+            results3_df = pd.DataFrame(results3)
+            st.dataframe(results3_df, use_container_width=True, hide_index=True)
+
+            q3a = st.radio("**Decision 3A:** Which food item is the most likely vehicle?", [
+                "— Select —",
+                "Potato salad — high number ate it",
+                "Chicken salad — highest RR with very low attack rate in unexposed",
+                "Deviled eggs — high RR, egg-Salmonella association",
+                "Both chicken salad AND deviled eggs — same cook, cross-contamination likely",
+            ], key="ob3_q3a")
+
+            if q3a == "Both chicken salad AND deviled eggs — same cook, cross-contamination likely":
+                st.success("""
+✅ **Correct — excellent epidemiologic reasoning.** Both chicken salad and deviled eggs show high RR and very low AR unexposed. In real investigations, when two items both show strong associations, look for a common source: the same cook, the same contaminated ingredient (raw chicken), the same utensils, or the same refrigerator. Here, the church member who brought both dishes used the same cutting board for raw chicken and egg preparation — a classic cross-contamination scenario.
+                """)
+            elif q3a == "Chicken salad — highest RR with very low attack rate in unexposed":
+                st.warning("""
+⚠️ **Partially correct.** Chicken salad does have the highest RR. But when two items show similar strong signals (chicken salad AND deviled eggs), consider a common source — same cook, same ingredient, cross-contamination. The best answer acknowledges both.
+                """)
+            elif q3a != "— Select —":
+                st.error("❌ Focus on the items with the highest RR AND the lowest AR unexposed. Potato salad actually has similar attack rates in those who ate vs. didn't eat (suggesting no association with illness).")
+
+            if q3a != "— Select —":
+                st.divider()
+                st.markdown("#### 🧮 Practice: Calculate the RR for chicken salad manually")
+                st.markdown("Ate chicken salad: 18 sick, 4 well. Did not eat: 5 sick, 71 well.")
+
+                ar_exp_input = st.number_input("AR exposed (ate chicken salad) %:", 0.0, 100.0, 0.0, 0.1, key="ob3_ar_exp")
+                ar_unexp_input = st.number_input("AR unexposed (did not eat) %:", 0.0, 100.0, 0.0, 0.1, key="ob3_ar_unexp")
+                rr_input = st.number_input("RR:", 0.0, 50.0, 0.0, 0.01, key="ob3_rr")
+
+                if st.button("Check calculation", key="ob3_check_rr"):
+                    correct_ar_exp = round(18/22*100, 1)
+                    correct_ar_unexp = round(5/76*100, 1)
+                    correct_rr = round(correct_ar_exp/correct_ar_unexp, 2)
+                    st.markdown(f"""
+**Correct values:**
+- AR exposed = 18/22 = **{correct_ar_exp}%**
+- AR unexposed = 5/76 = **{correct_ar_unexp}%**
+- RR = {correct_ar_exp}/{correct_ar_unexp} = **{correct_rr}**
+
+An RR of {correct_rr} means students who ate the chicken salad were {correct_rr}× more likely to become ill than those who did not. This is strong evidence for chicken salad as a vehicle.
+                    """)
+                    if abs(ar_exp_input - correct_ar_exp) < 1 and abs(rr_input - correct_rr) < 0.2:
+                        st.success("✅ Your calculation is correct!")
+                    else:
+                        st.info("Check your arithmetic — divide sick ÷ total (not sick + well) to get the attack rate.")
+
+        elif ob3_step == "Step 4 — Environmental investigation":
+            st.subheader("Step 4 — Environmental investigation and source tracing")
+            st.markdown("""
+The analytic study has identified chicken salad and deviled eggs as vehicles. Both were prepared by the same congregation member (Mrs. Johnson). Now you need to trace the contamination to its source.
+            """)
+            st.info("💡 **Step 8 continued:** Environmental sampling + source tracing")
+
+            st.markdown("""
+**Environmental investigation findings:**
+- Mrs. Johnson prepared both dishes Saturday evening at home
+- She purchased whole chickens from a local grocery store Saturday morning
+- She used a wooden cutting board that had been used for raw chicken
+- The same cutting board was used to chop celery and onions for the chicken salad
+- Deviled eggs were prepared in the same kitchen, same surfaces
+- Dishes were refrigerated Saturday night, transported to church in a cooler Sunday
+- Temperature at time of service: chicken salad = 58°F (should be ≤41°F)
+- Mrs. Johnson reports no illness herself
+
+**Samples collected:**
+- Leftover chicken salad: submitted to state lab
+- Mrs. Johnson's cutting board: swab submitted
+- Remaining whole chicken from grocery store (same purchase): submitted
+- Stool samples from 8 cases
+            """)
+
+            q4a = st.radio("**Decision 4A:** The chicken salad temperature was 58°F at service. Why does this matter?", [
+                "— Select —",
+                "It doesn't matter — Salmonella only comes from contaminated animals, not temperature",
+                "Temperatures between 41°F and 135°F allow Salmonella to multiply rapidly — the 'danger zone'",
+                "58°F is only slightly above the 55°F threshold — minimal risk",
+                "Temperature only matters for viruses, not bacteria",
+            ], key="ob3_q4a")
+
+            if q4a == "Temperatures between 41°F and 135°F allow Salmonella to multiply rapidly — the 'danger zone'":
+                st.success("""
+✅ **Correct.** The USDA "temperature danger zone" for bacterial growth is 41°F–135°F (5°C–57°C). At 58°F, Salmonella can double every 20–30 minutes. Even a small initial contamination can reach an infectious dose (10³–10⁶ organisms) within hours at this temperature. The combination of contamination (cross-contamination from raw chicken) AND temperature abuse (inadequate refrigeration/transport) created ideal conditions for a large outbreak.
+                """)
+            elif q4a != "— Select —":
+                st.error("❌ Temperature is critical for bacterial foodborne illness. Unlike viruses (which don't replicate in food), bacteria like Salmonella multiply exponentially at temperatures between 41°F and 135°F.")
+
+            if q4a != "— Select —":
+                st.divider()
+                q4b = st.radio("**Decision 4B:** Lab results show Salmonella Enteritidis in the leftover chicken salad and cutting board. The grocery store chicken is also positive. What do you do?", [
+                    "— Select —",
+                    "Issue press release blaming Mrs. Johnson",
+                    "Contact the state health department and FDA/USDA to investigate the grocery store chicken supplier",
+                    "Close the church for 2 weeks",
+                    "No further action — the event is over",
+                ], key="ob3_q4b")
+
+                if q4b == "Contact the state health department and FDA/USDA to investigate the grocery store chicken supplier":
+                    st.success("""
+✅ **Correct.** When a contaminated commercial food product is implicated, investigation extends up the supply chain. This outbreak may be one of many — PulseNet (CDC's molecular surveillance network) may identify the same Salmonella strain in cases from other states linked to the same supplier. A voluntary recall or regulatory action may be needed to prevent further illness nationally.
+
+This is how local foodborne investigations become national — the church potluck is the sentinel event that alerts the system to a broader contamination.
+                    """)
+                elif q4b != "— Select —":
+                    st.error("❌ When a commercially distributed product is the source, the investigation extends beyond the local outbreak. Other communities may be at risk from the same supplier.")
+
+        elif ob3_step == "Step 5 — Control, report & prevent recurrence":
+            st.subheader("Step 5 — Control, reporting, and prevention")
+            st.info("💡 **Steps 9–10 of 10:** Implement control measures → Communicate findings")
+
+            st.markdown("""
+**Final outbreak profile:**
+- 23 cases, 2 hospitalizations, 0 deaths
+- Salmonella Enteritidis serotype confirmed in 7/8 stool samples
+- Same strain found in chicken salad and cutting board
+- PulseNet match: identical molecular fingerprint to 12 cases in 2 other counties from same grocery chain
+- Grocery chain initiated voluntary recall of whole chickens from that distributor
+
+**Lessons applied:**
+            """)
+
+            lessons = {
+                "Cross-contamination prevention": "Use separate cutting boards for raw meat and ready-to-eat foods",
+                "Temperature control": "Keep cold foods at ≤41°F during preparation, storage, and transport",
+                "Potluck food safety": "Bring hot foods hot (≥135°F) and cold foods cold (≤41°F)",
+                "Hand hygiene": "Wash hands thoroughly after handling raw poultry",
+                "Food handler illness": "Exclude food handlers who are ill (though Mrs. Johnson was not ill herself)",
+                "Supply chain surveillance": "PulseNet enables local outbreaks to trigger national investigations",
+            }
+
+            for lesson, detail in lessons.items():
+                with st.expander(f"✅ {lesson}"):
+                    st.markdown(detail)
+
+            st.divider()
+            st.markdown("#### 📝 Write your outbreak report")
+            st.markdown("A complete outbreak investigation report includes:")
+
+            report_sections = [
+                ("Background", "When and where the outbreak was identified; who was affected"),
+                ("Methods", "Case definition used; how cases were found; how data were collected"),
+                ("Results", "Epidemic curve; case count; attack rates; most likely vehicle"),
+                ("Conclusions", "Probable source; contributing factors; mechanism of contamination"),
+                ("Recommendations", "Immediate control measures; long-term prevention"),
+            ]
+
+            for section, description in report_sections:
+                st.markdown(f"**{section}:** {description}")
+
+            with st.expander("🦠 What is Salmonella?"):
+                st.markdown("""
+**Salmonella** is a gram-negative bacteria and one of the most common causes of foodborne illness worldwide.
+
+- **Species:** Salmonella enterica (>2,500 serotypes); most common in US = S. Typhimurium and S. Enteritidis
+- **Sources:** Poultry, eggs, beef, pork, reptiles, contaminated produce
+- **Transmission:** Fecal-oral; ingestion of contaminated food or water; contact with infected animals
+- **Incubation:** 6–72 hours (typically 12–36h)
+- **Symptoms:** Diarrhea (may be bloody), fever, abdominal cramps, vomiting
+- **Duration:** 4–7 days (self-limited in healthy adults)
+- **At-risk populations:** Infants, elderly, immunocompromised — may develop bacteremia, meningitis
+- **Infectious dose:** As low as 10³ organisms (lower in high-fat vehicles like chocolate, peanut butter)
+- **Treatment:** Usually supportive; antibiotics for severe cases or bacteremia (resistance emerging)
+- **Prevention:** Cook poultry to 165°F; avoid cross-contamination; refrigerate properly; hand hygiene
+- **Surveillance:** Nationally notifiable; PulseNet provides molecular fingerprinting for outbreak detection
+                """)
+
+    elif ob_scenario == "— Choose an outbreak —":
+        st.info("Select a scenario above to begin your investigation.")
+        st.markdown("""
+#### 🎯 What you'll practice in Outbreak Lab
+Each scenario walks you through a real-style outbreak investigation, applying the **10-step framework** with:
+- **Decision points** — choose the right investigative action and get immediate feedback
+- **Interactive calculations** — calculate attack rates, RR, and herd immunity thresholds yourself
+- **Epidemic curves** — read and interpret real outbreak patterns
+- **Case definitions** — build your own and understand the tradeoffs
+- **Control measures** — choose and justify interventions
+
+**The three scenarios cover:**
+| Scenario | Agent | Key skills |
+|---|---|---|
+| 🍽️ University Dining Hall | Norovirus | Attack rates, vehicle identification, secondary spread |
+| 📚 Elementary School | Measles | Herd immunity math, contact tracing, vaccination policy |
+| 🥘 Church Potluck | Salmonella | Case definition, incubation estimation, supply chain tracing |
+        """)
 
 
 # ==================================================

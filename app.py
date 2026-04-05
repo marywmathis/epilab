@@ -6948,6 +6948,93 @@ You are an Epidemic Intelligence Service (EIS) officer. Three outbreaks have bee
 
     import math as _omath
 
+    # ── Compendium reference ──────────────────────────────────────────────────
+    with st.expander("📋 Field Reference — Compendium of Acute Foodborne GI Diseases (keep open while investigating)"):
+        st.markdown("Use this table to match incubation period, symptoms, and food vehicle to the most likely agent.")
+        st.divider()
+
+        st.markdown("#### Group I — Short incubation, vomiting predominant, little or no fever")
+        group1 = [
+            ["Bacillus cereus (emetic)", "0.5–6 hours", "Nausea, vomiting, cramps; diarrhea occasionally", "Boiled or fried rice"],
+            ["Staphylococcus aureus", "2–4 h (range 0.5–8 h)", "Nausea, cramps, vomiting, diarrhea; fever may be present", "Ham, beef, poultry; cream-filled pastries; custard; high-protein leftovers"],
+            ["Heavy metals (arsenic, cadmium, copper, mercury, lead, zinc)", "<1–6 hours", "Nausea, vomiting, cramps, diarrhea", "High-acid food/beverages stored in coated or metal-contaminated containers"],
+        ]
+        import pandas as pd
+        g1_df = pd.DataFrame(group1, columns=["Agent", "Incubation", "Symptoms", "Characteristic foods"])
+        st.dataframe(g1_df, use_container_width=True, hide_index=True)
+
+        st.markdown("#### Group II — Moderate to long incubation, diarrhea predominant, often with fever")
+        group2 = [
+            ["Bacillus cereus (diarrheal)", "6–24 hours", "Abdominal cramps, watery diarrhea; vomiting occasionally", "Custards, cereal products, meat loaf, sauces, refried beans, dried potatoes"],
+            ["Campylobacter jejuni", "2–5 days (1–10 d)", "Diarrhea (often bloody), cramps, fever, nausea, vomiting", "Raw milk, poultry, water, raw clams, beef liver"],
+            ["Clostridium perfringens", "8–12 h (6–24 h)", "Abdominal cramps, watery diarrhea; vomiting and fever rare", "Inadequately heated/reheated meats, stews, gravy, refried beans"],
+            ["ETEC (Enterotoxigenic E. coli)", "10–72 hours", "Abdominal cramps, watery diarrhea", "Uncooked vegetables, salads, water"],
+            ["STEC / E. coli O157:H7", "3–4 days (2–10 d)", "Bloody diarrhea, cramps; fever infrequent; HUS risk", "Undercooked ground beef, raw milk, produce, soft cheese, water"],
+            ["Norovirus", "24–48 h (10–50 h)", "Nausea, vomiting, cramps, watery diarrhea, low fever", "Fecally contaminated ready-to-eat foods, frostings, clams, oysters, water"],
+            ["Salmonella spp. (non-typhoidal)", "12–72 h (6 h–7 d)", "Diarrhea, cramps, fever, headache; vomiting occasionally", "Poultry, eggs, meat, raw milk, produce"],
+            ["Shigella spp.", "1–3 days (1–7 d)", "Cramps, fever, diarrhea (often bloody), watery diarrhea, nausea", "Fecally contaminated foods, salads, cut fruit, water"],
+            ["Vibrio cholerae", "24–72 h (hours–5 d)", "Profuse watery diarrhea (rice-water stools)", "Raw fish/shellfish, crustacean, fecally contaminated water/foods"],
+            ["Vibrio parahaemolyticus", "12–24 h (4–96 h)", "Cramps, watery diarrhea, nausea, vomiting, fever; bloody diarrhea occasionally", "Marine fish, shellfish, crustacean (raw or undercooked)"],
+            ["Yersinia enterocolitica", "4–6 days (1–14 d)", "Fever, diarrhea, cramps, vomiting; may mimic appendicitis", "Raw milk, tofu, water, undercooked pork"],
+        ]
+        g2_df = pd.DataFrame(group2, columns=["Agent", "Incubation", "Symptoms", "Characteristic foods"])
+        st.dataframe(g2_df, use_container_width=True, hide_index=True)
+
+        st.markdown("#### Group III — Special presentations")
+        group3 = [
+            ["Clostridium botulinum", "12–48 h (6 h–8 d)", "Nausea, vomiting, diarrhea; blurred vision; descending paralysis", "Canned low-acid foods, smoked fish, cooked potatoes, marine mammals"],
+            ["Cryptosporidium spp.", "7 days (2–14 d)", "Watery diarrhea, cramps, nausea, vomiting, fever", "Water, fecally contaminated foods"],
+            ["Giardia intestinalis", "7–10 days (3–25 d)", "Cramps, diarrhea, watery diarrhea, fatty stools, bloating", "Water, fecally contaminated foods"],
+            ["Hepatitis A virus", "28–30 days (15–50 d)", "Fever, nausea, diarrhea, anorexia, jaundice", "Raw shellfish, cold fecally contaminated foods, water"],
+            ["Scombroid fish poisoning", "Minutes–1 hour", "Headache, nausea, vomiting, flushing, dizziness, burning mouth/throat", "Temperature-abused fish (tuna, mahi mahi, bluefish, mackerel, marlin, bonito)"],
+        ]
+        g3_df = pd.DataFrame(group3, columns=["Agent", "Incubation", "Symptoms", "Characteristic foods"])
+        st.dataframe(g3_df, use_container_width=True, hide_index=True)
+
+        st.markdown("""
+<div style="font-size:11px;color:#6b7280;margin-top:8px;line-height:1.6;">
+<b>Symptom key:</b> AC = cramps; D = diarrhea; BD = bloody diarrhea; WD = watery diarrhea; F = fever; H = headache; N = nausea; V = vomiting<br>
+<b>Sources:</b> Heymann DL. <i>Control of Communicable Diseases Manual</i> (19th ed.), APHA 2008; CDC; Wisconsin Division of Public Health P-01257 (4/2016).<br>
+<b>How to use:</b> (1) Note incubation period from exposure to symptom onset. (2) Identify predominant symptom pattern. (3) Match to characteristic food vehicle. These three together narrow the differential significantly before lab results return.
+</div>
+        """, unsafe_allow_html=True)
+
+        st.divider()
+        st.markdown("#### 🔍 Quick differential by incubation period")
+        diff_col1, diff_col2, diff_col3 = st.columns(3)
+        with diff_col1:
+            st.markdown("""
+**< 6 hours**
+- Staph aureus toxin
+- B. cereus (emetic)
+- Heavy metals
+- Scombroid (minutes)
+
+*Vomiting dominant; preformed toxin — no replication needed*
+            """)
+        with diff_col2:
+            st.markdown("""
+**6–72 hours**
+- Clostridium perfringens
+- B. cereus (diarrheal)
+- Norovirus
+- Salmonella
+- ETEC
+
+*Mixed picture; diarrhea often prominent*
+            """)
+        with diff_col3:
+            st.markdown("""
+**> 3 days**
+- Campylobacter (2–5 d)
+- STEC/O157 (3–4 d)
+- Yersinia (4–6 d)
+- Giardia (7–10 d)
+- Hepatitis A (28–30 d)
+
+*Longer incubation; fever common; HUS/complications possible*
+            """)
+
     ob_scenario = st.selectbox("Select an outbreak to investigate:", [
         "— Choose an outbreak —",
         "🍽️ Scenario 1: Norovirus at a University Dining Hall",
@@ -7114,16 +7201,61 @@ You have now interviewed 89 students who ate Tuesday dinner. 47 meet your case d
 
             col1, col2 = st.columns(2)
             with col1:
-                st.markdown("#### 📊 Cases by hour of symptom onset")
-                onset_data = {
-                    "Wed 6am": 2, "Wed 9am": 5, "Wed 12pm": 9,
-                    "Wed 3pm": 12, "Wed 6pm": 11, "Wed 9pm": 5,
-                    "Thu 12am": 2, "Thu 3am": 1
-                }
-                import pandas as pd
-                onset_df = pd.DataFrame(list(onset_data.items()), columns=["Time of onset", "Cases"])
-                st.bar_chart(onset_df.set_index("Time of onset"))
-                st.caption("Tuesday dinner served 5:00–8:00 PM")
+                st.markdown("#### 📊 Cases by time of symptom onset")
+                # Time-ordered data: Tuesday dinner 5-8pm, norovirus incubation 18-36h
+                # Onset runs Wed 6am through Thu 6am — clean unimodal bell
+                onset_labels_ordered = [
+                    "Wed\n6am", "Wed\n9am", "Wed\n12pm", "Wed\n3pm",
+                    "Wed\n6pm", "Wed\n9pm", "Thu\n12am", "Thu\n3am", "Thu\n6am"
+                ]
+                onset_counts_ordered = [1, 4, 9, 13, 11, 6, 2, 1, 0]
+                # Render as SVG via components so order is guaranteed
+                import streamlit.components.v1 as _ob1_comp
+                n_bars = len(onset_labels_ordered)
+                max_c = max(onset_counts_ordered)
+                cw, ch = 420, 180
+                pad_l, pad_b, pad_t, pad_r = 36, 48, 20, 10
+                pw = cw - pad_l - pad_r
+                ph = ch - pad_b - pad_t
+                bw = pw / n_bars - 2
+                import math as _m
+
+                # Nice y ticks
+                tick_int = 5
+                y_max_tick = tick_int * (_m.ceil(max_c / tick_int) + 1)
+
+                bars_svg = ""
+                for i, (lbl, cnt) in enumerate(zip(onset_labels_ordered, onset_counts_ordered)):
+                    bh = (cnt / y_max_tick) * ph if y_max_tick > 0 else 0
+                    bx = pad_l + i * (pw / n_bars) + 1
+                    by = pad_t + ph - bh
+                    bars_svg += f'<rect x="{round(bx,1)}" y="{round(by,1)}" width="{round(bw,1)}" height="{round(bh,1)}" fill="#3b82f6" rx="2"/>'
+                    # x label (split on \n)
+                    parts = lbl.split("\n")
+                    lx = round(bx + bw/2, 1)
+                    bars_svg += f'<text x="{lx}" y="{ch-28}" font-size="8" fill="#6b7280" text-anchor="middle">{parts[0]}</text>'
+                    bars_svg += f'<text x="{lx}" y="{ch-18}" font-size="8" fill="#6b7280" text-anchor="middle">{parts[1]}</text>'
+
+                # Y ticks
+                yticks_svg = ""
+                for v in range(0, y_max_tick + 1, tick_int):
+                    ty = round(pad_t + ph - (v / y_max_tick) * ph, 1)
+                    yticks_svg += f'<line x1="{pad_l}" y1="{ty}" x2="{pad_l+pw}" y2="{ty}" stroke="#e5e7eb" stroke-width="1"/>'
+                    yticks_svg += f'<text x="{pad_l-4}" y="{ty+3}" font-size="8" fill="#9ca3af" text-anchor="end">{v}</text>'
+
+                axes_svg = (
+                    f'<line x1="{pad_l}" y1="{pad_t}" x2="{pad_l}" y2="{pad_t+ph}" stroke="#d1d5db" stroke-width="1.5"/>'
+                    f'<line x1="{pad_l}" y1="{pad_t+ph}" x2="{pad_l+pw}" y2="{pad_t+ph}" stroke="#d1d5db" stroke-width="1.5"/>'
+                    f'<text x="14" y="{pad_t+ph//2}" font-size="9" fill="#6b7280" text-anchor="middle" transform="rotate(-90,14,{pad_t+ph//2})">Cases</text>'
+                )
+                title_svg = f'<text x="{pad_l + pw//2}" y="13" font-size="10" font-weight="bold" fill="#374151" text-anchor="middle">Symptom Onset — Norovirus Outbreak</text>'
+
+                svg_html = f"""<!DOCTYPE html><html><body style="margin:0;padding:0;">
+<svg xmlns="http://www.w3.org/2000/svg" width="{cw}" height="{ch}" style="font-family:sans-serif;background:#fafafa;border-radius:6px;display:block;">
+  {title_svg}{yticks_svg}{bars_svg}{axes_svg}
+</svg></body></html>"""
+                _ob1_comp.html(svg_html, height=ch + 10, scrolling=False)
+                st.caption("Tuesday dinner served 5:00–8:00 PM. X-axis shows time of symptom onset (Wednesday–Thursday).")
 
             with col2:
                 st.markdown("#### 👥 Person characteristics")
@@ -7143,15 +7275,16 @@ You have now interviewed 89 students who ate Tuesday dinner. 47 meet your case d
             q3a = st.radio("**Decision 3A:** Based on the epidemic curve, what transmission pattern does this represent?", [
                 "— Select —",
                 "Propagated (person-to-person) — multiple waves",
-                "Point source — single sharp peak, all cases within one incubation period",
+                "Point source — single peak, all cases within one incubation period range",
                 "Endemic — stable background rate",
                 "Mixed — initial point source with secondary spread",
             ], key="ob1_q3a")
 
-            if q3a == "Point source — single sharp peak, all cases within one incubation period":
+            if q3a == "Point source — single peak, all cases within one incubation period range":
                 st.success("""
-✅ **Correct.** The curve shows a single peak rising Wednesday afternoon and declining by Thursday — all cases within a 24-hour window, consistent with a single common exposure (Tuesday dinner). The 18–36 hour incubation from Tuesday dinner to Wednesday onset is consistent with norovirus. No secondary wave = no ongoing person-to-person spread yet.
+✅ **Correct.** The curve shows a single unimodal peak — cases rise from Wednesday morning, peak Wednesday afternoon, and decline through Thursday. All cases fall within an ~30-hour window (6am Wed to 6am Thu), consistent with a single common exposure at Tuesday dinner 18–36 hours earlier. This is a classic point-source epidemic curve. No secondary wave has appeared yet, suggesting person-to-person spread has not started.
                 """)
+
             elif q3a == "Propagated (person-to-person) — multiple waves":
                 st.error("❌ A propagated curve would show multiple waves separated by one incubation period. This curve has one peak — consistent with a single common exposure.")
             elif q3a != "— Select —":

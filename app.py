@@ -3092,10 +3092,10 @@ Each "pie" represents one sufficient cause — a complete causal mechanism. Each
   </div>
 
   <!-- LETTER KEY -->
-  <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px;">
+  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
     <div style="display:flex;align-items:center;gap:5px;background:#fef2f2;border:1px solid #fca5a5;border-radius:20px;padding:4px 12px;">
       <span style="background:#ef4444;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">A</span>
-      <span style="font-size:12px;color:#1a202c;">Smoking <em style="font-size:10px;color:#dc2626;">(appears in I &amp; II — not necessary)</em></span>
+      <span style="font-size:12px;color:#1a202c;">Smoking <em style="font-size:10px;color:#dc2626;">(in I &amp; II — not necessary)</em></span>
     </div>
     <div style="display:flex;align-items:center;gap:5px;background:#fff7ed;border:1px solid #fdba74;border-radius:20px;padding:4px 12px;">
       <span style="background:#f97316;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">B</span>
@@ -3124,63 +3124,62 @@ Each "pie" represents one sufficient cause — a complete causal mechanism. Each
   </div>
 
   <!-- THREE PIES -->
-  <div style="display:flex;gap:32px;justify-content:center;flex-wrap:wrap;align-items:flex-start;">
+  <div style="display:flex;gap:24px;justify-content:center;flex-wrap:wrap;align-items:flex-start;">
 
-    <!-- PIE I -->
-    <div style="text-align:center;width:200px;">
+    <!-- PIE I: A=120°, B=80°, C=80°, U=80° — 2.5° gap each side -->
+    <div style="text-align:center;width:220px;">
       <div style="font-weight:700;color:#1d4ed8;margin-bottom:8px;font-size:14px;">Sufficient Cause I</div>
       <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-        <!-- A: Smoking ~120 deg (12 o'clock → 4 o'clock) -->
-        <path d="M100,100 L100,10 A90,90 0 0,1 177.9,55 Z" fill="#ef4444" stroke="white" stroke-width="2.5"/>
-        <!-- B: Asbestos ~80 deg (4 o'clock → ~6:40) -->
-        <path d="M100,100 L177.9,55 A90,90 0 0,1 177.9,145 Z" fill="#f97316" stroke="white" stroke-width="2.5"/>
-        <!-- C: Radon ~80 deg (~6:40 → ~9:20) -->
-        <path d="M100,100 L177.9,145 A90,90 0 0,1 22.1,145 Z" fill="#eab308" stroke="white" stroke-width="2.5"/>
-        <!-- U: Unknown ~80 deg (~9:20 → 12 o'clock) -->
-        <path d="M100,100 L22.1,145 A90,90 0 0,1 100,10 Z" fill="#94a3b8" stroke="white" stroke-width="2.5"/>
-        <!-- Letter labels centered in each slice -->
-        <text x="142" y="62"  font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">A</text>
-        <text x="162" y="105" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">B</text>
-        <text x="105" y="162" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">C</text>
-        <text x="44"  y="105" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">U</text>
+        <path d="M100,100 L103.84,12.08 A88,88 0 0,1 178.06,140.63 Z" fill="#ef4444"/>
+        <path d="M100,100 L174.22,147.28 A88,88 0 0,1 73.54,183.93 Z" fill="#f97316"/>
+        <path d="M100,100 L66.32,181.3 A88,88 0 0,1 12.75,88.51 Z" fill="#eab308"/>
+        <path d="M100,100 L14.09,80.95 A88,88 0 0,1 96.16,12.08 Z" fill="#94a3b8"/>
+        <!-- white gap lines -->
+        <line x1="100" y1="100" x2="103.84" y2="12.08" stroke="white" stroke-width="3"/>
+        <line x1="100" y1="100" x2="178.06" y2="140.63" stroke="white" stroke-width="3"/>
+        <line x1="100" y1="100" x2="73.54" y2="183.93" stroke="white" stroke-width="3"/>
+        <line x1="100" y1="100" x2="14.09" y2="80.95" stroke="white" stroke-width="3"/>
+        <!-- Labels -->
+        <text x="147.3" y="72.7"  font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">A</text>
+        <text x="118.7" y="151.3" font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">B</text>
+        <text x="52.7"  y="127.3" font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">C</text>
+        <text x="64.9"  y="58.2"  font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">U</text>
       </svg>
-      <div style="font-size:11px;color:#555;margin-top:6px;line-height:1.5;">A + B + C + U</div>
+      <div style="font-size:11px;color:#555;margin-top:4px;">A + B + C + U</div>
     </div>
 
-    <!-- PIE II -->
-    <div style="text-align:center;width:200px;">
+    <!-- PIE II: A=200°, D+U=160° -->
+    <div style="text-align:center;width:220px;">
       <div style="font-weight:700;color:#1d4ed8;margin-bottom:8px;font-size:14px;">Sufficient Cause II</div>
       <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-        <!-- A: Smoking ~200 deg (dominant, 12 → ~8:40) -->
-        <path d="M100,100 L100,10 A90,90 0 1,1 11.5,131 Z" fill="#ef4444" stroke="white" stroke-width="2.5"/>
-        <!-- D: Air pollution ~100 deg (~8:40 → 12) -->
-        <path d="M100,100 L11.5,131 A90,90 0 0,1 100,10 Z" fill="#8b5cf6" stroke="white" stroke-width="2.5"/>
-        <!-- Letter labels -->
-        <text x="120" y="90"  font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">A</text>
-        <text x="44"  y="130" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">D+U</text>
+        <path d="M100,100 L103.84,12.08 A88,88 0 1,1 73.54,183.93 Z" fill="#ef4444"/>
+        <path d="M100,100 L66.32,181.3 A88,88 0 0,1 96.16,12.08 Z" fill="#8b5cf6"/>
+        <line x1="100" y1="100" x2="103.84" y2="12.08" stroke="white" stroke-width="3"/>
+        <line x1="100" y1="100" x2="73.54"  y2="183.93" stroke="white" stroke-width="3"/>
+        <text x="153.7" y="109.5" font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">A</text>
+        <text x="46.3"  y="90.5"  font-size="16" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">D+U</text>
       </svg>
-      <div style="font-size:11px;color:#555;margin-top:6px;line-height:1.5;">A + D + U</div>
+      <div style="font-size:11px;color:#555;margin-top:4px;">A + D + U</div>
     </div>
 
-    <!-- PIE III -->
-    <div style="text-align:center;width:200px;">
+    <!-- PIE III: F=90°, B=90°, E=90°, U=90° -->
+    <div style="text-align:center;width:220px;">
       <div style="font-weight:700;color:#1d4ed8;margin-bottom:8px;font-size:14px;">Sufficient Cause III</div>
       <svg viewBox="0 0 200 200" width="200" height="200" xmlns="http://www.w3.org/2000/svg">
-        <!-- F: Genetic ~90 deg (12 → 3) -->
-        <path d="M100,100 L100,10 A90,90 0 0,1 190,100 Z" fill="#06b6d4" stroke="white" stroke-width="2.5"/>
-        <!-- B: Asbestos ~90 deg (3 → 6) -->
-        <path d="M100,100 L190,100 A90,90 0 0,1 100,190 Z" fill="#f97316" stroke="white" stroke-width="2.5"/>
-        <!-- E: Radiation ~90 deg (6 → 9) -->
-        <path d="M100,100 L100,190 A90,90 0 0,1 10,100 Z" fill="#10b981" stroke="white" stroke-width="2.5"/>
-        <!-- U: Unknown ~90 deg (9 → 12) -->
-        <path d="M100,100 L10,100 A90,90 0 0,1 100,10 Z" fill="#94a3b8" stroke="white" stroke-width="2.5"/>
-        <!-- Letter labels -->
-        <text x="155" y="55"  font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">F</text>
-        <text x="155" y="148" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">B</text>
-        <text x="45"  y="148" font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">E</text>
-        <text x="45"  y="55"  font-size="18" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">U</text>
+        <path d="M100,100 L103.84,12.08 A88,88 0 0,1 187.92,96.16 Z" fill="#06b6d4"/>
+        <path d="M100,100 L187.92,103.84 A88,88 0 0,1 103.84,187.92 Z" fill="#f97316"/>
+        <path d="M100,100 L96.16,187.92 A88,88 0 0,1 12.08,103.84 Z" fill="#10b981"/>
+        <path d="M100,100 L12.08,96.16 A88,88 0 0,1 96.16,12.08 Z" fill="#94a3b8"/>
+        <line x1="100" y1="100" x2="103.84" y2="12.08"  stroke="white" stroke-width="3"/>
+        <line x1="100" y1="100" x2="187.92" y2="96.16"  stroke="white" stroke-width="3"/>
+        <line x1="100" y1="100" x2="103.84" y2="187.92" stroke="white" stroke-width="3"/>
+        <line x1="100" y1="100" x2="12.08"  y2="103.84" stroke="white" stroke-width="3"/>
+        <text x="138.6" y="61.4"  font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">F</text>
+        <text x="138.6" y="138.6" font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">B</text>
+        <text x="61.4"  y="138.6" font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">E</text>
+        <text x="61.4"  y="61.4"  font-size="22" fill="white" font-weight="900" text-anchor="middle" dominant-baseline="middle">U</text>
       </svg>
-      <div style="font-size:11px;color:#555;margin-top:6px;line-height:1.5;">F + B + E + U <em>(no smoking)</em></div>
+      <div style="font-size:11px;color:#555;margin-top:4px;">F + B + E + U <em>(no smoking)</em></div>
     </div>
 
   </div>

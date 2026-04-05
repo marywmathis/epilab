@@ -3088,14 +3088,14 @@ Each "pie" represents one sufficient cause — a complete causal mechanism. Each
 <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:16px 0;background:#fff;">
 
   <div style="text-align:center;margin-bottom:16px;font-size:13px;color:#4b5563;">
-    Three sufficient causes (pies) for <b>Lung Cancer</b> — each represents a complete causal mechanism
+    Three <em>example</em> sufficient causes for <b>Lung Cancer</b> — illustrative pathways only; in reality there are many more
   </div>
 
   <!-- LETTER KEY -->
   <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
     <div style="display:flex;align-items:center;gap:5px;background:#fef2f2;border:1px solid #fca5a5;border-radius:20px;padding:4px 12px;">
       <span style="background:#ef4444;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">A</span>
-      <span style="font-size:12px;color:#1a202c;">Smoking <em style="font-size:10px;color:#dc2626;">(in I &amp; II — not necessary)</em></span>
+      <span style="font-size:12px;color:#1a202c;">Smoking <em style="font-size:10px;color:#dc2626;">(component, not necessary — but responsible for the largest PAR%)</em></span>
     </div>
     <div style="display:flex;align-items:center;gap:5px;background:#fff7ed;border:1px solid #fdba74;border-radius:20px;padding:4px 12px;">
       <span style="background:#f97316;color:white;font-weight:900;font-size:12px;border-radius:50%;width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;">B</span>
@@ -3185,10 +3185,14 @@ Each "pie" represents one sufficient cause — a complete causal mechanism. Each
   </div>
 
   <!-- Callout -->
-  <div style="margin-top:20px;background:#eff6ff;border-radius:8px;padding:12px 16px;font-size:12px;color:#1e40af;text-align:center;line-height:1.6;">
-    <b>A (Smoking) appears in Sufficient Causes I and II but NOT III.</b><br>
-    Smoking is a <em>component</em> cause, not a <em>necessary</em> cause — lung cancer can occur without it (Sufficient Cause III).<br>
-    Removing A eliminates pathways I and II but leaves pathway III intact. This is why smoking cessation reduces but does not eliminate lung cancer.
+  <!-- Callout: core teaching points -->
+  <div style="margin-top:20px;background:#eff6ff;border-radius:8px;padding:14px 18px;font-size:12px;color:#1e40af;line-height:1.8;">
+    <div style="font-weight:700;font-size:13px;margin-bottom:6px;">📌 Reading these diagrams</div>
+    <div>&#x2714; <b>A (Smoking) is in pathways I and II, but not III</b> — it is a <em>component</em> cause, not a <em>necessary</em> cause. Lung cancer can occur without it.</div>
+    <div>&#x2714; <b>"Not necessary" does not mean "not important."</b> Smoking carries the highest population attributable fraction of any single lung cancer component — it just doesn't appear in every sufficient cause.</div>
+    <div>&#x2714; <b>Every pathway contains U (unknown components).</b> This is not a gap in these three examples — it is a fundamental feature of the model. We never fully enumerate all component causes. This is why PAR%s for known causes rarely sum to 100%.</div>
+    <div>&#x2714; <b>These are three examples, not an exhaustive list.</b> There are likely many sufficient causes for lung cancer. This diagram illustrates the logic of the model, not a complete causal inventory.</div>
+    <div>&#x26A0; <b>Slice size does not represent causal strength.</b> Equal-sized slices are a visual convenience — component causes do not necessarily contribute equally, and some (like smoking) are far stronger contributors than others.</div>
   </div>
 
 </div>"""
@@ -3211,11 +3215,11 @@ A component that completes many sufficient causes has a high PAR% even if its RR
 
 A component with a very high RR (e.g., a rare genetic mutation) may complete few sufficient causes and have a low PAR% despite looking "strong."
 
-**The PAR% reflects how many pies contain a given component.**
+**PAR% reflects both how often a component participates in causal mechanisms and how common it is in the population.** A component appearing in many sufficient causes but rare in the population can still have a modest PAR%. Conversely, a common exposure that participates in even a few pathways can have a very high PAR%.
 
 #### Why Interactions Are Expected
 
-Two factors "interact" (show effect modification) when they appear in the same sufficient cause. Rothman's model predicts that interactions should be the *norm* rather than the exception — because disease rarely arises from single causes.
+Two factors "interact" (show effect modification) when they appear in the same sufficient cause. Rothman's model predicts that biologic interactions should be the *norm* rather than the exception — because disease rarely arises from single causes acting in isolation. A practical caveat: detecting statistical interaction in data depends heavily on the scale of measurement (additive vs. multiplicative) and on sample size. Most studies are underpowered to detect interaction even when it exists biologically.
 
 **Biologic interaction** = two factors in the same causal pie.
 **Statistical interaction** = departure from additive or multiplicative effects.
@@ -3230,16 +3234,18 @@ Every pie in the diagram contains "U" — unknown components. This is Rothman's 
 - PAR%s for known factors rarely sum to 100%
 - The "missing" variance reflects unmeasured or undiscovered components
 
-This is why residual confounding is always present and why effect estimates in observational studies are always tentative.
+This contributes to incomplete adjustment and uncertainty in observational estimates. Note: unknown component causes are not automatically confounders — confounding requires a common cause of both exposure and outcome. Unknown components may be unmeasured causal factors, parts of mechanisms unrelated to the study exposure, or sources of variability we have not yet characterized.
 
 #### Prevention Implications
 
-**You only need to remove ONE component from a sufficient cause to prevent disease through that pathway.**
+**Removing any one component from a sufficient cause prevents disease through that pathway** — but with an important population-level framing.
 
 This means:
-- Even modest exposures are worth targeting if they appear in many pies
+- Even modest exposures are worth targeting if they appear in many pathways
 - You don't need to address all causes simultaneously
 - Removing a common component (like smoking) disrupts many complete mechanisms at once
+
+**Two caveats for students:** First, we rarely know which sufficient cause any individual is "on" — prevention works probabilistically across populations, not deterministically for individuals. Second, removing a component prevents only the pathways that include it; other sufficient causes remain.
 
 **This is the theoretical basis for PAR% as a public health metric.**
             """)
@@ -7375,7 +7381,7 @@ Two component causes that appear in the same sufficient cause. Their joint effec
 Time between the action of a component cause and the completion of the sufficient cause (initiation of disease). Different from latency period (disease initiation to detection).
 
 **PAR% and the Causal Pies**
-PAR% reflects how many sufficient causes contain a given component — how many "pies" it appears in. A common exposure with modest RR can have high PAR% because it completes many pathways. Removing it disrupts all those pathways simultaneously.
+PAR% reflects both how often a component participates in causal mechanisms and how common it is in the population. A component appearing in many pathways but rare in the population can have modest PAR%. A common exposure with even modest RR can have high PAR% because it participates in many mechanisms across many people. Removing it disrupts all those pathways simultaneously.
 
 **Outbreak Investigation — The 10 Steps**
 Systematic framework: (1) Prepare for field work, (2) Establish outbreak exists, (3) Verify diagnosis, (4) Construct case definition, (5) Find cases systematically, (6) Describe by person/place/time, (7) Develop hypotheses, (8) Test hypotheses analytically, (9) Implement control measures, (10) Communicate findings. Steps 9 and 10 begin as early as possible — do not wait for complete investigation.

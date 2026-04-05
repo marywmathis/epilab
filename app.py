@@ -3883,7 +3883,36 @@ An **epidemic curve (epi curve)** is a histogram of case counts by time of sympt
             x_label   = preset["x_label"]
             max_count = max(counts) if counts else 1
 
-            # ---- Build SVG via components.html so it actually renders ----
+            # ── Axis scaling ────────────────────────────────────────────────
+            # Y-axis: nice tick interval, y_max slightly above max bar
+            def nice_tick_interval(data_max):
+                """Return a round tick interval giving 4-7 ticks."""
+                if data_max <= 0: return 1
+                if data_max <= 5: return 1   # small counts: tick every 1
+                raw = data_max / 5          # aim for ~5 ticks
+                magnitude = 10 ** _math.floor(_math.log10(raw))
+                candidates = [1, 2, 5, 10]
+                for c in candidates:
+                    val = c * magnitude
+                    if val >= raw:
+                        return max(1, int(val))
+                return max(1, int(10 * magnitude))
+
+            y_tick_interval = nice_tick_interval(max_count)
+            y_max = y_tick_interval * (_math.ceil(max_count / y_tick_interval) + 1)
+            y_ticks_vals = list(range(0, y_max + 1, y_tick_interval))
+
+            # X-axis: evenly spaced labels — target ~8-12 labels
+            n_bars = len(counts)
+            target_x_labels = min(12, n_bars)
+            x_step = max(1, round(n_bars / target_x_labels))
+            # Round x_step to a nice number
+            for nice in [1, 2, 5, 10, 20, 25, 50, 100]:
+                if nice >= x_step:
+                    x_step = nice
+                    break
+
+            # ---- Build SVG ------------------------------------------------
             chart_w   = 700
             chart_h   = 240
             pad_l     = 52
@@ -3892,34 +3921,37 @@ An **epidemic curve (epi curve)** is a histogram of case counts by time of sympt
             pad_r     = 20
             plot_w    = chart_w - pad_l - pad_r
             plot_h    = chart_h - pad_b - pad_t
-            n_bars    = len(counts)
             bar_gap   = 1
             bar_w     = max(2.0, (plot_w - bar_gap * (n_bars - 1)) / n_bars)
 
             def xp(i):
                 return pad_l + i * (bar_w + bar_gap)
             def yp(c):
-                return pad_t + plot_h - (c / max_count) * plot_h if max_count > 0 else pad_t + plot_h
+                return pad_t + plot_h - (c / y_max) * plot_h
 
             bars = ""
             for i, c in enumerate(counts):
-                bh = (c / max_count) * plot_h if max_count > 0 else 0
+                bh = (c / y_max) * plot_h if y_max > 0 else 0
                 bars += f'<rect x="{round(xp(i),1)}" y="{round(yp(c),1)}" width="{round(bar_w,1)}" height="{round(bh,1)}" fill="{color}" rx="1" opacity="0.82"/>'
 
-            # y ticks
+            # Y ticks — evenly spaced, always start at 0
             y_ticks = ""
-            for frac in [0, 0.25, 0.5, 0.75, 1.0]:
-                val = round(max_count * frac)
-                ty  = round(pad_t + plot_h - frac * plot_h, 1)
-                y_ticks += f'<line x1="{pad_l}" y1="{ty}" x2="{pad_l + plot_w}" y2="{ty}" stroke="#ececec" stroke-width="1"/>'
-                y_ticks += f'<text x="{pad_l - 6}" y="{ty + 4}" text-anchor="end" font-size="11" fill="#999">{val}</text>'
+            for val in y_ticks_vals:
+                ty = round(yp(val), 1)
+                if pad_t - 4 <= ty <= pad_t + plot_h + 4:  # only draw if in range
+                    y_ticks += f'<line x1="{pad_l}" y1="{ty}" x2="{pad_l + plot_w}" y2="{ty}" stroke="#ececec" stroke-width="1"/>'
+                    y_ticks += f'<text x="{pad_l - 6}" y="{ty + 4}" text-anchor="end" font-size="11" fill="#999">{val}</text>'
 
-            # x labels
-            step   = max(1, n_bars // 10)
+            # X labels — evenly spaced
             x_lbls = ""
-            for i in range(0, n_bars, step):
+            for i in range(0, n_bars, x_step):
                 lx = round(xp(i) + bar_w / 2, 1)
                 x_lbls += f'<text x="{lx}" y="{chart_h - 4}" text-anchor="middle" font-size="10" fill="#999">{x_vals[i]}</text>'
+            # Always label the last value if not already labeled
+            last_i = n_bars - 1
+            if last_i % x_step != 0:
+                lx = round(xp(last_i) + bar_w / 2, 1)
+                x_lbls += f'<text x="{lx}" y="{chart_h - 4}" text-anchor="middle" font-size="10" fill="#999">{x_vals[last_i]}</text>'
 
             # axis lines
             axes = (

@@ -4448,6 +4448,8 @@ elif current_page == "screening":
             npv = d / total_neg if total_neg > 0 else 0
             acc = (a + d) / N if N > 0 else 0
             prev = total_disease / N
+            lr_pos = sens / (1 - spec) if spec < 1 else float('inf')
+            lr_neg = (1 - sens) / spec if spec > 0 else float('inf')
 
             col1, col2, col3, col4, col5 = st.columns(5)
             col1.metric("Sensitivity", f"{round(sens*100,1)}%")
@@ -4455,6 +4457,50 @@ elif current_page == "screening":
             col3.metric("PPV", f"{round(ppv*100,1)}%")
             col4.metric("NPV", f"{round(npv*100,1)}%")
             col5.metric("Prevalence", f"{round(prev*100,1)}%")
+
+            # LR row
+            st.markdown("##### Likelihood Ratios")
+            lrc1, lrc2, lrc3 = st.columns([1, 1, 2])
+            lrp_str = f"{round(lr_pos, 2)}" if lr_pos != float('inf') else "∞"
+            lrn_str = f"{round(lr_neg, 3)}"
+
+            # Interpret LR+
+            if lr_pos >= 10:
+                lrp_interp = "🟢 Strong rule-in (≥10)"
+            elif lr_pos >= 5:
+                lrp_interp = "🟡 Moderate rule-in (5–10)"
+            elif lr_pos >= 2:
+                lrp_interp = "🟠 Weak rule-in (2–5)"
+            else:
+                lrp_interp = "🔴 Uninformative (<2)"
+
+            # Interpret LR−
+            if lr_neg <= 0.1:
+                lrn_interp = "🟢 Strong rule-out (≤0.1)"
+            elif lr_neg <= 0.2:
+                lrn_interp = "🟡 Moderate rule-out (0.1–0.2)"
+            elif lr_neg <= 0.5:
+                lrn_interp = "🟠 Weak rule-out (0.2–0.5)"
+            else:
+                lrn_interp = "🔴 Uninformative (>0.5)"
+
+            with lrc1:
+                st.metric("LR+", lrp_str)
+                st.caption(f"Sens ÷ (1−Spec) = {round(sens,3)} ÷ {round(1-spec,3)}")
+                st.caption(lrp_interp)
+            with lrc2:
+                st.metric("LR−", lrn_str)
+                st.caption(f"(1−Sens) ÷ Spec = {round(1-sens,3)} ÷ {round(spec,3)}")
+                st.caption(lrn_interp)
+            with lrc3:
+                st.info("""
+**Reading likelihood ratios:**
+- **LR+ ≥ 10** → positive result strongly increases disease probability
+- **LR+ 2–5** → modest increase; useful but not definitive
+- **LR− ≤ 0.1** → negative result strongly decreases disease probability
+- **LR− 0.2–0.5** → modest decrease; useful but not definitive
+- **LR = 1.0** → test result changes nothing
+                """)
 
             st.divider()
             if ppv < 0.5:
@@ -4471,6 +4517,8 @@ elif current_page == "screening":
 | PPV | a ÷ (a+b) | {a} ÷ {total_pos} | **{round(ppv*100,1)}%** |
 | NPV | d ÷ (c+d) | {d} ÷ {total_neg} | **{round(npv*100,1)}%** |
 | Accuracy | (a+d) ÷ N | {a+d} ÷ {N} | **{round(acc*100,1)}%** |
+| LR+ | Sens ÷ (1−Spec) | {round(sens,3)} ÷ {round(1-spec,3)} | **{lrp_str}** |
+| LR− | (1−Sens) ÷ Spec | {round(1-sens,3)} ÷ {round(spec,3)} | **{lrn_str}** |
                 """)
 
     elif screen_section == "3️⃣ Prevalence Effect on PPV":

@@ -63,7 +63,104 @@ if not st.session_state["authenticated"]:
 # HELPER FUNCTIONS
 # ==================================================
 
-def draw_ci(label, estimate, ci_low, ci_high):
+def interpret_nnt(nnt, is_benefit, treatment_label, control_label, outcome_label):
+    """Render a full contextual interpretation block for NNT or NNH."""
+    label = "NNT" if is_benefit else "NNH"
+    direction_word = "prevent" if is_benefit else "cause"
+    comparison = f"compared to {control_label}" if control_label else ""
+
+    # Contextual scale
+    if nnt <= 5:
+        scale_label = "Very high impact"
+        scale_color = "#1a7a1a" if is_benefit else "#b71c1c"
+        scale_note  = "Exceptionally few people need treatment/exposure for one event. Seen in highly effective treatments or very toxic exposures."
+    elif nnt <= 15:
+        scale_label = "High impact"
+        scale_color = "#2e7d32" if is_benefit else "#c62828"
+        scale_note  = "Strong real-world effect. Most clinically meaningful interventions fall here."
+    elif nnt <= 50:
+        scale_label = "Moderate impact"
+        scale_color = "#f57f17"
+        scale_note  = "Meaningful but modest. Common in preventive interventions applied to lower-risk populations."
+    elif nnt <= 200:
+        scale_label = "Small impact"
+        scale_color = "#e65100"
+        scale_note  = "Many people must be treated/exposed for one event. Typical of mass-population screening or low-prevalence exposures."
+    else:
+        scale_label = "Marginal impact"
+        scale_color = "#6a1a1a" if not is_benefit else "#4a4a4a"
+        scale_note  = f"Very large {label} — the absolute risk difference is tiny. Even if statistically significant, clinical/public health significance is limited."
+
+    main_interp = (
+        f"**{label} = {nnt}** — you must treat/expose **{nnt} people** with **{treatment_label}** "
+        f"to {direction_word} **one additional {outcome_label}** {comparison}."
+    )
+
+    scale_html = f"""
+<div style="margin:10px 0 6px 0; background:#f8f8f8; border-left:4px solid {scale_color};
+     padding:10px 16px; border-radius:4px; font-size:13px;">
+  <span style="font-weight:700; color:{scale_color};">{scale_label}</span> &nbsp;|&nbsp;
+  <span style="color:#555;">{scale_note}</span>
+</div>
+"""
+
+    # Reference scale table
+    scale_table = """
+<div style="font-size:12px; margin-top:10px; color:#555;">
+<strong>Contextual scale for {lbl}:</strong>
+<table style="border-collapse:collapse; width:100%; margin-top:6px;">
+  <tr style="background:#f0f0f0;">
+    <th style="padding:5px 10px; text-align:left; border:1px solid #ddd;">{lbl} value</th>
+    <th style="padding:5px 10px; text-align:left; border:1px solid #ddd;">Interpretation</th>
+    <th style="padding:5px 10px; text-align:left; border:1px solid #ddd;">Example</th>
+  </tr>
+  <tr><td style="padding:5px 10px; border:1px solid #ddd;">≤ 5</td>
+      <td style="padding:5px 10px; border:1px solid #ddd;">Very high impact</td>
+      <td style="padding:5px 10px; border:1px solid #ddd; color:#888;">IV antibiotics for bacterial meningitis (NNT ≈ 2–3)</td></tr>
+  <tr style="background:#f9f9f9;"><td style="padding:5px 10px; border:1px solid #ddd;">6–15</td>
+      <td style="padding:5px 10px; border:1px solid #ddd;">High impact</td>
+      <td style="padding:5px 10px; border:1px solid #ddd; color:#888;">Statins in high-risk patients (NNT ≈ 10–20)</td></tr>
+  <tr><td style="padding:5px 10px; border:1px solid #ddd;">16–50</td>
+      <td style="padding:5px 10px; border:1px solid #ddd;">Moderate impact</td>
+      <td style="padding:5px 10px; border:1px solid #ddd; color:#888;">Statins in average-risk patients (NNT ≈ 50)</td></tr>
+  <tr style="background:#f9f9f9;"><td style="padding:5px 10px; border:1px solid #ddd;">51–200</td>
+      <td style="padding:5px 10px; border:1px solid #ddd;">Small impact</td>
+      <td style="padding:5px 10px; border:1px solid #ddd; color:#888;">Mammography screening (NNT ≈ 100–200)</td></tr>
+  <tr><td style="padding:5px 10px; border:1px solid #ddd;">&gt; 200</td>
+      <td style="padding:5px 10px; border:1px solid #ddd;">Marginal impact</td>
+      <td style="padding:5px 10px; border:1px solid #ddd; color:#888;">Population salt reduction (NNT ≈ 1000+)</td></tr>
+</table>
+<p style="margin-top:8px; font-size:11px; color:#888;">
+⚠️ {lbl} is always relative to a baseline risk — the same intervention can have different {lbl} values in high-risk vs. low-risk populations.
+Always interpret {lbl} alongside the absolute risk difference and the severity of the outcome.
+</p>
+</div>
+""".format(lbl=label)
+
+    if is_benefit:
+        st.success(main_interp)
+    else:
+        st.error(main_interp)
+
+    import streamlit.components.v1 as _nnt_comp
+    _nnt_comp.html(f"<div style='font-family:sans-serif;'>{scale_html}</div>", height=70, scrolling=False)
+
+    with st.expander(f"📏 {label} Contextual Scale & Interpretation Guide"):
+        st.markdown(f"""
+**What does {label} = {nnt} mean in plain language?**
+
+{"NNT measures treatment benefit: out of every " + str(int(nnt)) + " people treated with " + treatment_label + ", exactly one person avoids " + outcome_label + " who would otherwise have experienced it. The other " + str(int(nnt)-1) + " people either were never going to get " + outcome_label + " anyway, or got it despite treatment." if is_benefit else
+ "NNH measures treatment/exposure harm: out of every " + str(int(nnt)) + " people exposed to " + treatment_label + ", exactly one additional person experiences " + outcome_label + " who would not have without the exposure. The other " + str(int(nnt)-1) + " experience no additional harm from this exposure."}
+
+**Why does baseline risk matter?**
+The same RR can produce very different NNT values depending on who is being treated:
+- High-risk population (10% baseline): RR 0.5 → ARD 5% → NNT = **20**
+- Low-risk population (1% baseline): RR 0.5 → ARD 0.5% → NNT = **200**
+Same relative benefit, 10× different absolute benefit.
+        """)
+        st.markdown(scale_table, unsafe_allow_html=True)
+
+
     significant = not (ci_low <= 1 <= ci_high)
     color = "#2e7d32" if significant else "#c0392b"
     sig_text = "CI does not cross 1 → statistically significant" if significant else "CI crosses 1 → not statistically significant"
@@ -4944,15 +5041,13 @@ elif current_page == "measures_association":
 **Absolute risk difference:** Among every 100 {exp_label}, **{round(ar_abs*100,1)} more** develop {out_label} compared to {unexp_label}.
 
 **AR% (Attributable Fraction in Exposed):** Of all {out_label} cases occurring in {exp_label}, **{round(ar_pct,1)}%** are attributable to the exposure itself — the remainder would have occurred anyway.
-
-**NNH:** Approximately **{round(nnt_nnh,1)} people** would need to be exposed to produce one additional case of {out_label} beyond the background rate.
                                 """)
+                                interpret_nnt(round(nnt_nnh, 1), False, exp_label, unexp_label, out_label)
                             else:
                                 st.markdown(f"""
 **Absolute risk difference:** Among every 100 {exp_label}, **{round(abs(ar_abs)*100,1)} fewer** develop {out_label} compared to {unexp_label}.
-
-**NNT:** Approximately **{round(nnt_nnh,1)} people** would need to receive the exposure/treatment to prevent one case of {out_label}.
                                 """)
+                                interpret_nnt(round(nnt_nnh, 1), True, exp_label, unexp_label, out_label)
 
                         # ── Design caution ────────────────────────────────────
                         if is_cs:
@@ -5132,8 +5227,9 @@ elif current_page == "advanced_measures":
                 col1.metric(f"Risk ({label_treatment})", f"{round(r_treatment*100,1)}%")
                 col2.metric(f"Risk ({label_control})", f"{round(r_control*100,1)}%")
                 col3.metric("Risk Difference", f"{round(risk_diff*100,1)}%")
-                if r_treatment < r_control: st.success(f"NNT = {nnt}: treat {nnt} people to prevent one additional outcome.")
-                else: st.error(f"NNH = {nnt}: {nnt} people exposed before one additional harm expected.")
+                is_benefit = r_treatment < r_control
+                interpret_nnt(nnt, is_benefit, label_treatment, label_control,
+                              "the outcome")
 
     elif measure == "Hazard Ratio (HR)":
         st.subheader("Hazard Ratio (HR)")
@@ -6268,8 +6364,8 @@ IRR = {round(c1/pt1,6)} ÷ {round(c2/pt2,6)} = **{round(irr,3)}**
                         is_benefit = d["r_treatment"] < d["r_control"]
                         label = "NNT" if is_benefit else "NNH"
                         st.metric(label, nnt)
-                        if is_benefit: st.success(f"NNT = {nnt}: treat {nnt} people to prevent one additional {d['outcome_label']}.")
-                        else: st.error(f"NNH = {nnt}: {nnt} people exposed before one additional {d['outcome_label']}.")
+                        interpret_nnt(nnt, is_benefit, d["treatment_label"],
+                                      d["control_label"], d["outcome_label"])
                 elif d["type"] == "hr":
                     col1,col2,col3 = st.columns(3)
                     col1.metric("HR", d["hr"]); col2.metric("CI Lower", d["ci_low"]); col3.metric("CI Upper", d["ci_high"])

@@ -4831,20 +4831,134 @@ elif current_page == "measures_association":
                         ci_low_or = math.exp(math.log(or_val)-1.96*se_log_or)
                         ci_high_or = math.exp(math.log(or_val)+1.96*se_log_or)
 
+                        # Derived measures
+                        risk_exp   = a/(a+b)
+                        risk_unexp = c/(c+d)
+                        ar_abs     = risk_exp - risk_unexp
+                        ar_pct     = (ar_abs / risk_exp * 100) if risk_exp > 0 else 0
+                        nnt_nnh    = abs(1/ar_abs) if ar_abs != 0 else float("inf")
+
+                        exp_label  = row_names[0] if row_names[0] else "exposed group"
+                        unexp_label = row_names[1] if row_names[1] else "unexposed group"
+                        out_label  = col_names[0] if col_names[0] else "the outcome"
+                        risk_word  = "prevalence" if is_cs else "risk"
+
+                        # Magnitude helper
+                        def rr_magnitude(v):
+                            v = abs(v - 1)
+                            if v < 0.1: return "negligible"
+                            elif v < 0.5: return "weak"
+                            elif v < 1.0: return "moderate"
+                            elif v < 2.0: return "strong"
+                            else: return "very strong"
+
+                        # ── RR / PR ──────────────────────────────────────────
                         st.subheader(f"{'Prevalence Ratio (PR)' if is_cs else 'Risk Ratio (RR)'}")
-                        if ci_low_rr <= 1 <= ci_high_rr: st.warning(f"{pabbr} = {round(rr,2)} — CI includes 1. Not significant.")
+
+                        sig_rr = not (ci_low_rr <= 1 <= ci_high_rr)
+                        direction_rr = "higher" if rr > 1 else "lower"
+                        mag_rr = rr_magnitude(rr)
+
+                        if sig_rr:
+                            st.success(f"{pabbr} = {round(rr,2)} (95% CI: {round(ci_low_rr,2)}–{round(ci_high_rr,2)})")
                         else:
-                            direction = "higher" if rr > 1 else "lower"
-                            st.success(f"{pabbr} = {round(rr,2)} (95% CI: {round(ci_low_rr,2)}–{round(ci_high_rr,2)}). {round(rr,2)}× {direction}.")
+                            st.warning(f"{pabbr} = {round(rr,2)} (95% CI: {round(ci_low_rr,2)}–{round(ci_high_rr,2)}) — CI includes 1")
+
+                        # Plain-language interpretation
+                        if rr > 1:
+                            interp_rr = (
+                                f"The {risk_word} of **{out_label}** among **{exp_label}** is "
+                                f"**{round(rr,2)} times higher** than among **{unexp_label}** "
+                                f"({round(risk_exp*100,1)}% vs. {round(risk_unexp*100,1)}%). "
+                                f"This is a **{mag_rr}** positive association."
+                            )
+                        elif rr < 1:
+                            interp_rr = (
+                                f"The {risk_word} of **{out_label}** among **{exp_label}** is "
+                                f"**{round((1-rr)*100,1)}% lower** than among **{unexp_label}** "
+                                f"({round(risk_exp*100,1)}% vs. {round(risk_unexp*100,1)}%). "
+                                f"This is a **{mag_rr}** negative association (possible protective effect)."
+                            )
+                        else:
+                            interp_rr = f"{pabbr} = 1.0 — no difference in {risk_word} between groups."
+
+                        ci_interp_rr = (
+                            f"We are 95% confident the true population {pabbr} lies between "
+                            f"**{round(ci_low_rr,2)} and {round(ci_high_rr,2)}**. "
+                            f"{'The CI excludes 1, consistent with a statistically significant association.' if sig_rr else 'The CI includes 1, consistent with a non-significant result — the true value could be no association.'}"
+                        )
+
+                        st.markdown(interp_rr)
+                        st.caption(ci_interp_rr)
                         draw_ci(pabbr, rr, ci_low_rr, ci_high_rr)
 
+                        # ── OR ───────────────────────────────────────────────
                         if design != "Cross-sectional":
                             st.subheader("Odds Ratio (OR)")
-                            if ci_low_or <= 1 <= ci_high_or: st.warning(f"OR = {round(or_val,2)} — Not significant.")
+                            sig_or = not (ci_low_or <= 1 <= ci_high_or)
+                            direction_or = "higher" if or_val > 1 else "lower"
+                            mag_or = rr_magnitude(or_val)
+
+                            if sig_or:
+                                st.success(f"OR = {round(or_val,2)} (95% CI: {round(ci_low_or,2)}–{round(ci_high_or,2)})")
                             else:
-                                direction = "higher" if or_val > 1 else "lower"
-                                st.success(f"OR = {round(or_val,2)} (95% CI: {round(ci_low_or,2)}–{round(ci_high_or,2)}). {round(or_val,2)}× {direction}.")
+                                st.warning(f"OR = {round(or_val,2)} (95% CI: {round(ci_low_or,2)}–{round(ci_high_or,2)}) — CI includes 1")
+
+                            if design == "Case-Control":
+                                or_design_note = (
+                                    f"In a **case-control study**, the OR estimates the odds of exposure in cases vs. controls — "
+                                    f"**not** the risk or probability of disease. "
+                                    f"The OR of **{round(or_val,2)}** means the odds of **{exp_label}** exposure were "
+                                    f"{'**' + str(round(or_val,2)) + '× higher** in cases' if or_val > 1 else '**' + str(round(1/or_val,2)) + '× lower** in cases'} "
+                                    f"than in controls. "
+                                    f"{'When outcome is rare, OR ≈ RR as a rough heuristic.' if (a+c)/(a+b+c+d) < 0.10 else 'Outcome prevalence here is not low, so OR and RR diverge — OR exaggerates the magnitude of association.'}"
+                                )
+                            else:
+                                or_design_note = (
+                                    f"The odds of **{out_label}** among **{exp_label}** are "
+                                    f"**{round(or_val,2)}× {'higher' if or_val > 1 else 'lower'}** than among **{unexp_label}**. "
+                                    f"This is a **{mag_or}** association. "
+                                    f"{'Outcome prevalence here is low, so OR ≈ RR as a rough heuristic.' if (a+c)/(a+b+c+d) < 0.10 else 'Outcome prevalence is not low — OR diverges from RR and should not be interpreted as a risk ratio.'}"
+                                )
+
+                            st.markdown(or_design_note)
+                            ci_interp_or = (
+                                f"95% CI: **{round(ci_low_or,2)}–{round(ci_high_or,2)}**. "
+                                f"{'CI excludes 1 — statistically significant.' if sig_or else 'CI includes 1 — result is not statistically significant at α=0.05.'}"
+                            )
+                            st.caption(ci_interp_or)
                             draw_ci("OR", or_val, ci_low_or, ci_high_or)
+
+                        # ── AR% & NNT ─────────────────────────────────────────
+                        with st.expander("📐 Attributable Risk & NNT/NNH"):
+                            col_ar1, col_ar2, col_ar3 = st.columns(3)
+                            col_ar1.metric("Absolute Risk Difference", f"{round(ar_abs*100,2)} pp",
+                                           help="Risk in exposed minus risk in unexposed (percentage points)")
+                            col_ar2.metric("AR% (Attributable Fraction)", f"{round(ar_pct,1)}%",
+                                           help="What % of disease in exposed is attributable to the exposure?")
+                            col_ar3.metric("NNT/NNH", f"{round(nnt_nnh,1)}",
+                                           help="Number needed to treat/harm — how many people exposed per extra case?")
+
+                            if ar_abs > 0:
+                                st.markdown(f"""
+**Absolute risk difference:** Among every 100 {exp_label}, **{round(ar_abs*100,1)} more** develop {out_label} compared to {unexp_label}.
+
+**AR% (Attributable Fraction in Exposed):** Of all {out_label} cases occurring in {exp_label}, **{round(ar_pct,1)}%** are attributable to the exposure itself — the remainder would have occurred anyway.
+
+**NNH:** Approximately **{round(nnt_nnh,1)} people** would need to be exposed to produce one additional case of {out_label} beyond the background rate.
+                                """)
+                            else:
+                                st.markdown(f"""
+**Absolute risk difference:** Among every 100 {exp_label}, **{round(abs(ar_abs)*100,1)} fewer** develop {out_label} compared to {unexp_label}.
+
+**NNT:** Approximately **{round(nnt_nnh,1)} people** would need to receive the exposure/treatment to prevent one case of {out_label}.
+                                """)
+
+                        # ── Design caution ────────────────────────────────────
+                        if is_cs:
+                            st.info("⏱️ **Cross-sectional caution:** Prevalence ratios from cross-sectional data cannot establish temporal precedence (exposure before outcome). Associations observed here may reflect disease duration as much as incidence.")
+                        elif design == "Case-Control":
+                            st.info("📋 **Case-control note:** Attack rates and RR cannot be directly calculated from case-control data — only OR. The OR above is the appropriate measure for this design.")
 
                         rr_or_explanation_expander(a, b, c, d, row_names, col_names,
                             rr, or_val, ci_low_rr, ci_high_rr, ci_low_or, ci_high_or,
@@ -4871,10 +4985,24 @@ elif current_page == "measures_association":
                 col2.metric(f"Rate ({group_names[1]})", f"{round(r2*100000,1)}/100k person-time")
                 col3.metric("IRR", round(irr,3))
                 st.write(f"95% CI: ({round(ci_low_irr,3)}, {round(ci_high_irr,3)})")
-                if ci_low_irr <= 1 <= ci_high_irr: st.warning("CI includes 1. Not significant.")
+                if ci_low_irr <= 1 <= ci_high_irr:
+                    st.warning(f"IRR = {round(irr,2)} (95% CI: {round(ci_low_irr,3)}–{round(ci_high_irr,3)}) — CI includes 1. No significant difference in rates.")
                 else:
                     direction = "higher" if irr > 1 else "lower"
-                    st.success(f"IRR = {round(irr,2)} — Rate in {group_names[0]} is {round(irr,2)}× {direction}.")
+                    st.success(f"IRR = {round(irr,2)} (95% CI: {round(ci_low_irr,3)}–{round(ci_high_irr,3)})")
+                    if irr > 1:
+                        st.markdown(
+                            f"The incidence rate in **{group_names[0]}** is **{round(irr,2)}× higher** "
+                            f"than in **{group_names[1]}** ({round(r1*100000,1)} vs. {round(r2*100000,1)} per 100,000 person-time). "
+                            f"We are 95% confident the true IRR lies between **{round(ci_low_irr,2)} and {round(ci_high_irr,2)}**, "
+                            f"which excludes 1 — consistent with a statistically significant association."
+                        )
+                    else:
+                        st.markdown(
+                            f"The incidence rate in **{group_names[0]}** is **{round((1-irr)*100,1)}% lower** "
+                            f"than in **{group_names[1]}** ({round(r1*100000,1)} vs. {round(r2*100000,1)} per 100,000 person-time). "
+                            f"95% CI: **{round(ci_low_irr,2)}–{round(ci_high_irr,2)}**, excluding 1."
+                        )
                 draw_ci("IRR", irr, ci_low_irr, ci_high_irr)
 
     st.markdown("---")

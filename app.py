@@ -161,6 +161,7 @@ Same relative benefit, 10× different absolute benefit.
         st.markdown(scale_table, unsafe_allow_html=True)
 
 
+def draw_ci(label, estimate, ci_low, ci_high):
     significant = not (ci_low <= 1 <= ci_high)
     color = "#2e7d32" if significant else "#c0392b"
     sig_text = "CI does not cross 1 → statistically significant" if significant else "CI crosses 1 → not statistically significant"

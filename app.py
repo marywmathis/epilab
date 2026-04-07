@@ -4418,9 +4418,37 @@ elif current_page == "screening":
 
         SCREEN_PRESETS = {
             "None — enter my own": None,
-            "Mammography & Breast Cancer (50-year-olds)": {"a":10,"b":89,"c":1,"d":900,"desc":"Approximate values based on typical screening mammography performance in average-risk 50-year-old women. Prevalence ~1%."},
-            "Rapid Strep Test": {"a":75,"b":10,"c":15,"d":900,"desc":"Rapid antigen test for Group A strep. Sensitivity ~83%, Specificity ~98%."},
-            "PSA Screening (>4 ng/mL) & Prostate Cancer": {"a":70,"b":300,"c":30,"d":600,"desc":"PSA threshold of 4 ng/mL. Relatively low specificity leads to many false positives."},
+            "Mammography & Breast Cancer (50-year-olds)": {
+                "a": 84, "b": 107, "c": 16, "d": 793,
+                "desc": (
+                    "Based on US Breast Cancer Surveillance Consortium (BCSC) data for women aged 50–59. "
+                    "Sensitivity ~84%, Specificity ~88%, Prevalence ~10% (symptomatic/referred population). "
+                    "Note: in true population screening (prevalence ~1%), PPV drops dramatically — "
+                    "use the Prevalence Effect on PPV section to explore this. "
+                    "Source: Kerlikowske et al., JAMA 1996; BCSC data."
+                )
+            },
+            "Rapid Strep Test (RADT)": {
+                "a": 257, "b": 32, "c": 43, "d": 668,
+                "desc": (
+                    "Based on Cochrane systematic review (Cohen et al., 2016) — 105 evaluations, 58,244 children. "
+                    "Summary sensitivity 85.6% (95% CI 83.3–87.6%), specificity 95.4% (95% CI 94.5–96.2%). "
+                    "Prevalence ~30% in symptomatic patients presenting with pharyngitis. "
+                    "High specificity means positive result is reliable; moderate sensitivity means negative result "
+                    "should prompt culture confirmation in children."
+                )
+            },
+            "PSA Screening (>4 ng/mL) & Prostate Cancer": {
+                "a": 31, "b": 54, "c": 119, "d": 796,
+                "desc": (
+                    "Based on the Prostate Cancer Prevention Trial (PCPT) placebo arm. "
+                    "At the standard 4 ng/mL cutoff: sensitivity ~21%, specificity ~94%. "
+                    "Prevalence ~15% in screened men ≥55 years. "
+                    "Note the very low sensitivity — nearly 80% of cancers are missed at this threshold. "
+                    "This is why PSA screening guidelines remain contested. "
+                    "Source: Thompson et al., J Natl Cancer Inst 2005; Etzioni et al."
+                )
+            },
         }
 
         preset_choice = st.selectbox("Load a preset:", list(SCREEN_PRESETS.keys()), key="screen_preset")

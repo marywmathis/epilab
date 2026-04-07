@@ -4456,12 +4456,28 @@ elif current_page == "screening":
         if preset and preset.get("desc"):
             st.info(preset["desc"])
 
+        # Force widget values to update when preset changes
+        if preset:
+            # Only overwrite if the preset selection just changed
+            prev_key = "screen_preset_prev"
+            if st.session_state.get(prev_key) != preset_choice:
+                st.session_state["sc_a"] = preset["a"]
+                st.session_state["sc_b"] = preset["b"]
+                st.session_state["sc_c"] = preset["c"]
+                st.session_state["sc_d"] = preset["d"]
+                st.session_state[prev_key] = preset_choice
+
         col1, col2, col3, col4 = st.columns(4)
-        defaults = preset if preset else {"a":90,"b":10,"c":10,"d":890}
-        a = col1.number_input("a (TP)", min_value=0, value=defaults["a"], key="sc_a")
-        b = col2.number_input("b (FP)", min_value=0, value=defaults["b"], key="sc_b")
-        c = col3.number_input("c (FN)", min_value=0, value=defaults["c"], key="sc_c")
-        d = col4.number_input("d (TN)", min_value=0, value=defaults["d"], key="sc_d")
+        defaults = preset if preset else {"a": 90, "b": 10, "c": 10, "d": 890}
+        # Initialize session state keys if not yet set
+        for k, v in [("sc_a", defaults["a"]), ("sc_b", defaults["b"]),
+                     ("sc_c", defaults["c"]), ("sc_d", defaults["d"])]:
+            if k not in st.session_state:
+                st.session_state[k] = v
+        a = col1.number_input("a (TP)", min_value=0, key="sc_a")
+        b = col2.number_input("b (FP)", min_value=0, key="sc_b")
+        c = col3.number_input("c (FN)", min_value=0, key="sc_c")
+        d = col4.number_input("d (TN)", min_value=0, key="sc_d")
 
         if st.button("Calculate Test Performance"):
             total_disease = a + c

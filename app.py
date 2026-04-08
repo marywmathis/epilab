@@ -453,34 +453,59 @@ if current_page == "foundations":
     if found_section == "1️⃣ Epidemiology Triangle":
         st.subheader("The Epidemiology Triangle (Epidemiologic Triad)")
         st.markdown("""
-The **epidemiology triangle** is one of the oldest and most widely used frameworks for understanding why disease occurs in populations. It holds that disease results from the interaction of three elements: **agent**, **host**, and **environment**. Remove or modify any one element, and the disease dynamic changes.
+The **epidemiology triangle** is one of the oldest and most widely used frameworks for understanding why disease occurs in populations. It holds that disease results from the interaction of three elements: **agent**, **host**, and **environment** — with **time** at the center, recognizing that the relationship among all three unfolds over time.
 
-This model was developed primarily for infectious disease but has been extended to chronic disease, injury, and behavioral health.
+Remove or modify any one element, and the disease dynamic changes.
         """)
 
-        st.markdown("""
-<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:28px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:14px;margin-bottom:20px;color:#1a202c;">The Epidemiology Triangle</div>
-  <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
-    <div style="background:#fce4ec;border:2px solid #c62828;border-radius:10px;padding:12px 24px;font-weight:700;font-size:13px;color:#c62828;min-width:130px;">
-      AGENT<br><span style="font-size:10px;font-weight:400;color:#888;">What causes the disease</span>
-    </div>
-    <div style="font-size:22px;color:#555;margin:4px 0;">▼</div>
-    <div style="display:flex;gap:60px;align-items:center;">
-      <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:12px 20px;font-weight:700;font-size:13px;color:#1565c0;min-width:130px;text-align:center;">
-        HOST<br><span style="font-size:10px;font-weight:400;color:#888;">Who gets the disease</span>
-      </div>
-      <div style="font-size:18px;color:#555;">⟷</div>
-      <div style="background:#e8f5e9;border:2px solid #2e7d32;border-radius:10px;padding:12px 20px;font-weight:700;font-size:13px;color:#2e7d32;min-width:130px;text-align:center;">
-        ENVIRONMENT<br><span style="font-size:10px;font-weight:400;color:#888;">Where it occurs</span>
-      </div>
-    </div>
-    <div style="margin-top:14px;font-size:11px;color:#718096;font-style:italic;">
-      Disease occurs when an agent and a susceptible host come together in an environment that supports transmission.
-    </div>
-  </div>
+        import streamlit.components.v1 as _tri_comp
+        _tri_comp.html("""
+<div style="font-family:sans-serif;text-align:center;padding:10px 0;">
+<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#1a202c;">The Epidemiology Triangle</div>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 310" width="420" height="310">
+  <!-- Triangle outline -->
+  <polygon points="210,20 30,280 390,280" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
+  <!-- Triangle sides as colored lines -->
+  <line x1="210" y1="20" x2="30" y2="280" stroke="#1565c0" stroke-width="2.5" stroke-dasharray="6,3"/>
+  <line x1="210" y1="20" x2="390" y2="280" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="6,3"/>
+  <line x1="30" y1="280" x2="390" y2="280" stroke="#c62828" stroke-width="2.5" stroke-dasharray="6,3"/>
+
+  <!-- AGENT - top -->
+  <rect x="155" y="5" width="110" height="48" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+  <text x="210" y="26" font-size="13" font-weight="700" fill="#c62828" text-anchor="middle">AGENT</text>
+  <text x="210" y="42" font-size="9" fill="#888" text-anchor="middle">What causes disease</text>
+
+  <!-- HOST - bottom left -->
+  <rect x="5" y="258" width="110" height="48" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="60" y="279" font-size="13" font-weight="700" fill="#1565c0" text-anchor="middle">HOST</text>
+  <text x="60" y="295" font-size="9" fill="#888" text-anchor="middle">Who gets disease</text>
+
+  <!-- ENVIRONMENT - bottom right -->
+  <rect x="305" y="258" width="110" height="48" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+  <text x="360" y="279" font-size="13" font-weight="700" fill="#2e7d32" text-anchor="middle">ENVIRONMENT</text>
+  <text x="360" y="295" font-size="9" fill="#888" text-anchor="middle">Where it occurs</text>
+
+  <!-- TIME - center -->
+  <ellipse cx="210" cy="175" rx="52" ry="30" fill="#fff8e1" stroke="#f9a825" stroke-width="2"/>
+  <text x="210" y="171" font-size="12" font-weight="700" fill="#f57f17" text-anchor="middle">TIME</text>
+  <text x="210" y="185" font-size="9" fill="#888" text-anchor="middle">When it unfolds</text>
+
+  <!-- Arrows from center to vertices -->
+  <line x1="210" y1="145" x2="210" y2="58" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="162" y1="185" x2="105" y2="268" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arr)"/>
+  <line x1="258" y1="185" x2="318" y2="268" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <defs>
+    <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#f9a825"/>
+    </marker>
+  </defs>
+
+  <!-- Caption -->
+  <text x="210" y="305" font-size="9" fill="#94a3b8" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
+</svg>
 </div>
-        """, unsafe_allow_html=True)
+        """, height=330, scrolling=False)
 
         st.markdown("""
 | Element | Definition | Key factors |
@@ -488,6 +513,7 @@ This model was developed primarily for infectious disease but has been extended 
 | **Agent** | The cause of the disease — biological, chemical, physical, or nutritional | Infectivity, pathogenicity, virulence, dose |
 | **Host** | The person or animal that harbors the disease | Age, sex, genetics, immunity, behavior, nutritional status |
 | **Environment** | External conditions that affect the agent and host interaction | Climate, sanitation, housing, social determinants, season |
+| **Time** | The temporal dimension — incubation, duration, trends, seasonality | Incubation period, duration of infectiousness, secular trends |
         """)
 
         st.info("""
@@ -496,8 +522,9 @@ Each vertex represents a point of intervention:
 - **Agent** → destroy, deactivate, or reduce infectivity (disinfection, antibiotics, food safety)
 - **Host** → increase resistance (vaccination, nutrition, behavior change)
 - **Environment** → modify conditions that allow transmission (sanitation, housing, vector control)
+- **Time** → act early in the natural history; prevent chronic exposure; use time-limited interventions
 
-Public health interventions rarely target just one vertex. A comprehensive response addresses all three simultaneously.
+Public health interventions rarely target just one vertex. A comprehensive response addresses all simultaneously.
         """)
 
         st.markdown("#### ⚠️ Limitations of the triangle")
@@ -505,7 +532,7 @@ Public health interventions rarely target just one vertex. A comprehensive respo
 The epidemiology triangle was designed for **infectious disease with a single identifiable agent**. For chronic disease, mental health, and injury:
 - There is rarely a single agent — causes are **multifactorial**
 - Social and structural determinants don't fit neatly into "environment"
-- The model doesn't capture time, dose-response relationships, or causal pathways
+- The model doesn't capture dose-response relationships or causal pathways
 
 This is why more complex models — the **Web of Causation**, **Rothman's causal pies**, and **DAGs** — were developed as extensions and alternatives.
         """)
@@ -520,13 +547,14 @@ This is why more complex models — the **Web of Causation**, **Rothman's causal
             "Both agent and environment — they are the same intervention here",
         ], key="tri_q1")
         if tri_q == "Both agent and environment — they are the same intervention here":
-            st.success("✅ Correct. Housing remediation removes the lead (agent modification) by changing the physical environment. These two vertices are tightly linked here. This also illustrates a limitation of the triangle — agent and environment are not always separable.")
+            st.success("✅ Correct. Housing remediation removes the lead (agent modification) by changing the physical environment. These two vertices are tightly linked here — a known limitation of the model.")
         elif tri_q == "Agent — removes the lead from the environment":
-            st.warning("⚠️ Partially correct. Removing lead does target the agent, but the intervention mechanism is environmental modification (changing the housing). The distinction between agent and environment is blurry here, which is actually a known limitation of this model.")
+            st.warning("⚠️ Partially correct. Removing lead targets the agent, but the mechanism is environmental modification. The distinction blurs here, which illustrates a real limitation of the triangle.")
         elif tri_q == "Environment — modifies the condition supporting exposure":
-            st.warning("⚠️ Partially correct. You could also argue this is agent removal. The model's limitation shows: lead in paint is both the agent and an environmental condition. Full credit for either answer if you reason it through.")
+            st.warning("⚠️ Partially correct. You could argue agent removal as well. Full credit for either answer if you reason it through.")
         elif tri_q == "Host — increases resistance in children":
-            st.error("❌ Lead chelation therapy is a host-level intervention after exposure, but housing remediation is not host-targeted. It does not increase the child's biological resistance to lead.")
+            st.error("❌ Lead chelation treats exposure after the fact. Housing remediation doesn't increase biological resistance — it removes the source.")
+
 
 
     elif found_section == "2️⃣ Natural History & Levels of Prevention":
@@ -4785,16 +4813,59 @@ Descriptive epi precedes analytic epi. You cannot test a hypothesis you haven't 
         """)
 
         st.divider()
-        st.markdown("#### 🧠 Practice: Person, Place, or Time?")
-        ppt_q = st.radio(
-            "**Scenario:** An investigator notes that diabetes prevalence is higher in rural counties, among adults over 65, and has increased every year since 2000. Which variable is *secular trend*?",
-            ["— Select —", "Rural county — that's place", "Adults over 65 — that's person (age)", "Increasing every year since 2000 — that's time (secular trend)", "All three together — you can't separate them"],
-            key="ppt_q1"
-        )
-        if ppt_q == "Increasing every year since 2000 — that's time (secular trend)":
-            st.success("✅ Correct. A long-term directional change over years = secular trend. Rural county = place. Adults over 65 = person (age). All three together describe the distribution — which is the goal of descriptive epidemiology. The secular increase generates a hypothesis: what changed after 2000 that could drive this trend? (Obesity rates? Diagnostic criteria? Surveillance intensity?)")
-        elif ppt_q != "— Select —":
-            st.error("❌ Secular trend = a long-term directional change over time (years to decades). 'Increasing every year since 2000' is a long-term temporal trend — that's the secular trend.")
+        st.divider()
+        st.markdown("#### 🧠 Practice: Person, Place, and Time")
+        st.markdown("Work through each scenario and identify which descriptive dimension is being used.")
+
+        ppt_scenarios = [
+            {
+                "q": "**Scenario 1:** Opioid overdose deaths are highest among white males aged 25–54 in rural Appalachian counties. Which dimension identifies *rural Appalachian counties* as a key descriptor?",
+                "opts": ["— Select —", "Person — demographic characteristic", "Place — geographic concentration", "Time — temporal pattern", "All three simultaneously"],
+                "correct": "Place — geographic concentration",
+                "fb_correct": "✅ Correct. Geographic concentration of cases = place. Rural Appalachian counties is a location descriptor that generates hypotheses about environmental factors, access to care, economic conditions, and distribution of the drug supply. Person (white males 25–54) and time would complete the descriptive picture.",
+                "fb_wrong": "❌ 'Rural Appalachian counties' is a geographic descriptor — that's place. Person would be white males aged 25–54. Time would be trend data.",
+                "key": "ppt_q2"
+            },
+            {
+                "q": "**Scenario 2:** Influenza hospitalizations peak every January–February and drop to near zero by May. This pattern repeats each year. This is best described as:",
+                "opts": ["— Select —", "A secular trend — consistent long-term increase", "A cyclic/seasonal pattern — regular recurrence tied to the calendar", "A point epidemic — single sharp peak from one exposure", "A cohort effect — one generation is more affected"],
+                "correct": "A cyclic/seasonal pattern — regular recurrence tied to the calendar",
+                "fb_correct": "✅ Correct. Seasonal patterns recur predictably. Influenza's winter peak is a cyclic pattern driven by indoor crowding, lower humidity, and seasonal immune changes. It repeats annually without a long-term directional change — distinguishing it from a secular trend.",
+                "fb_wrong": "❌ A cyclic pattern repeats regularly on a calendar basis. Secular trend = long-term directional change. Point epidemic = single sharp peak. Cohort effect = one birth cohort disproportionately affected.",
+                "key": "ppt_q3"
+            },
+            {
+                "q": "**Scenario 3:** Stomach cancer rates are 5× higher in Japan than in the US. Japanese immigrants to the US develop stomach cancer at rates intermediate between Japan and US-born individuals — and their children approach US rates. Which dimension does this pattern primarily use, and what hypothesis does it suggest?",
+                "opts": ["— Select —",
+                         "Time — the trend toward lower rates over generations suggests secular decline",
+                         "Place — comparing rates across countries suggests environmental/dietary causes, not purely genetic ones",
+                         "Person — age differences explain the variation",
+                         "This is purely a genetic story — place doesn't matter"],
+                "correct": "Place — comparing rates across countries suggests environmental/dietary causes, not purely genetic ones",
+                "fb_correct": "✅ Correct. This is a classic migration study — a place-based analysis. If stomach cancer were purely genetic, Japanese migrants to the US would maintain Japan's high rates. Instead, rates shift toward the US level within one or two generations, strongly suggesting that environmental/dietary exposures (salted foods, H. pylori prevalence) rather than genetics drive the difference. Place comparisons are powerful hypothesis generators.",
+                "fb_wrong": "❌ The key observation is the geographic variation AND the shift across migration — this is place-based analysis. The generational shift does involve time, but the primary inference is about place-specific environmental exposures, not a secular trend.",
+                "key": "ppt_q4"
+            },
+            {
+                "q": "**Scenario 4:** Lung cancer mortality among men rose sharply from 1930–1990, then began declining. Among women, it rose from 1960–2000, then plateaued. This is best explained by:",
+                "opts": ["— Select —",
+                         "A period effect — something in the environment changed everyone at the same time",
+                         "A cohort effect — generations who smoked heavily at different historical periods are experiencing consequences decades later",
+                         "A place effect — lung cancer varies by region",
+                         "Measurement artifact — diagnostic criteria changed"],
+                "correct": "A cohort effect — generations who smoked heavily at different historical periods are experiencing consequences decades later",
+                "fb_correct": "✅ Correct. Men adopted cigarette smoking in large numbers in the 1930s–40s; lung cancer followed 20–30 years later (the latency period). Women adopted smoking later (post-WWII); their lung cancer peak follows accordingly. Each generation (cohort) carries the exposure history of their era. This is a textbook cohort effect — distinguishable from a period effect because the timing differs between sexes based on when each group began smoking.",
+                "fb_wrong": "❌ A period effect would affect all age groups simultaneously at one calendar period. Here the timing differs between men and women based on historical smoking patterns — that's a cohort effect. Generations who smoked heavily are experiencing consequences 20–30 years after the exposure.",
+                "key": "ppt_q5"
+            },
+        ]
+
+        for scen in ppt_scenarios:
+            ans = st.radio(scen["q"], scen["opts"], key=scen["key"])
+            if ans == scen["correct"]:
+                st.success(scen["fb_correct"])
+            elif ans != "— Select —":
+                st.error(scen["fb_wrong"])
 
 
     elif df_section == "6️⃣ Public Health Surveillance":
@@ -4855,19 +4926,76 @@ Surveillance is the foundation of everything else: you cannot detect outbreaks, 
 | **Serosurveys** | Population antibody testing | Captures subclinical cases | Expensive, periodic not continuous |
         """)
 
-        surv_q = st.radio(
-            "**Practice:** A health department wants to ensure they capture every case of a rare hemorrhagic fever during an outbreak. They assign staff to call every hospital daily. This is:",
-            ["— Select —",
-             "Passive surveillance — providers report when they diagnose",
-             "Active surveillance — the health department is seeking out cases",
-             "Syndromic surveillance — based on symptom patterns",
-             "Sentinel surveillance — using selected reporting sites"],
-            key="surv_q1"
-        )
-        if surv_q == "Active surveillance — the health department is seeking out cases":
-            st.success("✅ Correct. Active surveillance means the health authority initiates contact and actively seeks cases rather than waiting for providers to report. It has higher sensitivity but costs more. Active surveillance is standard practice during outbreak investigation and for high-priority conditions where completeness matters.")
-        elif surv_q != "— Select —":
-            st.error("❌ When the health department *initiates contact* and seeks out cases, that is active surveillance. Passive surveillance waits for providers to report voluntarily.")
+        surv_scenarios = [
+            {
+                "q": "**Scenario 1:** A health department wants to ensure they capture every case of a rare hemorrhagic fever during an outbreak. They assign staff to call every hospital daily. This is:",
+                "opts": ["— Select —",
+                         "Passive surveillance — providers report when they diagnose",
+                         "Active surveillance — the health department is seeking out cases",
+                         "Syndromic surveillance — based on symptom patterns",
+                         "Sentinel surveillance — using selected reporting sites"],
+                "correct": "Active surveillance — the health department is seeking out cases",
+                "fb_correct": "✅ Correct. Active surveillance: the health authority initiates contact and seeks out cases. Higher sensitivity, higher cost. Standard for outbreak investigation and high-priority conditions where completeness matters.",
+                "fb_wrong": "❌ When the health department *initiates contact* and seeks cases, that is active surveillance. Passive waits for providers to report voluntarily.",
+                "key": "surv_q1"
+            },
+            {
+                "q": "**Scenario 2:** Every physician in the state is required by law to report any diagnosed case of tuberculosis to the county health department. The health department does not follow up unless a case is reported. This is:",
+                "opts": ["— Select —",
+                         "Active surveillance",
+                         "Passive surveillance",
+                         "Sentinel surveillance",
+                         "Syndromic surveillance"],
+                "correct": "Passive surveillance",
+                "fb_correct": "✅ Correct. The provider initiates the report upon diagnosis; the health department waits to receive it. This is passive surveillance. It relies on provider compliance, leading to underreporting — especially for conditions with stigma or where providers may not test.",
+                "fb_wrong": "❌ Passive surveillance = the health department waits for providers to report. The report originates with the clinician, not the health authority.",
+                "key": "surv_q2"
+            },
+            {
+                "q": "**Scenario 3:** A state health department tracks emergency department chief complaints electronically in real time, looking for unusual clusters of 'fever and rash' or 'difficulty breathing' that might signal an emerging outbreak before diagnoses are confirmed. This is:",
+                "opts": ["— Select —",
+                         "Passive surveillance",
+                         "Active surveillance",
+                         "Syndromic surveillance — using symptom clusters as early warning signals",
+                         "A disease registry"],
+                "correct": "Syndromic surveillance — using symptom clusters as early warning signals",
+                "fb_correct": "✅ Correct. Syndromic surveillance uses clinical indicators (symptoms, chief complaints, medication sales, school absenteeism) before confirmed diagnoses to provide real-time early warning. It is non-specific — many false alarms — but timely. Used extensively for bioterrorism detection and pandemic monitoring.",
+                "fb_wrong": "❌ Syndromic surveillance uses symptom patterns and proxy indicators (not confirmed diagnoses) for early outbreak detection. It's real-time but non-specific.",
+                "key": "surv_q3"
+            },
+            {
+                "q": "**Scenario 4:** A researcher wants to estimate the true prevalence of COVID-19 infection in a state, including people who never had symptoms and never tested. She draws a random sample of 5,000 residents and tests their blood for COVID-19 antibodies. This is:",
+                "opts": ["— Select —",
+                         "Notifiable disease surveillance — required reporting to the health department",
+                         "Active surveillance — the researcher is seeking cases",
+                         "A serosurvey — population-based serologic testing to estimate true exposure",
+                         "Sentinel surveillance — using selected high-risk sites"],
+                "correct": "A serosurvey — population-based serologic testing to estimate true exposure",
+                "fb_correct": "✅ Correct. A serosurvey (serologic survey) tests a population sample for antibodies to estimate cumulative exposure — including subclinical and asymptomatic infections that would never appear in case reports. Serosurveys revealed that COVID-19's true infection prevalence was many times higher than confirmed case counts. Limitation: expensive and periodic, not continuous.",
+                "fb_wrong": "❌ This is a serosurvey — blood-based testing of a population sample to detect past infection regardless of symptoms or testing history. It captures the 'iceberg' of infection below the surveillance waterline.",
+                "key": "surv_q4"
+            },
+            {
+                "q": "**Scenario 5:** State cancer registries record every newly diagnosed cancer case, including clinical details, treatment, and survival data. A researcher uses registry data to study 5-year survival trends for colon cancer. This data source is best described as:",
+                "opts": ["— Select —",
+                         "Notifiable disease surveillance",
+                         "A disease registry",
+                         "Vital records",
+                         "Syndromic surveillance"],
+                "correct": "A disease registry",
+                "fb_correct": "✅ Correct. Disease registries systematically collect detailed clinical information on all cases of a specific disease within a defined population. Cancer registries (like SEER) enable survival analysis, incidence trends, and treatment outcomes research. Limitation: voluntary reporting means they can be incomplete; they are expensive to maintain.",
+                "fb_wrong": "❌ A disease registry systematically collects detailed clinical data on a specific disease category. This is distinct from notifiable disease reports (which are law-required single reports) and vital records (which capture births and deaths only).",
+                "key": "surv_q5"
+            },
+        ]
+
+        for scen in surv_scenarios:
+            st.divider()
+            ans = st.radio(scen["q"], scen["opts"], key=scen["key"])
+            if ans == scen["correct"]:
+                st.success(scen["fb_correct"])
+            elif ans != "— Select —":
+                st.error(scen["fb_wrong"])
 
 
     elif df_section == "7️⃣ Mortality Measures & YPLL":
@@ -5356,6 +5484,139 @@ Plot each cutpoint as a point: **x = (1 − specificity), y = sensitivity**
 
 Connect all points → the ROC curve.
         """)
+
+        # ── SENS/SPEC TRADEOFF VISUAL ─────────────────────────────────────
+        st.markdown("#### 👁️ See the tradeoff — what actually happens when you move the threshold")
+        st.markdown("""
+The fundamental reason sensitivity and specificity trade off is that the distributions of test scores in diseased and healthy people **overlap**. The threshold sits somewhere in that overlap. Move it left or right and you change how much of each distribution you capture.
+        """)
+
+        import numpy as _np2
+        import streamlit.components.v1 as _dist_comp
+
+        dist_preset = st.selectbox("Choose a test overlap scenario:", [
+            "Good separation (AUC ≈ 0.85) — distributions mostly separate",
+            "Poor separation (AUC ≈ 0.65) — distributions heavily overlap",
+            "Excellent separation (AUC ≈ 0.95) — minimal overlap",
+        ], key="dist_preset_tradeoff")
+
+        if "Poor" in dist_preset:
+            mu_d, sd_d, mu_h, sd_h = 6.5, 2.8, 4.5, 2.6
+        elif "Excellent" in dist_preset:
+            mu_d, sd_d, mu_h, sd_h = 8.5, 1.4, 3.5, 1.4
+        else:
+            mu_d, sd_d, mu_h, sd_h = 7.5, 2.0, 4.0, 2.0
+
+        t_lo = min(mu_h - 3*sd_h, mu_d - 3*sd_d)
+        t_hi = max(mu_h + 3*sd_h, mu_d + 3*sd_d)
+        thresh_dist = st.slider("Move the diagnostic threshold:",
+            min_value=round(t_lo,1), max_value=round(t_hi,1),
+            value=round((mu_d + mu_h)/2, 1), step=0.1, key="dist_thresh")
+
+        # Compute metrics at this threshold
+        import math as _m2
+        def norm_cdf(x, mu, sd):
+            return 0.5 * (1 + math.erf((x - mu) / (sd * math.sqrt(2))))
+
+        sens_d = 1 - norm_cdf(thresh_dist, mu_d, sd_d)
+        spec_d = norm_cdf(thresh_dist, mu_h, sd_h)
+        fpr_d  = 1 - spec_d
+
+        c1,c2,c3,c4 = st.columns(4)
+        c1.metric("Sensitivity (TPR)", f"{round(sens_d*100,1)}%", help="Fraction of diseased people correctly called positive")
+        c2.metric("Specificity", f"{round(spec_d*100,1)}%", help="Fraction of healthy people correctly called negative")
+        c3.metric("False Positive Rate", f"{round(fpr_d*100,1)}%", help="1 − Specificity")
+        c4.metric("Youden's J", f"{round(sens_d + spec_d - 1, 3)}", help="Sensitivity + Specificity − 1. Max = 1 (perfect). Higher = better combined performance at this threshold.")
+
+        # Build SVG distribution plot
+        W2, H2 = 520, 220
+        pad_l, pad_b, pad_t, pad_r = 40, 30, 20, 20
+        pw2, ph2 = W2-pad_l-pad_r, H2-pad_b-pad_t
+
+        xs = [t_lo + i*(t_hi-t_lo)/400 for i in range(401)]
+        import math
+        def gauss(x, mu, sd):
+            return (1/(sd*math.sqrt(2*math.pi))) * math.exp(-0.5*((x-mu)/sd)**2)
+
+        yd = [gauss(x, mu_d, sd_d) for x in xs]
+        yh = [gauss(x, mu_h, sd_h) for x in xs]
+        y_max = max(max(yd), max(yh)) * 1.1
+
+        def px(v):
+            return pad_l + (v-t_lo)/(t_hi-t_lo)*pw2
+        def py(v):
+            return (H2-pad_b) - v/y_max*ph2
+
+        # Build paths
+        path_d = " ".join(f"{'M' if i==0 else 'L'}{round(px(xs[i]),1)},{round(py(yd[i]),1)}" for i in range(len(xs)))
+        path_h = " ".join(f"{'M' if i==0 else 'L'}{round(px(xs[i]),1)},{round(py(yh[i]),1)}" for i in range(len(xs)))
+
+        # Shaded regions
+        # TP: diseased above threshold (green fill)
+        tp_pts = [(px(xs[i]), py(yd[i])) for i in range(len(xs)) if xs[i] >= thresh_dist]
+        tp_path = f"M{round(px(thresh_dist),1)},{round(py(0),1)} " + " ".join(f"L{round(p[0],1)},{round(p[1],1)}" for p in tp_pts) + f" L{round(tp_pts[-1][0],1)},{round(py(0),1)} Z" if tp_pts else ""
+        # FN: diseased below threshold (red fill)
+        fn_pts = [(px(xs[i]), py(yd[i])) for i in range(len(xs)) if xs[i] < thresh_dist]
+        fn_path = f"M{round(px(xs[0]),1)},{round(py(0),1)} " + " ".join(f"L{round(p[0],1)},{round(p[1],1)}" for p in fn_pts) + f" L{round(px(thresh_dist),1)},{round(py(0),1)} Z" if fn_pts else ""
+        # FP: healthy above threshold (orange fill)
+        fp_pts = [(px(xs[i]), py(yh[i])) for i in range(len(xs)) if xs[i] >= thresh_dist]
+        fp_path = f"M{round(px(thresh_dist),1)},{round(py(0),1)} " + " ".join(f"L{round(p[0],1)},{round(p[1],1)}" for p in fp_pts) + f" L{round(fp_pts[-1][0],1)},{round(py(0),1)} Z" if fp_pts else ""
+        # TN: healthy below threshold (blue fill)
+        tn_pts = [(px(xs[i]), py(yh[i])) for i in range(len(xs)) if xs[i] < thresh_dist]
+        tn_path = f"M{round(px(xs[0]),1)},{round(py(0),1)} " + " ".join(f"L{round(p[0],1)},{round(p[1],1)}" for p in tn_pts) + f" L{round(px(thresh_dist),1)},{round(py(0),1)} Z" if tn_pts else ""
+
+        # Threshold line
+        tx = round(px(thresh_dist),1)
+
+        # X axis ticks
+        x_range = t_hi - t_lo
+        tick_step = round(x_range/5, 1)
+        xtick_svg = ""
+        for i in range(6):
+            v = round(t_lo + i*x_range/5, 1)
+            xtick_svg += f'<text x="{round(px(v),1)}" y="{H2-8}" font-size="8" text-anchor="middle" fill="#888">{v}</text>'
+
+        svg2 = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W2}" height="{H2}" style="font-family:sans-serif;background:#fafafa;border-radius:8px;">
+  <!-- Shaded areas -->
+  {"<path d='"+fn_path+"' fill='rgba(220,38,38,0.18)'/>" if fn_path else ""}
+  {"<path d='"+tp_path+"' fill='rgba(22,163,74,0.22)'/>" if tp_path else ""}
+  {"<path d='"+fp_path+"' fill='rgba(234,88,12,0.20)'/>" if fp_path else ""}
+  {"<path d='"+tn_path+"' fill='rgba(37,99,235,0.15)'/>" if tn_path else ""}
+  <!-- Distribution curves -->
+  <path d="{path_h}" stroke="#2563eb" stroke-width="2.5" fill="none"/>
+  <path d="{path_d}" stroke="#dc2626" stroke-width="2.5" fill="none"/>
+  <!-- Threshold line -->
+  <line x1="{tx}" y1="{pad_t}" x2="{tx}" y2="{H2-pad_b}" stroke="#374151" stroke-width="2" stroke-dasharray="5,3"/>
+  <text x="{tx+4}" y="{pad_t+12}" font-size="9" fill="#374151" font-weight="600">Threshold</text>
+  <!-- Axis -->
+  <line x1="{pad_l}" y1="{H2-pad_b}" x2="{W2-pad_r}" y2="{H2-pad_b}" stroke="#999" stroke-width="1.5"/>
+  {xtick_svg}
+  <text x="{pad_l+pw2//2}" y="{H2-1}" font-size="9" text-anchor="middle" fill="#666">Test score</text>
+  <!-- Legend -->
+  <rect x="{pad_l}" y="{pad_t}" width="10" height="10" fill="rgba(22,163,74,0.4)"/>
+  <text x="{pad_l+13}" y="{pad_t+9}" font-size="9" fill="#166534">TP (sens = {round(sens_d*100,0):.0f}%)</text>
+  <rect x="{pad_l}" y="{pad_t+14}" width="10" height="10" fill="rgba(220,38,38,0.35)"/>
+  <text x="{pad_l+13}" y="{pad_t+23}" font-size="9" fill="#991b1b">FN (missed = {round((1-sens_d)*100,0):.0f}%)</text>
+  <rect x="{pad_l+120}" y="{pad_t}" width="10" height="10" fill="rgba(37,99,235,0.3)"/>
+  <text x="{pad_l+133}" y="{pad_t+9}" font-size="9" fill="#1e40af">TN (spec = {round(spec_d*100,0):.0f}%)</text>
+  <rect x="{pad_l+120}" y="{pad_t+14}" width="10" height="10" fill="rgba(234,88,12,0.35)"/>
+  <text x="{pad_l+133}" y="{pad_t+23}" font-size="9" fill="#9a3412">FP (false+ = {round(fpr_d*100,0):.0f}%)</text>
+  <!-- Curve labels -->
+  <text x="{round(px(mu_d)+8,0)}" y="{round(py(gauss(mu_d,mu_d,sd_d))-6,0)}" font-size="9" fill="#dc2626" font-weight="600">Diseased</text>
+  <text x="{round(px(mu_h)-40,0)}" y="{round(py(gauss(mu_h,mu_h,sd_h))-6,0)}" font-size="9" fill="#2563eb" font-weight="600">Healthy</text>
+</svg>"""
+
+        _dist_comp.html(f"<div style='font-family:sans-serif;'>{svg2}</div>", height=H2+20, scrolling=False)
+        st.caption("Red curve = diseased population. Blue curve = healthy population. Move the threshold slider to see how the four regions (TP/FN/FP/TN) shift — and why sensitivity and specificity cannot both be maximized simultaneously when distributions overlap.")
+
+        st.info("""
+🔑 **The fundamental insight:** Sensitivity and specificity trade off because the diseased and healthy distributions **overlap**. In that overlap zone, some healthy people have high scores (→ false positives) and some diseased people have low scores (→ false negatives). No threshold can eliminate both simultaneously — it can only shift which error you make more of.
+
+- **Move threshold left** → capture more diseased people (↑ sensitivity) but also more healthy people (↑ false positives, ↓ specificity)
+- **Move threshold right** → exclude more healthy people (↑ specificity) but also miss more diseased (↑ false negatives, ↓ sensitivity)
+- **Better test** → distributions further apart → less overlap → both sensitivity and specificity can be high simultaneously
+        """)
+
 
         # Interactive ROC with adjustable threshold
         import numpy as np

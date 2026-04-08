@@ -2657,11 +2657,31 @@ Where: **a** = {exp_lbl} with {out_lbl}, **b** = {exp_lbl} without, **c** = {une
 
     elif conf_section == "5️⃣ DAG Library":
         st.subheader("DAG Library — Causal Structures in Epidemiology")
-        st.markdown("""
-A **Directed Acyclic Graph (DAG)** is a visual tool for representing causal assumptions. Nodes are variables, arrows show causal directions, and the structure determines what you should — and should **not** — adjust for in your analysis.
 
-Understanding DAG structures is essential for deciding which variables to control for and which to leave alone.
+        st.markdown("""
+In practice, researchers don't let the data decide for them. They start by drawing out what they believe the causal structure looks like — based on prior literature, biological or social plausibility, and logic. This is often done with a **DAG (Directed Acyclic Graph)**: a map of arrows showing what causes what.
+
+The DAG tells you which variables to control for and which to leave alone, **before you run a single model.** This is not a statistical decision. It's a conceptual one. You have to commit to a causal story about your variables and then let that story guide your modeling choices.
         """)
+
+        st.error("""
+⚠️ **Controlling for the wrong variable can make things worse, not better:**
+
+- **Control for a confounder →** removes bias ✅
+- **Control for a mediator →** blocks the causal pathway you're trying to study ❌
+- **Control for a collider →** opens up a new bias that didn't exist before ❌
+
+The same variable can play any of these roles depending on the causal structure — which is why you need the DAG first.
+        """)
+
+        st.info("""
+💬 **The uncomfortable truth:** Reasonable researchers can look at the same data and disagree on the causal structure. This is why published papers include **sensitivity analyses** that test different modeling choices — reporting what happens when you control for different sets of variables. It's less like following a formula and more like making an argument you have to defend. The DAG is how you make that argument explicit.
+        """)
+
+        st.divider()
+        st.markdown("#### Select a DAG structure to explore")
+        st.markdown("For each structure, study the diagram, understand *why* adjustment helps or hurts, and note what the correct analytical response is.")
+
 
         DAG_TYPES = [
             "Confounder",
@@ -3055,6 +3075,28 @@ A **proxy** (or surrogate) is a measured variable that stands in for an unmeasur
 
 **The golden rule:** Draw your DAG **before** your analysis. Your adjustment set should block all backdoor paths without conditioning on colliders or mediators.
             """)
+
+        st.divider()
+        st.markdown("#### 🧭 Putting it together: DAGs as arguments, not algorithms")
+        st.markdown("""
+The six structures above aren't just taxonomy — they're the building blocks of every confounding decision you'll ever make. Here's what working epidemiologists actually do:
+
+**Step 1 — Draw before you model.**
+Before opening a dataset, sketch your causal assumptions. What causes the exposure? What causes the outcome? What variables are on the causal pathway vs. common causes? Your DAG is a public commitment to a theoretical position.
+
+**Step 2 — Identify the adjustment set.**
+From your DAG, identify which variables to include in your model to block all backdoor paths — without conditioning on mediators or colliders. This is your *a priori* adjustment set. It comes from the DAG, not from stepwise variable selection.
+
+**Step 3 — Acknowledge uncertainty.**
+If reasonable people could draw the DAG differently, run sensitivity analyses. Control for different sets of variables and report what changes. A finding that holds across plausible causal structures is more credible than one that depends on one specific DAG.
+
+**Step 4 — Be honest about unmeasured confounding.**
+Every DAG has variables you couldn't measure. Name them explicitly. Discuss the likely direction of residual confounding. This is not a weakness — it's scientific integrity.
+        """)
+
+        st.success("""
+✅ **The key insight:** Two researchers can use identical data and reach different estimates — not because one made a math error, but because they committed to different causal structures. Statistical tests cannot resolve this disagreement. Only transparent causal reasoning can. This is what separates descriptive statistics from epidemiologic thinking.
+        """)
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")

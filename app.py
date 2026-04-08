@@ -440,16 +440,96 @@ if current_page == "foundations":
     st.markdown("Core frameworks that underpin all of epidemiology — how disease develops, how we prevent it, how we study it, and what counts as a cause.")
 
     found_section = st.radio("Section:", [
-        "1️⃣ Natural History & Levels of Prevention",
-        "2️⃣ Chain of Infection & Infectious Disease",
-        "3️⃣ Herd Immunity & R₀",
-        "4️⃣ Outbreak Investigation — The 10 Steps",
-        "5️⃣ PICO Framework",
+        "1️⃣ Epidemiology Triangle",
+        "2️⃣ Natural History & Levels of Prevention",
+        "3️⃣ Chain of Infection & Infectious Disease",
+        "4️⃣ Herd Immunity & R₀",
+        "5️⃣ Outbreak Investigation — The 10 Steps",
+        "6️⃣ PICO Framework",
     ], horizontal=True)
     st.divider()
 
-    # ── SECTION 1: NATURAL HISTORY & LEVELS OF PREVENTION ──
-    if found_section == "1️⃣ Natural History & Levels of Prevention":
+    # ── SECTION 1: EPIDEMIOLOGY TRIANGLE ──
+    if found_section == "1️⃣ Epidemiology Triangle":
+        st.subheader("The Epidemiology Triangle (Epidemiologic Triad)")
+        st.markdown("""
+The **epidemiology triangle** is one of the oldest and most widely used frameworks for understanding why disease occurs in populations. It holds that disease results from the interaction of three elements: **agent**, **host**, and **environment**. Remove or modify any one element, and the disease dynamic changes.
+
+This model was developed primarily for infectious disease but has been extended to chronic disease, injury, and behavioral health.
+        """)
+
+        st.markdown("""
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:28px;margin:16px 0;text-align:center;">
+  <div style="font-weight:700;font-size:14px;margin-bottom:20px;color:#1a202c;">The Epidemiology Triangle</div>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
+    <div style="background:#fce4ec;border:2px solid #c62828;border-radius:10px;padding:12px 24px;font-weight:700;font-size:13px;color:#c62828;min-width:130px;">
+      AGENT<br><span style="font-size:10px;font-weight:400;color:#888;">What causes the disease</span>
+    </div>
+    <div style="font-size:22px;color:#555;margin:4px 0;">▼</div>
+    <div style="display:flex;gap:60px;align-items:center;">
+      <div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:12px 20px;font-weight:700;font-size:13px;color:#1565c0;min-width:130px;text-align:center;">
+        HOST<br><span style="font-size:10px;font-weight:400;color:#888;">Who gets the disease</span>
+      </div>
+      <div style="font-size:18px;color:#555;">⟷</div>
+      <div style="background:#e8f5e9;border:2px solid #2e7d32;border-radius:10px;padding:12px 20px;font-weight:700;font-size:13px;color:#2e7d32;min-width:130px;text-align:center;">
+        ENVIRONMENT<br><span style="font-size:10px;font-weight:400;color:#888;">Where it occurs</span>
+      </div>
+    </div>
+    <div style="margin-top:14px;font-size:11px;color:#718096;font-style:italic;">
+      Disease occurs when an agent and a susceptible host come together in an environment that supports transmission.
+    </div>
+  </div>
+</div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("""
+| Element | Definition | Key factors |
+|---|---|---|
+| **Agent** | The cause of the disease — biological, chemical, physical, or nutritional | Infectivity, pathogenicity, virulence, dose |
+| **Host** | The person or animal that harbors the disease | Age, sex, genetics, immunity, behavior, nutritional status |
+| **Environment** | External conditions that affect the agent and host interaction | Climate, sanitation, housing, social determinants, season |
+        """)
+
+        st.info("""
+🔑 **Why the triangle matters for intervention:**
+Each vertex represents a point of intervention:
+- **Agent** → destroy, deactivate, or reduce infectivity (disinfection, antibiotics, food safety)
+- **Host** → increase resistance (vaccination, nutrition, behavior change)
+- **Environment** → modify conditions that allow transmission (sanitation, housing, vector control)
+
+Public health interventions rarely target just one vertex. A comprehensive response addresses all three simultaneously.
+        """)
+
+        st.markdown("#### ⚠️ Limitations of the triangle")
+        st.warning("""
+The epidemiology triangle was designed for **infectious disease with a single identifiable agent**. For chronic disease, mental health, and injury:
+- There is rarely a single agent — causes are **multifactorial**
+- Social and structural determinants don't fit neatly into "environment"
+- The model doesn't capture time, dose-response relationships, or causal pathways
+
+This is why more complex models — the **Web of Causation**, **Rothman's causal pies**, and **DAGs** — were developed as extensions and alternatives.
+        """)
+
+        st.divider()
+        st.markdown("#### 🧠 Apply the triangle")
+        tri_q = st.radio("**Scenario:** Childhood lead poisoning from old paint in urban housing. Which element does lead-safe housing remediation primarily target?", [
+            "— Select —",
+            "Agent — removes the lead from the environment",
+            "Host — increases resistance in children",
+            "Environment — modifies the condition supporting exposure",
+            "Both agent and environment — they are the same intervention here",
+        ], key="tri_q1")
+        if tri_q == "Both agent and environment — they are the same intervention here":
+            st.success("✅ Correct. Housing remediation removes the lead (agent modification) by changing the physical environment. These two vertices are tightly linked here. This also illustrates a limitation of the triangle — agent and environment are not always separable.")
+        elif tri_q == "Agent — removes the lead from the environment":
+            st.warning("⚠️ Partially correct. Removing lead does target the agent, but the intervention mechanism is environmental modification (changing the housing). The distinction between agent and environment is blurry here, which is actually a known limitation of this model.")
+        elif tri_q == "Environment — modifies the condition supporting exposure":
+            st.warning("⚠️ Partially correct. You could also argue this is agent removal. The model's limitation shows: lead in paint is both the agent and an environmental condition. Full credit for either answer if you reason it through.")
+        elif tri_q == "Host — increases resistance in children":
+            st.error("❌ Lead chelation therapy is a host-level intervention after exposure, but housing remediation is not host-targeted. It does not increase the child's biological resistance to lead.")
+
+
+    elif found_section == "2️⃣ Natural History & Levels of Prevention":
         st.subheader("Natural History of Disease")
         st.markdown("""
 The **natural history of disease** describes the progression of a disease process in an individual over time without medical intervention. Understanding it tells us *when* and *how* to intervene most effectively.
@@ -590,7 +670,7 @@ The **natural history of disease** describes the progression of a disease proces
             """)
 
     # ── SECTION 2: CHAIN OF INFECTION ──
-    elif found_section == "2️⃣ Chain of Infection & Infectious Disease":
+    elif found_section == "3️⃣ Chain of Infection & Infectious Disease":
         st.subheader("The Chain of Infection")
         st.markdown("""
 Infectious disease transmission requires an unbroken **chain of infection** — six linked components. Breaking any single link prevents transmission. This framework guides outbreak investigation and infection control.
@@ -697,7 +777,7 @@ Infectious disease transmission requires an unbroken **chain of infection** — 
             """)
 
     # ── SECTION 3: HERD IMMUNITY & R₀ ──
-    elif found_section == "3️⃣ Herd Immunity & R₀":
+    elif found_section == "4️⃣ Herd Immunity & R₀":
         st.subheader("Herd Immunity & the Basic Reproduction Number (R₀)")
 
         col1, col2 = st.columns(2)
@@ -803,7 +883,7 @@ Each infectious person can only transmit to susceptible contacts, so the effecti
             """)
 
     # ── SECTION 4: OUTBREAK INVESTIGATION 10 STEPS ──
-    elif found_section == "4️⃣ Outbreak Investigation — The 10 Steps":
+    elif found_section == "5️⃣ Outbreak Investigation — The 10 Steps":
         st.subheader("The 10-Step Outbreak Investigation")
         st.markdown("""
 When a cluster of cases is reported, epidemiologists follow a systematic process. The steps are not strictly sequential — several happen simultaneously — but the framework ensures nothing is missed.
@@ -874,7 +954,7 @@ Document all control measures and their timing for the outbreak report."""),
             st.markdown(steps_table)
 
     # ── SECTION 5: PICO ──
-    elif found_section == "5️⃣ PICO Framework":
+    elif found_section == "6️⃣ PICO Framework":
         st.subheader("The PICO Framework — Structuring Research Questions")
         st.markdown("""
 A well-formed research question is the foundation of a good study. The **PICO framework** breaks any clinical or epidemiologic question into four components that map directly onto study design decisions.
@@ -1086,6 +1166,39 @@ Just because countries with higher fat intake have higher breast cancer rates do
                 "Main weakness": ["Expensive; loss to follow-up","Recall bias; control selection","No temporality","Ecological fallacy — can't infer individual risk","Only transient exposures","Expensive; ethical limits; external validity"]
             })
             st.table(comparison_df)
+
+
+        st.divider()
+        st.markdown("#### ⚠️ The Ecologic Fallacy")
+        st.error("""
+**The ecologic fallacy** occurs when you draw conclusions about *individuals* from data measured at the *group (ecologic) level*.
+
+**Classic example:** Countries with higher fat consumption have higher rates of breast cancer. But this does not mean that *individuals* who eat more fat get more breast cancer — other individual-level factors (age, genetics, reproductive history) may explain the pattern, and the group-level correlation may be confounded in ways that can't be detected from group data alone.
+
+**Why it happens:** Ecologic data measure *averages* or *rates* for groups. Individual variation within those groups is invisible. An association that exists at the group level may disappear, reverse, or be spurious when studied at the individual level.
+
+**When ecologic studies are appropriate:**
+- Generating hypotheses for individual-level studies
+- Studying exposures that are truly group-level (e.g., air quality laws, water fluoridation policy)
+- Surveillance when individual data are unavailable
+
+**The rule:** Ecologic correlations cannot substitute for individual-level associations. Always note the unit of analysis and be explicit about what level the conclusions apply to.
+        """)
+
+        epi_q = st.radio("**Quick check:** A study finds that counties with more fast food restaurants per capita have higher obesity rates. A researcher concludes that people who eat at fast food restaurants are more likely to be obese. This is an example of:", [
+            "— Select —",
+            "A valid causal inference from ecologic data",
+            "The ecologic fallacy — individual-level conclusions drawn from group-level data",
+            "Confounding by income",
+            "Selection bias",
+        ], key="eco_q1")
+        if epi_q == "The ecologic fallacy — individual-level conclusions drawn from group-level data":
+            st.success("✅ Correct. The data are measured at the county level (restaurants per capita, obesity rate). You cannot conclude from this that individuals who eat fast food are more obese — the association may be confounded, reversed, or absent at the individual level.")
+        elif epi_q == "Confounding by income":
+            st.warning("⚠️ Income may be a confounder, but that's a separate issue. The primary methodological error here is drawing individual-level conclusions from group-level data — the ecologic fallacy.")
+        elif epi_q != "— Select —":
+            st.error("❌ When a study measures exposure and outcome at the group level but draws conclusions about individuals, that is the ecologic fallacy. The unit of analysis must match the unit of inference.")
+
 
     elif section == "2️⃣ Design Selector":
         st.subheader("Design Selector")
@@ -1736,6 +1849,83 @@ body {{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; back
 
 Think of the hierarchy as a guide for *how much confounding you need to worry about*, not as a ranking of which studies matter.
             """)
+
+
+
+        st.divider()
+        st.subheader("Randomization — Why It Works")
+        st.markdown("""
+**Randomization** is the defining feature of an RCT, and its power is frequently misunderstood. It does not simply create similar groups — it does something more fundamental: it **distributes all confounders — measured and unmeasured — equally between groups by chance**.
+
+In observational studies, the investigator must identify and control for every confounder. In a randomized trial, randomization handles all confounders *automatically* — including ones the investigator doesn't know about and couldn't measure.
+        """)
+
+        st.markdown("""
+| | Observational study | Randomized trial |
+|---|---|---|
+| **How groups are formed** | Participants choose exposure (or it's assigned by circumstance) | Exposure assigned by random chance |
+| **Confounding** | Present — must be identified and controlled statistically | Distributed equally by chance (on average) |
+| **Unmeasured confounders** | Remain a threat; cannot be adjusted | Balanced by randomization |
+| **Causal inference** | Limited — association, not proven causation | Stronger basis for causal inference |
+| **Feasibility** | Can study exposures that can't be randomized (smoking, poverty) | Cannot randomize harmful or impossible exposures |
+        """)
+
+        st.warning("""
+⚠️ **Randomization works in expectation, not perfectly in every trial.** In small trials, chance imbalance in key variables can still occur. This is why researchers check baseline characteristics (Table 1 in a paper) and why small trials are less convincing than large ones. It's also why randomization is done in blocks and may be stratified by important variables (e.g., sex, site) to improve balance.
+        """)
+
+        st.divider()
+        st.subheader("Blinding")
+        st.markdown("""
+**Blinding** (also called *masking*) prevents knowledge of treatment assignment from influencing outcomes, behavior, or assessment. Unblinded trials are susceptible to multiple biases.
+        """)
+
+        st.markdown("""
+| Type | Who is blinded | What bias it prevents |
+|---|---|---|
+| **Single-blind** | Participant only | Placebo effect; behavioral change based on knowing assignment |
+| **Double-blind** | Participant + investigator / assessor | Above + differential assessment and recording bias |
+| **Triple-blind** | Participant + investigator + data analyst | Above + analysis bias (selective reporting, outcome switching) |
+| **Open-label** | No blinding | Appropriate when blinding is impossible (e.g., surgical vs. no surgery) |
+        """)
+
+        st.info("""
+🔑 **The placebo effect** is the measurable, real improvement in health outcomes that occurs when a participant *believes* they are receiving an effective treatment. It is not imaginary — it produces documented physiological changes. Double-blinding controls for it by ensuring both arms receive an indistinguishable treatment (active drug vs. identical-appearing placebo).
+
+**Performance bias:** Even without outcome reporting issues, knowing your treatment assignment can change behavior. Participants who know they received the "real" treatment may comply more, exercise more, or seek less supplementary care — all of which confound the result.
+        """)
+
+        st.divider()
+        st.subheader("Intent-to-Treat Analysis")
+        st.markdown("""
+**Intent-to-treat (ITT) analysis** analyzes participants in the group to which they were *randomized*, regardless of whether they actually received the treatment, complied with it, or dropped out.
+
+**Why it matters:** If you only analyze participants who completed treatment as assigned (*per-protocol* analysis), you reintroduce selection bias — the kind of people who comply with or tolerate treatment may differ systematically from those who don't.
+
+| Analysis approach | Who is analyzed | Preserves randomization? | Best answers |
+|---|---|---|---|
+| **Intent-to-treat** | Everyone as randomized | ✅ Yes | "Does offering this treatment improve outcomes in the real world?" |
+| **Per-protocol** | Only those who completed treatment as assigned | ❌ No — selection bias re-enters | "Does the treatment work in ideal conditions?" |
+| **As-treated** | Grouped by what they actually received | ❌ No — observational | Similar to per-protocol; susceptible to confounding |
+        """)
+
+        st.success("""
+✅ **The rule:** ITT is the primary analysis in most RCTs because it mirrors real-world effectiveness. Per-protocol is often reported as a secondary/sensitivity analysis. A trial that only reports per-protocol results, especially when dropout rates differ between arms, should be read with caution.
+        """)
+
+        rct_q = st.radio(
+            "**Concept check:** In a trial of a new antidepressant, 30% of participants in the treatment group stop taking the medication due to side effects. An ITT analysis would:",
+            ["— Select —",
+             "Exclude the dropouts — they didn't actually receive the full treatment",
+             "Include all randomized participants in their original groups, including dropouts",
+             "Move dropouts to the control group since they didn't receive treatment",
+             "Run a separate analysis for completers only and report that as the primary result"],
+            key="rct_q_itt"
+        )
+        if rct_q == "Include all randomized participants in their original groups, including dropouts":
+            st.success("✅ Correct. ITT includes everyone as randomized. The 30% who stopped taking medication are still analyzed in the treatment group. This preserves the randomization and gives an estimate of real-world effectiveness — including the reality that 30% won't tolerate the drug. Excluding them would introduce selection bias (those who drop out due to side effects are likely different from those who don't).")
+        elif rct_q != "— Select —":
+            st.error("❌ ITT means 'analyze as randomized.' Everyone stays in their assigned group regardless of compliance or dropout. Excluding non-compliers reintroduces selection bias and answers a different question (efficacy in ideal conditions) rather than effectiveness in the real world.")
 
 
     st.markdown("---")
@@ -3112,7 +3302,8 @@ elif current_page == "causal_inference":
     ci_section = st.radio("Section:", [
         "1️⃣ Bradford Hill Criteria",
         "2️⃣ Criteria Application Exercise",
-        "3️⃣ Rothman's Sufficient-Component Cause Model"
+        "3️⃣ Rothman's Sufficient-Component Cause Model",
+        "4️⃣ Web of Causation"
     ], horizontal=True)
     st.divider()
 
@@ -3425,6 +3616,73 @@ Rothman argues that the biologically meaningful scale for interaction is additiv
 | **U (unknown)** | Unknown component causes that complete sufficient causes — always present |
             """)
 
+
+    elif ci_section == "4️⃣ Web of Causation":
+        st.subheader("Web of Causation (MacMahon & Pugh, 1960)")
+        st.markdown("""
+The **Web of Causation**, proposed by Brian MacMahon and Thomas Pugh, was a direct response to the limitations of single-agent causal models. It holds that disease is rarely caused by a single factor — instead, it arises from a complex network of interacting causes operating across biological, behavioral, social, and environmental levels simultaneously.
+
+The metaphor of a *web* captures the idea that causes are interconnected: pulling on one strand affects others. There is no single root cause, and no single intervention is sufficient.
+        """)
+
+        st.markdown("""
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;">
+<div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Web of Causation — Coronary Heart Disease (simplified)</div>
+<div style="font-size:12px;color:#334155;line-height:2;">
+<div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:16px;">
+  <span style="background:#fff3e0;border:1px solid #ef6c00;border-radius:6px;padding:4px 10px;">Diet high in saturated fat</span>
+  <span style="background:#fff3e0;border:1px solid #ef6c00;border-radius:6px;padding:4px 10px;">Physical inactivity</span>
+  <span style="background:#fff3e0;border:1px solid #ef6c00;border-radius:6px;padding:4px 10px;">Cigarette smoking</span>
+  <span style="background:#e3f2fd;border:1px solid #1565c0;border-radius:6px;padding:4px 10px;">Hypertension</span>
+  <span style="background:#e3f2fd;border:1px solid #1565c0;border-radius:6px;padding:4px 10px;">Hyperlipidemia</span>
+  <span style="background:#e3f2fd;border:1px solid #1565c0;border-radius:6px;padding:4px 10px;">Diabetes</span>
+  <span style="background:#e8f5e9;border:1px solid #2e7d32;border-radius:6px;padding:4px 10px;">Poverty</span>
+  <span style="background:#e8f5e9;border:1px solid #2e7d32;border-radius:6px;padding:4px 10px;">Stress</span>
+  <span style="background:#e8f5e9;border:1px solid #2e7d32;border-radius:6px;padding:4px 10px;">Limited healthcare access</span>
+  <span style="background:#fce4ec;border:1px solid #c62828;border-radius:6px;padding:4px 10px;font-weight:700;">↓ CORONARY HEART DISEASE ↓</span>
+</div>
+<div style="font-size:11px;color:#718096;text-align:center;font-style:italic;">
+Each factor connects to others — poverty → poor diet + stress + limited access; smoking → hypertension; inactivity → diabetes + hyperlipidemia.
+The web has no single origin and no single solution.
+</div>
+</div>
+</div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("#### Comparing causal models")
+        st.markdown("""
+| Model | Key idea | Best suited for | Key limitation |
+|---|---|---|---|
+| **Epidemiology Triangle** | Disease = agent × host × environment | Infectious disease with one identifiable agent | Too simple for chronic disease; no causal direction |
+| **Chain of infection** | Sequential steps from reservoir to host | Communicable disease control | Linear; doesn't capture feedback loops |
+| **Bradford Hill criteria** | Weight-of-evidence for one exposure-outcome pair | Evaluating a specific causal hypothesis | One pair at a time; no network structure |
+| **Rothman's causal pies** | Sufficient-component causes; multiple pies | Understanding why some exposed people don't get sick | Abstract; hard to operationalize for intervention |
+| **Web of Causation** | Interconnected network of causes at multiple levels | Chronic disease; social determinants; policy | Complexity makes it hard to test statistically |
+| **DAG** | Formal directed graph of causal assumptions | Deciding what to control for in a regression model | Requires strong prior knowledge; results depend on assumed structure |
+        """)
+
+        st.info("""
+🔑 **The web's contribution to public health practice:**
+Because causes are interconnected, intervening at *any* point in the web can reduce disease. You don't need to find the "root cause" — you need to find the most *modifiable*, *high-impact* nodes.
+
+This is why seat belts reduce traffic deaths even though the "cause" of a crash is driver behavior. And why improving neighborhood walkability reduces diabetes even without targeting diet directly.
+        """)
+
+        web_q = st.radio(
+            "**Apply it:** A researcher wants to reduce hypertension rates in a low-income urban neighborhood. The Web of Causation perspective would suggest:",
+            ["— Select —",
+             "Prescribe antihypertensive medications to all residents — target the biological pathway",
+             "Address only stress reduction programs — the most direct cause",
+             "Pursue multiple simultaneous interventions: access to healthy food, stress reduction, healthcare access, and built environment changes",
+             "Wait for genetic research to identify the root cause"],
+            key="web_q1"
+        )
+        if web_q == "Pursue multiple simultaneous interventions: access to healthy food, stress reduction, healthcare access, and built environment changes":
+            st.success("✅ Correct. The web has no single root cause — multiple interconnected factors contribute. A web-of-causation approach recommends targeting multiple nodes simultaneously, especially upstream social and environmental determinants, rather than any single factor.")
+        elif web_q != "— Select —":
+            st.error("❌ The Web of Causation rejects single-cause thinking. No single intervention addresses all the interconnected factors. The model specifically motivates multi-level, simultaneous interventions — including upstream social and structural causes.")
+
+
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")
 
@@ -3436,7 +3694,7 @@ elif current_page == "disease_frequency":
     st.title("📊 Disease Frequency")
     st.markdown("Before comparing rates across groups, you need to be able to measure disease frequency accurately in a single population.")
 
-    df_section = st.radio("Section:", ["1️⃣ Core Measures", "2️⃣ Interactive Calculator", "3️⃣ Prevalence-Incidence Relationship", "4️⃣ Epidemic Curves"], horizontal=True)
+    df_section = st.radio("Section:", ["1️⃣ Core Measures", "2️⃣ Interactive Calculator", "3️⃣ Prevalence-Incidence Relationship", "4️⃣ Epidemic Curves", "5️⃣ Person, Place & Time", "6️⃣ Public Health Surveillance", "7️⃣ Mortality Measures & YPLL"], horizontal=True)
     st.divider()
 
     if df_section == "1️⃣ Core Measures":
@@ -4462,6 +4720,239 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
 **Reading the baseline:** The dotted gray line represents the **expected endemic level** — how many cases occur in any given time period without an unusual event. Cases above the baseline represent excess cases attributable to the outbreak or epidemic. An **epidemic threshold** (red dashes, shown in the endemic panel) represents one possible alert level — a common teaching heuristic uses 2 standard deviations above the historical mean, though real surveillance systems use varied approaches. When cases cross the threshold, formal outbreak investigation is triggered.
         """)
 
+
+    elif df_section == "5️⃣ Person, Place & Time":
+        st.subheader("Descriptive Epidemiology — Person, Place, and Time")
+        st.markdown("""
+**Descriptive epidemiology** characterizes the distribution of disease in a population. The classic organizing framework is **person, place, and time** — three dimensions that, taken together, generate hypotheses about causation by revealing *who* gets sick, *where*, and *when*.
+
+Descriptive epi precedes analytic epi. You cannot test a hypothesis you haven't formed yet. Person-place-time analysis is how you form it.
+        """)
+
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.markdown("""
+<div style="background:#e3f2fd;border:2px solid #1565c0;border-radius:10px;padding:16px;height:100%;">
+<div style="font-weight:700;font-size:15px;color:#1565c0;margin-bottom:8px;">👤 Person</div>
+<div style="font-size:12px;color:#334155;line-height:1.6;">
+<b>Who</b> is getting sick?<br><br>
+• Age<br>• Sex / gender<br>• Race / ethnicity<br>• Socioeconomic status<br>• Occupation<br>• Behavior (diet, activity, smoking)<br>• Immune status<br>• Marital / household status
+<br><br><i>Generates hypotheses about host susceptibility and exposure patterns</i>
+</div>
+</div>
+            """, unsafe_allow_html=True)
+        with col2:
+            st.markdown("""
+<div style="background:#e8f5e9;border:2px solid #2e7d32;border-radius:10px;padding:16px;height:100%;">
+<div style="font-weight:700;font-size:15px;color:#2e7d32;margin-bottom:8px;">📍 Place</div>
+<div style="font-size:12px;color:#334155;line-height:1.6;">
+<b>Where</b> is disease concentrated?<br><br>
+• Geographic region / country<br>• Urban vs. rural<br>• Neighborhood / census tract<br>• Workplace / school<br>• Healthcare setting<br>• Country of birth<br>• Water / food source
+<br><br><i>Generates hypotheses about environmental exposures and transmission routes</i>
+</div>
+</div>
+            """, unsafe_allow_html=True)
+        with col3:
+            st.markdown("""
+<div style="background:#fce4ec;border:2px solid #c62828;border-radius:10px;padding:16px;height:100%;">
+<div style="font-weight:700;font-size:15px;color:#c62828;margin-bottom:8px;">📅 Time</div>
+<div style="font-size:12px;color:#334155;line-height:1.6;">
+<b>When</b> does disease occur?<br><br>
+• Secular (long-term) trends<br>• Cyclic / seasonal patterns<br>• Point epidemic<br>• Epidemic curve shape<br>• Time since exposure<br>• Period vs. cohort effects
+<br><br><i>Generates hypotheses about incubation periods, exposure timing, and trend drivers</i>
+</div>
+</div>
+            """, unsafe_allow_html=True)
+
+        st.markdown("&nbsp;", unsafe_allow_html=True)
+
+        st.markdown("#### Time patterns in epidemiology")
+        st.markdown("""
+| Time pattern | Description | Example |
+|---|---|---|
+| **Secular trend** | Long-term change over years or decades | Declining smoking rates → declining lung cancer incidence |
+| **Cyclic pattern** | Regular ups and downs, often seasonal | Influenza peaking each winter |
+| **Point epidemic** | Sudden sharp rise traced to a single exposure | Food poisoning at a catered event |
+| **Propagated epidemic** | Successive waves from person-to-person spread | Measles in an under-vaccinated school |
+| **Cohort effect** | A generation's risk differs from others due to shared exposures at a formative period | Higher lung cancer in cohorts who smoked before health warnings |
+| **Period effect** | A change in risk affects all age groups simultaneously at one calendar period | Increased opioid mortality after 2010 across all ages |
+        """)
+
+        st.info("""
+🔑 **From description to hypothesis:** Person-place-time analysis doesn't prove causation — it generates the *question*. 
+
+**Example:** If you observe that cases of hepatitis A cluster in restaurant workers (person), in a single neighborhood (place), after a one-week window (time), you now have a specific hypothesis — shared food source, specific location, known incubation window — that you can test analytically.
+        """)
+
+        st.divider()
+        st.markdown("#### 🧠 Practice: Person, Place, or Time?")
+        ppt_q = st.radio(
+            "**Scenario:** An investigator notes that diabetes prevalence is higher in rural counties, among adults over 65, and has increased every year since 2000. Which variable is *secular trend*?",
+            ["— Select —", "Rural county — that's place", "Adults over 65 — that's person (age)", "Increasing every year since 2000 — that's time (secular trend)", "All three together — you can't separate them"],
+            key="ppt_q1"
+        )
+        if ppt_q == "Increasing every year since 2000 — that's time (secular trend)":
+            st.success("✅ Correct. A long-term directional change over years = secular trend. Rural county = place. Adults over 65 = person (age). All three together describe the distribution — which is the goal of descriptive epidemiology. The secular increase generates a hypothesis: what changed after 2000 that could drive this trend? (Obesity rates? Diagnostic criteria? Surveillance intensity?)")
+        elif ppt_q != "— Select —":
+            st.error("❌ Secular trend = a long-term directional change over time (years to decades). 'Increasing every year since 2000' is a long-term temporal trend — that's the secular trend.")
+
+
+    elif df_section == "6️⃣ Public Health Surveillance":
+        st.subheader("Public Health Surveillance")
+        st.markdown("""
+**Public health surveillance** is the continuous, systematic collection, analysis, and interpretation of health data, used to plan, implement, and evaluate public health practice.
+
+Surveillance is the foundation of everything else: you cannot detect outbreaks, identify trends, target interventions, or evaluate programs without it. The CDC defines it as *information for action*.
+        """)
+
+        st.markdown("#### Active vs. Passive Surveillance")
+        st.markdown("""
+| Feature | Passive surveillance | Active surveillance |
+|---|---|---|
+| **How data are collected** | Health providers report voluntarily when they diagnose a condition | Health department actively contacts providers and seeks out cases |
+| **Effort required** | Low — relies on existing reporting channels | High — requires dedicated staff and contact |
+| **Sensitivity** | Lower — underreporting common | Higher — more complete case ascertainment |
+| **Cost** | Lower | Higher |
+| **Best use** | Ongoing background monitoring of common conditions | Outbreak investigation; verification of eradication; high-priority conditions |
+| **Example** | Physician reports a tuberculosis case to the health department | Health department calls all hospitals weekly to find influenza hospitalizations |
+        """)
+
+        st.markdown("#### Notifiable Diseases")
+        st.info("""
+**Notifiable diseases** (also called *reportable diseases*) are conditions that clinicians and laboratories are legally required to report to public health authorities when diagnosed. Reportability is determined by state law; the CDC maintains a national list of **Nationally Notifiable Diseases** that states are encouraged to report to CDC.
+
+**What makes a disease notifiable?**
+- Potential for epidemic spread
+- Severity or public health impact
+- Existence of an effective intervention that requires prompt action
+- Need for national surveillance data
+
+**Examples:** Cholera, measles, HIV, gonorrhea, Salmonellosis, pertussis, hepatitis A, rabies, COVID-19 (added 2020)
+
+⚠️ **Important limitation:** Notifiable disease data reflect only *diagnosed and reported* cases. Underreporting is the norm — particularly for conditions with stigma, for diseases where providers don't test, and for asymptomatic infections.
+        """)
+
+        st.markdown("#### The Surveillance Cycle")
+        st.markdown("""
+| Step | Action | Example |
+|---|---|---|
+| **Collection** | Gather case reports, lab data, vital records | Lab reports positive *Salmonella* culture |
+| **Analysis** | Calculate rates, identify trends, compare to baseline | Rate this week vs. expected baseline for the season |
+| **Interpretation** | Determine public health significance | Is this a cluster? Has a threshold been crossed? |
+| **Dissemination** | Share findings with decision makers and public | MMWR report, health alert network |
+| **Action** | Implement response; evaluate effectiveness | Outbreak investigation, recall, targeted vaccination |
+        """)
+
+        st.markdown("#### Surveillance data sources")
+        st.markdown("""
+| Source | Examples | Strengths | Limitations |
+|---|---|---|---|
+| **Vital records** | Death certificates, birth records | Universal, continuous, legal | Coding errors, cause-of-death inaccuracies |
+| **Disease registries** | Cancer registry, trauma registry | Detailed clinical data | Voluntary, incomplete, expensive |
+| **Notifiable disease reports** | CDC NNDSS | Legally mandated, national | Underreporting, reporting delays |
+| **Sentinel surveillance** | Selected sites report all cases of a condition | Timely, detailed | Not nationally representative |
+| **Syndromic surveillance** | ER chief complaints, pharmacy sales | Real-time, early warning | Non-specific, many false alarms |
+| **Serosurveys** | Population antibody testing | Captures subclinical cases | Expensive, periodic not continuous |
+        """)
+
+        surv_q = st.radio(
+            "**Practice:** A health department wants to ensure they capture every case of a rare hemorrhagic fever during an outbreak. They assign staff to call every hospital daily. This is:",
+            ["— Select —",
+             "Passive surveillance — providers report when they diagnose",
+             "Active surveillance — the health department is seeking out cases",
+             "Syndromic surveillance — based on symptom patterns",
+             "Sentinel surveillance — using selected reporting sites"],
+            key="surv_q1"
+        )
+        if surv_q == "Active surveillance — the health department is seeking out cases":
+            st.success("✅ Correct. Active surveillance means the health authority initiates contact and actively seeks cases rather than waiting for providers to report. It has higher sensitivity but costs more. Active surveillance is standard practice during outbreak investigation and for high-priority conditions where completeness matters.")
+        elif surv_q != "— Select —":
+            st.error("❌ When the health department *initiates contact* and seeks out cases, that is active surveillance. Passive surveillance waits for providers to report voluntarily.")
+
+
+    elif df_section == "7️⃣ Mortality Measures & YPLL":
+        st.subheader("Mortality Measures & Years of Potential Life Lost (YPLL)")
+        st.markdown("""
+Beyond crude mortality rates, epidemiologists use several specialized mortality measures that capture *who* is dying, *from what*, and — critically — how *premature* the deaths are. These measures guide resource allocation and reflect priorities for prevention.
+        """)
+
+        st.markdown("#### Key Mortality Rate Formulas")
+        st.markdown("""
+| Measure | Formula | What it captures |
+|---|---|---|
+| **Crude mortality rate** | (Total deaths ÷ Midyear population) × 10ⁿ | Overall death burden; confounded by age structure |
+| **Age-specific mortality rate** | (Deaths in age group ÷ Population in age group) × 10ⁿ | Mortality at a specific life stage |
+| **Cause-specific mortality rate** | (Deaths from cause X ÷ Midyear population) × 10ⁿ | Burden of a specific disease on the population |
+| **Case fatality rate (CFR)** | (Deaths from disease ÷ Cases of disease) × 100 | Severity of a disease once acquired |
+| **Infant mortality rate (IMR)** | (Deaths under 1 year ÷ Live births) × 1,000 | Child survival; widely used population health indicator |
+| **Maternal mortality ratio** | (Maternal deaths ÷ Live births) × 100,000 | Risk of death from pregnancy/childbirth |
+| **Proportional mortality ratio (PMR)** | (Deaths from cause X ÷ Total deaths) × 100 | Fraction of all deaths attributable to a cause |
+        """)
+
+        st.info("""
+⚠️ **PMR vs. cause-specific mortality rate:** The PMR tells you what *proportion* of deaths are from a cause — it says nothing about the absolute risk of dying from that cause in the population. A high PMR for heart disease could mean heart disease is common OR that everything else has been controlled.
+        """)
+
+        st.divider()
+        st.markdown("#### Years of Potential Life Lost (YPLL)")
+        st.markdown("""
+**YPLL** measures the impact of *premature mortality* — deaths that occur before an expected age. Unlike crude mortality rates (which count all deaths equally), YPLL gives more weight to deaths among young people.
+
+**Formula:** For each death before the reference age (usually **75 years** in the US):
+
+> YPLL = Reference age (75) − Age at death
+
+**Example:** A person dies at age 25 → contributes 50 YPLL. A person dies at age 70 → contributes 5 YPLL. A person dies at age 80 → contributes 0 YPLL (did not die prematurely by this definition).
+
+**Population YPLL rate** = (Total YPLL ÷ Population under 75) × 100,000
+        """)
+
+        st.markdown("""
+| Why YPLL matters | Explanation |
+|---|---|
+| **Captures burden of premature death** | Injuries and homicides rank higher in YPLL than in crude mortality because they kill young people |
+| **Reframes prevention priorities** | Cancer and heart disease dominate crude death counts; unintentional injuries dominate YPLL |
+| **Policy relevance** | A dollar spent preventing a death at age 30 prevents more YPLL than one preventing a death at age 72 |
+| **Leading causes shift** | In YPLL rankings, unintentional injury, suicide, and homicide rise dramatically relative to their crude death rank |
+        """)
+
+        st.divider()
+        st.markdown("#### 🧮 YPLL Calculator")
+        ref_age = 75
+        col_y1, col_y2 = st.columns(2)
+        with col_y1:
+            n_deaths = st.number_input("Number of deaths to enter:", min_value=1, max_value=20, value=3, key="ypll_n")
+        ages = []
+        for i in range(int(n_deaths)):
+            age = st.number_input(f"Age at death #{i+1}:", min_value=0, max_value=74, value=min(30 + i*10, 74), key=f"ypll_age_{i}")
+            ages.append(age)
+
+        if st.button("Calculate YPLL", key="ypll_calc"):
+            ypll_list = [(age, ref_age - age) for age in ages]
+            total_ypll = sum(y for _, y in ypll_list)
+            import pandas as pd
+            ypll_df = pd.DataFrame(ypll_list, columns=["Age at death", "YPLL contributed"])
+            ypll_df["Age at death"] = ypll_df["Age at death"].astype(int)
+            st.dataframe(ypll_df, use_container_width=True, hide_index=True)
+            st.metric("Total YPLL", total_ypll)
+            avg_age = sum(ages) / len(ages)
+            st.success(f"These {len(ages)} deaths contribute a total of **{total_ypll} years of potential life lost** (reference age = 75). Average age at death = {round(avg_age,1)} years. Contrast with a scenario where all deaths occurred at age 74 — that would yield only {len(ages)} YPLL total.")
+
+        ypll_q = st.radio(
+            "**Concept check:** Unintentional injuries rank #5 in crude US mortality but #1 in YPLL. What does this tell you?",
+            ["— Select —",
+             "Injuries are actually less important than heart disease for prevention",
+             "Injuries disproportionately kill young people — each death removes many more years of life",
+             "The YPLL method overcounts injury deaths",
+             "YPLL and crude mortality always give the same ranking"],
+            key="ypll_q1"
+        )
+        if ypll_q == "Injuries disproportionately kill young people — each death removes many more years of life":
+            st.success("✅ Correct. Injuries are a leading killer of people aged 1–44. Each death in this age group contributes 30–74 YPLL. Heart disease deaths, though more numerous, tend to occur in older adults (70s–80s) and contribute few or no YPLL per death. YPLL thus ranks injuries as a top prevention priority even when raw death counts would suggest otherwise.")
+        elif ypll_q != "— Select —":
+            st.error("❌ YPLL weights deaths by how young the person was — more years lost per death = higher YPLL rank. Injuries kill disproportionately young people, making them rank higher in YPLL than in crude mortality counts.")
+
+
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")
 
@@ -4477,7 +4968,8 @@ elif current_page == "screening":
         "1️⃣ Core Concepts",
         "2️⃣ Interactive 2×2 Calculator",
         "3️⃣ Prevalence Effect on PPV",
-        "4️⃣ Wilson & Jungner Criteria"
+        "4️⃣ Wilson & Jungner Criteria",
+        "5️⃣ ROC Curve"
     ], horizontal=True)
     st.divider()
 
@@ -4836,6 +5328,220 @@ This is why PSA screening recommendations are inconsistent across countries and 
 | 9 | Cost-effective | Is the benefit worth the cost? |
 | 10 | Ongoing program | Is re-screening at intervals feasible? |
             """)
+
+
+    elif screen_section == "5️⃣ ROC Curve":
+        st.subheader("Receiver Operating Characteristic (ROC) Curve")
+        st.markdown("""
+The **ROC curve** is one of the most important concepts in diagnostic test evaluation. It visualizes the fundamental tradeoff between a test's ability to correctly identify people who have a disease (sensitivity) and its ability to correctly identify people who don't (specificity) — across every possible threshold for calling a test "positive."
+
+Understanding ROC curves is essential for evaluating tests, comparing competing tests, and choosing diagnostic cutpoints in clinical and public health practice.
+        """)
+
+        st.info("""
+**The core tradeoff:** Every diagnostic test that produces a continuous result (e.g., blood glucose, PSA level, test score) requires a *cutpoint* to divide results into "positive" and "negative." 
+- Move the cutpoint lower → more people test positive → sensitivity ↑, specificity ↓ (more true positives, but more false positives too)
+- Move the cutpoint higher → fewer people test positive → specificity ↑, sensitivity ↓ (fewer false positives, but more missed cases)
+
+The ROC curve shows *every possible version* of that tradeoff simultaneously.
+        """)
+
+        st.markdown("#### How the ROC curve is constructed")
+        st.markdown("""
+For each possible cutpoint along the test's continuous scale:
+1. Calculate **sensitivity** = TP / (TP + FN) — the true positive rate
+2. Calculate **1 − specificity** = FP / (FP + TN) — the false positive rate
+
+Plot each cutpoint as a point: **x = (1 − specificity), y = sensitivity**
+
+Connect all points → the ROC curve.
+        """)
+
+        # Interactive ROC with adjustable threshold
+        import numpy as np
+        import pandas as pd
+        import streamlit.components.v1 as _roc_comp
+
+        st.markdown("#### 🧮 Interactive ROC Explorer")
+        st.markdown("Adjust the diagnostic threshold to see how sensitivity and specificity change — and where that threshold sits on the ROC curve.")
+
+        roc_preset = st.selectbox("Select a test scenario:", [
+            "Moderate test (AUC ≈ 0.75) — e.g., PSA for prostate cancer",
+            "Good test (AUC ≈ 0.85) — e.g., HbA1c for diabetes",
+            "Excellent test (AUC ≈ 0.95) — e.g., HIV ELISA",
+            "Poor test (AUC ≈ 0.60) — near-random discrimination",
+        ], key="roc_preset")
+
+        np.random.seed(42)
+        n = 500
+        if "PSA" in roc_preset:
+            diseased = np.random.normal(6.0, 2.5, n//2)
+            healthy  = np.random.normal(3.5, 2.0, n//2)
+        elif "HbA1c" in roc_preset:
+            diseased = np.random.normal(7.5, 1.5, n//2)
+            healthy  = np.random.normal(5.5, 1.2, n//2)
+        elif "HIV" in roc_preset:
+            diseased = np.random.normal(8.0, 1.0, n//2)
+            healthy  = np.random.normal(3.0, 1.2, n//2)
+        else:
+            diseased = np.random.normal(5.5, 2.5, n//2)
+            healthy  = np.random.normal(4.5, 2.5, n//2)
+
+        all_scores = np.concatenate([diseased, healthy])
+        labels = np.concatenate([np.ones(n//2), np.zeros(n//2)])
+        t_min, t_max = float(np.min(all_scores)), float(np.max(all_scores))
+        t_mid = float(np.median(diseased) * 0.6 + np.median(healthy) * 0.4)
+
+        threshold = st.slider("Diagnostic threshold (test positive if score ≥ threshold):",
+                              min_value=round(t_min,1), max_value=round(t_max,1),
+                              value=round(t_mid,1), step=0.1, key="roc_threshold")
+
+        tp = np.sum((all_scores >= threshold) & (labels == 1))
+        fp = np.sum((all_scores >= threshold) & (labels == 0))
+        fn = np.sum((all_scores < threshold)  & (labels == 1))
+        tn = np.sum((all_scores < threshold)  & (labels == 0))
+        sens = tp / (tp + fn) if (tp + fn) > 0 else 0
+        spec = tn / (fp + tn) if (fp + tn) > 0 else 0
+        ppv  = tp / (tp + fp) if (tp + fp) > 0 else 0
+        npv  = tn / (fn + tn) if (fn + tn) > 0 else 0
+
+        c1,c2,c3,c4 = st.columns(4)
+        c1.metric("Sensitivity", f"{round(sens*100,1)}%")
+        c2.metric("Specificity", f"{round(spec*100,1)}%")
+        c3.metric("PPV", f"{round(ppv*100,1)}%")
+        c4.metric("NPV", f"{round(npv*100,1)}%")
+
+        # Build ROC curve data
+        thresholds = np.linspace(t_min, t_max, 300)
+        roc_pts = []
+        for t in thresholds:
+            tp_t = np.sum((all_scores >= t) & (labels == 1))
+            fp_t = np.sum((all_scores >= t) & (labels == 0))
+            fn_t = np.sum((all_scores < t)  & (labels == 1))
+            tn_t = np.sum((all_scores < t)  & (labels == 0))
+            s = tp_t/(tp_t+fn_t) if (tp_t+fn_t)>0 else 0
+            sp = tn_t/(fp_t+tn_t) if (fp_t+tn_t)>0 else 0
+            roc_pts.append((1-sp, s))
+
+        # AUC via trapezoid
+        xs = [p[0] for p in roc_pts]
+        ys = [p[1] for p in roc_pts]
+        auc = 0.0
+        for i in range(len(xs)-1):
+            auc += (xs[i]-xs[i+1]) * (ys[i]+ys[i+1]) / 2
+        auc = abs(auc)
+
+        # SVG ROC curve
+        W, H = 400, 320
+        pad = 50
+        pw, ph = W-pad-20, H-pad-20
+        def to_px(fpr, tpr):
+            x = pad + fpr * pw
+            y = (H-pad) - tpr * ph
+            return x, y
+
+        path_d = " ".join([f"{'M' if i==0 else 'L'}{round(to_px(x,y)[0],1)},{round(to_px(x,y)[1],1)}"
+                           for i,(x,y) in enumerate(roc_pts)])
+        # Current threshold point
+        cur_fpr = 1 - spec
+        cur_tpr = sens
+        cpx, cpy = to_px(cur_fpr, cur_tpr)
+
+        # Diagonal reference line
+        diag = f"M{pad},{H-pad} L{pad+pw},{H-pad-ph}"
+
+        # Y axis ticks
+        yticks = "".join([f'<text x="{pad-5}" y="{round(to_px(0,v)[1]+4,0)}" font-size="9" text-anchor="end" fill="#666">{round(v*100)}%</text>' +
+                          f'<line x1="{pad-3}" y1="{round(to_px(0,v)[1],0)}" x2="{pad}" y2="{round(to_px(0,v)[1],0)}" stroke="#ccc"/>' 
+                          for v in [0,.2,.4,.6,.8,1.0]])
+        xticks = "".join([f'<text x="{round(to_px(v,0)[0],0)}" y="{H-pad+14}" font-size="9" text-anchor="middle" fill="#666">{round(v*100)}%</text>'
+                          for v in [0,.2,.4,.6,.8,1.0]])
+
+        svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" style="font-family:sans-serif;background:#fafafa;border-radius:8px;">
+  <!-- Axes -->
+  <line x1="{pad}" y1="{H-pad}" x2="{pad+pw}" y2="{H-pad}" stroke="#999" stroke-width="1.5"/>
+  <line x1="{pad}" y1="{H-pad}" x2="{pad}" y2="{H-pad-ph}" stroke="#999" stroke-width="1.5"/>
+  {yticks}{xticks}
+  <!-- Labels -->
+  <text x="{pad+pw//2}" y="{H-4}" font-size="10" text-anchor="middle" fill="#555">1 − Specificity (False Positive Rate)</text>
+  <text x="12" y="{H-pad-ph//2}" font-size="10" text-anchor="middle" fill="#555" transform="rotate(-90,12,{H-pad-ph//2})">Sensitivity (True Positive Rate)</text>
+  <!-- Diagonal reference (random = AUC 0.50) -->
+  <path d="{diag}" stroke="#bbb" stroke-width="1" stroke-dasharray="4,3" fill="none"/>
+  <text x="{pad+pw-5}" y="{H-pad-ph+10}" font-size="9" fill="#aaa" text-anchor="end">Random (AUC=0.50)</text>
+  <!-- ROC curve -->
+  <path d="{path_d}" stroke="#2563eb" stroke-width="2.5" fill="none"/>
+  <!-- Current threshold point -->
+  <circle cx="{round(cpx,1)}" cy="{round(cpy,1)}" r="7" fill="#ef4444" stroke="white" stroke-width="2"/>
+  <text x="{round(cpx+12,1)}" y="{round(cpy-4,1)}" font-size="9" fill="#ef4444">Current threshold</text>
+  <!-- AUC label -->
+  <text x="{pad+pw-8}" y="{H-pad-ph+28}" font-size="11" font-weight="bold" text-anchor="end" fill="#2563eb">AUC = {round(auc,3)}</text>
+</svg>"""
+
+        _roc_comp.html(f"<div style='font-family:sans-serif;'>{svg}</div>", height=H+10, scrolling=False)
+
+        st.caption("Blue curve = ROC curve for this test. Red dot = current threshold. Dashed diagonal = a test that performs no better than chance (AUC = 0.50).")
+
+        st.divider()
+        st.markdown("#### The Area Under the Curve (AUC)")
+        st.markdown(f"""
+**AUC = {round(auc,3)}** for this scenario.
+
+The AUC (also called the **c-statistic**) summarizes the ROC curve in a single number — the probability that the test assigns a higher score to a randomly chosen diseased person than to a randomly chosen healthy person.
+        """)
+
+        st.markdown("""
+| AUC | Interpretation | Example context |
+|---|---|---|
+| **1.0** | Perfect discrimination — no overlap between diseased and healthy distributions | Rare in practice |
+| **0.90–0.99** | Excellent | HIV ELISA, some molecular tests |
+| **0.80–0.89** | Good | HbA1c for diabetes |
+| **0.70–0.79** | Fair/Moderate | Many clinical risk scores |
+| **0.60–0.69** | Poor | PSA for prostate cancer |
+| **0.50** | No discrimination — equivalent to flipping a coin | Useless test |
+| **< 0.50** | Worse than chance — test result is inverted | Test score is inverse predictor |
+        """)
+
+        st.info("""
+🔑 **Choosing a cutpoint from the ROC curve:**
+There is no single "correct" threshold — the right choice depends on the consequences of false positives vs. false negatives:
+
+- **Screening for a serious, treatable disease** → set threshold low → prioritize sensitivity (catch all cases even if many false positives)
+- **Confirmatory test before invasive procedure** → set threshold high → prioritize specificity (minimize unnecessary harm)
+- **Youden's J statistic** (sensitivity + specificity − 1) identifies the point on the ROC curve that maximizes the combined performance
+
+The point at the upper-left corner of the ROC curve (high sensitivity AND high specificity) is ideal — but how close you can get depends on the underlying biological overlap between diseased and healthy populations.
+        """)
+
+        st.divider()
+        st.markdown("#### 🧠 Concept check")
+        roc_q1 = st.radio(
+            "**Q1:** You lower the diagnostic threshold for a blood glucose screening test. What happens on the ROC curve?",
+            ["— Select —",
+             "The AUC increases — you've improved the test",
+             "You move along the curve toward higher sensitivity and higher false positive rate",
+             "You move along the curve toward higher specificity and lower sensitivity",
+             "The curve shape changes"],
+            key="roc_q1"
+        )
+        if roc_q1 == "You move along the curve toward higher sensitivity and higher false positive rate":
+            st.success("✅ Correct. Lowering the threshold calls more people positive — you catch more true cases (sensitivity ↑) but also flag more healthy people incorrectly (false positive rate ↑ = specificity ↓). This moves the red dot along the existing curve — it doesn't change the curve's shape or the AUC, because AUC reflects the test's inherent discriminating ability, not the chosen cutpoint.")
+        elif roc_q1 != "— Select —":
+            st.error("❌ Changing the threshold moves you along the existing ROC curve but doesn't change its shape or AUC. AUC is a property of the test itself, not the threshold. Lowering the threshold → more positives → sensitivity ↑, specificity ↓ → move toward the upper-right corner of the curve.")
+
+        roc_q2 = st.radio(
+            "**Q2:** Test A has AUC = 0.65. Test B has AUC = 0.88. What can you conclude?",
+            ["— Select —",
+             "Test B is better at discriminating diseased from non-diseased, across all possible thresholds",
+             "Test B has higher sensitivity than Test A",
+             "Test B has higher specificity than Test A",
+             "Test A is useless and should be abandoned"],
+            key="roc_q2"
+        )
+        if roc_q2 == "Test B is better at discriminating diseased from non-diseased, across all possible thresholds":
+            st.success("✅ Correct. AUC summarizes performance across all thresholds. Test B discriminates better overall. You cannot conclude which test has higher sensitivity or specificity at any specific threshold — that depends on where you set the cutpoint. And AUC = 0.65 is poor but not necessarily useless, especially if it provides incremental value alongside other tests.")
+        elif roc_q2 != "— Select —":
+            st.error("❌ AUC compares overall discrimination ability across all thresholds. It doesn't tell you sensitivity or specificity at any specific cutpoint — those depend on the chosen threshold, not the AUC. Test B is the better discriminator overall.")
+
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")

@@ -3141,7 +3141,7 @@ A **collider** is a variable that is caused by **both** the exposure and the out
     <text x="280" y="220" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">Conditioning on Success makes Talent and Hard Work appear negatively correlated</text>
   </svg>
 </div>"""
-            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=280, scrolling=False)
+            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=360, scrolling=False)
 
             st.error("❌ **Collider bias:** Conditioning on a collider opens a spurious path. This happens when you: restrict your sample by outcome (selection bias), adjust for a variable caused by both exposure and outcome, or use a mediator that is also a collider.")
             st.success("✅ **What to do:** Do NOT adjust for colliders. Identify them in your DAG before analysis. Berkson's bias and healthy worker effect are real-world examples of collider bias.")
@@ -3286,7 +3286,7 @@ It's called M-bias because the DAG has an M shape.
     <div style="background:#fce4ec;border-radius:6px;padding:8px 12px;color:#c62828;">❌ <b>Adjust for M:</b> Opens E ← U₁ → M ← U₂ → Y — introduces bias</div>
   </div>
 </div>"""
-            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=260, scrolling=False)
+            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=340, scrolling=False)
 
             st.error("❌ **M-bias trap:** Including a pre-treatment variable that looks 'harmless' can actually introduce bias if it's a collider on a path between unmeasured common causes. This is why you need a DAG — you can't detect this from the data alone.")
             st.info("💡 **Practical implication:** Not all pre-treatment variables should be adjusted for. Draw your DAG first. If a variable is a collider on any path, do not adjust for it.")

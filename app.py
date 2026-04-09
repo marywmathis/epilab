@@ -462,50 +462,49 @@ Remove or modify any one element, and the disease dynamic changes.
         _tri_comp.html("""
 <div style="font-family:sans-serif;text-align:center;padding:10px 0;">
 <div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#1a202c;">The Epidemiology Triangle</div>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 310" width="420" height="310">
-  <!-- Triangle outline -->
-  <polygon points="210,20 30,280 390,280" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/>
-  <!-- Triangle sides as colored lines -->
-  <line x1="210" y1="20" x2="30" y2="280" stroke="#1565c0" stroke-width="2.5" stroke-dasharray="6,3"/>
-  <line x1="210" y1="20" x2="390" y2="280" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="6,3"/>
-  <line x1="30" y1="280" x2="390" y2="280" stroke="#c62828" stroke-width="2.5" stroke-dasharray="6,3"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 340" width="500" height="340">
+  <!-- Triangle fill -->
+  <polygon points="250,28 40,300 460,300" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <!-- Triangle sides colored -->
+  <line x1="250" y1="28" x2="40" y2="300" stroke="#1565c0" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <line x1="250" y1="28" x2="460" y2="300" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <line x1="40" y1="300" x2="460" y2="300" stroke="#c62828" stroke-width="2.5" stroke-dasharray="7,4"/>
 
-  <!-- AGENT - top -->
-  <rect x="155" y="5" width="110" height="48" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
-  <text x="210" y="26" font-size="13" font-weight="700" fill="#c62828" text-anchor="middle">AGENT</text>
-  <text x="210" y="42" font-size="9" fill="#888" text-anchor="middle">What causes disease</text>
+  <!-- AGENT top -->
+  <rect x="185" y="8" width="130" height="52" rx="9" fill="#fce4ec" stroke="#c62828" stroke-width="2.5"/>
+  <text x="250" y="31" font-size="14" font-weight="700" fill="#c62828" text-anchor="middle">AGENT</text>
+  <text x="250" y="49" font-size="10" fill="#888" text-anchor="middle">What causes disease</text>
 
-  <!-- HOST - bottom left -->
-  <rect x="5" y="258" width="110" height="48" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
-  <text x="60" y="279" font-size="13" font-weight="700" fill="#1565c0" text-anchor="middle">HOST</text>
-  <text x="60" y="295" font-size="9" fill="#888" text-anchor="middle">Who gets disease</text>
+  <!-- HOST bottom-left -->
+  <rect x="8" y="274" width="120" height="52" rx="9" fill="#e3f2fd" stroke="#1565c0" stroke-width="2.5"/>
+  <text x="68" y="297" font-size="14" font-weight="700" fill="#1565c0" text-anchor="middle">HOST</text>
+  <text x="68" y="314" font-size="10" fill="#888" text-anchor="middle">Who gets disease</text>
 
-  <!-- ENVIRONMENT - bottom right -->
-  <rect x="305" y="258" width="110" height="48" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
-  <text x="360" y="279" font-size="13" font-weight="700" fill="#2e7d32" text-anchor="middle">ENVIRONMENT</text>
-  <text x="360" y="295" font-size="9" fill="#888" text-anchor="middle">Where it occurs</text>
+  <!-- ENVIRONMENT bottom-right -->
+  <rect x="372" y="274" width="120" height="52" rx="9" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+  <text x="432" y="297" font-size="14" font-weight="700" fill="#2e7d32" text-anchor="middle">ENVIRONMENT</text>
+  <text x="432" y="314" font-size="10" fill="#888" text-anchor="middle">Where it occurs</text>
 
-  <!-- TIME - center -->
-  <ellipse cx="210" cy="175" rx="52" ry="30" fill="#fff8e1" stroke="#f9a825" stroke-width="2"/>
-  <text x="210" y="171" font-size="12" font-weight="700" fill="#f57f17" text-anchor="middle">TIME</text>
-  <text x="210" y="185" font-size="9" fill="#888" text-anchor="middle">When it unfolds</text>
+  <!-- TIME center ellipse -->
+  <ellipse cx="250" cy="190" rx="62" ry="36" fill="#fff8e1" stroke="#f9a825" stroke-width="2.5"/>
+  <text x="250" y="185" font-size="13" font-weight="700" fill="#f57f17" text-anchor="middle">TIME</text>
+  <text x="250" y="202" font-size="10" fill="#999" text-anchor="middle">When it unfolds</text>
 
-  <!-- Arrows from center to vertices -->
-  <line x1="210" y1="145" x2="210" y2="58" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="162" y1="185" x2="105" y2="268" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arr)"/>
-  <line x1="258" y1="185" x2="318" y2="268" stroke="#f9a825" stroke-width="1.5" marker-end="url(#arr)"/>
-
+  <!-- Arrows: TIME → vertices -->
   <defs>
-    <marker id="arr" markerWidth="8" markerHeight="8" refX="4" refY="4" orient="auto">
-      <path d="M0,0 L8,4 L0,8 Z" fill="#f9a825"/>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#f9a825"/>
     </marker>
   </defs>
+  <line x1="250" y1="154" x2="250" y2="66" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="192" y1="202" x2="118" y2="284" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="308" y1="202" x2="382" y2="284" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
 
   <!-- Caption -->
-  <text x="210" y="305" font-size="9" fill="#94a3b8" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
+  <text x="250" y="335" font-size="9" fill="#94a3b8" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
 </svg>
 </div>
-        """, height=330, scrolling=False)
+        """, height=365, scrolling=False)
 
         st.markdown("""
 | Element | Definition | Key factors |
@@ -539,21 +538,53 @@ This is why more complex models — the **Web of Causation**, **Rothman's causal
 
         st.divider()
         st.markdown("#### 🧠 Apply the triangle")
-        tri_q = st.radio("**Scenario:** Childhood lead poisoning from old paint in urban housing. Which element does lead-safe housing remediation primarily target?", [
-            "— Select —",
-            "Agent — removes the lead from the environment",
-            "Host — increases resistance in children",
-            "Environment — modifies the condition supporting exposure",
-            "Both agent and environment — they are the same intervention here",
-        ], key="tri_q1")
-        if tri_q == "Both agent and environment — they are the same intervention here":
-            st.success("✅ Correct. Housing remediation removes the lead (agent modification) by changing the physical environment. These two vertices are tightly linked here — a known limitation of the model.")
-        elif tri_q == "Agent — removes the lead from the environment":
-            st.warning("⚠️ Partially correct. Removing lead targets the agent, but the mechanism is environmental modification. The distinction blurs here, which illustrates a real limitation of the triangle.")
-        elif tri_q == "Environment — modifies the condition supporting exposure":
-            st.warning("⚠️ Partially correct. You could argue agent removal as well. Full credit for either answer if you reason it through.")
-        elif tri_q == "Host — increases resistance in children":
-            st.error("❌ Lead chelation treats exposure after the fact. Housing remediation doesn't increase biological resistance — it removes the source.")
+
+        tri_scenarios = [
+            {
+                "q": "**Scenario 1:** Childhood lead poisoning from old paint in urban housing. Which element does lead-safe housing remediation primarily target?",
+                "opts": ["— Select —",
+                         "Agent — removes the lead from the environment",
+                         "Host — increases resistance in children",
+                         "Environment — modifies the condition supporting exposure",
+                         "Both agent and environment — they overlap here"],
+                "correct": "Both agent and environment — they overlap here",
+                "fb_correct": "✅ Correct. Housing remediation removes the lead (agent) by modifying the environment. These vertices blur here — a known limitation of the model. This is also a time intervention: acting before long-term exposure accumulates.",
+                "fb_wrong": "❌ Lead remediation modifies both the agent (removes lead) and the environment (changes housing condition). The model's limitation shows here — agent and environment aren't always separable.",
+                "key": "tri_q1"
+            },
+            {
+                "q": "**Scenario 2:** During the 1918 influenza pandemic, soldiers living in crowded barracks had dramatically higher attack rates than civilians in rural areas. Using the triangle, what primarily explains the higher transmission in barracks?",
+                "opts": ["— Select —",
+                         "Agent — the influenza virus was more virulent in military settings",
+                         "Host — soldiers had weaker immune systems than civilians",
+                         "Environment — crowded indoor living conditions facilitated airborne transmission",
+                         "Time — soldiers were exposed at a different point in the epidemic curve"],
+                "correct": "Environment — crowded indoor living conditions facilitated airborne transmission",
+                "fb_correct": "✅ Correct. The agent (influenza virus) was the same. The hosts (healthy young adults) were actually immunologically comparable. The environment — crowded indoor barracks with poor ventilation — was the primary differentiating factor. Environmental modification (spacing bunks, improving ventilation) was one of the few available interventions. Time also matters: sustained exposure in shared quarters increased cumulative dose.",
+                "fb_wrong": "❌ Same virus, comparable hosts. The environmental difference (crowded indoor barracks vs. dispersed rural settings) is what drove higher transmission. Environmental factors are a powerful intervention target for airborne disease.",
+                "key": "tri_q2"
+            },
+            {
+                "q": "**Scenario 3:** HIV transmission rates are far higher in sub-Saharan Africa than in Western Europe despite similar viral biology. A public health team wants to prioritize intervention using the triangle. Which element(s) most explain the geographic disparity?",
+                "opts": ["— Select —",
+                         "Agent — HIV is more virulent in Africa",
+                         "Host — genetic susceptibility differs by population",
+                         "Environment — structural factors including poverty, gender inequality, limited healthcare access, and concurrent infections that increase susceptibility",
+                         "Time — Africa is earlier in the epidemic"],
+                "correct": "Environment — structural factors including poverty, gender inequality, limited healthcare access, and concurrent infections that increase susceptibility",
+                "fb_correct": "✅ Correct. HIV-1 biology is essentially the same globally. Genetic host factors play a minor role. The environmental vertex captures structural determinants: poverty limiting condom access, gender inequality reducing women's negotiating power, co-infections (HSV-2, STIs) increasing mucosal susceptibility, and limited antiretroviral treatment availability. This illustrates both the triangle's strength (identifies modifiable targets) and its limitation (the 'environment' box is doing a lot of work for what are really complex social structures).",
+                "fb_wrong": "❌ HIV viral biology is similar globally. The geographic disparity is driven by structural environmental factors — poverty, gender inequality, healthcare infrastructure, and co-infection rates — all of which are modifiable intervention targets.",
+                "key": "tri_q3"
+            },
+        ]
+
+        for scen in tri_scenarios:
+            ans = st.radio(scen["q"], scen["opts"], key=scen["key"])
+            if ans == scen["correct"]:
+                st.success(scen["fb_correct"])
+            elif ans != "— Select —":
+                st.error(scen["fb_wrong"])
+            st.markdown("")
 
 
 
@@ -1213,19 +1244,52 @@ Just because countries with higher fat intake have higher breast cancer rates do
 **The rule:** Ecologic correlations cannot substitute for individual-level associations. Always note the unit of analysis and be explicit about what level the conclusions apply to.
         """)
 
-        epi_q = st.radio("**Quick check:** A study finds that counties with more fast food restaurants per capita have higher obesity rates. A researcher concludes that people who eat at fast food restaurants are more likely to be obese. This is an example of:", [
-            "— Select —",
-            "A valid causal inference from ecologic data",
-            "The ecologic fallacy — individual-level conclusions drawn from group-level data",
-            "Confounding by income",
-            "Selection bias",
-        ], key="eco_q1")
-        if epi_q == "The ecologic fallacy — individual-level conclusions drawn from group-level data":
-            st.success("✅ Correct. The data are measured at the county level (restaurants per capita, obesity rate). You cannot conclude from this that individuals who eat fast food are more obese — the association may be confounded, reversed, or absent at the individual level.")
-        elif epi_q == "Confounding by income":
-            st.warning("⚠️ Income may be a confounder, but that's a separate issue. The primary methodological error here is drawing individual-level conclusions from group-level data — the ecologic fallacy.")
-        elif epi_q != "— Select —":
-            st.error("❌ When a study measures exposure and outcome at the group level but draws conclusions about individuals, that is the ecologic fallacy. The unit of analysis must match the unit of inference.")
+        epi_scenarios = [
+            {
+                "q": "**Scenario 1:** A study finds that counties with more fast food restaurants per capita have higher obesity rates. A researcher concludes that people who eat at fast food restaurants are more likely to be obese. This is:",
+                "opts": ["— Select —",
+                         "A valid causal inference from ecologic data",
+                         "The ecologic fallacy — individual-level conclusions drawn from group-level data",
+                         "Confounding by income",
+                         "Selection bias"],
+                "correct": "The ecologic fallacy — individual-level conclusions drawn from group-level data",
+                "fb_correct": "✅ Correct. County-level restaurant density and county-level obesity rate are group measures. Whether individuals who eat at fast food chains are more obese than individuals in those same counties who don't — that's an individual-level question the ecologic data cannot answer.",
+                "fb_wrong": "❌ The primary error is drawing individual-level conclusions from group-level data. The unit of analysis is counties; the inference is about individuals. Income confounding may exist too, but the structural error is the ecologic fallacy.",
+                "key": "eco_q1"
+            },
+            {
+                "q": "**Scenario 2:** Countries with higher chocolate consumption per capita win more Nobel Prizes per capita. A journalist concludes that eating chocolate makes people smarter. What is the most likely explanation?",
+                "opts": ["— Select —",
+                         "Chocolate consumption causes cognitive improvement — a valid biological mechanism",
+                         "The ecologic fallacy — wealth (a country-level variable) drives both chocolate consumption and Nobel Prize rates",
+                         "Reverse causation — winning Nobel Prizes causes people to eat more chocolate",
+                         "This is a valid randomized finding"],
+                "correct": "The ecologic fallacy — wealth (a country-level variable) drives both chocolate consumption and Nobel Prize rates",
+                "fb_correct": "✅ Correct. This is a famous real example (Messerli, 2012 — published somewhat tongue-in-cheek). Wealthy countries have both higher per-capita chocolate consumption AND higher per-capita Nobel Prizes, because wealth drives investment in education and research. The correlation is ecologic confounding. No individual-level data support a chocolate-intelligence link. Classic ecologic fallacy + confounding at the group level.",
+                "fb_wrong": "❌ Wealthy nations have both higher chocolate consumption AND greater investment in education and research. A country-level correlation driven by a common cause (wealth) cannot support individual-level causal claims. This is the ecologic fallacy compounded by ecologic confounding.",
+                "key": "eco_q2"
+            },
+            {
+                "q": "**Scenario 3:** A researcher uses county-level data to study the relationship between opioid prescribing rates and opioid overdose death rates. She finds a strong positive correlation (r = 0.74). She wants to use this to estimate the individual-level risk of overdose among people who receive opioid prescriptions. Is this appropriate?",
+                "opts": ["— Select —",
+                         "Yes — the correlation is strong, so the inference is valid",
+                         "No — this is an ecologic correlation; it cannot directly estimate individual-level risk",
+                         "Yes — county-level data are more reliable than individual data",
+                         "It depends on whether the data are from the same year"],
+                "correct": "No — this is an ecologic correlation; it cannot directly estimate individual-level risk",
+                "fb_correct": "✅ Correct. The county-level correlation is informative for policy (target high-prescribing counties for intervention) but cannot estimate the individual-level probability of overdose among people who receive a prescription. That requires individual-level data with person-level exposure and outcome. The ecologic correlation is real and useful — but it answers a different question than individual risk.",
+                "fb_wrong": "❌ Ecologic correlations — even strong ones — cannot substitute for individual-level associations. The same county-level pattern could exist even if the highest-prescribing doctors serve the lowest-risk patients. Individual data are needed for individual-level inference.",
+                "key": "eco_q3"
+            },
+        ]
+
+        for scen in epi_scenarios:
+            ans = st.radio(scen["q"], scen["opts"], key=scen["key"])
+            if ans == scen["correct"]:
+                st.success(scen["fb_correct"])
+            elif ans != "— Select —":
+                st.error(scen["fb_wrong"])
+            st.markdown("")
 
 
     elif section == "2️⃣ Design Selector":
@@ -2431,26 +2495,6 @@ If this exceeds 10%, the variable is a confounder worth controlling.
 **Important:** This is a rule of thumb, not a law. Context matters — a 5% change could matter clinically even if it's below the threshold.
             """)
 
-        # Visual DAG
-        dag_html = """
-<div style="background:#f8f9fa;border-radius:8px;padding:20px;margin:12px 0;">
-  <p style="font-weight:bold;margin-bottom:8px;font-size:13px;">DAG (Directed Acyclic Graph): Smoking confounds Coffee → Heart Disease</p>
-  <div style="display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;">
-    <div style="text-align:center;padding:12px 20px;background:#fff3e0;border-radius:8px;border:2px solid #ef6c00;font-weight:bold;font-size:13px;">Smoking<br><span style="font-size:10px;color:#888;">(Confounder)</span></div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 8px;">
-      <div style="font-size:20px;color:#ef6c00;">↙</div>
-      <div style="font-size:20px;color:#ef6c00;">↘</div>
-    </div>
-    <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
-      <div style="text-align:center;padding:12px 20px;background:#e3f2fd;border-radius:8px;border:2px solid #1565c0;font-weight:bold;font-size:13px;">Coffee<br><span style="font-size:10px;color:#888;">(Exposure)</span></div>
-      <div style="font-size:18px;color:#999;">↓ (spurious)</div>
-      <div style="text-align:center;padding:12px 20px;background:#fce4ec;border-radius:8px;border:2px solid #c62828;font-weight:bold;font-size:13px;">Heart Disease<br><span style="font-size:10px;color:#888;">(Outcome)</span></div>
-    </div>
-    <div style="font-size:20px;color:#c62828;padding:0 8px;">→</div>
-  </div>
-  <p style="font-size:12px;color:#666;text-align:center;margin-top:12px;">Smoking → Coffee AND Smoking → Heart Disease creates a backdoor path. Remove it by adjusting for smoking.</p>
-</div>"""
-        st.markdown(dag_html, unsafe_allow_html=True)
 
     elif conf_section == "2️⃣ Controlling Confounding":
         st.subheader("Methods to Control Confounding")
@@ -3003,34 +3047,41 @@ A **mediator** (or intermediate variable) lies **on the causal pathway** between
 
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Mediator DAG: Physical Activity → Blood Pressure → CVD</div>
-  <div style="display:flex;align-items:center;justify-content:center;gap:0;">
-    {dag_box("Physical Activity","Exposure","#e3f2fd","#1565c0")}
-    <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px;">
-      <div style="height:2px;width:50px;background:#2e7d32;"></div>
-      <div style="font-size:14px;color:#2e7d32;">▶</div>
-      <div style="font-size:10px;color:#2e7d32;">causes</div>
-    </div>
-    {dag_box("↓ Blood Pressure","Mediator","#e8f5e9","#2e7d32")}
-    <div style="display:flex;flex-direction:column;align-items:center;padding:0 8px;">
-      <div style="height:2px;width:50px;background:#c62828;"></div>
-      <div style="font-size:14px;color:#c62828;">▶</div>
-      <div style="font-size:10px;color:#c62828;">causes</div>
-    </div>
-    {dag_box("CVD Risk","Outcome","#fce4ec","#c62828")}
-  </div>
-  <div style="margin-top:12px;">
-    <div style="font-size:11px;color:#718096;font-style:italic;">Physical Activity also has a direct path to CVD (dashed line below)</div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-top:8px;">
-      {dag_box("Physical Activity","Exposure","#e3f2fd","#1565c0")}
-      <div style="height:2px;width:200px;background:#1565c0;border-top:2px dashed #1565c0;"></div>
-      <div style="font-size:14px;color:#1565c0;">▶</div>
-      {dag_box("CVD Risk","Outcome","#fce4ec","#c62828")}
-    </div>
-  </div>
-  <div style="margin-top:16px;font-size:11px;color:#718096;background:#fff;border-radius:6px;padding:8px 12px;display:inline-block;">
-    🟢 <b>Total effect</b> = Direct effect + Indirect effect (through blood pressure)
-  </div>
+  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Mediator DAG: Physical Activity → Blood Pressure → CVD</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" width="520" height="160" style="font-family:sans-serif;">
+    <defs>
+      <marker id="ma" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2e7d32"/></marker>
+      <marker id="mr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#c62828"/></marker>
+      <marker id="mb" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#1565c0"/></marker>
+    </defs>
+    <!-- Nodes -->
+    <rect x="10" y="55" width="140" height="50" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+    <text x="80" y="77" font-size="12" font-weight="700" fill="#1565c0" text-anchor="middle">Physical Activity</text>
+    <text x="80" y="94" font-size="10" fill="#888" text-anchor="middle">Exposure (E)</text>
+
+    <rect x="190" y="55" width="140" height="50" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+    <text x="260" y="77" font-size="12" font-weight="700" fill="#2e7d32" text-anchor="middle">↓ Blood Pressure</text>
+    <text x="260" y="94" font-size="10" fill="#888" text-anchor="middle">Mediator (M)</text>
+
+    <rect x="370" y="55" width="140" height="50" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+    <text x="440" y="77" font-size="12" font-weight="700" fill="#c62828" text-anchor="middle">CVD Risk</text>
+    <text x="440" y="94" font-size="10" fill="#888" text-anchor="middle">Outcome (Y)</text>
+
+    <!-- E → M -->
+    <line x1="152" y1="80" x2="188" y2="80" stroke="#2e7d32" stroke-width="2" marker-end="url(#ma)"/>
+    <text x="170" y="72" font-size="9" fill="#2e7d32" text-anchor="middle">causes</text>
+
+    <!-- M → Y -->
+    <line x1="332" y1="80" x2="368" y2="80" stroke="#c62828" stroke-width="2" marker-end="url(#mr)"/>
+    <text x="350" y="72" font-size="9" fill="#c62828" text-anchor="middle">causes</text>
+
+    <!-- E → Y direct (dashed, above) -->
+    <path d="M80,55 Q260,10 440,55" stroke="#1565c0" stroke-width="1.8" stroke-dasharray="6,3" fill="none" marker-end="url(#mb)"/>
+    <text x="260" y="22" font-size="9" fill="#1565c0" text-anchor="middle">direct effect (also exists)</text>
+
+    <!-- Labels -->
+    <text x="260" y="148" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">Total effect = direct + indirect (via blood pressure). Do NOT adjust for M to estimate total effect.</text>
+  </svg>
 </div>"""
             st.markdown(dag_html, unsafe_allow_html=True)
 
@@ -3058,32 +3109,35 @@ A **collider** is a variable that is caused by **both** the exposure and the out
 
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Collider DAG: Talent and Hard Work both cause Success</div>
-  <div style="display:flex;align-items:flex-end;justify-content:center;gap:0;">
-    <div style="display:flex;flex-direction:column;align-items:center;">
-      {dag_box("Talent","Exposure","#e3f2fd","#1565c0")}
-      <div style="display:flex;align-items:center;margin-top:4px;">
-        <div style="width:60px;height:2px;background:#7b1fa2;"></div>
-        <div style="font-size:14px;color:#7b1fa2;">↘</div>
-      </div>
-    </div>
-    <div style="margin-bottom:8px;">{dag_box("Success","Collider","#f3e5f5","#7b1fa2")}</div>
-    <div style="display:flex;flex-direction:column;align-items:center;">
-      {dag_box("Hard Work","Exposure","#e8f5e9","#2e7d32")}
-      <div style="display:flex;align-items:center;margin-top:4px;">
-        <div style="font-size:14px;color:#7b1fa2;">↙</div>
-        <div style="width:60px;height:2px;background:#7b1fa2;"></div>
-      </div>
-    </div>
-  </div>
-  <div style="margin-top:16px;display:flex;gap:16px;justify-content:center;font-size:11px;">
-    <div style="background:#e8f5e9;border-radius:6px;padding:8px 12px;color:#2e7d32;">
-      ✅ <b>Unadjusted:</b> Talent and Hard Work are independent (no association)
-    </div>
-    <div style="background:#fce4ec;border-radius:6px;padding:8px 12px;color:#c62828;">
-      ❌ <b>After conditioning on Success</b> (e.g., studying only successful people): Talent and Hard Work appear <i>negatively</i> correlated — the "talented people don't work hard" fallacy
-    </div>
-  </div>
+  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Collider DAG: Talent and Hard Work → Success (collider)</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 190" width="520" height="190" style="font-family:sans-serif;">
+    <defs>
+      <marker id="cp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#7b1fa2"/></marker>
+      <marker id="cg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2e7d32"/></marker>
+      <marker id="cb" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#1565c0"/></marker>
+    </defs>
+    <!-- Talent (top-left) -->
+    <rect x="10" y="10" width="130" height="50" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+    <text x="75" y="32" font-size="12" font-weight="700" fill="#1565c0" text-anchor="middle">Talent</text>
+    <text x="75" y="49" font-size="10" fill="#888" text-anchor="middle">Cause 1</text>
+    <!-- Hard Work (bottom-left) -->
+    <rect x="10" y="130" width="130" height="50" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+    <text x="75" y="152" font-size="12" font-weight="700" fill="#2e7d32" text-anchor="middle">Hard Work</text>
+    <text x="75" y="169" font-size="10" fill="#888" text-anchor="middle">Cause 2</text>
+    <!-- Success (center-right, collider) -->
+    <rect x="300" y="70" width="130" height="50" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2.5"/>
+    <text x="365" y="92" font-size="12" font-weight="700" fill="#7b1fa2" text-anchor="middle">Success</text>
+    <text x="365" y="109" font-size="10" fill="#888" text-anchor="middle">COLLIDER ← ←</text>
+    <!-- Arrows into collider -->
+    <line x1="142" y1="35" x2="298" y2="82" stroke="#1565c0" stroke-width="2" marker-end="url(#cb)"/>
+    <line x1="142" y1="155" x2="298" y2="108" stroke="#2e7d32" stroke-width="2" marker-end="url(#cg)"/>
+    <!-- Key insight boxes -->
+    <rect x="10" y="95" width="250" height="28" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+    <text x="135" y="110" font-size="10" fill="#2e7d32" text-anchor="middle">✅ Don't adjust: path blocked naturally</text>
+    <rect x="270" y="155" width="240" height="28" rx="5" fill="#fce4ec" stroke="#c62828" stroke-width="1"/>
+    <text x="390" y="170" font-size="10" fill="#c62828" text-anchor="middle">❌ Adjust for Success → opens spurious path</text>
+    <text x="365" y="185" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">In a sample of successful people, talent and hard work appear negatively correlated</text>
+  </svg>
 </div>"""
             st.markdown(dag_html, unsafe_allow_html=True)
 
@@ -3185,33 +3239,49 @@ It's called M-bias because the DAG has an M shape.
 
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">M-Bias DAG Structure</div>
-  <div style="display:flex;justify-content:center;gap:40px;align-items:flex-start;">
-    {dag_box("U₁","Unmeasured cause of E","#f5f5f5","#9e9e9e")}
-    <div style="width:60px;"></div>
-    {dag_box("U₂","Unmeasured cause of Y","#f5f5f5","#9e9e9e")}
-  </div>
-  <div style="display:flex;justify-content:center;gap:0;margin:4px 0;font-size:18px;color:#9e9e9e;">
-    <div style="margin-right:20px;">↓ &nbsp; ↘</div>
-    <div style="margin-left:20px;">↙ &nbsp; ↓</div>
-  </div>
-  <div style="display:flex;justify-content:center;gap:80px;align-items:center;">
-    {dag_box("Exposure (E)","","#e3f2fd","#1565c0")}
-    {dag_box("M","Pre-treatment variable","#fff3e0","#e65100")}
-    {dag_box("Outcome (Y)","","#fce4ec","#c62828")}
-  </div>
-  <div style="margin-top:10px;display:flex;flex-direction:column;align-items:center;gap:4px;">
-    <div style="height:2px;width:120px;background:#c62828;"></div>
-    <div style="font-size:14px;color:#c62828;">▶</div>
-    <div style="font-size:10px;color:#c62828;">E → Y (true causal effect)</div>
-  </div>
-  <div style="margin-top:16px;display:flex;gap:16px;justify-content:center;font-size:11px;">
-    <div style="background:#e8f5e9;border-radius:6px;padding:8px 12px;color:#2e7d32;">
-      ✅ <b>Without adjusting for M:</b> E and Y association is unbiased (M blocks the U₁-U₂ path)
-    </div>
-    <div style="background:#fce4ec;border-radius:6px;padding:8px 12px;color:#c62828;">
-      ❌ <b>After adjusting for M:</b> Opens backdoor path E ← U₁ → M ← U₂ → Y, introducing bias
-    </div>
+  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">M-Bias DAG — The M shape</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 210" width="560" height="210" style="font-family:sans-serif;">
+    <defs>
+      <marker id="mg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#9e9e9e"/></marker>
+      <marker id="mr2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#c62828"/></marker>
+    </defs>
+    <!-- U1 top-left -->
+    <rect x="10" y="10" width="110" height="50" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="65" y="32" font-size="11" font-weight="700" fill="#757575" text-anchor="middle">U₁</text>
+    <text x="65" y="50" font-size="9" fill="#aaa" text-anchor="middle">Unmeasured → E</text>
+    <!-- U2 top-right -->
+    <rect x="440" y="10" width="110" height="50" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="495" y="32" font-size="11" font-weight="700" fill="#757575" text-anchor="middle">U₂</text>
+    <text x="495" y="50" font-size="9" fill="#aaa" text-anchor="middle">Unmeasured → Y</text>
+    <!-- E bottom-left -->
+    <rect x="10" y="150" width="120" height="50" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+    <text x="70" y="172" font-size="12" font-weight="700" fill="#1565c0" text-anchor="middle">Exposure (E)</text>
+    <text x="70" y="189" font-size="10" fill="#888" text-anchor="middle">e.g., alcohol use</text>
+    <!-- M center -->
+    <rect x="220" y="80" width="120" height="50" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="2.5"/>
+    <text x="280" y="102" font-size="12" font-weight="700" fill="#e65100" text-anchor="middle">M</text>
+    <text x="280" y="119" font-size="10" fill="#888" text-anchor="middle">Pre-treatment var.</text>
+    <!-- Y bottom-right -->
+    <rect x="430" y="150" width="120" height="50" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+    <text x="490" y="172" font-size="12" font-weight="700" fill="#c62828" text-anchor="middle">Outcome (Y)</text>
+    <text x="490" y="189" font-size="10" fill="#888" text-anchor="middle">e.g., depression</text>
+    <!-- U1 → E -->
+    <line x1="65" y1="62" x2="65" y2="148" stroke="#9e9e9e" stroke-width="1.8" stroke-dasharray="4,2" marker-end="url(#mg)"/>
+    <!-- U1 → M -->
+    <line x1="122" y1="35" x2="218" y2="95" stroke="#9e9e9e" stroke-width="1.8" stroke-dasharray="4,2" marker-end="url(#mg)"/>
+    <!-- U2 → Y -->
+    <line x1="495" y1="62" x2="495" y2="148" stroke="#9e9e9e" stroke-width="1.8" stroke-dasharray="4,2" marker-end="url(#mg)"/>
+    <!-- U2 → M -->
+    <line x1="438" y1="35" x2="342" y2="95" stroke="#9e9e9e" stroke-width="1.8" stroke-dasharray="4,2" marker-end="url(#mg)"/>
+    <!-- E → Y (true effect) -->
+    <path d="M130,175 Q280,205 428,175" stroke="#c62828" stroke-width="2" fill="none" marker-end="url(#mr2)"/>
+    <text x="280" y="205" font-size="9" fill="#c62828" text-anchor="middle">E → Y (true causal effect)</text>
+    <!-- M shape label -->
+    <text x="280" y="17" font-size="10" fill="#e65100" text-anchor="middle" font-weight="700">The "M" shape: U₁ → M ← U₂, with E ← U₁ and U₂ → Y</text>
+  </svg>
+  <div style="margin-top:10px;display:flex;gap:12px;justify-content:center;font-size:11px;">
+    <div style="background:#e8f5e9;border-radius:6px;padding:8px 12px;color:#2e7d32;">✅ <b>Without M:</b> E→Y estimate is unbiased (U₁-U₂ path blocked at M)</div>
+    <div style="background:#fce4ec;border-radius:6px;padding:8px 12px;color:#c62828;">❌ <b>Adjust for M:</b> Opens E ← U₁ → M ← U₂ → Y — introduces bias</div>
   </div>
 </div>"""
             st.markdown(dag_html, unsafe_allow_html=True)
@@ -3232,28 +3302,37 @@ A **proxy** (or surrogate) is a measured variable that stands in for an unmeasur
 
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Proxy DAG: Education proxies for SES</div>
-  <div style="display:flex;align-items:center;justify-content:center;gap:12px;">
-    {dag_box("SES (U)","Unmeasured","#f5f5f5","#9e9e9e")}
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-      <div style="font-size:12px;color:#555;">causes</div>
-      <div style="height:2px;width:40px;background:#555;"></div>
-      <div style="font-size:14px;color:#555;">▶</div>
-    </div>
-    {dag_box("Education","Proxy (measured)","#fff3e0","#e65100")}
-  </div>
-  <div style="margin-top:16px;display:flex;align-items:center;justify-content:center;gap:12px;">
-    {dag_box("SES (U)","Unmeasured","#f5f5f5","#9e9e9e")}
-    <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
-      <div style="font-size:12px;color:#c62828;">also causes</div>
-      <div style="height:2px;width:40px;background:#c62828;"></div>
-      <div style="font-size:14px;color:#c62828;">▶</div>
-    </div>
-    {dag_box("Health Outcome","Outcome","#fce4ec","#c62828")}
-  </div>
-  <div style="margin-top:16px;font-size:11px;color:#718096;background:#fff;border-radius:6px;padding:8px 12px;display:inline-block;">
-    When you adjust for Education (proxy), you partially adjust for SES — but imperfect measurement means residual confounding remains
-  </div>
+  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Proxy DAG: Education proxies for SES</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 180" width="560" height="180" style="font-family:sans-serif;">
+    <defs>
+      <marker id="pg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#9e9e9e"/></marker>
+      <marker id="po" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#e65100"/></marker>
+      <marker id="pr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#c62828"/></marker>
+    </defs>
+    <!-- SES (U) - unmeasured, top-center -->
+    <rect x="195" y="10" width="170" height="50" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="280" y="32" font-size="12" font-weight="700" fill="#757575" text-anchor="middle">SES (U)</text>
+    <text x="280" y="49" font-size="10" fill="#aaa" text-anchor="middle">True variable — unmeasured</text>
+    <!-- Education - proxy, bottom-left -->
+    <rect x="30" y="120" width="150" height="50" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="2.5"/>
+    <text x="105" y="142" font-size="12" font-weight="700" fill="#e65100" text-anchor="middle">Education</text>
+    <text x="105" y="159" font-size="10" fill="#888" text-anchor="middle">Proxy (measured)</text>
+    <!-- Health Outcome - bottom-right -->
+    <rect x="380" y="120" width="150" height="50" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+    <text x="455" y="142" font-size="12" font-weight="700" fill="#c62828" text-anchor="middle">Health Outcome</text>
+    <text x="455" y="159" font-size="10" fill="#888" text-anchor="middle">Outcome (Y)</text>
+    <!-- SES → Education -->
+    <line x1="230" y1="62" x2="145" y2="118" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#pg)"/>
+    <text x="172" y="88" font-size="9" fill="#9e9e9e" text-anchor="middle">causes</text>
+    <!-- SES → Outcome -->
+    <line x1="330" y1="62" x2="415" y2="118" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#pg)"/>
+    <text x="388" y="88" font-size="9" fill="#9e9e9e" text-anchor="middle">causes</text>
+    <!-- Education → Outcome (the adjusted path — partial) -->
+    <line x1="182" y1="145" x2="378" y2="145" stroke="#e65100" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#po)"/>
+    <text x="280" y="138" font-size="9" fill="#e65100" text-anchor="middle">adjusting for proxy → partial confounding control</text>
+    <!-- Note -->
+    <text x="280" y="175" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">Residual confounding remains because Education ≠ SES. Weaker proxy = more residual confounding.</text>
+  </svg>
 </div>"""
             st.markdown(dag_html, unsafe_allow_html=True)
 

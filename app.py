@@ -504,7 +504,7 @@ Remove or modify any one element, and the disease dynamic changes.
   <text x="250" y="335" font-size="9" fill="#94a3b8" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
 </svg>
 </div>
-        """, height=365, scrolling=False)
+        """, height=420, scrolling=False)
 
         st.markdown("""
 | Element | Definition | Key factors |
@@ -3048,7 +3048,7 @@ A **mediator** (or intermediate variable) lies **on the causal pathway** between
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
   <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Mediator DAG: Physical Activity → Blood Pressure → CVD</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 160" width="520" height="160" style="font-family:sans-serif;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 200" width="520" height="200" style="font-family:sans-serif;">
     <defs>
       <marker id="ma" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2e7d32"/></marker>
       <marker id="mr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#c62828"/></marker>
@@ -3083,7 +3083,7 @@ A **mediator** (or intermediate variable) lies **on the causal pathway** between
     <text x="260" y="148" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">Total effect = direct + indirect (via blood pressure). Do NOT adjust for M to estimate total effect.</text>
   </svg>
 </div>"""
-            st.markdown(dag_html, unsafe_allow_html=True)
+            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=250, scrolling=False)
 
             st.error("❌ **Critical mistake:** If you adjust for blood pressure when studying physical activity → CVD, you block the main causal pathway. Your estimate of the physical activity effect becomes biased (over-adjustment bias).")
             st.success("✅ **What to do:** Decide your question first. Total effect? Don't adjust for mediator. Direct effect only? Use mediation analysis methods, not simple regression adjustment.")
@@ -3110,36 +3110,38 @@ A **collider** is a variable that is caused by **both** the exposure and the out
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
   <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Collider DAG: Talent and Hard Work → Success (collider)</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 190" width="520" height="190" style="font-family:sans-serif;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 230" width="560" height="230" style="font-family:sans-serif;">
     <defs>
       <marker id="cp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#7b1fa2"/></marker>
       <marker id="cg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2e7d32"/></marker>
       <marker id="cb" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#1565c0"/></marker>
     </defs>
     <!-- Talent (top-left) -->
-    <rect x="10" y="10" width="130" height="50" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
-    <text x="75" y="32" font-size="12" font-weight="700" fill="#1565c0" text-anchor="middle">Talent</text>
-    <text x="75" y="49" font-size="10" fill="#888" text-anchor="middle">Cause 1</text>
+    <rect x="20" y="20" width="140" height="52" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+    <text x="90" y="43" font-size="13" font-weight="700" fill="#1565c0" text-anchor="middle">Talent</text>
+    <text x="90" y="61" font-size="10" fill="#888" text-anchor="middle">Cause 1</text>
     <!-- Hard Work (bottom-left) -->
-    <rect x="10" y="130" width="130" height="50" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
-    <text x="75" y="152" font-size="12" font-weight="700" fill="#2e7d32" text-anchor="middle">Hard Work</text>
-    <text x="75" y="169" font-size="10" fill="#888" text-anchor="middle">Cause 2</text>
-    <!-- Success (center-right, collider) -->
-    <rect x="300" y="70" width="130" height="50" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2.5"/>
-    <text x="365" y="92" font-size="12" font-weight="700" fill="#7b1fa2" text-anchor="middle">Success</text>
-    <text x="365" y="109" font-size="10" fill="#888" text-anchor="middle">COLLIDER ← ←</text>
+    <rect x="20" y="158" width="140" height="52" rx="8" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2"/>
+    <text x="90" y="181" font-size="13" font-weight="700" fill="#2e7d32" text-anchor="middle">Hard Work</text>
+    <text x="90" y="199" font-size="10" fill="#888" text-anchor="middle">Cause 2</text>
+    <!-- Success (right, collider) -->
+    <rect x="360" y="89" width="160" height="52" rx="8" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2.5"/>
+    <text x="440" y="112" font-size="13" font-weight="700" fill="#7b1fa2" text-anchor="middle">Success</text>
+    <text x="440" y="130" font-size="10" fill="#888" text-anchor="middle">COLLIDER ← ←</text>
     <!-- Arrows into collider -->
-    <line x1="142" y1="35" x2="298" y2="82" stroke="#1565c0" stroke-width="2" marker-end="url(#cb)"/>
-    <line x1="142" y1="155" x2="298" y2="108" stroke="#2e7d32" stroke-width="2" marker-end="url(#cg)"/>
-    <!-- Key insight boxes -->
-    <rect x="10" y="95" width="250" height="28" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
-    <text x="135" y="110" font-size="10" fill="#2e7d32" text-anchor="middle">✅ Don't adjust: path blocked naturally</text>
-    <rect x="270" y="155" width="240" height="28" rx="5" fill="#fce4ec" stroke="#c62828" stroke-width="1"/>
-    <text x="390" y="170" font-size="10" fill="#c62828" text-anchor="middle">❌ Adjust for Success → opens spurious path</text>
-    <text x="365" y="185" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">In a sample of successful people, talent and hard work appear negatively correlated</text>
+    <line x1="162" y1="46" x2="358" y2="106" stroke="#1565c0" stroke-width="2" marker-end="url(#cb)"/>
+    <line x1="162" y1="184" x2="358" y2="124" stroke="#2e7d32" stroke-width="2" marker-end="url(#cg)"/>
+    <!-- Do not adjust label (left-center) -->
+    <rect x="180" y="95" width="160" height="28" rx="5" fill="#e8f5e9" stroke="#2e7d32" stroke-width="1"/>
+    <text x="260" y="113" font-size="10" fill="#2e7d32" text-anchor="middle">✅ Path blocked naturally</text>
+    <!-- Warning label (bottom-right) -->
+    <rect x="300" y="160" width="240" height="28" rx="5" fill="#fce4ec" stroke="#c62828" stroke-width="1"/>
+    <text x="420" y="178" font-size="10" fill="#c62828" text-anchor="middle">❌ Adjust for Success → opens spurious path</text>
+    <!-- Caption -->
+    <text x="280" y="220" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">Conditioning on Success makes Talent and Hard Work appear negatively correlated</text>
   </svg>
 </div>"""
-            st.markdown(dag_html, unsafe_allow_html=True)
+            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=280, scrolling=False)
 
             st.error("❌ **Collider bias:** Conditioning on a collider opens a spurious path. This happens when you: restrict your sample by outcome (selection bias), adjust for a variable caused by both exposure and outcome, or use a mediator that is also a collider.")
             st.success("✅ **What to do:** Do NOT adjust for colliders. Identify them in your DAG before analysis. Berkson's bias and healthy worker effect are real-world examples of collider bias.")
@@ -3206,7 +3208,7 @@ A **moderator** (or effect modifier) is a variable that changes the **magnitude 
   </div>
   <div style="margin-top:10px;font-size:11px;color:#718096;">A single pooled RR would be misleading for both sexes. Report stratum-specific estimates.</div>
 </div>"""
-            st.markdown(dag_html, unsafe_allow_html=True)
+            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=240, scrolling=False)
 
             st.warning("⚠️ **Important:** The moderator arrow points TO the exposure-outcome path (it modifies the relationship), not directly to the outcome. This distinguishes it from a confounder (which is a common cause).")
             st.success("✅ **What to do:** Stratify by the modifier and report separate estimates. A single adjusted estimate obscures a clinically important difference.")
@@ -3284,7 +3286,7 @@ It's called M-bias because the DAG has an M shape.
     <div style="background:#fce4ec;border-radius:6px;padding:8px 12px;color:#c62828;">❌ <b>Adjust for M:</b> Opens E ← U₁ → M ← U₂ → Y — introduces bias</div>
   </div>
 </div>"""
-            st.markdown(dag_html, unsafe_allow_html=True)
+            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=260, scrolling=False)
 
             st.error("❌ **M-bias trap:** Including a pre-treatment variable that looks 'harmless' can actually introduce bias if it's a collider on a path between unmeasured common causes. This is why you need a DAG — you can't detect this from the data alone.")
             st.info("💡 **Practical implication:** Not all pre-treatment variables should be adjusted for. Draw your DAG first. If a variable is a collider on any path, do not adjust for it.")
@@ -3303,38 +3305,37 @@ A **proxy** (or surrogate) is a measured variable that stands in for an unmeasur
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
   <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Proxy DAG: Education proxies for SES</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 180" width="560" height="180" style="font-family:sans-serif;">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 230" width="560" height="230" style="font-family:sans-serif;">
     <defs>
       <marker id="pg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#9e9e9e"/></marker>
       <marker id="po" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#e65100"/></marker>
-      <marker id="pr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#c62828"/></marker>
     </defs>
-    <!-- SES (U) - unmeasured, top-center -->
-    <rect x="195" y="10" width="170" height="50" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2"/>
-    <text x="280" y="32" font-size="12" font-weight="700" fill="#757575" text-anchor="middle">SES (U)</text>
-    <text x="280" y="49" font-size="10" fill="#aaa" text-anchor="middle">True variable — unmeasured</text>
-    <!-- Education - proxy, bottom-left -->
-    <rect x="30" y="120" width="150" height="50" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="2.5"/>
-    <text x="105" y="142" font-size="12" font-weight="700" fill="#e65100" text-anchor="middle">Education</text>
-    <text x="105" y="159" font-size="10" fill="#888" text-anchor="middle">Proxy (measured)</text>
-    <!-- Health Outcome - bottom-right -->
-    <rect x="380" y="120" width="150" height="50" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
-    <text x="455" y="142" font-size="12" font-weight="700" fill="#c62828" text-anchor="middle">Health Outcome</text>
-    <text x="455" y="159" font-size="10" fill="#888" text-anchor="middle">Outcome (Y)</text>
+    <!-- SES (U) top-center -->
+    <rect x="195" y="10" width="170" height="52" rx="8" fill="#f5f5f5" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="5,3"/>
+    <text x="280" y="33" font-size="12" font-weight="700" fill="#757575" text-anchor="middle">SES (U)</text>
+    <text x="280" y="51" font-size="10" fill="#aaa" text-anchor="middle">True variable — unmeasured</text>
+    <!-- Education bottom-left -->
+    <rect x="40" y="155" width="160" height="52" rx="8" fill="#fff3e0" stroke="#e65100" stroke-width="2.5"/>
+    <text x="120" y="178" font-size="12" font-weight="700" fill="#e65100" text-anchor="middle">Education</text>
+    <text x="120" y="196" font-size="10" fill="#888" text-anchor="middle">Proxy (measured)</text>
+    <!-- Health Outcome bottom-right -->
+    <rect x="360" y="155" width="160" height="52" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+    <text x="440" y="178" font-size="12" font-weight="700" fill="#c62828" text-anchor="middle">Health Outcome</text>
+    <text x="440" y="196" font-size="10" fill="#888" text-anchor="middle">Outcome (Y)</text>
     <!-- SES → Education -->
-    <line x1="230" y1="62" x2="145" y2="118" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#pg)"/>
-    <text x="172" y="88" font-size="9" fill="#9e9e9e" text-anchor="middle">causes</text>
+    <line x1="230" y1="64" x2="168" y2="153" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#pg)"/>
+    <text x="188" y="105" font-size="9" fill="#9e9e9e" text-anchor="middle">causes</text>
     <!-- SES → Outcome -->
-    <line x1="330" y1="62" x2="415" y2="118" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#pg)"/>
-    <text x="388" y="88" font-size="9" fill="#9e9e9e" text-anchor="middle">causes</text>
-    <!-- Education → Outcome (the adjusted path — partial) -->
-    <line x1="182" y1="145" x2="378" y2="145" stroke="#e65100" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#po)"/>
-    <text x="280" y="138" font-size="9" fill="#e65100" text-anchor="middle">adjusting for proxy → partial confounding control</text>
-    <!-- Note -->
-    <text x="280" y="175" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">Residual confounding remains because Education ≠ SES. Weaker proxy = more residual confounding.</text>
+    <line x1="330" y1="64" x2="392" y2="153" stroke="#9e9e9e" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#pg)"/>
+    <text x="372" y="105" font-size="9" fill="#9e9e9e" text-anchor="middle">causes</text>
+    <!-- Education → Outcome partial path (below nodes) -->
+    <line x1="202" y1="181" x2="358" y2="181" stroke="#e65100" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#po)"/>
+    <text x="280" y="146" font-size="9" fill="#e65100" text-anchor="middle">adjusting for proxy = partial confounding control</text>
+    <!-- Caption -->
+    <text x="280" y="220" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">Residual confounding remains: Education ≠ SES. Weaker proxy = more residual confounding.</text>
   </svg>
 </div>"""
-            st.markdown(dag_html, unsafe_allow_html=True)
+            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=280, scrolling=False)
 
             st.warning("⚠️ **Proxy limitations:** Adjusting for a proxy only partially controls for the underlying variable. The weaker the proxy-variable relationship, the more residual confounding remains. This is why residual confounding is almost always present in observational studies.")
 

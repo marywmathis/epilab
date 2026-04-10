@@ -5175,9 +5175,10 @@ elif current_page == "screening":
     screen_section = st.radio("Section:", [
         "1️⃣ Core Concepts",
         "2️⃣ Interactive 2×2 Calculator",
-        "3️⃣ Prevalence Effect on PPV",
-        "4️⃣ Wilson & Jungner Criteria",
-        "5️⃣ ROC Curve"
+        "3️⃣ Likelihood Ratios & Fagan Nomogram",
+        "4️⃣ Prevalence Effect on PPV",
+        "5️⃣ Wilson & Jungner Criteria",
+        "6️⃣ ROC Curve"
     ], horizontal=True)
     st.divider()
 
@@ -5404,7 +5405,244 @@ elif current_page == "screening":
 | LR− | (1−Sens) ÷ Spec | {round(1-sens,3)} ÷ {round(spec,3)} | **{lrn_str}** |
                 """)
 
-    elif screen_section == "3️⃣ Prevalence Effect on PPV":
+    elif screen_section == "3️⃣ Likelihood Ratios & Fagan Nomogram":
+        st.subheader("Likelihood Ratios — Updating Probability with Test Results")
+        st.markdown("""
+Sensitivity, specificity, PPV, and NPV all depend on the prevalence of disease in the population being tested. **Likelihood ratios (LRs)** are different — they describe the test's inherent discriminating ability and can be applied to any patient with a known pre-test probability.
+
+**LR+ = Sensitivity ÷ (1 − Specificity)** — how much more likely a positive result is in a diseased person vs. a healthy person
+
+**LR− = (1 − Sensitivity) ÷ Specificity** — how much less likely a negative result is in a diseased person vs. a healthy person
+        """)
+
+        st.markdown("""
+| LR+ value | Interpretation | Rule-of-thumb |
+|---|---|---|
+| > 10 | Large, often conclusive increase in probability | Strong rule-in |
+| 5–10 | Moderate increase | Moderate rule-in |
+| 2–5 | Small increase | Weak rule-in |
+| 1–2 | Minimal/no change | Uninformative |
+| **LR− value** | | |
+| < 0.1 | Large, often conclusive decrease in probability | Strong rule-out |
+| 0.1–0.2 | Moderate decrease | Moderate rule-out |
+| 0.2–0.5 | Small decrease | Weak rule-out |
+| > 0.5 | Minimal/no change | Uninformative |
+        """)
+
+        st.info("""
+🔑 **How to use an LR:** Convert pre-test probability → pre-test odds → multiply by LR → post-test odds → convert back to post-test probability.
+
+**Pre-test odds** = Pre-test probability ÷ (1 − Pre-test probability)
+
+**Post-test odds** = Pre-test odds × LR
+
+**Post-test probability** = Post-test odds ÷ (1 + Post-test odds)
+        """)
+
+        st.divider()
+        st.subheader("🧮 Dynamic Fagan Nomogram")
+        st.markdown("""
+The **Fagan nomogram** is a graphical tool that performs the pre-test → post-test probability conversion visually. Draw a line from pre-test probability (left) through LR (center) to read post-test probability (right).
+        """)
+
+        import math as _fm
+        import streamlit.components.v1 as _fagan_comp
+
+        col_f1, col_f2, col_f3 = st.columns(3)
+        with col_f1:
+            pre_prob = st.slider("Pre-test probability (%):", 1, 99, 20, 1, key="fagan_pre") / 100
+        with col_f2:
+            lr_type = st.radio("Apply:", ["LR+ (positive result)", "LR− (negative result)"], key="fagan_lr_type", horizontal=True)
+        with col_f3:
+            if "LR+" in lr_type:
+                lr_val = st.slider("LR+ value:", 0.5, 50.0, 5.0, 0.5, key="fagan_lrp")
+            else:
+                lr_val = st.slider("LR− value:", 0.01, 2.0, 0.1, 0.01, key="fagan_lrn")
+
+        # Calculate post-test probability
+        pre_odds = pre_prob / (1 - pre_prob)
+        post_odds = pre_odds * lr_val
+        post_prob = post_odds / (1 + post_odds)
+
+        # Show metrics
+        mc1, mc2, mc3 = st.columns(3)
+        mc1.metric("Pre-test probability", f"{round(pre_prob*100,1)}%")
+        mc2.metric("LR applied", round(lr_val, 2))
+        mc3.metric("Post-test probability", f"{round(post_prob*100,1)}%",
+                   delta=f"{round((post_prob - pre_prob)*100,1)} pp",
+                   delta_color="normal" if post_prob > pre_prob else "inverse")
+
+        # Build Fagan nomogram SVG
+        # Three vertical log-odds scales: pre-test prob (left), LR (center), post-test prob (right)
+        NW, NH = 480, 400
+        pad_top, pad_bot = 40, 40
+        scale_h = NH - pad_top - pad_bot
+
+        def prob_to_y(p, h=scale_h, top=pad_top):
+            """Convert probability to y position using log-odds scale"""
+            p = max(0.001, min(0.999, p))
+            odds = p / (1 - p)
+            log_odds = math.log10(odds)
+            lo_min, lo_max = math.log10(0.001/0.999), math.log10(0.999/0.001)
+            frac = (log_odds - lo_min) / (lo_max - lo_min)
+            return top + (1 - frac) * h
+
+        def lr_to_y(lr, h=scale_h, top=pad_top):
+            """Convert LR to y position using log scale"""
+            lr = max(0.001, min(1000, lr))
+            log_lr = math.log10(lr)
+            lr_min, lr_max = math.log10(0.001), math.log10(1000)
+            frac = (log_lr - lr_min) / (lr_max - lr_min)
+            return top + (1 - frac) * h
+
+        # Scale positions
+        x_pre = 80
+        x_lr  = NW // 2
+        x_post = NW - 80
+
+        # Pre-test probability ticks
+        pre_ticks  = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4,
+                      0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99]
+        lr_ticks   = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5,
+                      1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+        post_ticks = pre_ticks
+
+        def tick_label(p):
+            if p >= 0.1: return f"{round(p*100)}"
+            elif p >= 0.01: return f"{round(p*100,1)}"
+            else: return f"{p*100:.1f}"
+
+        def lr_label(v):
+            if v >= 1: return str(int(v)) if v == int(v) else str(round(v,1))
+            else: return str(round(v,3)).rstrip('0').rstrip('.')
+
+        pre_tick_svg = ""
+        for p in pre_ticks:
+            y = prob_to_y(p)
+            pre_tick_svg += f'<line x1="{x_pre-6}" y1="{round(y,1)}" x2="{x_pre}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
+            pre_tick_svg += f'<text x="{x_pre-8}" y="{round(y+3,1)}" font-size="9" text-anchor="end" fill="#444">{tick_label(p)}</text>'
+
+        lr_tick_svg = ""
+        for v in lr_ticks:
+            y = lr_to_y(v)
+            lr_tick_svg += f'<line x1="{x_lr-4}" y1="{round(y,1)}" x2="{x_lr+4}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
+            lr_tick_svg += f'<text x="{x_lr+6}" y="{round(y+3,1)}" font-size="9" text-anchor="start" fill="#444">{lr_label(v)}</text>'
+
+        post_tick_svg = ""
+        for p in post_ticks:
+            y = prob_to_y(p)
+            post_tick_svg += f'<line x1="{x_post}" y1="{round(y,1)}" x2="{x_post+6}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
+            post_tick_svg += f'<text x="{x_post+8}" y="{round(y+3,1)}" font-size="9" text-anchor="start" fill="#444">{tick_label(p)}</text>'
+
+        # The pivot line: from pre-test through LR to post-test
+        y_pre  = prob_to_y(pre_prob)
+        y_lr   = lr_to_y(lr_val)
+        y_post = prob_to_y(post_prob)
+
+        line_color = "#2563eb" if "LR+" in lr_type else "#dc2626"
+
+        nomo_svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{NW}" height="{NH}"
+     style="font-family:sans-serif;background:#fafafa;border-radius:8px;border:1px solid #e2e8f0;">
+  <!-- Scale lines -->
+  <line x1="{x_pre}" y1="{pad_top}" x2="{x_pre}" y2="{NH-pad_bot}" stroke="#888" stroke-width="1.5"/>
+  <line x1="{x_lr}"  y1="{pad_top}" x2="{x_lr}"  y2="{NH-pad_bot}" stroke="#888" stroke-width="1.5"/>
+  <line x1="{x_post}" y1="{pad_top}" x2="{x_post}" y2="{NH-pad_bot}" stroke="#888" stroke-width="1.5"/>
+
+  <!-- Scale headers -->
+  <text x="{x_pre}"  y="{pad_top-12}" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">Pre-test %</text>
+  <text x="{x_lr}"   y="{pad_top-12}" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">Likelihood Ratio</text>
+  <text x="{x_post}" y="{pad_top-12}" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">Post-test %</text>
+
+  <!-- Ticks -->
+  {pre_tick_svg}
+  {lr_tick_svg}
+  {post_tick_svg}
+
+  <!-- Pivot line through all three points -->
+  <line x1="{x_pre}" y1="{round(y_pre,1)}" x2="{x_post}" y2="{round(y_post,1)}"
+        stroke="{line_color}" stroke-width="2.5" stroke-dasharray="6,3" opacity="0.7"/>
+
+  <!-- Dots at each scale -->
+  <circle cx="{x_pre}"  cy="{round(y_pre,1)}"  r="7" fill="{line_color}" stroke="white" stroke-width="2"/>
+  <circle cx="{x_lr}"   cy="{round(y_lr,1)}"   r="6" fill="#f59e0b"      stroke="white" stroke-width="2"/>
+  <circle cx="{x_post}" cy="{round(y_post,1)}"  r="7" fill="{line_color}" stroke="white" stroke-width="2"/>
+
+  <!-- Value labels at dots -->
+  <text x="{x_pre-14}" y="{round(y_pre-9,1)}" font-size="10" font-weight="700" fill="{line_color}" text-anchor="middle">{round(pre_prob*100,1)}%</text>
+  <text x="{x_lr}"     y="{round(y_lr-9,1)}"  font-size="10" font-weight="700" fill="#b45309"       text-anchor="middle">LR={round(lr_val,2)}</text>
+  <text x="{x_post+14}" y="{round(y_post-9,1)}" font-size="10" font-weight="700" fill="{line_color}" text-anchor="middle">{round(post_prob*100,1)}%</text>
+
+  <!-- LR=1 reference line -->
+  <line x1="{x_lr-4}" y1="{round(lr_to_y(1),1)}" x2="{x_lr+4}" y2="{round(lr_to_y(1),1)}"
+        stroke="#ef4444" stroke-width="2"/>
+  <text x="{x_lr-40}" y="{round(lr_to_y(1)+4,1)}" font-size="9" fill="#ef4444" font-weight="600">LR=1</text>
+
+  <!-- Bottom note -->
+  <text x="{NW//2}" y="{NH-8}" font-size="9" fill="#94a3b8" text-anchor="middle" font-style="italic">
+    Read: draw line from pre-test probability through LR to post-test probability
+  </text>
+</svg>"""
+
+        _fagan_comp.html(f"<div style='font-family:sans-serif;'>{nomo_svg}</div>", height=NH+20, scrolling=False)
+
+        # Plain language interpretation
+        change = post_prob - pre_prob
+        direction = "increases" if change > 0 else "decreases"
+        st.markdown(f"""
+**Interpretation:** Starting with a pre-test probability of **{round(pre_prob*100,1)}%**, applying an **{"LR+" if "LR+" in lr_type else "LR−"} of {round(lr_val,2)}**
+{direction} the post-test probability to **{round(post_prob*100,1)}%** — a change of **{round(abs(change)*100,1)} percentage points**.
+
+Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → Post-test probability: {round(post_prob*100,1)}%
+        """)
+
+        if "LR+" in lr_type:
+            if lr_val >= 10:
+                st.success(f"✅ LR+ = {round(lr_val,2)} — a **large, often conclusive** increase. A positive test substantially raises disease probability.")
+            elif lr_val >= 5:
+                st.success(f"✅ LR+ = {round(lr_val,2)} — a **moderate** increase. A positive test is meaningful but not definitive.")
+            elif lr_val >= 2:
+                st.warning(f"⚠️ LR+ = {round(lr_val,2)} — a **small** increase. A positive test provides some, but limited, diagnostic value.")
+            else:
+                st.error(f"❌ LR+ = {round(lr_val,2)} — **near 1**. A positive test adds almost no diagnostic information.")
+        else:
+            if lr_val <= 0.1:
+                st.success(f"✅ LR− = {round(lr_val,3)} — a **large, often conclusive** decrease. A negative test substantially lowers disease probability (strong rule-out).")
+            elif lr_val <= 0.2:
+                st.success(f"✅ LR− = {round(lr_val,3)} — a **moderate** decrease. A negative test is meaningful for ruling out disease.")
+            elif lr_val <= 0.5:
+                st.warning(f"⚠️ LR− = {round(lr_val,3)} — a **small** decrease. A negative test provides some but limited reassurance.")
+            else:
+                st.error(f"❌ LR− = {round(lr_val,3)} — **near 1**. A negative test adds almost no diagnostic information.")
+
+        st.divider()
+        st.markdown("#### 🧠 Practice: Applying Likelihood Ratios")
+        lr_q1 = st.radio(
+            "**Scenario:** A 55-year-old woman with chest pain has a pre-test probability of coronary artery disease of 40%. Her exercise stress test is positive. The LR+ for this test is 4.5. What is her approximate post-test probability?",
+            ["— Select —", "~20% — the test lowered probability", "~50% — barely changed",
+             "~75% — LR+ of 4.5 substantially raises a 40% pre-test probability", "~95% — almost certain"],
+            key="lr_q1"
+        )
+        if lr_q1 == "~75% — LR+ of 4.5 substantially raises a 40% pre-test probability":
+            st.success("""✅ Correct. Pre-test odds = 0.40/0.60 = 0.667. Post-test odds = 0.667 × 4.5 = 3.0. Post-test probability = 3.0/4.0 = 75%. A positive stress test in a patient with intermediate pre-test probability substantially raises the probability — but note it's still not 100%, which is why further testing may follow.""")
+        elif lr_q1 != "— Select —":
+            st.error("❌ Work through the math: Pre-test odds = 0.4/0.6 = 0.667. Post-test odds = 0.667 × 4.5 = 3.0. Post-test probability = 3.0/(1+3.0) = 75%.")
+
+        lr_q2 = st.radio(
+            "**Scenario:** A patient has a 30% pre-test probability of pulmonary embolism. A D-dimer test is negative. The LR− for D-dimer is 0.08. What does this mean clinically?",
+            ["— Select —",
+             "Post-test probability is still ~30% — the test didn't change anything",
+             "Post-test probability drops to ~3% — PE is effectively ruled out",
+             "Post-test probability rises — a negative test worsens the outlook",
+             "LR− can't be used for ruling out disease"],
+            key="lr_q2"
+        )
+        if lr_q2 == "Post-test probability drops to ~3% — PE is effectively ruled out":
+            st.success("""✅ Correct. Pre-test odds = 0.3/0.7 = 0.429. Post-test odds = 0.429 × 0.08 = 0.034. Post-test probability = 0.034/1.034 ≈ 3.3%. A negative D-dimer in a patient with moderate pre-test probability reduces the probability to ~3% — below the threshold for anticoagulation. This illustrates the power of LR− for rule-out. D-dimer's high sensitivity (low LR−) is why it's used as a rule-out test.""")
+        elif lr_q2 != "— Select —":
+            st.error("❌ LR− below 0.1 is a strong rule-out. Pre-test odds = 0.3/0.7 = 0.429. Post-test odds = 0.429 × 0.08 = 0.034. Post-test probability ≈ 3.3%.")
+
+
+    elif screen_section == "4️⃣ Prevalence Effect on PPV":
         st.subheader("How Prevalence Changes PPV")
         st.markdown("One of the most important — and counterintuitive — facts in screening: **a test with excellent sensitivity and specificity can still have very poor PPV when disease prevalence is low.**")
 
@@ -5446,7 +5684,7 @@ The test hasn't changed — only the population it's applied to.
 **Why does this happen?** In a low-prevalence population, there are very few true cases but an enormous number of disease-free people. Even a test with high specificity — meaning its false positive *rate* is low — will produce a large absolute *number* of false positives when applied to millions of non-cases. A 95% specific test still incorrectly flags 5% of non-cases as positive; in a population of 1,000,000 non-cases, that's 50,000 false positives regardless of how few true cases exist. The problem is not the test's performance — it's the mismatch between the test's false positive rate and the vast size of the non-case pool. This is the mathematical basis for why mass screening of low-risk populations often produces more harm (unnecessary follow-up, anxiety, procedures) than benefit.
         """)
 
-    elif screen_section == "4️⃣ Wilson & Jungner Criteria":
+    elif screen_section == "5️⃣ Wilson & Jungner Criteria":
         st.subheader("Wilson & Jungner Criteria for Screening Programs")
         st.markdown("""
 In 1968, Wilson and Jungner published a landmark WHO report establishing the criteria that a disease and its screening test must meet before a population-wide screening program is justified. These remain the gold standard framework for evaluating screening programs today.
@@ -5538,7 +5776,7 @@ This is why PSA screening recommendations are inconsistent across countries and 
             """)
 
 
-    elif screen_section == "5️⃣ ROC Curve":
+    elif screen_section == "6️⃣ ROC Curve":
         st.subheader("Receiver Operating Characteristic (ROC) Curve")
         st.markdown("""
 The **ROC curve** is one of the most important concepts in diagnostic test evaluation. It visualizes the fundamental tradeoff between a test's ability to correctly identify people who have a disease (sensitivity) and its ability to correctly identify people who don't (specificity) — across every possible threshold for calling a test "positive."
@@ -5656,7 +5894,7 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
             v = round(t_lo + i*x_range/5, 1)
             xtick_svg += f'<text x="{round(px(v),1)}" y="{H2-8}" font-size="8" text-anchor="middle" fill="#888">{v}</text>'
 
-        svg2 = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W2}" height="{H2}" style="font-family:sans-serif;background:#fafafa;border-radius:8px;">
+        svg2 = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W2}" height="{H2}" style="font-family:sans-serif;background:#fafafa;border-radius:8px 8px 0 0;">
   <!-- Shaded areas -->
   {"<path d='"+fn_path+"' fill='rgba(220,38,38,0.18)'/>" if fn_path else ""}
   {"<path d='"+tp_path+"' fill='rgba(22,163,74,0.22)'/>" if tp_path else ""}
@@ -5672,21 +5910,18 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
   <line x1="{pad_l}" y1="{H2-pad_b}" x2="{W2-pad_r}" y2="{H2-pad_b}" stroke="#999" stroke-width="1.5"/>
   {xtick_svg}
   <text x="{pad_l+pw2//2}" y="{H2-1}" font-size="9" text-anchor="middle" fill="#666">Test score</text>
-  <!-- Legend -->
-  <rect x="{pad_l}" y="{pad_t}" width="10" height="10" fill="rgba(22,163,74,0.4)"/>
-  <text x="{pad_l+13}" y="{pad_t+9}" font-size="9" fill="#166534">TP (sens = {round(sens_d*100,0):.0f}%)</text>
-  <rect x="{pad_l}" y="{pad_t+14}" width="10" height="10" fill="rgba(220,38,38,0.35)"/>
-  <text x="{pad_l+13}" y="{pad_t+23}" font-size="9" fill="#991b1b">FN (missed = {round((1-sens_d)*100,0):.0f}%)</text>
-  <rect x="{pad_l+120}" y="{pad_t}" width="10" height="10" fill="rgba(37,99,235,0.3)"/>
-  <text x="{pad_l+133}" y="{pad_t+9}" font-size="9" fill="#1e40af">TN (spec = {round(spec_d*100,0):.0f}%)</text>
-  <rect x="{pad_l+120}" y="{pad_t+14}" width="10" height="10" fill="rgba(234,88,12,0.35)"/>
-  <text x="{pad_l+133}" y="{pad_t+23}" font-size="9" fill="#9a3412">FP (false+ = {round(fpr_d*100,0):.0f}%)</text>
-  <!-- Curve labels -->
-  <text x="{round(px(mu_d)+8,0)}" y="{round(py(gauss(mu_d,mu_d,sd_d))-6,0)}" font-size="9" fill="#dc2626" font-weight="600">Diseased</text>
-  <text x="{round(px(mu_h)-40,0)}" y="{round(py(gauss(mu_h,mu_h,sd_h))-6,0)}" font-size="9" fill="#2563eb" font-weight="600">Healthy</text>
-</svg>"""
+  <!-- Curve peak labels only (no overlap) -->
+  <text x="{round(px(mu_d)+4,0)}" y="{round(py(gauss(mu_d,mu_d,sd_d))-10,0)}" font-size="10" fill="#dc2626" font-weight="700">Diseased</text>
+  <text x="{round(px(mu_h)-4,0)}" y="{round(py(gauss(mu_h,mu_h,sd_h))-10,0)}" font-size="10" fill="#2563eb" font-weight="700" text-anchor="end">Healthy</text>
+</svg>
+<div style="background:#f0f4f8;border-radius:0 0 8px 8px;padding:8px 16px;display:flex;gap:20px;flex-wrap:wrap;font-family:sans-serif;font-size:11px;">
+  <span><span style="display:inline-block;width:12px;height:12px;background:rgba(22,163,74,0.5);border-radius:2px;margin-right:4px;vertical-align:middle;"></span><span style="color:#166534;font-weight:600;">TP</span> — sens = {round(sens_d*100,0):.0f}%</span>
+  <span><span style="display:inline-block;width:12px;height:12px;background:rgba(220,38,38,0.4);border-radius:2px;margin-right:4px;vertical-align:middle;"></span><span style="color:#991b1b;font-weight:600;">FN</span> — missed = {round((1-sens_d)*100,0):.0f}%</span>
+  <span><span style="display:inline-block;width:12px;height:12px;background:rgba(37,99,235,0.35);border-radius:2px;margin-right:4px;vertical-align:middle;"></span><span style="color:#1e40af;font-weight:600;">TN</span> — spec = {round(spec_d*100,0):.0f}%</span>
+  <span><span style="display:inline-block;width:12px;height:12px;background:rgba(234,88,12,0.4);border-radius:2px;margin-right:4px;vertical-align:middle;"></span><span style="color:#9a3412;font-weight:600;">FP</span> — false+ = {round(fpr_d*100,0):.0f}%</span>
+</div>"""
 
-        _dist_comp.html(f"<div style='font-family:sans-serif;'>{svg2}</div>", height=H2+20, scrolling=False)
+        _dist_comp.html(f"<div style='font-family:sans-serif;'>{svg2}</div>", height=H2+50, scrolling=False)
         st.caption("Red curve = diseased population. Blue curve = healthy population. Move the threshold slider to see how the four regions (TP/FN/FP/TN) shift — and why sensitivity and specificity cannot both be maximized simultaneously when distributions overlap.")
 
         st.info("""

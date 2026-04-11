@@ -68,9 +68,6 @@ def login_screen():
                 st.rerun()
             else:
                 st.error("Incorrect username or password.")
-                # Debug — shows what credential source is active
-                users = load_users()
-                st.caption(f"Debug: {len(users)} user(s) loaded. Keys: {list(users.keys())}")
         st.markdown("<br>", unsafe_allow_html=True)
         st.caption("Access issues? Contact support.")
 

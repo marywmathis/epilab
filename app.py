@@ -15,23 +15,24 @@ st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 
 def load_users():
     """
-    Load users from three sources in priority order:
-    1. Railway environment variable EPILAB_USERS (JSON string) — for buyer deployments
-    2. Streamlit Cloud secrets [users] section — for course deployment
-    3. Hardcoded fallback — for local development only
+    Load users from two sources depending on platform:
+    1. EPILAB_USERS environment variable (JSON) — Railway buyer deployment
+    2. Hardcoded fallback — local development only
 
-    Railway env var format (set in Railway dashboard):
-    EPILAB_USERS = {"buyer001": "pass123", "buyer002": "pass456"}
+    Streamlit Cloud course credentials are managed separately via
+    st.secrets and do not affect this deployment.
     """
-    # 1. Railway / any platform environment variable
+    # Railway / any platform environment variable
     env_users_raw = os.environ.get("EPILAB_USERS", "")
-    if env_users_raw:
+    if env_users_raw.strip():
         try:
-            return json.loads(env_users_raw)
+            users = json.loads(env_users_raw)
+            if users:
+                return users
         except Exception:
             pass
 
-    # 2. Streamlit Cloud secrets
+    # Streamlit Cloud secrets (course deployment only)
     try:
         cloud_users = st.secrets.get("users", {})
         if cloud_users:
@@ -39,11 +40,10 @@ def load_users():
     except Exception:
         pass
 
-    # 3. Local development fallback — NOT used in either production deployment
+    # Local development fallback
     return {
         "marymathis": "epilab2024",
         "student1":   "epilab2024",
-        "student2":   "epilab2024",
         "guest":      "epilab2024",
     }
 
@@ -68,6 +68,9 @@ def login_screen():
                 st.rerun()
             else:
                 st.error("Incorrect username or password.")
+                # Debug — shows what credential source is active
+                users = load_users()
+                st.caption(f"Debug: {len(users)} user(s) loaded. Keys: {list(users.keys())}")
         st.markdown("<br>", unsafe_allow_html=True)
         st.caption("Access issues? Contact support.")
 

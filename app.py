@@ -4,6 +4,8 @@ import numpy as np
 from scipy.stats import chi2_contingency
 import math
 import random
+import os
+import json
 
 st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 
@@ -11,25 +13,43 @@ st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 # LOGIN GATE
 # ==================================================
 
-def check_credentials(username, password):
+def load_users():
     """
-    Add or remove users here directly.
-    Format:  "username": "password"
+    Load users from three sources in priority order:
+    1. Railway environment variable EPILAB_USERS (JSON string) — for buyer deployments
+    2. Streamlit Cloud secrets [users] section — for course deployment
+    3. Hardcoded fallback — for local development only
+
+    Railway env var format (set in Railway dashboard):
+    EPILAB_USERS = {"buyer001": "pass123", "buyer002": "pass456"}
     """
-    USERS = {
+    # 1. Railway / any platform environment variable
+    env_users_raw = os.environ.get("EPILAB_USERS", "")
+    if env_users_raw:
+        try:
+            return json.loads(env_users_raw)
+        except Exception:
+            pass
+
+    # 2. Streamlit Cloud secrets
+    try:
+        cloud_users = st.secrets.get("users", {})
+        if cloud_users:
+            return dict(cloud_users)
+    except Exception:
+        pass
+
+    # 3. Local development fallback — NOT used in either production deployment
+    return {
         "marymathis": "epilab2024",
         "student1":   "epilab2024",
         "student2":   "epilab2024",
         "guest":      "epilab2024",
     }
-    # Also check Streamlit Cloud secrets if available
-    try:
-        cloud_users = st.secrets.get("users", {})
-        if cloud_users:
-            return username in cloud_users and cloud_users[username] == password
-    except Exception:
-        pass
-    return username in USERS and USERS[username] == password
+
+def check_credentials(username, password):
+    users = load_users()
+    return username in users and users[username] == password
 
 def login_screen():
     col_l, col_m, col_r = st.columns([1, 2, 1])
@@ -49,7 +69,7 @@ def login_screen():
             else:
                 st.error("Incorrect username or password.")
         st.markdown("<br>", unsafe_allow_html=True)
-        st.caption("Access issues? Contact your course instructor.")
+        st.caption("Access issues? Contact support.")
 
 
 if "authenticated" not in st.session_state:

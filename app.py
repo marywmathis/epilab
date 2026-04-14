@@ -15,24 +15,23 @@ st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 
 def load_users():
     """
-    Load users from two sources depending on platform:
-    1. EPILAB_USERS environment variable (JSON) — Railway buyer deployment
-    2. Hardcoded fallback — local development only
+    Load users from three sources in priority order:
+    1. Railway environment variable EPILAB_USERS (JSON string) — for buyer deployments
+    2. Streamlit Cloud secrets [users] section — for course deployment
+    3. Hardcoded fallback — for local development only
 
-    Streamlit Cloud course credentials are managed separately via
-    st.secrets and do not affect this deployment.
+    Railway env var format (set in Railway dashboard):
+    EPILAB_USERS = {"buyer001": "pass123", "buyer002": "pass456"}
     """
-    # Railway / any platform environment variable
+    # 1. Railway / any platform environment variable
     env_users_raw = os.environ.get("EPILAB_USERS", "")
-    if env_users_raw.strip():
+    if env_users_raw:
         try:
-            users = json.loads(env_users_raw)
-            if users:
-                return users
+            return json.loads(env_users_raw)
         except Exception:
             pass
 
-    # Streamlit Cloud secrets (course deployment only)
+    # 2. Streamlit Cloud secrets
     try:
         cloud_users = st.secrets.get("users", {})
         if cloud_users:
@@ -40,10 +39,11 @@ def load_users():
     except Exception:
         pass
 
-    # Local development fallback
+    # 3. Local development fallback — NOT used in either production deployment
     return {
         "marymathis": "epilab2024",
         "student1":   "epilab2024",
+        "student2":   "epilab2024",
         "guest":      "epilab2024",
     }
 
@@ -5468,63 +5468,23 @@ The **Fagan nomogram** is a graphical tool that performs the pre-test → post-t
         import math as _fm
         import streamlit.components.v1 as _fagan_comp
 
-        # ── Link to Section 2 Se/Sp calculator ───────────────────────────────
-        # The 2×2 calculator in Section 2 stores its values under sc_a/sc_b/sc_c/sc_d.
-        # If those are populated we can compute LR+/LR− and let the student pull them in.
-        _sc_a = int(st.session_state.get("sc_a", 0))
-        _sc_b = int(st.session_state.get("sc_b", 0))
-        _sc_c = int(st.session_state.get("sc_c", 0))
-        _sc_d = int(st.session_state.get("sc_d", 0))
-        _sesp_lrp = None
-        _sesp_lrn = None
-        if _sc_a + _sc_b + _sc_c + _sc_d > 0:
-            _dis  = _sc_a + _sc_c
-            _well = _sc_b + _sc_d
-            if _dis > 0 and _well > 0:
-                _sens_link = _sc_a / _dis
-                _spec_link = _sc_d / _well
-                if 0 < _spec_link < 1:
-                    _sesp_lrp = round(_sens_link / (1 - _spec_link), 2)
-                if _spec_link > 0:
-                    _sesp_lrn = round((1 - _sens_link) / _spec_link, 3)
-
-        _use_sesp = False
-        if _sesp_lrp is not None:
-            _use_sesp = st.checkbox(
-                f"🔗 Use values from Sensitivity & Specificity calculator above  "
-                f"(LR+ = {_sesp_lrp},  LR− = {_sesp_lrn})",
-                key="fagan_use_sesp"
-            )
-            if _use_sesp:
-                st.info(
-                    f"Values pulled from your 2×2 table in Section 2: "
-                    f"**LR+ = {_sesp_lrp}**,  **LR− = {_sesp_lrn}**. "
-                    f"Adjust the pre-test probability slider below to explore how those "
-                    f"test characteristics update clinical probability."
-                )
-
-        # ── Controls ──────────────────────────────────────────────────────────
         col_f1, col_f2, col_f3 = st.columns(3)
         with col_f1:
             pre_prob = st.slider("Pre-test probability (%):", 1, 99, 20, 1, key="fagan_pre") / 100
         with col_f2:
             lr_type = st.radio("Apply:", ["LR+ (positive result)", "LR− (negative result)"], key="fagan_lr_type", horizontal=True)
         with col_f3:
-            if _use_sesp and _sesp_lrp is not None:
-                lr_val = float(_sesp_lrp) if "LR+" in lr_type else float(_sesp_lrn)
-                st.metric("LR from calculator", lr_val)
+            if "LR+" in lr_type:
+                lr_val = st.slider("LR+ value:", 0.5, 50.0, 5.0, 0.5, key="fagan_lrp")
             else:
-                if "LR+" in lr_type:
-                    lr_val = st.slider("LR+ value:", 0.5, 50.0, 5.0, 0.5, key="fagan_lrp")
-                else:
-                    lr_val = st.slider("LR− value:", 0.01, 2.0, 0.1, 0.01, key="fagan_lrn")
+                lr_val = st.slider("LR− value:", 0.01, 2.0, 0.1, 0.01, key="fagan_lrn")
 
-        # ── Calculate post-test probability ───────────────────────────────────
-        pre_odds  = pre_prob / (1 - pre_prob)
+        # Calculate post-test probability
+        pre_odds = pre_prob / (1 - pre_prob)
         post_odds = pre_odds * lr_val
         post_prob = post_odds / (1 + post_odds)
 
-        # ── Metrics ───────────────────────────────────────────────────────────
+        # Show metrics
         mc1, mc2, mc3 = st.columns(3)
         mc1.metric("Pre-test probability", f"{round(pre_prob*100,1)}%")
         mc2.metric("LR applied", round(lr_val, 2))
@@ -5532,95 +5492,74 @@ The **Fagan nomogram** is a graphical tool that performs the pre-test → post-t
                    delta=f"{round((post_prob - pre_prob)*100,1)} pp",
                    delta_color="normal" if post_prob > pre_prob else "inverse")
 
-        # ── Build Fagan nomogram SVG ───────────────────────────────────────────
-        NW, NH   = 480, 400
-        pad_top  = 40
-        pad_bot  = 40
-        scale_h  = NH - pad_top - pad_bot
+        # Build Fagan nomogram SVG
+        # Three vertical log-odds scales: pre-test prob (left), LR (center), post-test prob (right)
+        NW, NH = 480, 400
+        pad_top, pad_bot = 40, 40
+        scale_h = NH - pad_top - pad_bot
 
         def prob_to_y(p, h=scale_h, top=pad_top):
+            """Convert probability to y position using log-odds scale"""
             p = max(0.001, min(0.999, p))
-            log_odds = math.log10(p / (1 - p))
-            lo_min   = math.log10(0.001 / 0.999)
-            lo_max   = math.log10(0.999 / 0.001)
+            odds = p / (1 - p)
+            log_odds = math.log10(odds)
+            lo_min, lo_max = math.log10(0.001/0.999), math.log10(0.999/0.001)
             frac = (log_odds - lo_min) / (lo_max - lo_min)
             return top + (1 - frac) * h
 
         def lr_to_y(lr, h=scale_h, top=pad_top):
-            lr    = max(0.001, min(1000, lr))
-            frac  = (math.log10(lr) - math.log10(0.001)) / (math.log10(1000) - math.log10(0.001))
+            """Convert LR to y position using log scale"""
+            lr = max(0.001, min(1000, lr))
+            log_lr = math.log10(lr)
+            lr_min, lr_max = math.log10(0.001), math.log10(1000)
+            frac = (log_lr - lr_min) / (lr_max - lr_min)
             return top + (1 - frac) * h
 
-        x_pre  = 80
-        x_lr   = NW // 2
+        # Scale positions
+        x_pre = 80
+        x_lr  = NW // 2
         x_post = NW - 80
 
-        pre_ticks = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3,
-                     0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99]
-        lr_ticks  = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5,
-                     1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+        # Pre-test probability ticks
+        pre_ticks  = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4,
+                      0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99]
+        lr_ticks   = [0.001, 0.002, 0.005, 0.01, 0.02, 0.05, 0.1, 0.2, 0.5,
+                      1, 2, 5, 10, 20, 50, 100, 200, 500, 1000]
+        post_ticks = pre_ticks
 
         def tick_label(p):
-            if p >= 0.1:   return f"{round(p*100)}"
+            if p >= 0.1: return f"{round(p*100)}"
             elif p >= 0.01: return f"{round(p*100,1)}"
-            else:           return f"{p*100:.1f}"
+            else: return f"{p*100:.1f}"
 
         def lr_label(v):
-            if v >= 1: return str(int(v)) if v == int(v) else str(round(v, 1))
-            return str(round(v, 3)).rstrip('0').rstrip('.')
+            if v >= 1: return str(int(v)) if v == int(v) else str(round(v,1))
+            else: return str(round(v,3)).rstrip('0').rstrip('.')
 
         pre_tick_svg = ""
         for p in pre_ticks:
             y = prob_to_y(p)
-            pre_tick_svg += (
-                f'<line x1="{x_pre-6}" y1="{round(y,1)}" x2="{x_pre}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
-                f'<text x="{x_pre-8}" y="{round(y+3,1)}" font-size="9" text-anchor="end" fill="#444">{tick_label(p)}</text>'
-            )
+            pre_tick_svg += f'<line x1="{x_pre-6}" y1="{round(y,1)}" x2="{x_pre}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
+            pre_tick_svg += f'<text x="{x_pre-8}" y="{round(y+3,1)}" font-size="9" text-anchor="end" fill="#444">{tick_label(p)}</text>'
 
         lr_tick_svg = ""
         for v in lr_ticks:
             y = lr_to_y(v)
-            lr_tick_svg += (
-                f'<line x1="{x_lr-4}" y1="{round(y,1)}" x2="{x_lr+4}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
-                f'<text x="{x_lr+6}" y="{round(y+3,1)}" font-size="9" text-anchor="start" fill="#444">{lr_label(v)}</text>'
-            )
+            lr_tick_svg += f'<line x1="{x_lr-4}" y1="{round(y,1)}" x2="{x_lr+4}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
+            lr_tick_svg += f'<text x="{x_lr+6}" y="{round(y+3,1)}" font-size="9" text-anchor="start" fill="#444">{lr_label(v)}</text>'
 
         post_tick_svg = ""
-        for p in pre_ticks:
+        for p in post_ticks:
             y = prob_to_y(p)
-            post_tick_svg += (
-                f'<line x1="{x_post}" y1="{round(y,1)}" x2="{x_post+6}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
-                f'<text x="{x_post+8}" y="{round(y+3,1)}" font-size="9" text-anchor="start" fill="#444">{tick_label(p)}</text>'
-            )
+            post_tick_svg += f'<line x1="{x_post}" y1="{round(y,1)}" x2="{x_post+6}" y2="{round(y,1)}" stroke="#555" stroke-width="1"/>'
+            post_tick_svg += f'<text x="{x_post+8}" y="{round(y+3,1)}" font-size="9" text-anchor="start" fill="#444">{tick_label(p)}</text>'
 
+        # The pivot line: from pre-test through LR to post-test
         y_pre  = prob_to_y(pre_prob)
         y_lr   = lr_to_y(lr_val)
         y_post = prob_to_y(post_prob)
 
         line_color = "#2563eb" if "LR+" in lr_type else "#dc2626"
-
-        # ── Stagger labels when dots are close together ───────────────────────
-        # Default: place each label 12 px above its dot.
-        # If two y-positions are within MIN_SEP pixels, push one up and one down
-        # so the text never sits on top of another label.
-        MIN_SEP = 22
-        off_pre, off_lr, off_post = -14, -14, -14
-
-        if abs(y_pre - y_lr) < MIN_SEP:
-            off_pre = -24
-            off_lr  = +16
-        if abs(y_lr - y_post) < MIN_SEP:
-            off_lr   = min(off_lr, -14) - 8   # push lr further up if already adjusted
-            off_post = +16
-        if abs(y_pre - y_post) < MIN_SEP:
-            # pre and post are on different columns so visual overlap is rare,
-            # but adjust offsets to be safe
-            off_pre  = -24
-            off_post = +16
-
-        lbl_pre_y  = round(y_pre  + off_pre,  1)
-        lbl_lr_y   = round(y_lr   + off_lr,   1)
-        lbl_post_y = round(y_post + off_post, 1)
 
         nomo_svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{NW}" height="{NH}"
      style="font-family:sans-serif;background:#fafafa;border-radius:8px;border:1px solid #e2e8f0;">
@@ -5648,10 +5587,10 @@ The **Fagan nomogram** is a graphical tool that performs the pre-test → post-t
   <circle cx="{x_lr}"   cy="{round(y_lr,1)}"   r="6" fill="#f59e0b"      stroke="white" stroke-width="2"/>
   <circle cx="{x_post}" cy="{round(y_post,1)}"  r="7" fill="{line_color}" stroke="white" stroke-width="2"/>
 
-  <!-- Value labels — staggered to prevent overlap -->
-  <text x="{x_pre}"   y="{lbl_pre_y}"  font-size="10" font-weight="700" fill="{line_color}" text-anchor="middle">{round(pre_prob*100,1)}%</text>
-  <text x="{x_lr}"    y="{lbl_lr_y}"   font-size="10" font-weight="700" fill="#b45309"       text-anchor="middle">LR={round(lr_val,2)}</text>
-  <text x="{x_post}"  y="{lbl_post_y}" font-size="10" font-weight="700" fill="{line_color}" text-anchor="middle">{round(post_prob*100,1)}%</text>
+  <!-- Value labels at dots -->
+  <text x="{x_pre-14}" y="{round(y_pre-9,1)}" font-size="10" font-weight="700" fill="{line_color}" text-anchor="middle">{round(pre_prob*100,1)}%</text>
+  <text x="{x_lr}"     y="{round(y_lr-9,1)}"  font-size="10" font-weight="700" fill="#b45309"       text-anchor="middle">LR={round(lr_val,2)}</text>
+  <text x="{x_post+14}" y="{round(y_post-9,1)}" font-size="10" font-weight="700" fill="{line_color}" text-anchor="middle">{round(post_prob*100,1)}%</text>
 
   <!-- LR=1 reference line -->
   <line x1="{x_lr-4}" y1="{round(lr_to_y(1),1)}" x2="{x_lr+4}" y2="{round(lr_to_y(1),1)}"
@@ -5666,8 +5605,8 @@ The **Fagan nomogram** is a graphical tool that performs the pre-test → post-t
 
         _fagan_comp.html(f"<div style='font-family:sans-serif;'>{nomo_svg}</div>", height=NH+20, scrolling=False)
 
-        # ── Plain-language interpretation ─────────────────────────────────────
-        change    = post_prob - pre_prob
+        # Plain language interpretation
+        change = post_prob - pre_prob
         direction = "increases" if change > 0 else "decreases"
         st.markdown(f"""
 **Interpretation:** Starting with a pre-test probability of **{round(pre_prob*100,1)}%**, applying an **{"LR+" if "LR+" in lr_type else "LR−"} of {round(lr_val,2)}**
@@ -7352,10 +7291,10 @@ elif current_page == "practice_design":
          "description":"A researcher compiles data from 42 countries. For each country, she records the national average alcohol consumption (liters per capita per year) and the national age-standardized liver cirrhosis mortality rate (per 100,000). She finds a strong positive correlation (r = 0.74) between the two country-level measures.",
          "correct_design":"Ecological",
          "correct_outcome":"Rate (person-time)",
-         "correct_exposure":"Categorical (>2 groups)",
+         "correct_exposure":"Continuous",
          "design_hint":"The unit of analysis is **countries**, not individuals. Exposure and outcome are both measured at the aggregate (population) level — this is an ecological study.",
          "outcome_hint":"Liver cirrhosis mortality rate per 100,000 is a **rate with a person-time denominator** — countries contribute population-years of observation.",
-         "exposure_hint":"Average alcohol consumption is a continuous measure recorded across 42 countries — more than 2 levels = categorical.",
+         "exposure_hint":"Average alcohol consumption in liters per capita is a **continuous** measure — it takes any numeric value along a scale, not discrete groups.",
          "design_wrong":{
              "Cohort":"❌ A cohort study would follow individual people classified by their own alcohol consumption. Here the data are country averages — no individual-level data exist.",
              "Cross-sectional":"❌ Cross-sectional studies measure exposure and outcome for individuals at one point in time. Here both are aggregated to the country level — that's ecological.",
@@ -7363,16 +7302,20 @@ elif current_page == "practice_design":
          },
          "outcome_wrong":{
              "Binary":"❌ The outcome is a mortality rate per 100,000 — a continuous rate variable, not a yes/no for each person.",
+             "Continuous":"❌ Close — it is numerically continuous, but because it has a person-time denominator (population-years), the precise type is Rate (person-time).",
              "Categorical (Nominal >2 levels)":"❌ A continuous rate is not an unordered categorical variable.",
              "Ordinal":"❌ A mortality rate is a continuous measure, not ordered categories.",
          },
-         "exposure_wrong":{"Binary (2 groups)":"❌ Alcohol consumption in liters per capita is continuous across 42 countries — more than 2 levels = categorical."},
+         "exposure_wrong":{
+             "Binary (2 groups)":"❌ Alcohol consumption in liters per capita spans a full numeric range across 42 countries — that is continuous, not two groups.",
+             "Categorical (>2 groups)":"❌ While there are more than 2 countries, the exposure is a measured quantity on a continuous scale, not discrete named categories.",
+         },
          "data":None},
     ]
 
     design_options   = ["— Select —","Cohort","Case-Control","Cross-sectional","Ecological","Case-Crossover"]
-    outcome_options  = ["— Select —","Binary","Categorical (Nominal >2 levels)","Ordinal","Rate (person-time)"]
-    exposure_options = ["— Select —","Binary (2 groups)","Categorical (>2 groups)"]
+    outcome_options  = ["— Select —","Binary","Continuous","Categorical (Nominal >2 levels)","Ordinal","Rate (person-time)"]
+    exposure_options = ["— Select —","Binary (2 groups)","Categorical (>2 groups)","Continuous"]
 
     if "prac_scenario_order" not in st.session_state:
         order = list(range(len(PRACTICE_SCENARIOS))); random.shuffle(order)
@@ -10433,4 +10376,3 @@ Criteria defining who counts as a case in an outbreak investigation. Components:
 
     st.divider()
     st.markdown("*Return to any module to apply these concepts in context.*")
-

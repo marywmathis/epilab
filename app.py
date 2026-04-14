@@ -7209,7 +7209,7 @@ elif current_page == "practice_design":
          "exposure_hint":"Exposed vs. unexposed neighborhoods — two groups = binary.",
          "design_wrong":{"Case-Control":"❌ Case-control starts with cases. Here researchers started with exposure status.","Cross-sectional":"❌ Cross-sectional is a snapshot. Here children followed 3 years."},
          "outcome_wrong":{"Continuous":"❌ Learning disability is recorded as present or absent — a yes/no outcome, not a numeric measurement.","Categorical (Nominal >2 levels)":"❌ Categorical requires 3+. Diagnosis is yes/no = binary.","Ordinal":"❌ A diagnosis is yes or no = binary.","Rate (person-time)":"❌ All followed same 3-year period — binary outcome works."},
-         "exposure_wrong":{"Categorical (>2 groups)":"❌ Categorical requires 3+ groups. Two groups here = binary.","Continuous":"❌ Exposure is group membership (exposed vs. unexposed neighborhoods), not a measured quantity — binary."},
+         "exposure_wrong":{"Categorical (>2 groups)":"❌ Categorical requires 3+ groups. Two groups here = binary.","Ordinal":"❌ Ordinal implies ordered categories (e.g., low/medium/high). Exposed vs. unexposed is simply two groups = binary.","Continuous":"❌ Exposure is group membership (exposed vs. unexposed neighborhoods), not a measured quantity — binary."},
          "data":{"type":"contingency","context":"3-year follow-up data. Calculate RR, OR, and p-value.",
                  "row_names":["Lead-exposed","Unexposed"],"col_names":["Learning Disability","No Learning Disability"],"cells":[[52,348],[21,379]]}},
         {"id":"s2","title":"Scenario 2: Fast Food & Obesity",
@@ -7220,7 +7220,7 @@ elif current_page == "practice_design":
          "exposure_hint":"Four frequency categories — more than 2 = categorical.",
          "design_wrong":{"Cohort":"❌ Cohort follows people over time. One-time survey = no follow-up.","Case-Control":"❌ Case-control recruits by disease status and looks back. Survey measured everything at once."},
          "outcome_wrong":{"Continuous":"❌ Obesity (BMI ≥30) is a yes/no classification — not a continuous measurement.","Categorical (Nominal >2 levels)":"❌ Obesity is yes or no — two categories = binary.","Ordinal":"❌ A diagnosis is binary.","Rate (person-time)":"❌ One-time survey — no follow-up time."},
-         "exposure_wrong":{"Binary (2 groups)":"❌ Four frequency categories = categorical.","Continuous":"❌ Fast food frequency is recorded in four discrete named categories, not as a measured quantity on a numeric scale — categorical."},
+         "exposure_wrong":{"Binary (2 groups)":"❌ Four frequency categories = categorical.","Ordinal":"❌ Close — the categories do have a natural order, but they are named discrete groups, not a measured quantity. Categorical (>2 groups) is the standard classification here.","Continuous":"❌ Fast food frequency is recorded in four discrete named categories, not as a measured quantity on a numeric scale — categorical."},
          "data":{"type":"contingency_wide","context":"Survey data by fast food frequency and obesity.",
                  "row_names":["Never","1–2x/week","3–4x/week","5+x/week"],"col_names":["Obese","Not Obese"],"cells":[[62,538],[118,682],[189,561],[141,209]]}},
         {"id":"s3","title":"Scenario 3: HPV Vaccine & Cervical Cancer",
@@ -7231,7 +7231,7 @@ elif current_page == "practice_design":
          "exposure_hint":"Vaccinated vs. unvaccinated — two groups = binary.",
          "design_wrong":{"Cohort":"❌ Cohort classifies by vaccination then tracks who gets cancer. Here recruited by cancer status.","Cross-sectional":"❌ Cross-sectional measures simultaneously. Here recruited by disease status and looked back."},
          "outcome_wrong":{"Continuous":"❌ Cervical cancer is present or absent — a yes/no outcome, not a numeric measurement.","Categorical (Nominal >2 levels)":"❌ Binary.","Ordinal":"❌ Binary.","Rate (person-time)":"❌ In case-control, outcome is determined before study begins."},
-         "exposure_wrong":{"Categorical (>2 groups)":"❌ Vaccinated vs. unvaccinated = two groups = binary.","Continuous":"❌ Vaccination status is a group classification (vaccinated vs. unvaccinated), not a measured quantity — binary."},
+         "exposure_wrong":{"Categorical (>2 groups)":"❌ Vaccinated vs. unvaccinated = two groups = binary.","Ordinal":"❌ Vaccination status has no natural ordering — it is simply vaccinated or not = binary.","Continuous":"❌ Vaccination status is a group classification (vaccinated vs. unvaccinated), not a measured quantity — binary."},
          "data":{"type":"contingency","context":"Case-control data. Odds Ratio is appropriate.",
                  "row_names":["Unvaccinated","Vaccinated"],"col_names":["Cervical Cancer (Case)","No Cancer (Control)"],"cells":[[178,182],[72,318]]}},
         {"id":"s4","title":"Scenario 4: Shift Work & Metabolic Syndrome",
@@ -7242,7 +7242,7 @@ elif current_page == "practice_design":
          "exposure_hint":"Three shift types — more than 2 = categorical.",
          "design_wrong":{"Case-Control":"❌ Case-control starts with people who already have metabolic syndrome. Here employees classified by shift type first.","Cross-sectional":"❌ Employees followed 5 years — not a snapshot."},
          "outcome_wrong":{"Continuous":"❌ Metabolic syndrome is recorded as present or absent — a yes/no outcome, not a numeric measurement.","Categorical (Nominal >2 levels)":"❌ Metabolic syndrome = yes/no = binary.","Ordinal":"❌ Binary.","Rate (person-time)":"❌ All followed same 5-year period."},
-         "exposure_wrong":{"Binary (2 groups)":"❌ Three categories = categorical.","Continuous":"❌ Shift type is a named category (day/rotating/night), not a quantity measured on a numeric scale — categorical."},
+         "exposure_wrong":{"Binary (2 groups)":"❌ Three categories = categorical.","Ordinal":"❌ Shift type (day/rotating/night) is an unordered nominal grouping, not a naturally ranked scale — categorical.","Continuous":"❌ Shift type is a named category (day/rotating/night), not a quantity measured on a numeric scale — categorical."},
          "data":{"type":"contingency_wide","context":"5-year follow-up data by shift type.",
                  "row_names":["Day shift","Rotating shift","Night shift"],"col_names":["Metabolic Syndrome","No Metabolic Syndrome"],"cells":[[62,338],[98,302],[121,279]]}},
         {"id":"s5","title":"Scenario 5: Air Pollution & ED Visits",
@@ -7253,7 +7253,7 @@ elif current_page == "practice_design":
          "exposure_hint":"High vs. low PM2.5 — two groups = binary.",
          "design_wrong":{"Case-Control":"❌ Case-control would start with people who already had ED visits. Here classified by exposure first.","Cross-sectional":"❌ Followed over 2 years — not a snapshot."},
          "outcome_wrong":{"Binary":"❌ Follow-up time varies. Need person-time denominator.","Continuous":"❌ The outcome is a count of events relative to time at risk — that requires a rate with a person-time denominator, not a generic continuous measure.","Categorical (Nominal >2 levels)":"❌ Rate, not unordered categories.","Ordinal":"❌ Rate per person-time."},
-         "exposure_wrong":{"Categorical (>2 groups)":"❌ High vs. low = two groups = binary.","Continuous":"❌ PM2.5 exposure is classified into two groups (high vs. low) here — binary, not a raw continuous measure."},
+         "exposure_wrong":{"Categorical (>2 groups)":"❌ High vs. low = two groups = binary.","Ordinal":"❌ High vs. low PM2.5 is two groups with no meaningful in-between ranking — binary.","Continuous":"❌ PM2.5 exposure is classified into two groups (high vs. low) here — binary, not a raw continuous measure."},
          "data":{"type":"rate","context":"Person-time data. Calculate IRR.",
                  "row_names":["High PM2.5","Low PM2.5"],"cases":[187,64],"person_time":[4200,5100]}},
         {"id":"s7","title":"Scenario 6: Air Pollution Spikes & MI",
@@ -7264,7 +7264,7 @@ elif current_page == "practice_design":
          "exposure_hint":"High vs. low PM2.5 — two groups = binary.",
          "design_wrong":{"Cohort":"❌ Cohort groups by exposure and follows forward. Here everyone already had MI.","Case-Control":"❌ Standard case-control recruits a separate control group. Here each case is their own control.","Cross-sectional":"❌ Cross-sectional is one time point. Here two time windows per person."},
          "outcome_wrong":{"Continuous":"❌ MI either occurred or did not — a yes/no outcome, not a numeric measurement.","Categorical (Nominal >2 levels)":"❌ MI: yes or no = binary.","Ordinal":"❌ Binary.","Rate (person-time)":"❌ Comparison between two windows per person, not varying follow-up."},
-         "exposure_wrong":{"Categorical (>2 groups)":"❌ High vs. low = two groups = binary.","Continuous":"❌ PM2.5 is classified into two groups (high vs. low) here — binary, not a raw continuous measure."},
+         "exposure_wrong":{"Categorical (>2 groups)":"❌ High vs. low = two groups = binary.","Ordinal":"❌ High vs. low PM2.5 is two groups — binary.","Continuous":"❌ PM2.5 is classified into two groups (high vs. low) here — binary, not a raw continuous measure."},
          "data":{"type":"contingency","context":"Matched data. OR appropriate — each person is their own control.",
                  "row_names":["High PM2.5 (hazard)","Low PM2.5 (hazard)"],"col_names":["High PM2.5 (control)","Low PM2.5 (control)"],"cells":[[210,480],[95,1315]]}},
         {"id":"s8","title":"Scenario 7: Sodium Intake & Hypertension (Retrospective Cohort)",
@@ -7285,7 +7285,7 @@ elif current_page == "practice_design":
              "Ordinal":"❌ A diagnosis is yes/no = binary.",
              "Rate (person-time)":"❌ All participants have the same 8-year follow-up period — binary outcome is appropriate here.",
          },
-         "exposure_wrong":{"Categorical (>2 groups)":"❌ High vs. low sodium = two groups = binary.","Continuous":"❌ Sodium intake is classified into two groups (high vs. low) here — binary, not a raw continuous measure."},
+         "exposure_wrong":{"Categorical (>2 groups)":"❌ High vs. low sodium = two groups = binary.","Ordinal":"❌ High vs. low sodium is two groups — binary.","Continuous":"❌ Sodium intake is classified into two groups (high vs. low) here — binary, not a raw continuous measure."},
          "data":{"type":"contingency","context":"Retrospective cohort data. Calculate RR, OR, and chi-square.",
                  "row_names":["High sodium","Low sodium"],"col_names":["Hypertension","No Hypertension"],"cells":[[312,1188],[198,1802]]}},
         {"id":"s9","title":"Scenario 8: Country-Level Alcohol Consumption & Liver Cirrhosis",
@@ -7310,13 +7310,14 @@ elif current_page == "practice_design":
          "exposure_wrong":{
              "Binary (2 groups)":"❌ Alcohol consumption in liters per capita spans a full numeric range across 42 countries — that is continuous, not two groups.",
              "Categorical (>2 groups)":"❌ While there are more than 2 countries, the exposure is a measured quantity on a continuous scale, not discrete named categories.",
+             "Ordinal":"❌ Liters per capita is a precise numeric measurement, not ordered rank categories — continuous.",
          },
          "data":None},
     ]
 
     design_options   = ["— Select —","Cohort","Case-Control","Cross-sectional","Ecological","Case-Crossover"]
     outcome_options  = ["— Select —","Binary","Continuous","Categorical (Nominal >2 levels)","Ordinal","Rate (person-time)"]
-    exposure_options = ["— Select —","Binary (2 groups)","Categorical (>2 groups)","Continuous"]
+    exposure_options = ["— Select —","Binary (2 groups)","Categorical (>2 groups)","Ordinal","Continuous"]
 
     if "prac_scenario_order" not in st.session_state:
         order = list(range(len(PRACTICE_SCENARIOS))); random.shuffle(order)

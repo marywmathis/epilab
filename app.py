@@ -6013,6 +6013,23 @@ The **ROC curve** is one of the most important concepts in diagnostic test evalu
 Understanding ROC curves is essential for evaluating tests, comparing competing tests, and choosing diagnostic cutpoints in clinical and public health practice.
         """)
 
+        st.markdown("""
+<div style="background:#f8fafc;border:1px solid #cbd5e1;border-radius:8px;padding:14px 18px;margin:14px 0;font-size:13px;color:#334155;">
+<b style="color:#0f172a;">How to read this module:</b> The concepts build on each other in order. Each step depends on the one before it.
+<div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;font-size:12.5px;">
+  <span style="background:#dbeafe;color:#1e3a8a;padding:4px 10px;border-radius:20px;font-weight:600;">① How the curve is constructed</span>
+  <span style="color:#64748b;align-self:center;">→</span>
+  <span style="background:#dbeafe;color:#1e3a8a;padding:4px 10px;border-radius:20px;font-weight:600;">② Why the tradeoff exists (overlapping distributions)</span>
+  <span style="color:#64748b;align-self:center;">→</span>
+  <span style="background:#dbeafe;color:#1e3a8a;padding:4px 10px;border-radius:20px;font-weight:600;">③ Interactive ROC explorer</span>
+  <span style="color:#64748b;align-self:center;">→</span>
+  <span style="background:#dbeafe;color:#1e3a8a;padding:4px 10px;border-radius:20px;font-weight:600;">④ AUC interpretation</span>
+  <span style="color:#64748b;align-self:center;">→</span>
+  <span style="background:#dbeafe;color:#1e3a8a;padding:4px 10px;border-radius:20px;font-weight:600;">⑤ Apply your understanding</span>
+</div>
+</div>
+        """, unsafe_allow_html=True)
+
         st.info("""
 **The core tradeoff:** Every diagnostic test that produces a continuous result (e.g., blood glucose, PSA level, test score) requires a *cutpoint* to divide results into "positive" and "negative." 
 - Move the cutpoint lower → more people test positive → sensitivity ↑, specificity ↓ (more true positives, but more false positives too)
@@ -6021,7 +6038,7 @@ Understanding ROC curves is essential for evaluating tests, comparing competing 
 The ROC curve shows *every possible version* of that tradeoff simultaneously.
         """)
 
-        st.markdown("#### How the ROC curve is constructed")
+        st.markdown("#### Step ① How the ROC curve is constructed")
         st.markdown("""
 For each possible cutpoint along the test's continuous scale:
 1. Calculate **sensitivity** = TP / (TP + FN) — the true positive rate
@@ -6033,7 +6050,7 @@ Connect all points → the ROC curve.
         """)
 
         # ── SENS/SPEC TRADEOFF VISUAL ─────────────────────────────────────
-        st.markdown("#### 👁️ See the tradeoff — what actually happens when you move the threshold")
+        st.markdown("#### Step ② Why the tradeoff exists — overlapping distributions")
         st.markdown("""
 The fundamental reason sensitivity and specificity trade off is that the distributions of test scores in diseased and healthy people **overlap**. The threshold sits somewhere in that overlap. Move it left or right and you change how much of each distribution you capture.
         """)
@@ -6075,9 +6092,9 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
         c3.metric("False Positive Rate", f"{round(fpr_d*100,1)}%", help="1 − Specificity")
         c4.metric("Youden's J", f"{round(sens_d + spec_d - 1, 3)}", help="Sensitivity + Specificity − 1. Max = 1 (perfect). Higher = better combined performance at this threshold.")
 
-        # Build SVG distribution plot
-        W2, H2 = 520, 220
-        pad_l, pad_b, pad_t, pad_r = 40, 30, 20, 20
+        # Build SVG distribution plot - enlarged because this is the central visual
+        W2, H2 = 680, 300
+        pad_l, pad_b, pad_t, pad_r = 50, 38, 26, 26
         pw2, ph2 = W2-pad_l-pad_r, H2-pad_b-pad_t
 
         xs = [t_lo + i*(t_hi-t_lo)/400 for i in range(401)]
@@ -6121,7 +6138,7 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
         xtick_svg = ""
         for i in range(6):
             v = round(t_lo + i*x_range/5, 1)
-            xtick_svg += f'<text x="{round(px(v),1)}" y="{H2-8}" font-size="8" text-anchor="middle" fill="#888">{v}</text>'
+            xtick_svg += f'<text x="{round(px(v),1)}" y="{H2-22}" font-size="10" text-anchor="middle" fill="#64748b">{v}</text>'
 
         svg2 = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W2}" height="{H2}" style="font-family:sans-serif;background:#fafafa;border-radius:8px 8px 0 0;">
   <!-- Shaded areas -->
@@ -6130,27 +6147,27 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
   {"<path d='"+fp_path+"' fill='rgba(234,88,12,0.20)'/>" if fp_path else ""}
   {"<path d='"+tn_path+"' fill='rgba(37,99,235,0.15)'/>" if tn_path else ""}
   <!-- Distribution curves -->
-  <path d="{path_h}" stroke="#2563eb" stroke-width="2.5" fill="none"/>
-  <path d="{path_d}" stroke="#dc2626" stroke-width="2.5" fill="none"/>
+  <path d="{path_h}" stroke="#2563eb" stroke-width="3" fill="none"/>
+  <path d="{path_d}" stroke="#dc2626" stroke-width="3" fill="none"/>
   <!-- Threshold line -->
-  <line x1="{tx}" y1="{pad_t}" x2="{tx}" y2="{H2-pad_b}" stroke="#374151" stroke-width="2" stroke-dasharray="5,3"/>
-  <text x="{tx+4}" y="{pad_t+12}" font-size="9" fill="#374151" font-weight="600">Threshold</text>
+  <line x1="{tx}" y1="{pad_t}" x2="{tx}" y2="{H2-pad_b}" stroke="#374151" stroke-width="2.5" stroke-dasharray="6,3"/>
+  <text x="{tx+6}" y="{pad_t+14}" font-size="11" fill="#374151" font-weight="700">Threshold</text>
   <!-- Axis -->
   <line x1="{pad_l}" y1="{H2-pad_b}" x2="{W2-pad_r}" y2="{H2-pad_b}" stroke="#999" stroke-width="1.5"/>
   {xtick_svg}
-  <text x="{pad_l+pw2//2}" y="{H2-1}" font-size="9" text-anchor="middle" fill="#666">Test score</text>
+  <text x="{pad_l+pw2//2}" y="{H2-2}" font-size="11" text-anchor="middle" fill="#475569" font-weight="600">Test score</text>
   <!-- Curve peak labels only (no overlap) -->
-  <text x="{round(px(mu_d)+4,0)}" y="{round(py(gauss(mu_d,mu_d,sd_d))-10,0)}" font-size="10" fill="#dc2626" font-weight="700">Diseased</text>
-  <text x="{round(px(mu_h)-4,0)}" y="{round(py(gauss(mu_h,mu_h,sd_h))-10,0)}" font-size="10" fill="#2563eb" font-weight="700" text-anchor="end">Healthy</text>
+  <text x="{round(px(mu_d)+4,0)}" y="{round(py(gauss(mu_d,mu_d,sd_d))-14,0)}" font-size="13" fill="#dc2626" font-weight="700">Diseased</text>
+  <text x="{round(px(mu_h)-4,0)}" y="{round(py(gauss(mu_h,mu_h,sd_h))-14,0)}" font-size="13" fill="#2563eb" font-weight="700" text-anchor="end">Healthy</text>
 </svg>
-<div style="background:#f0f4f8;border-radius:0 0 8px 8px;padding:8px 16px;display:flex;gap:20px;flex-wrap:wrap;font-family:sans-serif;font-size:11px;">
-  <span><span style="display:inline-block;width:12px;height:12px;background:rgba(22,163,74,0.5);border-radius:2px;margin-right:4px;vertical-align:middle;"></span><span style="color:#166534;font-weight:600;">TP</span> — sens = {round(sens_d*100,0):.0f}%</span>
-  <span><span style="display:inline-block;width:12px;height:12px;background:rgba(220,38,38,0.4);border-radius:2px;margin-right:4px;vertical-align:middle;"></span><span style="color:#991b1b;font-weight:600;">FN</span> — missed = {round((1-sens_d)*100,0):.0f}%</span>
-  <span><span style="display:inline-block;width:12px;height:12px;background:rgba(37,99,235,0.35);border-radius:2px;margin-right:4px;vertical-align:middle;"></span><span style="color:#1e40af;font-weight:600;">TN</span> — spec = {round(spec_d*100,0):.0f}%</span>
-  <span><span style="display:inline-block;width:12px;height:12px;background:rgba(234,88,12,0.4);border-radius:2px;margin-right:4px;vertical-align:middle;"></span><span style="color:#9a3412;font-weight:600;">FP</span> — false+ = {round(fpr_d*100,0):.0f}%</span>
+<div style="background:#f0f4f8;border-radius:0 0 8px 8px;padding:10px 18px;display:flex;gap:24px;flex-wrap:wrap;font-family:sans-serif;font-size:12px;">
+  <span><span style="display:inline-block;width:14px;height:14px;background:rgba(22,163,74,0.5);border-radius:2px;margin-right:5px;vertical-align:middle;"></span><span style="color:#166534;font-weight:600;">TP</span> — sens = {round(sens_d*100,0):.0f}%</span>
+  <span><span style="display:inline-block;width:14px;height:14px;background:rgba(220,38,38,0.4);border-radius:2px;margin-right:5px;vertical-align:middle;"></span><span style="color:#991b1b;font-weight:600;">FN</span> — missed = {round((1-sens_d)*100,0):.0f}%</span>
+  <span><span style="display:inline-block;width:14px;height:14px;background:rgba(37,99,235,0.35);border-radius:2px;margin-right:5px;vertical-align:middle;"></span><span style="color:#1e40af;font-weight:600;">TN</span> — spec = {round(spec_d*100,0):.0f}%</span>
+  <span><span style="display:inline-block;width:14px;height:14px;background:rgba(234,88,12,0.4);border-radius:2px;margin-right:5px;vertical-align:middle;"></span><span style="color:#9a3412;font-weight:600;">FP</span> — false+ = {round(fpr_d*100,0):.0f}%</span>
 </div>"""
 
-        _dist_comp.html(f"<div style='font-family:sans-serif;'>{svg2}</div>", height=H2+50, scrolling=False)
+        _dist_comp.html(f"<div style='font-family:sans-serif;'>{svg2}</div>", height=H2+60, scrolling=False)
         st.caption("Red curve = diseased population. Blue curve = healthy population. Move the threshold slider to see how the four regions (TP/FN/FP/TN) shift — and why sensitivity and specificity cannot both be maximized simultaneously when distributions overlap.")
 
         st.info("""
@@ -6167,7 +6184,7 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
         import pandas as pd
         import streamlit.components.v1 as _roc_comp
 
-        st.markdown("#### 🧮 Interactive ROC Explorer")
+        st.markdown("#### Step ③ Interactive ROC Explorer")
         st.markdown("Adjust the diagnostic threshold to see how sensitivity and specificity change — and where that threshold sits on the ROC curve.")
 
         roc_preset = st.selectbox("Select a test scenario:", [
@@ -6216,6 +6233,31 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
         c3.metric("PPV", f"{round(ppv*100,1)}%")
         c4.metric("NPV", f"{round(npv*100,1)}%")
 
+        # Dynamic clinical-strategy interpretation - connects ROC numbers to real-world test use
+        if sens >= 0.90 and spec < 0.70:
+            _strategy_label = "Aggressive screening threshold"
+            _strategy_desc = "High sensitivity, low specificity. Use when missing a case is more harmful than a false alarm — e.g., screening for serious, treatable disease where follow-up confirms positives."
+            _strategy_bg, _strategy_border, _strategy_fg = "#fff7ed", "#fb923c", "#9a3412"
+        elif spec >= 0.90 and sens < 0.70:
+            _strategy_label = "Conservative confirmatory threshold"
+            _strategy_desc = "High specificity, lower sensitivity. Use when a false positive triggers a harmful or costly action — e.g., confirming disease before invasive treatment, where avoiding overtreatment matters most."
+            _strategy_bg, _strategy_border, _strategy_fg = "#eff6ff", "#60a5fa", "#1e40af"
+        elif abs(sens - spec) < 0.10 and sens >= 0.70:
+            _strategy_label = "Balanced threshold"
+            _strategy_desc = "Sensitivity and specificity are roughly equal — close to Youden's J optimum. Use when false positives and false negatives carry similar consequences."
+            _strategy_bg, _strategy_border, _strategy_fg = "#f0fdf4", "#4ade80", "#15803d"
+        else:
+            _strategy_label = "Intermediate threshold"
+            _strategy_desc = "Neither sensitivity nor specificity is being strongly prioritized. The right choice depends on which error costs more in your specific clinical or public-health context."
+            _strategy_bg, _strategy_border, _strategy_fg = "#f8fafc", "#cbd5e1", "#475569"
+        st.markdown(f"""
+<div style="background:{_strategy_bg};border-left:4px solid {_strategy_border};padding:12px 16px;margin:10px 0 18px 0;border-radius:0 8px 8px 0;">
+  <div style="font-size:13px;font-weight:700;color:{_strategy_fg};text-transform:uppercase;letter-spacing:0.4px;">Clinical strategy at this threshold</div>
+  <div style="font-size:15px;font-weight:700;color:{_strategy_fg};margin-top:2px;">{_strategy_label}</div>
+  <div style="font-size:13px;color:{_strategy_fg};margin-top:4px;line-height:1.55;">{_strategy_desc}</div>
+</div>
+        """, unsafe_allow_html=True)
+
         # Build ROC curve data
         thresholds = np.linspace(t_min, t_max, 300)
         roc_pts = []
@@ -6236,10 +6278,10 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
             auc += (xs[i]-xs[i+1]) * (ys[i]+ys[i+1]) / 2
         auc = abs(auc)
 
-        # SVG ROC curve
-        W, H = 400, 320
-        pad = 50
-        pw, ph = W-pad-20, H-pad-20
+        # SVG ROC curve - enlarged: the ROC curve is the synthesis of the prior concepts
+        W, H = 540, 440
+        pad = 60
+        pw, ph = W-pad-30, H-pad-30
         def to_px(fpr, tpr):
             x = pad + fpr * pw
             y = (H-pad) - tpr * ph
@@ -6252,14 +6294,14 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
         cur_tpr = sens
         cpx, cpy = to_px(cur_fpr, cur_tpr)
 
-        # Diagonal reference line
+        # Diagonal reference line - drawn lighter so the ROC curve dominates
         diag = f"M{pad},{H-pad} L{pad+pw},{H-pad-ph}"
 
         # Y axis ticks
-        yticks = "".join([f'<text x="{pad-5}" y="{round(to_px(0,v)[1]+4,0)}" font-size="9" text-anchor="end" fill="#666">{round(v*100)}%</text>' +
-                          f'<line x1="{pad-3}" y1="{round(to_px(0,v)[1],0)}" x2="{pad}" y2="{round(to_px(0,v)[1],0)}" stroke="#ccc"/>' 
+        yticks = "".join([f'<text x="{pad-6}" y="{round(to_px(0,v)[1]+4,0)}" font-size="11" text-anchor="end" fill="#64748b">{round(v*100)}%</text>' +
+                          f'<line x1="{pad-4}" y1="{round(to_px(0,v)[1],0)}" x2="{pad}" y2="{round(to_px(0,v)[1],0)}" stroke="#cbd5e1"/>' 
                           for v in [0,.2,.4,.6,.8,1.0]])
-        xticks = "".join([f'<text x="{round(to_px(v,0)[0],0)}" y="{H-pad+14}" font-size="9" text-anchor="middle" fill="#666">{round(v*100)}%</text>'
+        xticks = "".join([f'<text x="{round(to_px(v,0)[0],0)}" y="{H-pad+18}" font-size="11" text-anchor="middle" fill="#64748b">{round(v*100)}%</text>'
                           for v in [0,.2,.4,.6,.8,1.0]])
 
         svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" style="font-family:sans-serif;background:#fafafa;border-radius:8px;">
@@ -6268,18 +6310,18 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
   <line x1="{pad}" y1="{H-pad}" x2="{pad}" y2="{H-pad-ph}" stroke="#999" stroke-width="1.5"/>
   {yticks}{xticks}
   <!-- Labels -->
-  <text x="{pad+pw//2}" y="{H-4}" font-size="10" text-anchor="middle" fill="#555">1 − Specificity (False Positive Rate)</text>
-  <text x="12" y="{H-pad-ph//2}" font-size="10" text-anchor="middle" fill="#555" transform="rotate(-90,12,{H-pad-ph//2})">Sensitivity (True Positive Rate)</text>
-  <!-- Diagonal reference (random = AUC 0.50) -->
-  <path d="{diag}" stroke="#bbb" stroke-width="1" stroke-dasharray="4,3" fill="none"/>
-  <text x="{pad+pw-5}" y="{H-pad-ph+10}" font-size="9" fill="#aaa" text-anchor="end">Random (AUC=0.50)</text>
-  <!-- ROC curve -->
-  <path d="{path_d}" stroke="#2563eb" stroke-width="2.5" fill="none"/>
-  <!-- Current threshold point -->
-  <circle cx="{round(cpx,1)}" cy="{round(cpy,1)}" r="7" fill="#ef4444" stroke="white" stroke-width="2"/>
-  <text x="{round(cpx+12,1)}" y="{round(cpy-4,1)}" font-size="9" fill="#ef4444">Current threshold</text>
-  <!-- AUC label -->
-  <text x="{pad+pw-8}" y="{H-pad-ph+28}" font-size="11" font-weight="bold" text-anchor="end" fill="#2563eb">AUC = {round(auc,3)}</text>
+  <text x="{pad+pw//2}" y="{H-6}" font-size="12" text-anchor="middle" fill="#334155" font-weight="600">1 − Specificity (False Positive Rate)</text>
+  <text x="16" y="{H-pad-ph//2}" font-size="12" text-anchor="middle" fill="#334155" font-weight="600" transform="rotate(-90,16,{H-pad-ph//2})">Sensitivity (True Positive Rate)</text>
+  <!-- Diagonal reference (random = AUC 0.50) - lighter, smaller dashes so it doesn't compete -->
+  <path d="{diag}" stroke="#d1d5db" stroke-width="1" stroke-dasharray="3,3" fill="none"/>
+  <text x="{pad+pw-8}" y="{H-pad-ph+14}" font-size="10" fill="#94a3b8" text-anchor="end" font-style="italic">Random (AUC = 0.50)</text>
+  <!-- ROC curve - thicker for visual dominance -->
+  <path d="{path_d}" stroke="#2563eb" stroke-width="3.5" fill="none"/>
+  <!-- Current threshold point - larger and more prominent -->
+  <circle cx="{round(cpx,1)}" cy="{round(cpy,1)}" r="10" fill="#ef4444" stroke="white" stroke-width="3"/>
+  <text x="{round(cpx+16,1)}" y="{round(cpy-6,1)}" font-size="12" fill="#dc2626" font-weight="700">Current threshold</text>
+  <!-- AUC label - bigger and bolder -->
+  <text x="{pad+pw-10}" y="{H-pad-ph+38}" font-size="16" font-weight="bold" text-anchor="end" fill="#1d4ed8">AUC = {round(auc,3)}</text>
 </svg>"""
 
         _roc_comp.html(f"<div style='font-family:sans-serif;'>{svg}</div>", height=H+10, scrolling=False)
@@ -6287,11 +6329,13 @@ The fundamental reason sensitivity and specificity trade off is that the distrib
         st.caption("Blue curve = ROC curve for this test. Red dot = current threshold. Dashed diagonal = a test that performs no better than chance (AUC = 0.50).")
 
         st.divider()
-        st.markdown("#### The Area Under the Curve (AUC)")
+        st.markdown("#### Step ④ The Area Under the Curve (AUC)")
         st.markdown(f"""
 **AUC = {round(auc,3)}** for this scenario.
 
 The AUC (also called the **c-statistic**) summarizes the ROC curve in a single number — the probability that the test assigns a higher score to a randomly chosen diseased person than to a randomly chosen healthy person.
+
+**In plain terms:** Higher AUC = better separation between healthy and diseased populations. AUC tells you how well the test *discriminates* — it doesn't tell you what threshold to choose for any specific patient.
         """)
 
         st.markdown("""
@@ -6318,7 +6362,7 @@ The point at the upper-left corner of the ROC curve (high sensitivity AND high s
         """)
 
         st.divider()
-        st.markdown("#### 🧠 Concept check")
+        st.markdown("#### Step ⑤ Apply your understanding")
         roc_q1 = st.radio(
             "**Q1:** You lower the diagnostic threshold for a blood glucose screening test. What happens on the ROC curve?",
             ["— Select —",
@@ -6329,9 +6373,14 @@ The point at the upper-left corner of the ROC curve (high sensitivity AND high s
             key="roc_q1"
         )
         if roc_q1 == "You move along the curve toward higher sensitivity and higher false positive rate":
-            st.success("✅ Correct. Lowering the threshold calls more people positive — you catch more true cases (sensitivity ↑) but also flag more healthy people incorrectly (false positive rate ↑ = specificity ↓). This moves the red dot along the existing curve — it doesn't change the curve's shape or the AUC, because AUC reflects the test's inherent discriminating ability, not the chosen cutpoint.")
+            st.success("""✅ **Correct.** Lowering the threshold calls more people positive — you catch more true cases (sensitivity ↑) but also flag more healthy people incorrectly (false positive rate ↑ = specificity ↓). This moves the red dot along the existing curve — it doesn't change the curve's shape or the AUC, because AUC reflects the test's inherent discriminating ability, not the chosen cutpoint.
+
+**Why the other options are wrong:**
+- *"AUC increases — you've improved the test":* AUC is a property of the test itself (its ability to separate the diseased and healthy distributions). Changing the threshold doesn't change the underlying biology — it just changes *which* point on the existing curve you sit at. To improve AUC you'd need a fundamentally better test, not a different cutpoint.
+- *"Higher specificity and lower sensitivity":* That's the *opposite* direction — that's what happens when you *raise* the threshold (fewer people called positive → fewer false positives but more missed cases).
+- *"The curve shape changes":* The curve represents every possible threshold simultaneously. Changing one threshold moves your *position* on the curve, not the curve itself.""")
         elif roc_q1 != "— Select —":
-            st.error("❌ Changing the threshold moves you along the existing ROC curve but doesn't change its shape or AUC. AUC is a property of the test itself, not the threshold. Lowering the threshold → more positives → sensitivity ↑, specificity ↓ → move toward the upper-right corner of the curve.")
+            st.error("❌ Lowering the threshold means more people are called positive. That catches more cases (sensitivity ↑) but produces more false alarms (false positive rate ↑). You move along the existing ROC curve toward the upper-right — the curve's shape and AUC do not change.")
 
         roc_q2 = st.radio(
             "**Q2:** Test A has AUC = 0.65. Test B has AUC = 0.88. What can you conclude?",
@@ -6343,9 +6392,14 @@ The point at the upper-left corner of the ROC curve (high sensitivity AND high s
             key="roc_q2"
         )
         if roc_q2 == "Test B is better at discriminating diseased from non-diseased, across all possible thresholds":
-            st.success("✅ Correct. AUC summarizes performance across all thresholds. Test B discriminates better overall. You cannot conclude which test has higher sensitivity or specificity at any specific threshold — that depends on where you set the cutpoint. And AUC = 0.65 is poor but not necessarily useless, especially if it provides incremental value alongside other tests.")
+            st.success("""✅ **Correct.** AUC summarizes performance across all thresholds. Test B discriminates better overall — its ROC curve sits higher and to the left than Test A's at every cutpoint.
+
+**Why the other options are wrong:**
+- *"Test B has higher sensitivity than Test A":* AUC tells you about overall discrimination — not sensitivity or specificity at any specific cutpoint. At a given threshold, Test A could actually have higher sensitivity than Test B (just at the cost of much worse specificity). The numbers you compare with AUC describe *whole curves*, not points on them.
+- *"Test B has higher specificity than Test A":* Same reasoning — specificity is a property of a chosen threshold, not of AUC. A test with higher AUC has *more favorable combinations* of sensitivity and specificity available, but you still have to pick a cutpoint to get any specific number.
+- *"Test A is useless and should be abandoned":* AUC = 0.65 is poor but not necessarily useless. It still discriminates better than chance (AUC = 0.50), and may have value when combined with other tests or risk factors. "Useless" is too strong — clinical utility depends on what alternatives exist and what consequences positive vs. negative results trigger.""")
         elif roc_q2 != "— Select —":
-            st.error("❌ AUC compares overall discrimination ability across all thresholds. It doesn't tell you sensitivity or specificity at any specific cutpoint — those depend on the chosen threshold, not the AUC. Test B is the better discriminator overall.")
+            st.error("❌ AUC compares overall discrimination ability across all thresholds — it doesn't tell you sensitivity or specificity at any specific cutpoint. Test B is the better discriminator overall, but the specific values of sensitivity and specificity depend on the chosen threshold, not the AUC itself.")
 
 
     st.markdown("---")

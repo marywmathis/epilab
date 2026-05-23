@@ -5227,20 +5227,20 @@ elif current_page == "screening":
 <table style="border-collapse:collapse;width:100%;max-width:600px;">
   <tr>
     <td style="border:none;padding:8px;"></td>
-    <td style="border:1px solid #aaa;padding:10px;text-align:center;background:#fce4ec;font-weight:bold;color:#c62828;">Disease Present</td>
-    <td style="border:1px solid #aaa;padding:10px;text-align:center;background:#e8f5e9;font-weight:bold;color:#2e7d32;">Disease Absent</td>
+    <td style="border:1px solid #aaa;padding:10px;text-align:center;background:#eef2f7;font-weight:bold;color:#1f2937;">Disease Present</td>
+    <td style="border:1px solid #aaa;padding:10px;text-align:center;background:#eef2f7;font-weight:bold;color:#1f2937;">Disease Absent</td>
     <td style="border:1px solid #eee;padding:10px;text-align:center;font-size:12px;color:#666;">Row Total</td>
   </tr>
   <tr>
-    <td style="border:1px solid #aaa;padding:10px;background:#fff3e0;font-weight:bold;color:#e65100;">Test Positive</td>
-    <td style="border:1px solid #aaa;padding:12px;text-align:center;font-size:18px;font-weight:bold;color:#2e7d32;">a<br><span style="font-size:11px;color:#888;">True Positive (TP)</span></td>
-    <td style="border:1px solid #aaa;padding:12px;text-align:center;font-size:18px;font-weight:bold;color:#c62828;">b<br><span style="font-size:11px;color:#888;">False Positive (FP)</span></td>
+    <td style="border:1px solid #aaa;padding:10px;background:#eef2f7;font-weight:bold;color:#1f2937;">Test Positive</td>
+    <td style="border:1px solid #aaa;padding:12px;text-align:center;background:#f0fdf4;"><span style="font-size:20px;font-weight:bold;color:#15803d;">TP</span><br><span style="font-size:13px;color:#374151;">True Positive</span><br><span style="font-size:11px;color:#9ca3af;">(cell a)</span></td>
+    <td style="border:1px solid #aaa;padding:12px;text-align:center;background:#fef2f2;"><span style="font-size:20px;font-weight:bold;color:#b91c1c;">FP</span><br><span style="font-size:13px;color:#374151;">False Positive</span><br><span style="font-size:11px;color:#9ca3af;">(cell b)</span></td>
     <td style="border:1px solid #eee;padding:10px;text-align:center;font-size:13px;">a+b</td>
   </tr>
   <tr>
-    <td style="border:1px solid #aaa;padding:10px;background:#fff3e0;font-weight:bold;color:#e65100;">Test Negative</td>
-    <td style="border:1px solid #aaa;padding:12px;text-align:center;font-size:18px;font-weight:bold;color:#c62828;">c<br><span style="font-size:11px;color:#888;">False Negative (FN)</span></td>
-    <td style="border:1px solid #aaa;padding:12px;text-align:center;font-size:18px;font-weight:bold;color:#2e7d32;">d<br><span style="font-size:11px;color:#888;">True Negative (TN)</span></td>
+    <td style="border:1px solid #aaa;padding:10px;background:#eef2f7;font-weight:bold;color:#1f2937;">Test Negative</td>
+    <td style="border:1px solid #aaa;padding:12px;text-align:center;background:#fef2f2;"><span style="font-size:20px;font-weight:bold;color:#b91c1c;">FN</span><br><span style="font-size:13px;color:#374151;">False Negative</span><br><span style="font-size:11px;color:#9ca3af;">(cell c)</span></td>
+    <td style="border:1px solid #aaa;padding:12px;text-align:center;background:#f0fdf4;"><span style="font-size:20px;font-weight:bold;color:#15803d;">TN</span><br><span style="font-size:13px;color:#374151;">True Negative</span><br><span style="font-size:11px;color:#9ca3af;">(cell d)</span></td>
     <td style="border:1px solid #eee;padding:10px;text-align:center;font-size:13px;">c+d</td>
   </tr>
   <tr>
@@ -5250,6 +5250,7 @@ elif current_page == "screening":
     <td style="border:1px solid #eee;padding:10px;text-align:center;font-size:13px;">N</td>
   </tr>
 </table>
+<div style="font-size:12px;color:#6b7280;margin-top:6px;font-style:italic;">Green cells = correct results. Red cells = incorrect results. The letters a/b/c/d are the same cells in formula notation.</div>
 </div>"""
         st.markdown(table_html, unsafe_allow_html=True)
 
@@ -5257,13 +5258,13 @@ elif current_page == "screening":
         with col1:
             st.markdown("#### Properties of the Test (Fixed)")
             st.markdown("""
-**Sensitivity** = a ÷ (a+c)
+**Sensitivity** = TP ÷ (TP + FN) = a ÷ (a+c)
 - Proportion of true cases that test *positive*
 - "If you have the disease, how likely is the test to catch it?"
 - High sensitivity → few false negatives → good for ruling OUT disease
 - Mnemonic: **SnNout** — Sensitive test, Negative result, rules Out
 
-**Specificity** = d ÷ (b+d)
+**Specificity** = TN ÷ (TN + FP) = d ÷ (b+d)
 - Proportion of true non-cases that test *negative*
 - "If you don't have the disease, how likely is the test to be negative?"
 - High specificity → few false positives → good for ruling IN disease
@@ -5273,22 +5274,22 @@ elif current_page == "screening":
         with col2:
             st.markdown("#### Clinical Usefulness (Depend on Prevalence)")
             st.markdown("""
-**Positive Predictive Value (PPV)** = a ÷ (a+b)
+**Positive Predictive Value (PPV)** = TP ÷ (TP + FP) = a ÷ (a+b)
 - Probability that a *positive test* means disease is truly present
 - Changes with prevalence — even a specific test has low PPV in low-prevalence populations
 
-**Negative Predictive Value (NPV)** = d ÷ (c+d)
+**Negative Predictive Value (NPV)** = TN ÷ (TN + FN) = d ÷ (c+d)
 - Probability that a *negative test* means disease is truly absent
 - Increases as prevalence decreases (negatives more reliable when disease is rare)
 
-**Accuracy** = (a+d) ÷ N
+**Accuracy** = (TP + TN) ÷ N = (a+d) ÷ N
 - Proportion of all tests that are correct
-- Misleading in low-prevalence settings (always predicting negative = high accuracy but useless)
+- A test can appear highly accurate in low-prevalence settings simply by predicting most people are negative — high accuracy alone does not mean a test is clinically useful
             """)
 
         st.divider()
         st.markdown("#### Sensitivity-Specificity Tradeoff")
-        st.info("For any test, you can shift the cutpoint: lowering it increases sensitivity but decreases specificity (more positives, more false positives). Raising it increases specificity but decreases sensitivity. The ROC curve plots this tradeoff.")
+        st.info("For any test, you can shift the cutpoint: lowering it increases sensitivity but decreases specificity (more positive results, including more false positives). Raising it increases specificity but decreases sensitivity (fewer positive results, but more missed cases). The ROC curve plots this tradeoff.")
 
     elif screen_section == "2️⃣ Interactive 2×2 Calculator":
         st.subheader("Screening Test Calculator")

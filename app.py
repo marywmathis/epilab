@@ -621,6 +621,18 @@ The **natural history of disease** describes the progression of a disease proces
 
         nh_html = """
 <div style="overflow-x:auto;margin:16px 0;">
+
+<!-- Temporal phase labels above the stages -->
+<div style="display:flex;align-items:stretch;gap:0;min-width:600px;margin-bottom:4px;">
+  <div style="flex:1;text-align:center;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Before disease</div>
+  <div style="width:28px;"></div>
+  <div style="flex:1;text-align:center;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Silent disease</div>
+  <div style="width:28px;"></div>
+  <div style="flex:1;text-align:center;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Symptomatic disease</div>
+  <div style="width:28px;"></div>
+  <div style="flex:1;text-align:center;font-size:10px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;">Long-term outcomes</div>
+</div>
+
 <div style="display:flex;align-items:stretch;gap:0;min-width:600px;">
   <div style="flex:1;background:#f0fdf4;border:2px solid #16a34a;border-radius:10px 0 0 10px;padding:14px 12px;text-align:center;">
     <div style="font-size:22px;">🌱</div>
@@ -633,7 +645,7 @@ The **natural history of disease** describes the progression of a disease proces
     <div style="font-size:22px;">🔬</div>
     <div style="font-weight:700;font-size:12px;color:#92400e;margin:4px 0;">STAGE 2</div>
     <div style="font-weight:700;font-size:13px;color:#92400e;">Subclinical Disease</div>
-    <div style="font-size:11px;color:#78350f;margin-top:6px;line-height:1.5;">Pathological changes underway. No symptoms yet. Disease detectable by screening tests.<br><br><b>Intervention point:</b><br>Secondary prevention</div>
+    <div style="font-size:11px;color:#78350f;margin-top:6px;line-height:1.5;">Disease present but not yet symptomatic; may be detectable by screening.<br><br><b>Intervention point:</b><br>Secondary prevention</div>
   </div>
   <div style="width:28px;display:flex;align-items:center;justify-content:center;background:#e2e8f0;font-size:18px;color:#64748b;">→</div>
   <div style="flex:1;background:#fef2f2;border:2px solid #dc2626;padding:14px 12px;text-align:center;">
@@ -650,7 +662,16 @@ The **natural history of disease** describes the progression of a disease proces
     <div style="font-size:11px;color:#4c1d95;margin-top:6px;line-height:1.5;">Recovery, disability, or death. Chronic disease = prolonged stage 3/4.<br><br><b>Intervention point:</b><br>Tertiary prevention</div>
   </div>
 </div>
-<div style="margin-top:8px;text-align:center;font-size:11px;color:#718096;">
+
+<!-- Unified timeline bar reinforcing temporality as the organizing axis -->
+<div style="display:flex;align-items:center;min-width:600px;margin-top:10px;">
+  <div style="flex:1;height:6px;background:linear-gradient(to right, #16a34a, #d97706, #dc2626, #7c3aed);border-radius:3px;"></div>
+</div>
+<div style="display:flex;align-items:center;min-width:600px;margin-top:2px;">
+  <div style="font-size:10px;color:#64748b;font-style:italic;">⏱ Time →</div>
+</div>
+
+<div style="margin-top:12px;text-align:center;font-size:11px;color:#718096;">
   ← The <b>incubation period</b> begins after infection and ends at symptom onset (within stage 2). The <b>latency period</b> in chronic disease (exposure to detectable pathology) does not map cleanly onto a single stage boundary.
 </div>
 </div>"""
@@ -711,34 +732,109 @@ The **natural history of disease** describes the progression of a disease proces
         with col3:
             st.markdown("#### 🔴 Tertiary Prevention")
             st.markdown("""
-**Goal:** Reduce disability and improve function in those who already have established disease.
+**Goal:** Reduce disability, prevent recurrence or progression, and improve function in those who already have established disease.
 
 **Acts during:** Clinical disease and resolution stages.
 
 **Mechanisms:**
-- Treatment to prevent complications
-- Rehabilitation
-- Disease management programs
+- Treatment to prevent complications or recurrence
+- Rehabilitation to restore function
+- Disease management programs (stabilize chronic conditions)
 - Palliative care
 
 **Examples:**
-- Cardiac rehab after heart attack
-- Insulin management for diabetics
-- Physical therapy after stroke
+- Cardiac rehab after heart attack (prevent recurrence)
+- Insulin management for diabetics (stabilize, prevent progression)
+- Physical therapy after stroke (restore function)
 - Cancer pain management
 - Support groups for chronic illness
 
-**Epidemiologic measure:** Case fatality rate, disability-adjusted life years (DALYs), quality of life
+**Epidemiologic measure:** Case fatality rate, disability-adjusted life years (DALYs), quality of life, recurrence rate
 
-**Quaternary prevention:** Protect patients from unnecessary or harmful interventions (overdiagnosis, overtreatment) — increasingly recognized as a fourth level.
+**Quaternary prevention:** Protect patients from unnecessary or harmful interventions. **In plain terms: avoid unnecessary testing and treatment that may cause more harm than benefit** — for example, screening tests with high false-positive rates in low-risk populations, or aggressive end-of-life interventions when palliative care would serve the patient better. Increasingly recognized as a fourth level of prevention.
             """)
 
         st.divider()
         with st.expander("⚠️ Lead-Time Bias — The Hidden Trap of Screening"):
             st.markdown("""
 **Lead-time bias** occurs when screening appears to extend survival, but only because disease is detected earlier — not because treatment is more effective.
+            """)
 
-**Example:** Without screening, a cancer is detected at symptoms and patient lives 2 more years (total disease duration: 10 years). With screening, cancer detected 3 years earlier — patient lives 5 more years from diagnosis. But total lifespan is unchanged. It *looks* like survival improved (5 > 2 years), but no extra time was gained — we just moved the diagnosis earlier.
+            # Visual timeline: makes the conceptual core immediately obvious
+            lead_time_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" style="width:100%;max-width:720px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+  <!-- Time axis bottom -->
+  <line x1="80" y1="200" x2="660" y2="200" stroke="#475569" stroke-width="1.5" marker-end="url(#arrTime)"/>
+  <text x="370" y="220" font-size="11" fill="#475569" font-weight="600" text-anchor="middle">⏱ Time →</text>
+
+  <defs>
+    <marker id="arrTime" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <!-- WITHOUT SCREENING: diagnosis later, shorter apparent survival, same death point -->
+  <text x="20" y="55" font-size="11" font-weight="700" fill="#475569">Without</text>
+  <text x="20" y="68" font-size="11" font-weight="700" fill="#475569">screening</text>
+
+  <!-- Disease starts (subclinical) -->
+  <line x1="120" y1="40" x2="120" y2="80" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="120" y="32" font-size="9" fill="#64748b" text-anchor="middle">Disease begins</text>
+  <text x="120" y="95" font-size="8" fill="#94a3b8" text-anchor="middle">(subclinical)</text>
+
+  <!-- Diagnosis at symptoms (later) -->
+  <circle cx="440" cy="60" r="8" fill="#dc2626" stroke="white" stroke-width="2"/>
+  <text x="440" y="32" font-size="10" font-weight="700" fill="#dc2626" text-anchor="middle">Diagnosed</text>
+  <text x="440" y="45" font-size="9" fill="#dc2626" text-anchor="middle">(at symptoms)</text>
+
+  <!-- Survival arrow from diagnosis to death -->
+  <line x1="448" y1="60" x2="568" y2="60" stroke="#dc2626" stroke-width="2"/>
+  <text x="508" y="55" font-size="10" font-weight="700" fill="#dc2626" text-anchor="middle">"2 years survival"</text>
+
+  <!-- Death marker -->
+  <line x1="580" y1="40" x2="580" y2="80" stroke="#1f2937" stroke-width="2"/>
+  <text x="580" y="32" font-size="10" font-weight="700" fill="#1f2937" text-anchor="middle">Death</text>
+
+  <!-- Divider -->
+  <line x1="80" y1="115" x2="660" y2="115" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <!-- WITH SCREENING: earlier diagnosis, same death point, longer apparent survival -->
+  <text x="20" y="150" font-size="11" font-weight="700" fill="#475569">With</text>
+  <text x="20" y="163" font-size="11" font-weight="700" fill="#475569">screening</text>
+
+  <!-- Same disease-start point -->
+  <line x1="120" y1="135" x2="120" y2="175" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="120" y="127" font-size="9" fill="#64748b" text-anchor="middle">Disease begins</text>
+  <text x="120" y="188" font-size="8" fill="#94a3b8" text-anchor="middle">(subclinical)</text>
+
+  <!-- Earlier diagnosis via screening -->
+  <circle cx="260" cy="155" r="8" fill="#2563eb" stroke="white" stroke-width="2"/>
+  <text x="260" y="127" font-size="10" font-weight="700" fill="#2563eb" text-anchor="middle">Diagnosed</text>
+  <text x="260" y="140" font-size="9" fill="#2563eb" text-anchor="middle">(by screening)</text>
+
+  <!-- Survival arrow from earlier diagnosis to same death point -->
+  <line x1="268" y1="155" x2="568" y2="155" stroke="#2563eb" stroke-width="2"/>
+  <text x="418" y="150" font-size="10" font-weight="700" fill="#2563eb" text-anchor="middle">"5 years survival"</text>
+
+  <!-- SAME death marker -->
+  <line x1="580" y1="135" x2="580" y2="175" stroke="#1f2937" stroke-width="2"/>
+  <text x="580" y="127" font-size="10" font-weight="700" fill="#1f2937" text-anchor="middle">Death</text>
+
+  <!-- Vertical comparison line connecting both death points -->
+  <line x1="580" y1="80" x2="580" y2="135" stroke="#1f2937" stroke-width="1" stroke-dasharray="2,2"/>
+
+  <!-- Annotation: lead time = the gap between diagnosis points -->
+  <line x1="260" y1="105" x2="440" y2="105" stroke="#f59e0b" stroke-width="1.5"/>
+  <line x1="260" y1="100" x2="260" y2="110" stroke="#f59e0b" stroke-width="1.5"/>
+  <line x1="440" y1="100" x2="440" y2="110" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="350" y="113" font-size="10" font-weight="700" fill="#b45309" text-anchor="middle">← LEAD TIME (extra time of "knowing," not "living") →</text>
+</svg>"""
+            st.markdown(f"<div style='margin:14px 0;'>{lead_time_svg}</div>", unsafe_allow_html=True)
+
+            st.markdown("""
+**Reading the diagram:** Both patients have the same disease, same biology, and **die at the same time**. The only difference is *when they learn they have the disease*. Screening detected it 3 years earlier (the lead time). On paper, "survival from diagnosis" jumped from 2 years to 5 years — but no one actually lived longer.
+
+**Example walk-through:** Without screening, a cancer is detected at symptoms and the patient lives 2 more years (total disease duration: 10 years). With screening, cancer detected 3 years earlier — patient lives 5 more years from diagnosis. But total lifespan is unchanged. It *looks* like survival improved (5 > 2 years), but no extra time was gained — we just moved the diagnosis earlier.
 
 **The fix:** Use mortality rates (not survival time) to evaluate screening effectiveness, or compare age-standardized disease-specific mortality in screened vs. unscreened populations.
             """)
@@ -749,7 +845,7 @@ The **natural history of disease** describes the progression of a disease proces
 |---|---|---|---|---|
 | **Primary** | Susceptibility | Prevent disease occurrence | Vaccination, seat belts | Incidence |
 | **Secondary** | Subclinical | Early detection & treatment | Mammography, Pap smear | Prevalence detected, CFR |
-| **Tertiary** | Clinical/Resolution | Reduce disability & complications | Cardiac rehab, diabetes management | DALYs, QoL, CFR |
+| **Tertiary** | Clinical/Resolution | Reduce disability, prevent recurrence/progression | Cardiac rehab, diabetes management | DALYs, QoL, CFR, recurrence rate |
 | **Quaternary** | Any | Prevent over-medicalization | Avoiding unnecessary surgery | Iatrogenic harm rates |
             """)
 

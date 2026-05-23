@@ -4618,64 +4618,67 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
 
         import streamlit.components.v1 as _comp4
 
-        four_panel_html = """
-<!DOCTYPE html>
+        four_panel_html = """<!DOCTYPE html>
 <html>
 <head>
 <style>
   body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8fafc; }
   .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding: 16px; }
-  .panel { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); }
-  .panel-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
-  .panel-subtitle { font-size: 11px; color: #6b7280; margin-bottom: 10px; }
-  svg { width: 100%; overflow: visible; }
-  .legend { font-size: 10px; color: #6b7280; margin-top: 8px; display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-  .legend-item { display: flex; align-items: center; gap: 4px; }
-  .key-box { background: #f0f9ff; border-left: 3px solid #0284c7; padding: 8px 10px; margin-top: 10px; border-radius: 0 6px 6px 0; font-size: 11px; color: #0c4a6e; line-height: 1.5; }
+  .panel { background: white; border-radius: 10px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+  .panel-title { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+  .panel-subtitle { font-size: 11px; color: #6b7280; margin-bottom: 12px; }
+  .chart-wrap { width: 100%; display: flex; justify-content: center; }
+  svg.chart { width: 100%; max-width: 460px; height: auto; display: block; }
+  .key-box { background: #f0f9ff; border-left: 3px solid #0284c7; padding: 10px 12px; margin-top: 14px; border-radius: 0 6px 6px 0; font-size: 11.5px; color: #0c4a6e; line-height: 1.6; }
+  .key-box b { color: #0c4a6e; }
+  .legend-row { padding: 4px 16px 16px 16px; display: flex; gap: 24px; font-size: 11px; color: #6b7280; flex-wrap: wrap; }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
 </style>
 </head>
 <body>
+
 <div class="grid">
 
   <!-- PANEL 1: POINT SOURCE -->
   <div class="panel">
     <div class="panel-title" style="color:#dc2626;">☢️ Point Source</div>
     <div class="panel-subtitle">All cases exposed to same source at same time</div>
-    <svg viewBox="0 0 280 155" xmlns="http://www.w3.org/2000/svg">
-      <!-- Axes -->
-      <line x1="35" y1="110" x2="270" y2="110" stroke="#d1d5db" stroke-width="1.5"/>
-      <line x1="35" y1="10" x2="35" y2="110" stroke="#d1d5db" stroke-width="1.5"/>
-      <!-- Baseline dotted -->
-      <line x1="35" y1="100" x2="270" y2="100" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3"/>
-      <text x="272" y="103" font-size="8" fill="#94a3b8">baseline</text>
-      <!-- Bars: sharp peak, bell shaped, all within short window -->
-      <!-- Time points 1-12, bars only at 3-7 -->
-      <rect x="68" y="102" width="14" height="8" fill="#fca5a5" rx="1"/>
-      <rect x="88" y="88" width="14" height="22" fill="#f87171" rx="1"/>
-      <rect x="108" y="68" width="14" height="42" fill="#ef4444" rx="1"/>
-      <rect x="128" y="48" width="14" height="62" fill="#dc2626" rx="1"/>
-      <rect x="148" y="62" width="14" height="48" fill="#ef4444" rx="1"/>
-      <rect x="168" y="82" width="14" height="28" fill="#f87171" rx="1"/>
-      <rect x="188" y="98" width="14" height="12" fill="#fca5a5" rx="1"/>
-      <!-- Peak annotation -->
-      <line x1="135" y1="44" x2="135" y2="20" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2"/>
-      <text x="138" y="18" font-size="9" fill="#dc2626" font-weight="bold">Peak</text>
-      <!-- X axis labels -->
-      <text x="33" y="122" font-size="8" fill="#9ca3af" text-anchor="middle">0</text>
-      <text x="75" y="122" font-size="8" fill="#9ca3af" text-anchor="middle">2</text>
-      <text x="115" y="122" font-size="8" fill="#9ca3af" text-anchor="middle">4</text>
-      <text x="155" y="122" font-size="8" fill="#9ca3af" text-anchor="middle">6</text>
-      <text x="195" y="122" font-size="8" fill="#9ca3af" text-anchor="middle">8</text>
-      <text x="235" y="122" font-size="8" fill="#9ca3af" text-anchor="middle">10</text>
-      <!-- Bracket showing incubation width -->
-      <line x1="70" y1="130" x2="200" y2="130" stroke="#dc2626" stroke-width="1.2"/>
-      <line x1="70" y1="127" x2="70" y2="133" stroke="#dc2626" stroke-width="1.2"/>
-      <line x1="200" y1="127" x2="200" y2="133" stroke="#dc2626" stroke-width="1.2"/>
-      <text x="135" y="139" font-size="8" fill="#dc2626" text-anchor="middle">≈ incubation period range</text>
-      <!-- Y label -->
-      <text x="12" y="65" font-size="8" fill="#9ca3af" transform="rotate(-90,12,65)">Cases</text>
-      <text x="150" y="150" font-size="9" fill="#6b7280" text-anchor="middle" font-weight="600">Time</text>
-    </svg>
+    <div class="chart-wrap">
+      <svg class="chart" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Y-axis label -->
+        <text x="14" y="100" font-size="10" fill="#6b7280" transform="rotate(-90,14,100)" text-anchor="middle">Cases</text>
+        <!-- Axes -->
+        <line x1="40" y1="150" x2="305" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
+        <line x1="40" y1="20" x2="40" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
+        <!-- Baseline -->
+        <line x1="40" y1="138" x2="305" y2="138" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="5,3"/>
+        <!-- Bars: bell-shaped point source outbreak -->
+        <rect x="75" y="130" width="18" height="20" fill="#fca5a5" rx="1.5"/>
+        <rect x="98" y="115" width="18" height="35" fill="#f87171" rx="1.5"/>
+        <rect x="121" y="85" width="18" height="65" fill="#ef4444" rx="1.5"/>
+        <rect x="144" y="55" width="18" height="95" fill="#dc2626" rx="1.5"/>
+        <rect x="167" y="78" width="18" height="72" fill="#ef4444" rx="1.5"/>
+        <rect x="190" y="108" width="18" height="42" fill="#f87171" rx="1.5"/>
+        <rect x="213" y="128" width="18" height="22" fill="#fca5a5" rx="1.5"/>
+        <!-- Peak annotation -->
+        <line x1="153" y1="50" x2="153" y2="28" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="3,2"/>
+        <text x="153" y="22" font-size="11" fill="#dc2626" font-weight="bold" text-anchor="middle">Peak</text>
+        <!-- X-axis tick labels -->
+        <text x="40" y="164" font-size="9" fill="#9ca3af" text-anchor="middle">0</text>
+        <text x="84" y="164" font-size="9" fill="#9ca3af" text-anchor="middle">2</text>
+        <text x="130" y="164" font-size="9" fill="#9ca3af" text-anchor="middle">4</text>
+        <text x="176" y="164" font-size="9" fill="#9ca3af" text-anchor="middle">6</text>
+        <text x="222" y="164" font-size="9" fill="#9ca3af" text-anchor="middle">8</text>
+        <text x="268" y="164" font-size="9" fill="#9ca3af" text-anchor="middle">10</text>
+        <!-- Incubation bracket -->
+        <line x1="80" y1="174" x2="222" y2="174" stroke="#dc2626" stroke-width="1.3"/>
+        <line x1="80" y1="170" x2="80" y2="178" stroke="#dc2626" stroke-width="1.3"/>
+        <line x1="222" y1="170" x2="222" y2="178" stroke="#dc2626" stroke-width="1.3"/>
+        <text x="151" y="186" font-size="9" fill="#dc2626" text-anchor="middle" font-weight="600">≈ incubation period range</text>
+        <!-- X-axis label -->
+        <text x="172" y="198" font-size="10" fill="#374151" text-anchor="middle" font-weight="600">Time</text>
+      </svg>
+    </div>
     <div class="key-box">
       <b>Shape:</b> Single sharp peak, rapid rise and fall<br>
       <b>Duration:</b> Width ≈ one incubation period<br>
@@ -4688,45 +4691,46 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
   <div class="panel">
     <div class="panel-title" style="color:#1d4ed8;">🔗 Propagated (Person-to-Person)</div>
     <div class="panel-subtitle">Each generation infects the next — successive waves</div>
-    <svg viewBox="0 0 280 155" xmlns="http://www.w3.org/2000/svg">
-      <!-- Axes -->
-      <line x1="35" y1="110" x2="270" y2="110" stroke="#d1d5db" stroke-width="1.5"/>
-      <line x1="35" y1="10" x2="35" y2="110" stroke="#d1d5db" stroke-width="1.5"/>
-      <!-- Baseline dotted -->
-      <line x1="35" y1="100" x2="270" y2="100" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3"/>
-      <text x="272" y="103" font-size="8" fill="#94a3b8">baseline</text>
-      <!-- Wave 1: small (index cases) -->
-      <rect x="42" y="96" width="10" height="14" fill="#93c5fd" rx="1"/>
-      <rect x="54" y="90" width="10" height="20" fill="#60a5fa" rx="1"/>
-      <rect x="66" y="96" width="10" height="14" fill="#93c5fd" rx="1"/>
-      <!-- Wave 2: medium -->
-      <rect x="88" y="88" width="10" height="22" fill="#60a5fa" rx="1"/>
-      <rect x="100" y="76" width="10" height="34" fill="#3b82f6" rx="1"/>
-      <rect x="112" y="82" width="10" height="28" fill="#3b82f6" rx="1"/>
-      <rect x="124" y="90" width="10" height="20" fill="#60a5fa" rx="1"/>
-      <!-- Wave 3: large -->
-      <rect x="146" y="72" width="10" height="38" fill="#2563eb" rx="1"/>
-      <rect x="158" y="50" width="10" height="60" fill="#1d4ed8" rx="1"/>
-      <rect x="170" y="58" width="10" height="52" fill="#1d4ed8" rx="1"/>
-      <rect x="182" y="72" width="10" height="38" fill="#2563eb" rx="1"/>
-      <rect x="194" y="84" width="10" height="26" fill="#60a5fa" rx="1"/>
-      <!-- Wave 4: declining -->
-      <rect x="216" y="88" width="10" height="22" fill="#93c5fd" rx="1"/>
-      <rect x="228" y="94" width="10" height="16" fill="#bfdbfe" rx="1"/>
-      <rect x="240" y="98" width="10" height="12" fill="#bfdbfe" rx="1"/>
-      <!-- Wave labels -->
-      <text x="58" y="85" font-size="8" fill="#1d4ed8" text-anchor="middle">W1</text>
-      <text x="108" y="71" font-size="8" fill="#1d4ed8" text-anchor="middle">W2</text>
-      <text x="168" y="45" font-size="8" fill="#1d4ed8" text-anchor="middle">W3</text>
-      <text x="228" y="83" font-size="8" fill="#1d4ed8" text-anchor="middle">W4</text>
-      <!-- Incubation period arrows between waves -->
-      <line x1="65" y1="75" x2="98" y2="75" stroke="#1d4ed8" stroke-width="1" marker-end="url(#arrow)" stroke-dasharray="3,2"/>
-      <line x1="133" y1="75" x2="146" y2="75" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="3,2"/>
-      <text x="82" y="72" font-size="7" fill="#1d4ed8" text-anchor="middle">≈1 incub.</text>
-      <!-- Y label -->
-      <text x="12" y="65" font-size="8" fill="#9ca3af" transform="rotate(-90,12,65)">Cases</text>
-      <text x="150" y="135" font-size="9" fill="#6b7280" text-anchor="middle" font-weight="600">Time</text>
-    </svg>
+    <div class="chart-wrap">
+      <svg class="chart" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Y-axis label -->
+        <text x="14" y="100" font-size="10" fill="#6b7280" transform="rotate(-90,14,100)" text-anchor="middle">Cases</text>
+        <!-- Axes -->
+        <line x1="40" y1="150" x2="305" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
+        <line x1="40" y1="20" x2="40" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
+        <!-- Baseline -->
+        <line x1="40" y1="138" x2="305" y2="138" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="5,3"/>
+        <!-- Wave 1: small (index cases) -->
+        <rect x="50" y="125" width="11" height="25" fill="#93c5fd" rx="1"/>
+        <rect x="63" y="118" width="11" height="32" fill="#60a5fa" rx="1"/>
+        <rect x="76" y="125" width="11" height="25" fill="#93c5fd" rx="1"/>
+        <!-- Wave 2: medium -->
+        <rect x="102" y="115" width="11" height="35" fill="#60a5fa" rx="1"/>
+        <rect x="115" y="98" width="11" height="52" fill="#3b82f6" rx="1"/>
+        <rect x="128" y="105" width="11" height="45" fill="#3b82f6" rx="1"/>
+        <rect x="141" y="118" width="11" height="32" fill="#60a5fa" rx="1"/>
+        <!-- Wave 3: large (peak wave) -->
+        <rect x="167" y="92" width="11" height="58" fill="#2563eb" rx="1"/>
+        <rect x="180" y="60" width="11" height="90" fill="#1d4ed8" rx="1"/>
+        <rect x="193" y="72" width="11" height="78" fill="#1d4ed8" rx="1"/>
+        <rect x="206" y="92" width="11" height="58" fill="#2563eb" rx="1"/>
+        <rect x="219" y="110" width="11" height="40" fill="#60a5fa" rx="1"/>
+        <!-- Wave 4: declining -->
+        <rect x="245" y="118" width="11" height="32" fill="#93c5fd" rx="1"/>
+        <rect x="258" y="125" width="11" height="25" fill="#bfdbfe" rx="1"/>
+        <rect x="271" y="130" width="11" height="20" fill="#bfdbfe" rx="1"/>
+        <!-- Wave labels -->
+        <text x="69" y="110" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W1</text>
+        <text x="122" y="90" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W2</text>
+        <text x="190" y="52" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W3</text>
+        <text x="258" y="110" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W4</text>
+        <!-- Incubation period spacing indicator -->
+        <line x1="78" y1="78" x2="120" y2="78" stroke="#1d4ed8" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="99" y="74" font-size="9" fill="#1d4ed8" text-anchor="middle" font-style="italic">≈1 incub.</text>
+        <!-- X-axis label -->
+        <text x="172" y="186" font-size="10" fill="#374151" text-anchor="middle" font-weight="600">Time</text>
+      </svg>
+    </div>
     <div class="key-box">
       <b>Shape:</b> Multiple waves, each growing then shrinking<br>
       <b>Wave spacing:</b> ≈ one incubation period apart<br>
@@ -4739,39 +4743,41 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
   <div class="panel">
     <div class="panel-title" style="color:#7c3aed;">🔀 Mixed</div>
     <div class="panel-subtitle">Point source followed by person-to-person spread</div>
-    <svg viewBox="0 0 280 155" xmlns="http://www.w3.org/2000/svg">
-      <!-- Axes -->
-      <line x1="35" y1="110" x2="270" y2="110" stroke="#d1d5db" stroke-width="1.5"/>
-      <line x1="35" y1="10" x2="35" y2="110" stroke="#d1d5db" stroke-width="1.5"/>
-      <!-- Baseline dotted -->
-      <line x1="35" y1="100" x2="270" y2="100" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3"/>
-      <text x="272" y="103" font-size="8" fill="#94a3b8">baseline</text>
-      <!-- Point source initial peak (red) -->
-      <rect x="48" y="72" width="11" height="38" fill="#fca5a5" rx="1"/>
-      <rect x="61" y="50" width="11" height="60" fill="#f87171" rx="1"/>
-      <rect x="74" y="40" width="11" height="70" fill="#ef4444" rx="1"/>
-      <rect x="87" y="55" width="11" height="55" fill="#f87171" rx="1"/>
-      <rect x="100" y="75" width="11" height="35" fill="#fca5a5" rx="1"/>
-      <!-- Secondary wave (purple) -->
-      <rect x="128" y="82" width="11" height="28" fill="#c4b5fd" rx="1"/>
-      <rect x="141" y="65" width="11" height="45" fill="#a78bfa" rx="1"/>
-      <rect x="154" y="58" width="11" height="52" fill="#8b5cf6" rx="1"/>
-      <rect x="167" y="68" width="11" height="42" fill="#7c3aed" rx="1"/>
-      <rect x="180" y="78" width="11" height="32" fill="#a78bfa" rx="1"/>
-      <rect x="193" y="88" width="11" height="22" fill="#c4b5fd" rx="1"/>
-      <!-- Third wave (smaller) -->
-      <rect x="218" y="90" width="11" height="20" fill="#ddd6fe" rx="1"/>
-      <rect x="231" y="94" width="11" height="16" fill="#ede9fe" rx="1"/>
-      <rect x="244" y="98" width="11" height="12" fill="#ede9fe" rx="1"/>
-      <!-- Labels -->
-      <text x="74" y="35" font-size="8" fill="#dc2626" text-anchor="middle" font-weight="bold">Point source</text>
-      <text x="163" y="53" font-size="8" fill="#7c3aed" text-anchor="middle" font-weight="bold">2° spread</text>
-      <!-- Arrow from initial peak to secondary -->
-      <path d="M 110 65 Q 120 55 128 70" stroke="#7c3aed" stroke-width="1.2" fill="none" stroke-dasharray="3,2"/>
-      <!-- Y label -->
-      <text x="12" y="65" font-size="8" fill="#9ca3af" transform="rotate(-90,12,65)">Cases</text>
-      <text x="150" y="135" font-size="9" fill="#6b7280" text-anchor="middle" font-weight="600">Time</text>
-    </svg>
+    <div class="chart-wrap">
+      <svg class="chart" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Y-axis label -->
+        <text x="14" y="100" font-size="10" fill="#6b7280" transform="rotate(-90,14,100)" text-anchor="middle">Cases</text>
+        <!-- Axes -->
+        <line x1="40" y1="150" x2="305" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
+        <line x1="40" y1="20" x2="40" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
+        <!-- Baseline -->
+        <line x1="40" y1="138" x2="305" y2="138" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="5,3"/>
+        <!-- Point source initial peak (red) -->
+        <rect x="55" y="105" width="13" height="45" fill="#fca5a5" rx="1.5"/>
+        <rect x="70" y="80" width="13" height="70" fill="#f87171" rx="1.5"/>
+        <rect x="85" y="65" width="13" height="85" fill="#ef4444" rx="1.5"/>
+        <rect x="100" y="85" width="13" height="65" fill="#f87171" rx="1.5"/>
+        <rect x="115" y="110" width="13" height="40" fill="#fca5a5" rx="1.5"/>
+        <!-- Secondary wave (purple) -->
+        <rect x="145" y="115" width="13" height="35" fill="#c4b5fd" rx="1.5"/>
+        <rect x="160" y="92" width="13" height="58" fill="#a78bfa" rx="1.5"/>
+        <rect x="175" y="82" width="13" height="68" fill="#8b5cf6" rx="1.5"/>
+        <rect x="190" y="95" width="13" height="55" fill="#7c3aed" rx="1.5"/>
+        <rect x="205" y="110" width="13" height="40" fill="#a78bfa" rx="1.5"/>
+        <rect x="220" y="122" width="13" height="28" fill="#c4b5fd" rx="1.5"/>
+        <!-- Third smaller wave -->
+        <rect x="250" y="126" width="13" height="24" fill="#ddd6fe" rx="1.5"/>
+        <rect x="265" y="130" width="13" height="20" fill="#ede9fe" rx="1.5"/>
+        <rect x="280" y="134" width="13" height="16" fill="#ede9fe" rx="1.5"/>
+        <!-- Annotations -->
+        <text x="91" y="58" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="bold">Point source</text>
+        <text x="183" y="75" font-size="10" fill="#7c3aed" text-anchor="middle" font-weight="bold">2° spread</text>
+        <!-- Curved arrow from initial peak to secondary wave -->
+        <path d="M 128 85 Q 138 70 148 95" stroke="#7c3aed" stroke-width="1.3" fill="none" stroke-dasharray="3,2"/>
+        <!-- X-axis label -->
+        <text x="172" y="186" font-size="10" fill="#374151" text-anchor="middle" font-weight="600">Time</text>
+      </svg>
+    </div>
     <div class="key-box">
       <b>Shape:</b> Initial sharp peak (point source), then waves<br>
       <b>Initial peak:</b> Red = common vehicle (food, water)<br>
@@ -4784,43 +4790,40 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
   <div class="panel">
     <div class="panel-title" style="color:#166534;">📈 Endemic</div>
     <div class="panel-subtitle">Stable background rate — disease is always present</div>
-    <svg viewBox="0 0 280 155" xmlns="http://www.w3.org/2000/svg">
-      <!-- Axes -->
-      <line x1="35" y1="110" x2="270" y2="110" stroke="#d1d5db" stroke-width="1.5"/>
-      <line x1="35" y1="10" x2="35" y2="110" stroke="#d1d5db" stroke-width="1.5"/>
-      <!-- Normal-range band: shaded zone between endemic baseline and epidemic threshold -->
-      <rect x="35" y="72" width="235" height="18" fill="#dcfce7" opacity="0.55"/>
-      <text x="155" y="84" font-size="8.5" fill="#166534" text-anchor="middle" font-style="italic" font-weight="600">normal range</text>
-      <!-- Epidemic threshold (higher dotted line) -->
-      <line x1="35" y1="72" x2="270" y2="72" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4,3"/>
-      <text x="272" y="70" font-size="8" fill="#dc2626">epidemic threshold</text>
-      <!-- Baseline (endemic level) dotted -->
-      <line x1="35" y1="90" x2="270" y2="90" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3"/>
-      <text x="272" y="93" font-size="8" fill="#94a3b8">endemic baseline</text>
-      <!-- Endemic bars — fluctuating around baseline, never crossing epidemic threshold -->
-      <rect x="42" y="88" width="13" height="22" fill="#86efac" rx="1"/>
-      <rect x="58" y="83" width="13" height="27" fill="#4ade80" rx="1"/>
-      <rect x="74" y="78" width="13" height="32" fill="#22c55e" rx="1"/>
-      <rect x="90" y="85" width="13" height="25" fill="#4ade80" rx="1"/>
-      <rect x="106" y="87" width="13" height="23" fill="#86efac" rx="1"/>
-      <rect x="122" y="82" width="13" height="28" fill="#4ade80" rx="1"/>
-      <rect x="138" y="76" width="13" height="34" fill="#16a34a" rx="1"/>
-      <rect x="154" y="80" width="13" height="30" fill="#22c55e" rx="1"/>
-      <rect x="170" y="85" width="13" height="25" fill="#4ade80" rx="1"/>
-      <rect x="186" y="83" width="13" height="27" fill="#4ade80" rx="1"/>
-      <rect x="202" y="79" width="13" height="31" fill="#22c55e" rx="1"/>
-      <rect x="218" y="86" width="13" height="24" fill="#86efac" rx="1"/>
-      <rect x="234" y="88" width="13" height="22" fill="#86efac" rx="1"/>
-      <rect x="250" y="84" width="13" height="26" fill="#4ade80" rx="1"/>
-      <!-- Y label -->
-      <text x="12" y="65" font-size="8" fill="#9ca3af" transform="rotate(-90,12,65)">Cases</text>
-      <text x="150" y="135" font-size="9" fill="#6b7280" text-anchor="middle" font-weight="600">Time (months/years)</text>
-    </svg>
+    <div class="chart-wrap">
+      <svg class="chart" viewBox="0 0 320 200" xmlns="http://www.w3.org/2000/svg">
+        <!-- Y-axis label -->
+        <text x="14" y="100" font-size="10" fill="#6b7280" transform="rotate(-90,14,100)" text-anchor="middle">Cases</text>
+        <!-- Axes -->
+        <line x1="40" y1="150" x2="305" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
+        <line x1="40" y1="20" x2="40" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
+        <!-- Epidemic threshold (red dashed) -->
+        <line x1="40" y1="80" x2="305" y2="80" stroke="#dc2626" stroke-width="1.3" stroke-dasharray="4,3"/>
+        <!-- Endemic baseline (gray dashed) -->
+        <line x1="40" y1="120" x2="305" y2="120" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="5,3"/>
+        <!-- Endemic bars: fluctuate around baseline, never crossing threshold -->
+        <rect x="50" y="115" width="16" height="35" fill="#86efac" rx="1.5"/>
+        <rect x="68" y="108" width="16" height="42" fill="#4ade80" rx="1.5"/>
+        <rect x="86" y="100" width="16" height="50" fill="#22c55e" rx="1.5"/>
+        <rect x="104" y="110" width="16" height="40" fill="#4ade80" rx="1.5"/>
+        <rect x="122" y="118" width="16" height="32" fill="#86efac" rx="1.5"/>
+        <rect x="140" y="105" width="16" height="45" fill="#4ade80" rx="1.5"/>
+        <rect x="158" y="95" width="16" height="55" fill="#16a34a" rx="1.5"/>
+        <rect x="176" y="102" width="16" height="48" fill="#22c55e" rx="1.5"/>
+        <rect x="194" y="112" width="16" height="38" fill="#4ade80" rx="1.5"/>
+        <rect x="212" y="108" width="16" height="42" fill="#4ade80" rx="1.5"/>
+        <rect x="230" y="98" width="16" height="52" fill="#22c55e" rx="1.5"/>
+        <rect x="248" y="115" width="16" height="35" fill="#86efac" rx="1.5"/>
+        <rect x="266" y="118" width="16" height="32" fill="#86efac" rx="1.5"/>
+        <rect x="284" y="110" width="16" height="40" fill="#4ade80" rx="1.5"/>
+        <!-- X-axis label -->
+        <text x="172" y="186" font-size="10" fill="#374151" text-anchor="middle" font-weight="600">Time (months/years)</text>
+      </svg>
+    </div>
     <div class="key-box">
       <b>Shape:</b> Fluctuates around a stable baseline — no single peak<br>
       <b>Baseline:</b> Expected background rate for this population<br>
-      <b>Normal range (green band):</b> Expected fluctuation — no outbreak<br>
-      <b>Epidemic threshold:</b> Red dashes — cases crossing this trigger investigation<br>
+      <b>Epidemic threshold:</b> Red dashes — cases above this trigger investigation<br>
       <b>Examples:</b> Malaria in endemic zones, TB, seasonal flu baseline
     </div>
   </div>
@@ -4828,20 +4831,21 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
 </div>
 
 <!-- Legend row -->
-<div style="padding: 4px 16px 12px 16px; display: flex; gap: 24px; font-size: 11px; color: #6b7280; flex-wrap: wrap;">
-  <div style="display:flex;align-items:center;gap:6px;">
-    <svg width="30" height="10"><line x1="0" y1="5" x2="30" y2="5" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="5,3"/></svg>
+<div class="legend-row">
+  <div class="legend-item">
+    <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="5,3"/></svg>
     Endemic baseline — expected background case count
   </div>
-  <div style="display:flex;align-items:center;gap:6px;">
-    <svg width="30" height="10"><line x1="0" y1="5" x2="30" y2="5" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="4,3"/></svg>
+  <div class="legend-item">
+    <svg width="32" height="10"><line x1="0" y1="5" x2="32" y2="5" stroke="#dc2626" stroke-width="1.3" stroke-dasharray="4,3"/></svg>
     Epidemic threshold — cases above this warrant investigation
   </div>
 </div>
+
 </body>
 </html>
 """
-        _comp4.html(four_panel_html, height=950, scrolling=True)
+        _comp4.html(four_panel_html, height=1100, scrolling=True)
 
         st.markdown("""
 **Reading the baseline:** The dotted gray line represents the **expected endemic level** — how many cases occur in any given time period without an unusual event. Cases above the baseline represent excess cases attributable to the outbreak or epidemic. An **epidemic threshold** (red dashes, shown in the endemic panel) represents one possible alert level — a common teaching heuristic uses 2 standard deviations above the historical mean, though real surveillance systems use varied approaches. When cases cross the threshold, formal outbreak investigation is triggered.

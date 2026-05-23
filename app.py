@@ -481,9 +481,9 @@ Remove or modify any one element, and the disease dynamic changes.
         import streamlit.components.v1 as _tri_comp
         _tri_comp.html("""
 <div style="font-family:sans-serif;text-align:center;padding:10px 0;">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 380" width="500" height="380">
-  <!-- Title rendered as SVG text with white halo for guaranteed contrast in both light AND dark mode -->
-  <text x="250" y="20" font-size="15" font-weight="700" fill="#475569" stroke="white" stroke-width="3" paint-order="stroke" text-anchor="middle">The Epidemiology Triangle</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 410" width="500" height="410">
+  <!-- Title: mid-tone slate reads on both light and dark backgrounds -->
+  <text x="250" y="22" font-size="16" font-weight="700" fill="#64748b" text-anchor="middle">The Epidemiology Triangle</text>
 
   <!-- Triangle fill -->
   <polygon points="250,68 40,340 460,340" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
@@ -512,21 +512,24 @@ Remove or modify any one element, and the disease dynamic changes.
   <text x="250" y="225" font-size="13" font-weight="700" fill="#f57f17" text-anchor="middle">TIME</text>
   <text x="250" y="242" font-size="10" fill="#999" text-anchor="middle">When it unfolds</text>
 
-  <!-- Arrows: TIME → vertices -->
+  <!-- Arrows: TIME → vertices. Endpoints shortened so arrowheads don't overlap box corners -->
   <defs>
     <marker id="arr" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
       <path d="M0,0 L9,4.5 L0,9 Z" fill="#f9a825"/>
     </marker>
   </defs>
-  <line x1="250" y1="194" x2="250" y2="106" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
-  <line x1="192" y1="242" x2="118" y2="324" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
-  <line x1="308" y1="242" x2="382" y2="324" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- Arrow to AGENT (top): tip stops just above the box -->
+  <line x1="250" y1="194" x2="250" y2="105" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- Arrow to HOST (bottom-left): tip stops short of the box corner -->
+  <line x1="196" y1="244" x2="135" y2="316" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <!-- Arrow to ENVIRONMENT (bottom-right): tip stops short of the box corner -->
+  <line x1="304" y1="244" x2="365" y2="316" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
 
-  <!-- Caption with same white-halo treatment -->
-  <text x="250" y="375" font-size="10" fill="#64748b" stroke="white" stroke-width="2.5" paint-order="stroke" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
+  <!-- Caption: increased font size, moved down to clear the bottom boxes -->
+  <text x="250" y="395" font-size="11" fill="#64748b" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
 </svg>
 </div>
-        """, height=420, scrolling=False)
+        """, height=440, scrolling=False)
 
         st.markdown("""
 | Element | Definition | Key factors |

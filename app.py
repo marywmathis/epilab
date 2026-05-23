@@ -3011,41 +3011,235 @@ A high-quality RCT in volunteers may have *excellent* internal validity (rigorou
         st.subheader("Information Bias")
         st.markdown("Information bias (also called **misclassification bias**) occurs when exposure or outcome is measured incorrectly. The consequences depend on whether the error is the same in all groups (non-differential) or differs between groups (differential).")
 
+        # ─────────────── NON-DIFFERENTIAL MISCLASSIFICATION ───────────────
         with st.expander("📊 Non-Differential Misclassification", expanded=True):
             st.markdown("""
 **What it is:** Measurement error that is **the same** in exposed and unexposed groups (or cases and controls). The error is random with respect to the other variable.
 
-**Effect on the result:** Biases the measure of association **toward the null** (toward RR = 1 or OR = 1). You underestimate the true association. A finding of "no association" could be real — or it could be a true association that's been attenuated by non-differential misclassification.
+**Effect on the result:** **Usually biases the measure of association toward the null** (toward RR = 1 or OR = 1). You underestimate the true association. A finding of "no association" could be real — or it could be a true association that's been attenuated by non-differential misclassification.
 
-**Example:** A self-reported physical activity questionnaire that systematically under-reports activity in *both* high-risk and low-risk individuals. The resulting OR or RR will be closer to 1 than the truth.
-
-**Key insight:** Even if measurement error is random, it still biases results — it just biases them in a predictable direction (toward null).
+*Technical nuance:* For a dichotomous exposure with non-differential error, this is reliably true. With more than two exposure categories or with extreme error rates, exceptions can occur — but for intro-level interpretation, the "toward null" rule is the right anchor.
             """)
 
+            # Causal-flow diagram: error applied equally to both groups → groups blur together
+            nondiff_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 220" style="width:100%;max-width:700px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+
+  <!-- LEFT: True groups (distinct) -->
+  <text x="100" y="22" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">TRUE EXPOSURE STATUS</text>
+  <rect x="20" y="34" width="160" height="44" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="100" y="52" font-size="11" font-weight="700" fill="#1e40af" text-anchor="middle">Truly exposed</text>
+  <text x="100" y="68" font-size="10" fill="#1e3a8a" text-anchor="middle">(distinct group)</text>
+  <rect x="20" y="92" width="160" height="44" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="100" y="110" font-size="11" font-weight="700" fill="#14532d" text-anchor="middle">Truly unexposed</text>
+  <text x="100" y="126" font-size="10" fill="#15803d" text-anchor="middle">(distinct group)</text>
+
+  <!-- True RR labeled below -->
+  <text x="100" y="160" font-size="11" font-weight="700" fill="#dc2626" text-anchor="middle">True RR = 3.0</text>
+  <text x="100" y="174" font-size="10" font-style="italic" fill="#7f1d1d" text-anchor="middle">strong real association</text>
+
+  <!-- MIDDLE: Measurement filter (equal error) -->
+  <text x="350" y="22" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">MEASUREMENT ERROR APPLIED EQUALLY</text>
+  <rect x="220" y="60" width="260" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="350" y="82" font-size="11" font-weight="700" fill="#78350f" text-anchor="middle">Same misclassification rate</text>
+  <text x="350" y="98" font-size="11" font-weight="700" fill="#78350f" text-anchor="middle">in both groups</text>
+  <text x="350" y="118" font-size="10" font-style="italic" fill="#78350f" text-anchor="middle">e.g., 20% of exposed mislabeled unexposed</text>
+  <text x="350" y="132" font-size="10" font-style="italic" fill="#78350f" text-anchor="middle">AND 20% of unexposed mislabeled exposed</text>
+
+  <!-- Arrows from groups to filter -->
+  <line x1="180" y1="56" x2="225" y2="80" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <line x1="180" y1="114" x2="225" y2="120" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- RIGHT: Observed (blurred) groups -->
+  <text x="600" y="22" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">WHAT YOU OBSERVE</text>
+  <rect x="520" y="34" width="160" height="44" rx="6" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+  <text x="600" y="52" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">"Exposed" group</text>
+  <text x="600" y="68" font-size="10" fill="#475569" text-anchor="middle">(mixed in some truly unexposed)</text>
+  <rect x="520" y="92" width="160" height="44" rx="6" fill="#e2e8f0" stroke="#64748b" stroke-width="1.5"/>
+  <text x="600" y="110" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">"Unexposed" group</text>
+  <text x="600" y="126" font-size="10" fill="#475569" text-anchor="middle">(mixed in some truly exposed)</text>
+
+  <!-- Arrows from filter to observed -->
+  <line x1="475" y1="80" x2="520" y2="56" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <line x1="475" y1="120" x2="520" y2="114" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- Observed RR -->
+  <text x="600" y="160" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">Observed RR = 1.8</text>
+  <text x="600" y="174" font-size="10" font-style="italic" fill="#92400e" text-anchor="middle">attenuated toward 1</text>
+
+  <!-- Bottom caption -->
+  <text x="350" y="206" font-size="11" font-style="italic" fill="#1f2937" text-anchor="middle">Equal error in both groups → groups blur together → RR moves toward the null (RR = 1)</text>
+</svg>"""
+            import streamlit.components.v1 as _info_comp
+            _info_comp.html(nondiff_svg, height=240, scrolling=False)
+
+            st.markdown("""
+**Example:** A self-reported physical activity questionnaire that systematically under-reports activity in *both* high-risk and low-risk individuals. The resulting OR or RR will be closer to 1 than the truth.
+
+**Key insight:** Even if measurement error is random, it still biases results — it just biases them in a predictable direction (toward null). This is *predictable distortion*, which is much easier to reason about than the alternative.
+            """)
+
+        # ─────────────── DIFFERENTIAL MISCLASSIFICATION ───────────────
         with st.expander("⚠️ Differential Misclassification"):
             st.markdown("""
 **What it is:** Measurement error that **differs** between the groups being compared. The most common form is **recall bias** in case-control studies.
 
-**Effect on the result:** Can bias the measure of association in either direction — away from or toward the null. The direction depends on the specific pattern of error. This is more dangerous than non-differential misclassification because you can't predict which way it goes.
+**Effect on the result:** Can bias the measure of association in **either direction** — away from or toward the null. The direction depends on the specific pattern of error. This is more dangerous than non-differential misclassification because **you cannot predict which way it goes**.
+            """)
 
-**Recall bias (classic example):** In a case-control study of birth defects, mothers of affected children (cases) may search their memories more thoroughly for exposures during pregnancy than mothers of healthy children (controls). Cases over-report past exposures compared to controls — inflating the OR even if no true association exists.
+            # Causal-flow diagram: asymmetric error creates artificial association
+            diff_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 230" style="width:100%;max-width:700px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+
+  <!-- Title -->
+  <text x="350" y="22" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">RECALL BIAS — classic example of differential misclassification</text>
+
+  <!-- LEFT: True past exposures (same in both groups) -->
+  <rect x="20" y="40" width="200" height="70" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="120" y="58" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">True past exposure</text>
+  <text x="120" y="74" font-size="11" font-weight="700" fill="#334155" text-anchor="middle">(EQUAL in both groups)</text>
+  <text x="120" y="94" font-size="10" font-style="italic" fill="#475569" text-anchor="middle">No true association exists</text>
+
+  <!-- Arrow splits to cases and controls -->
+  <line x1="225" y1="60" x2="280" y2="40" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <line x1="225" y1="90" x2="280" y2="110" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <!-- TOP MIDDLE: Cases recall more -->
+  <rect x="280" y="30" width="200" height="50" rx="6" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="380" y="48" font-size="11" font-weight="700" fill="#991b1b" text-anchor="middle">CASES (have disease)</text>
+  <text x="380" y="64" font-size="10" fill="#7f1d1d" text-anchor="middle">recall and report MORE past exposure</text>
+  <text x="380" y="76" font-size="10" font-style="italic" fill="#7f1d1d" text-anchor="middle">(motivated to find explanation)</text>
+
+  <!-- BOTTOM MIDDLE: Controls recall less -->
+  <rect x="280" y="100" width="200" height="50" rx="6" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="380" y="118" font-size="11" font-weight="700" fill="#1e40af" text-anchor="middle">CONTROLS (no disease)</text>
+  <text x="380" y="134" font-size="10" fill="#1e3a8a" text-anchor="middle">recall and report LESS past exposure</text>
+  <text x="380" y="146" font-size="10" font-style="italic" fill="#1e3a8a" text-anchor="middle">(no reason to search memory)</text>
+
+  <!-- Right side: artificial association -->
+  <line x1="485" y1="55" x2="540" y2="80" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <line x1="485" y1="125" x2="540" y2="90" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+
+  <rect x="540" y="60" width="140" height="60" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="610" y="80" font-size="11" font-weight="700" fill="#78350f" text-anchor="middle">ARTIFICIAL</text>
+  <text x="610" y="96" font-size="11" font-weight="700" fill="#78350f" text-anchor="middle">association</text>
+  <text x="610" y="112" font-size="10" font-style="italic" fill="#78350f" text-anchor="middle">OR inflated away from null</text>
+
+  <!-- Caption -->
+  <text x="350" y="180" font-size="11" font-style="italic" fill="#1f2937" text-anchor="middle">Asymmetric measurement error creates apparent association that doesn't exist in reality —</text>
+  <text x="350" y="194" font-size="11" font-style="italic" fill="#1f2937" text-anchor="middle">but the direction is unpredictable: depending on error pattern, it can inflate OR or shrink it.</text>
+  <text x="350" y="212" font-size="11" font-weight="700" fill="#7f1d1d" text-anchor="middle">⚠️ You usually cannot predict which way differential misclassification pushes your estimate.</text>
+</svg>"""
+            _info_comp.html(diff_svg, height=250, scrolling=False)
+
+            st.markdown("""
+**Recall bias (classic example):** In a case-control study of birth defects, mothers of affected children (cases) may search their memories more thoroughly for exposures during pregnancy than mothers of healthy children (controls). Cases over-report past exposures compared to controls — **inflating the OR even if no true association exists**.
 
 **Interviewer bias:** If interviewers know who is a case vs. control (or exposed vs. unexposed), they may probe more thoroughly for certain exposures — introducing systematic differential error.
 
-**How to minimize:** Blind interviewers to case/control status; use objective biomarkers instead of self-report; use standardized instruments.
+**How to minimize:** Blind interviewers to case/control status; use objective biomarkers instead of self-report; use standardized instruments; collect exposure data before outcome is known (prospective designs).
             """)
 
+        # ─────────────── COMPARISON TABLE — refined per critique ───────────────
         with st.expander("🔬 Visual: Non-Differential vs. Differential"):
             st.markdown("""
 | Feature | Non-Differential | Differential |
 |---|---|---|
 | Error equal across groups? | ✅ Yes | ❌ No |
-| Direction of bias | Toward null (attenuates) | Either direction |
+| Direction of bias | Usually toward null (attenuates) | Either direction |
 | Predictability | Predictable | Unpredictable |
-| Most common in | Cohort studies (outcome misclassification) | Case-control (recall bias) |
-| Can produce false positive? | No | Yes |
-| Can cause false negative? | Yes | Yes |
+| Classic example | Cohort with imperfect exposure assessment | Case-control with recall bias |
+| Can exaggerate association? | Rarely | Yes |
+| Can mask a true association? | Yes (toward null) | Yes (any direction) |
             """)
+
+        st.divider()
+
+        # ─────────────── RELIABILITY VS VALIDITY — TARGET BOARD VISUAL ───────────────
+        st.markdown("#### 🎯 Reliability vs. Validity — The Target Visual")
+        st.markdown("Information bias has two underlying sources: **reliability** (consistency of measurement) and **validity** (accuracy of measurement). The classic target-board analogy makes the distinction immediate:")
+
+        target_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 240" style="width:100%;max-width:720px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+
+  <!-- Target 1: Reliable AND Valid (bullseye, tight) -->
+  <g transform="translate(60,40)">
+    <circle cx="50" cy="50" r="50" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="34" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="18" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="6" fill="#dc2626"/>
+    <!-- Shots tight + on center -->
+    <circle cx="48" cy="48" r="3" fill="#1f2937"/>
+    <circle cx="52" cy="50" r="3" fill="#1f2937"/>
+    <circle cx="50" cy="52" r="3" fill="#1f2937"/>
+    <circle cx="47" cy="51" r="3" fill="#1f2937"/>
+  </g>
+  <text x="110" y="160" font-size="12" font-weight="700" fill="#15803d" text-anchor="middle">✅ Reliable AND Valid</text>
+  <text x="110" y="178" font-size="10" fill="#475569" text-anchor="middle">Consistent + accurate</text>
+  <text x="110" y="192" font-size="10" fill="#475569" text-anchor="middle">No misclassification</text>
+  <text x="110" y="216" font-size="9" font-style="italic" fill="#64748b" text-anchor="middle">Goal of any good measure</text>
+
+  <!-- Target 2: Reliable but NOT Valid (tight but off-center) -->
+  <g transform="translate(220,40)">
+    <circle cx="50" cy="50" r="50" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="34" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="18" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="6" fill="#dc2626"/>
+    <!-- Shots tight but off-center -->
+    <circle cx="78" cy="28" r="3" fill="#1f2937"/>
+    <circle cx="82" cy="30" r="3" fill="#1f2937"/>
+    <circle cx="76" cy="32" r="3" fill="#1f2937"/>
+    <circle cx="80" cy="33" r="3" fill="#1f2937"/>
+  </g>
+  <text x="270" y="160" font-size="12" font-weight="700" fill="#b45309" text-anchor="middle">⚠️ Reliable but NOT Valid</text>
+  <text x="270" y="178" font-size="10" fill="#475569" text-anchor="middle">Consistent but wrong</text>
+  <text x="270" y="192" font-size="10" fill="#475569" text-anchor="middle">→ Systematic bias</text>
+  <text x="270" y="216" font-size="9" font-style="italic" fill="#64748b" text-anchor="middle">Differential misclassification</text>
+
+  <!-- Target 3: Unreliable but Valid (scattered, average on center) -->
+  <g transform="translate(380,40)">
+    <circle cx="50" cy="50" r="50" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="34" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="18" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="6" fill="#dc2626"/>
+    <!-- Shots scattered but centered on average -->
+    <circle cx="30" cy="35" r="3" fill="#1f2937"/>
+    <circle cx="72" cy="38" r="3" fill="#1f2937"/>
+    <circle cx="42" cy="68" r="3" fill="#1f2937"/>
+    <circle cx="65" cy="62" r="3" fill="#1f2937"/>
+  </g>
+  <text x="430" y="160" font-size="12" font-weight="700" fill="#7c3aed" text-anchor="middle">⚠️ Unreliable but Valid</text>
+  <text x="430" y="178" font-size="10" fill="#475569" text-anchor="middle">Scattered but centered</text>
+  <text x="430" y="192" font-size="10" fill="#475569" text-anchor="middle">→ Random error</text>
+  <text x="430" y="216" font-size="9" font-style="italic" fill="#64748b" text-anchor="middle">Non-differential misclassification</text>
+
+  <!-- Target 4: Neither -->
+  <g transform="translate(540,40)">
+    <circle cx="50" cy="50" r="50" fill="#fef2f2" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="34" fill="#fee2e2" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="18" fill="#fecaca" stroke="#dc2626" stroke-width="1.5"/>
+    <circle cx="50" cy="50" r="6" fill="#dc2626"/>
+    <!-- Shots scattered AND off-center -->
+    <circle cx="20" cy="22" r="3" fill="#1f2937"/>
+    <circle cx="78" cy="25" r="3" fill="#1f2937"/>
+    <circle cx="15" cy="78" r="3" fill="#1f2937"/>
+    <circle cx="85" cy="80" r="3" fill="#1f2937"/>
+  </g>
+  <text x="590" y="160" font-size="12" font-weight="700" fill="#991b1b" text-anchor="middle">❌ Neither</text>
+  <text x="590" y="178" font-size="10" fill="#475569" text-anchor="middle">Scattered AND wrong</text>
+  <text x="590" y="192" font-size="10" fill="#475569" text-anchor="middle">→ Compound error</text>
+  <text x="590" y="216" font-size="9" font-style="italic" fill="#64748b" text-anchor="middle">Worst-case measurement</text>
+
+</svg>"""
+        _info_comp.html(target_svg, height=260, scrolling=False)
+
+        st.markdown("""
+**The two questions to ask of any measurement:**
+- **Reliability:** If I measured this thing again, would I get the same value? (Are my shots tightly clustered?)
+- **Validity:** Is what I'm measuring actually the right thing? (Are my shots centered on the bullseye?)
+
+A measure can be reliable without being valid (consistent but systematically wrong → **differential misclassification**) or valid without being reliable (centered on average but scattered → **non-differential misclassification**). The two failures produce different bias signatures and require different fixes. This connects directly to the Reliability & Validity section, where these concepts get formally measured (kappa, Cronbach's α, ICC).
+        """)
 
     elif bias_section == "3️⃣ Bias Direction Exercise":
         st.subheader("Bias Direction Exercise")

@@ -2765,43 +2765,247 @@ elif current_page == "bias":
         st.subheader("Selection Bias")
         st.markdown("Selection bias occurs when **who is included in the study** is related to both exposure and outcome, creating a distorted sample that doesn't represent the target population.")
 
+        # Hero callout: the structural insight that unifies all four examples below
+        st.markdown("""
+<div style="background:#eef2ff;border-left:4px solid #4f46e5;padding:14px 18px;margin:10px 0 18px 0;border-radius:0 8px 8px 0;">
+<div style="font-size:13px;font-weight:700;color:#312e81;text-transform:uppercase;letter-spacing:0.4px;">The structural insight</div>
+<div style="font-size:14px;color:#312e81;line-height:1.65;margin-top:4px;">
+Selection bias is fundamentally about <b>filters</b>. A selection process acts as a filter on your population; when that filter depends on both exposure <i>and</i> outcome, the sample you end up studying no longer represents the population you wanted to study. <b>Conditioning on a filter creates an artificial association</b> — even when no real association exists.
+</div>
+</div>
+        """, unsafe_allow_html=True)
+
+        # ─────────────── BERKSON'S BIAS ───────────────
         with st.expander("🏥 Berkson's Bias (Hospital Admission Bias)", expanded=True):
             st.markdown("""
 **What it is:** When both exposure and disease independently increase the probability of hospital admission, hospitalized patients show a spurious negative association between exposure and disease — even if no true association exists in the general population.
 
-**Classic example:** Studying whether respiratory disease and bone fractures are associated. In the general population, they're unrelated. But in a hospital, patients with *only* respiratory disease (no fracture) and patients with *only* a fracture (no respiratory disease) are both admitted. Patients with both conditions are also there — but so are those with neither, just less commonly. The hospital sample distorts the apparent association.
+**The deep causal insight:** Hospitalization acts like a **filter** that preferentially selects certain combinations of exposure and disease. **Conditioning on hospitalization creates an artificial association** between two things that are independent in the general population. This is called *collider bias* in causal inference language.
+            """)
+
+            # Causal structure diagram
+            berkson_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 200" style="width:100%;max-width:700px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+  <!-- General population box (top) -->
+  <rect x="20" y="14" width="660" height="50" rx="6" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="350" y="33" font-size="12" font-weight="700" fill="#475569" text-anchor="middle">General Population — no association between respiratory disease and bone fractures</text>
+  <text x="350" y="51" font-size="11" fill="#64748b" text-anchor="middle">Respiratory disease ↮ Bone fracture (independent)</text>
+
+  <!-- Arrows down: both conditions increase hospitalization -->
+  <text x="180" y="84" font-size="11" font-weight="700" fill="#0369a1" text-anchor="middle">Respiratory disease</text>
+  <line x1="180" y1="92" x2="280" y2="115" stroke="#0369a1" stroke-width="2" marker-end="url(#arrBlue)"/>
+
+  <text x="520" y="84" font-size="11" font-weight="700" fill="#dc2626" text-anchor="middle">Bone fracture</text>
+  <line x1="520" y1="92" x2="420" y2="115" stroke="#dc2626" stroke-width="2" marker-end="url(#arrRed)"/>
+
+  <defs>
+    <marker id="arrBlue" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#0369a1"/>
+    </marker>
+    <marker id="arrRed" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- Hospital filter box -->
+  <rect x="240" y="118" width="220" height="42" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="350" y="138" font-size="12" font-weight="700" fill="#78350f" text-anchor="middle">🏥 Hospital admission (the filter)</text>
+  <text x="350" y="153" font-size="10" fill="#78350f" text-anchor="middle" font-style="italic">Both conditions independently increase admission</text>
+
+  <!-- Output: spurious association in hospital sample -->
+  <text x="350" y="180" font-size="11" font-weight="700" fill="#991b1b" text-anchor="middle">In the hospital sample: SPURIOUS NEGATIVE ASSOCIATION between respiratory disease and fracture</text>
+  <text x="350" y="194" font-size="10" font-style="italic" fill="#7f1d1d" text-anchor="middle">↑ The association is an artifact of the filter, not a feature of biology</text>
+</svg>"""
+            import streamlit.components.v1 as _bias_comp
+            _bias_comp.html(berkson_svg, height=220, scrolling=False)
+
+            st.markdown("""
+**Classic example:** In the general population, respiratory disease and bone fractures are unrelated. But in a hospital, patients with respiratory disease (no fracture) and patients with a fracture (no respiratory disease) are both admitted. The combined sample shows a spurious *negative* association because hospitalization "fills in" patients with only one condition, while in the general population most people have neither.
 
 **Study designs most affected:** Case-control studies using hospital-based controls.
+
+**Directional intuition:** Berkson's bias can create *spurious associations* — usually negative — between truly independent exposures.
 
 **How to minimize:** Use population-based controls rather than hospital controls.
             """)
 
+        # ─────────────── HEALTHY WORKER EFFECT ───────────────
         with st.expander("🏃 Healthy Worker Effect"):
             st.markdown("""
-**What it is:** Employed workers are systematically healthier than the general population because people who are very ill, disabled, or near death are less likely to be employed. When occupational cohorts are compared to the general population, mortality appears lower — not because of any protective effect of the job, but because of who gets selected into employment.
+**What it is:** Employed workers are systematically healthier than the general population because people who are very ill, disabled, or near death are less likely to be employed. When occupational cohorts are compared to the general population, mortality appears lower — not because of any protective effect of the job, but because of *who gets selected into employment*.
+            """)
 
+            # Causal structure diagram
+            hwe_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 180" style="width:100%;max-width:700px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+
+  <!-- General population on left -->
+  <rect x="20" y="20" width="180" height="120" rx="8" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+  <text x="110" y="42" font-size="12" font-weight="700" fill="#334155" text-anchor="middle">General population</text>
+  <text x="110" y="62" font-size="10" fill="#64748b" text-anchor="middle">Healthy people</text>
+  <text x="110" y="78" font-size="10" fill="#64748b" text-anchor="middle">+ Mildly ill</text>
+  <text x="110" y="94" font-size="10" fill="#64748b" text-anchor="middle">+ Moderately ill</text>
+  <text x="110" y="110" font-size="10" fill="#64748b" text-anchor="middle">+ Severely ill / disabled</text>
+  <text x="110" y="126" font-size="10" fill="#64748b" text-anchor="middle">+ Near death</text>
+
+  <!-- Filter arrow -->
+  <line x1="210" y1="80" x2="290" y2="80" stroke="#f59e0b" stroke-width="3" marker-end="url(#arrAmber)"/>
+  <text x="250" y="62" font-size="10" font-weight="700" fill="#b45309" text-anchor="middle">Employment</text>
+  <text x="250" y="75" font-size="10" font-weight="700" fill="#b45309" text-anchor="middle">filter</text>
+  <text x="250" y="100" font-size="9" fill="#b45309" text-anchor="middle" font-style="italic">excludes severely</text>
+  <text x="250" y="113" font-size="9" fill="#b45309" text-anchor="middle" font-style="italic">ill and disabled</text>
+
+  <defs>
+    <marker id="arrAmber" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#f59e0b"/>
+    </marker>
+  </defs>
+
+  <!-- Worker cohort on right -->
+  <rect x="300" y="40" width="180" height="80" rx="8" fill="#dcfce7" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="390" y="62" font-size="12" font-weight="700" fill="#14532d" text-anchor="middle">Worker cohort</text>
+  <text x="390" y="82" font-size="10" fill="#15803d" text-anchor="middle">Healthy people</text>
+  <text x="390" y="98" font-size="10" fill="#15803d" text-anchor="middle">+ Mildly ill</text>
+  <text x="390" y="114" font-size="10" fill="#15803d" text-anchor="middle">(severely ill excluded)</text>
+
+  <!-- Result -->
+  <text x="600" y="55" font-size="11" font-weight="700" fill="#1e40af" text-anchor="middle">Compared to</text>
+  <text x="600" y="70" font-size="11" font-weight="700" fill="#1e40af" text-anchor="middle">general pop:</text>
+  <text x="600" y="92" font-size="14" font-weight="700" fill="#dc2626" text-anchor="middle">SMR &lt; 1</text>
+  <text x="600" y="110" font-size="9" font-style="italic" fill="#7f1d1d" text-anchor="middle">→ harmful exposures</text>
+  <text x="600" y="122" font-size="9" font-style="italic" fill="#7f1d1d" text-anchor="middle">look safer than they are</text>
+
+  <line x1="485" y1="80" x2="540" y2="80" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,3"/>
+</svg>"""
+            _bias_comp.html(hwe_svg, height=200, scrolling=False)
+
+            st.markdown("""
 **Effect on SMR:** Causes SMR < 1, potentially masking true occupational hazards.
+
+**Directional intuition:** **The Healthy Worker Effect usually makes harmful exposures look safer than they are.** An asbestos worker cohort may show lower-than-expected lung cancer mortality compared to the general population — not because asbestos is protective, but because the cohort excludes everyone who was too sick to work. This is one of the most consequential biases in occupational epidemiology.
 
 **How to minimize:** Compare workers to other workers (internal comparison) rather than to the general population.
             """)
 
+        # ─────────────── LOSS TO FOLLOW-UP ───────────────
         with st.expander("📉 Loss to Follow-Up / Non-Response Bias"):
             st.markdown("""
 **What it is:** Participants who drop out of a study or refuse to participate differ systematically from those who stay. If dropout is related to both exposure and outcome, the remaining sample is not representative.
 
-**Example:** In a cohort studying smoking and cancer, heavy smokers who develop early symptoms may be more likely to drop out (due to illness) before the outcome is recorded. This could underestimate the true RR.
+**The conceptual rupture:** **Remaining sample ≠ original cohort.** The cohort you end up analyzing is not the cohort you randomized or enrolled. Whatever you learn applies to the sample that stayed — not to the population the original sample was meant to represent.
+            """)
+
+            # Loss to follow-up flow diagram
+            ltfu_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 170" style="width:100%;max-width:700px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+
+  <!-- Original cohort -->
+  <rect x="20" y="40" width="200" height="80" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="2"/>
+  <text x="120" y="62" font-size="12" font-weight="700" fill="#1e3a8a" text-anchor="middle">Original cohort</text>
+  <text x="120" y="82" font-size="11" fill="#1e40af" text-anchor="middle">All enrolled participants</text>
+  <text x="120" y="98" font-size="10" fill="#1e40af" text-anchor="middle">(target of inference)</text>
+  <text x="120" y="112" font-size="14" font-weight="700" fill="#1e3a8a" text-anchor="middle">n = 1000</text>
+
+  <!-- Filter arrow -->
+  <line x1="230" y1="80" x2="310" y2="80" stroke="#dc2626" stroke-width="3" marker-end="url(#arrRedLtfu)"/>
+  <text x="270" y="62" font-size="11" font-weight="700" fill="#991b1b" text-anchor="middle">Differential</text>
+  <text x="270" y="76" font-size="11" font-weight="700" fill="#991b1b" text-anchor="middle">dropout</text>
+  <text x="270" y="100" font-size="9" fill="#991b1b" text-anchor="middle" font-style="italic">sicker patients</text>
+  <text x="270" y="112" font-size="9" fill="#991b1b" text-anchor="middle" font-style="italic">drop out faster</text>
+
+  <defs>
+    <marker id="arrRedLtfu" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#dc2626"/>
+    </marker>
+  </defs>
+
+  <!-- Remaining sample -->
+  <rect x="320" y="40" width="200" height="80" rx="8" fill="#fef3c7" stroke="#f59e0b" stroke-width="2"/>
+  <text x="420" y="62" font-size="12" font-weight="700" fill="#78350f" text-anchor="middle">Remaining sample</text>
+  <text x="420" y="82" font-size="11" fill="#92400e" text-anchor="middle">Completers only</text>
+  <text x="420" y="98" font-size="10" fill="#92400e" text-anchor="middle">(what you actually analyze)</text>
+  <text x="420" y="112" font-size="14" font-weight="700" fill="#78350f" text-anchor="middle">n = 720</text>
+
+  <!-- "Not equal to" symbol -->
+  <text x="600" y="76" font-size="32" font-weight="700" fill="#dc2626" text-anchor="middle">≠</text>
+  <text x="600" y="100" font-size="11" font-weight="700" fill="#7f1d1d" text-anchor="middle">Different</text>
+  <text x="600" y="113" font-size="11" font-weight="700" fill="#7f1d1d" text-anchor="middle">populations</text>
+
+  <!-- Caption -->
+  <text x="350" y="148" font-size="11" font-style="italic" fill="#475569" text-anchor="middle">The cohort you analyze is not the cohort you enrolled.</text>
+  <text x="350" y="160" font-size="10" font-style="italic" fill="#64748b" text-anchor="middle">Conclusions apply to "people who stayed," not "people in the target population."</text>
+</svg>"""
+            _bias_comp.html(ltfu_svg, height=190, scrolling=False)
+
+            st.markdown("""
+**Example:** In a cohort studying smoking and cancer, heavy smokers who develop early symptoms may be more likely to drop out (due to illness) before the outcome is recorded. This could **underestimate** the true RR.
 
 **Non-response bias:** Survey participants who respond tend to be more health-conscious, educated, or concerned about the topic than non-responders — biasing prevalence estimates.
 
-**How to minimize:** Track reasons for dropout; compare baseline characteristics of dropouts vs. completers; maximize follow-up rates.
+**Directional intuition:** When the sickest participants drop out faster, **harmful exposures appear less harmful than they really are**. When dropout depends on the outcome itself, prevalence and incidence estimates can be biased in either direction depending on which subgroup drops out.
+
+**How to minimize:** Track reasons for dropout; compare baseline characteristics of dropouts vs. completers; maximize follow-up rates; use sensitivity analyses that test best-case and worst-case assumptions about missing outcomes.
             """)
 
+        # ─────────────── VOLUNTEER / SELF-SELECTION ───────────────
         with st.expander("🔄 Volunteer / Self-Selection Bias"):
             st.markdown("""
-**What it is:** People who volunteer for studies tend to be healthier, more educated, and more health-conscious than those who don't. This limits generalizability (external validity) even if the internal results are valid.
+**What it is:** People who volunteer for studies tend to be healthier, more educated, and more health-conscious than those who don't. **This primarily threatens external validity (generalizability) — internal validity may remain intact.** A clinical trial in volunteers can still correctly tell you whether a treatment works *for that volunteer population*; it just can't tell you whether it will work the same way for the broader patient population.
 
-**Example:** Clinical trial volunteers often have fewer comorbidities, better adherence, and more social support than typical patients — so trial results may overestimate effectiveness in real-world practice.
+**Example:** Clinical trial volunteers often have fewer comorbidities, better adherence, and more social support than typical patients — so trial results may **overestimate effectiveness in real-world practice**.
+
+**Why the internal/external distinction matters:**
+- **Internal validity:** Was the study itself conducted correctly? Were the conclusions justified by the data observed in *this sample*?
+- **External validity:** Do the conclusions generalize to the population beyond this sample?
+
+A high-quality RCT in volunteers may have *excellent* internal validity (rigorous methods, unbiased comparison within the trial) and *limited* external validity (can't be directly applied to non-volunteer patients). This is why effectiveness studies in real-world populations often produce smaller effects than efficacy studies in volunteer trials.
+
+**Directional intuition:** Self-selection by motivated, healthier individuals typically **overestimates intervention effectiveness** when results are extrapolated to typical patients.
             """)
+
+        st.divider()
+
+        # ─────────────── DIRECTION OF BIAS SUMMARY ───────────────
+        st.markdown("#### 🎯 Direction of Bias — Predictive Intuition")
+        st.markdown("Advanced epidemiologic reasoning depends on predicting *which way* a bias pushes the result. Use this summary to develop directional intuition:")
+
+        st.markdown("""
+<table style="border-collapse:collapse;width:100%;margin-top:8px;font-family:-apple-system,sans-serif;font-size:13px;">
+<thead>
+  <tr style="background:#f3f4f6;">
+    <th style="border:1px solid #d1d5db;padding:10px 12px;text-align:left;font-weight:700;color:#1f2937;">Selection bias</th>
+    <th style="border:1px solid #d1d5db;padding:10px 12px;text-align:left;font-weight:700;color:#1f2937;">Typical direction of bias</th>
+    <th style="border:1px solid #d1d5db;padding:10px 12px;text-align:left;font-weight:700;color:#1f2937;">Validity threatened</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;background:#eff6ff;color:#1e3a8a;font-weight:700;">🏥 Berkson's bias</td>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;color:#374151;">Creates <b>spurious associations</b> — usually negative — between truly independent exposures</td>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;color:#374151;">Internal validity</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;background:#f0fdf4;color:#14532d;font-weight:700;">🏃 Healthy worker effect</td>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;color:#374151;"><b>Makes harmful exposures look safer</b> (SMR < 1, masks occupational hazards)</td>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;color:#374151;">Internal validity</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;background:#fffbeb;color:#78350f;font-weight:700;">📉 Loss to follow-up</td>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;color:#374151;">Usually <b>biases toward null</b> when sicker patients drop out; can go either direction depending on which subgroup is lost</td>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;color:#374151;">Internal validity</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;background:#fdf4ff;color:#6b21a8;font-weight:700;">🔄 Volunteer / self-selection</td>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;color:#374151;"><b>Inflates apparent effectiveness</b> when generalizing trial results to typical patients</td>
+    <td style="border:1px solid #d1d5db;padding:8px 12px;color:#374151;">External validity (generalizability)</td>
+  </tr>
+</tbody>
+</table>
+
+<div style="margin-top:14px;background:#f8fafc;border-left:3px solid #64748b;padding:12px 16px;border-radius:0 6px 6px 0;font-size:13px;color:#334155;line-height:1.6;">
+<b>The general rule:</b> When you suspect selection bias, ask yourself two questions: (1) Who got included that shouldn't have been? (2) Who got excluded that should have been included? The answers tell you what direction the bias pushes your estimate.
+</div>
+        """, unsafe_allow_html=True)
 
     elif bias_section == "2️⃣ Information Bias":
         st.subheader("Information Bias")

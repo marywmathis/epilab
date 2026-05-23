@@ -3837,22 +3837,24 @@ The crude estimate was being pulled toward the null by a confounder that worked 
     elif conf_section == "3️⃣ Effect Modification":
         st.subheader("Effect Modification (Interaction)")
         st.markdown("""
-Effect modification occurs when the **magnitude of the association between exposure and outcome differs across levels of a third variable**. Unlike confounding, effect modification is a real biological or social phenomenon — not a bias to be removed.
+Effect modification occurs when the **magnitude of the association between exposure and outcome differs across levels of a third variable**. Unlike confounding, effect modification is a real phenomenon — biological, social, or contextual — not a bias to be removed. *(It's worth noting: effect modification doesn't always reflect a pure biological mechanism. It can also arise from differences in access, measurement, competing risks, or healthcare utilization. The pattern is real; the underlying mechanism still needs to be reasoned about.)*
 
-**Key distinction:**
-- **Confounding** = distortion to be controlled/removed
-- **Effect modification** = a finding to be reported and understood
+**Key distinction — the two questions:**
+- **Confounding** asks: *"Is the association we're seeing distorted?"* → distortion to be controlled/removed
+- **Effect modification** asks: *"For whom does the exposure matter most?"* → a finding to be reported and understood
         """)
 
         with st.expander("Example: Aspirin & Heart Attack, Stratified by Sex", expanded=True):
             st.markdown("""
 Suppose aspirin reduces the risk of heart attack:
-- In men: RR = 0.6 (40% risk reduction)
-- In women: RR = 0.95 (5% risk reduction — essentially no effect)
+- In men: RR = 0.6 (40% risk reduction) → **aspirin appears strongly protective**
+- In women: RR = 0.95 (5% risk reduction) → **aspirin shows little benefit**
+
+*(Reminder: smaller RR = stronger protection when RR is below 1. RR = 0.6 means 40% lower risk in aspirin users compared to non-users.)*
 
 Sex **modifies** the effect of aspirin. The overall (crude) RR would be somewhere between these — misleading for both sexes. Reporting sex-stratified RRs is more informative than a single pooled estimate.
 
-**Effect modification on what scale?** Effect modification can occur on the additive scale (risk differences differ) or the multiplicative scale (risk ratios differ). These don't always agree — a variable can modify on one scale but not the other. Epidemiologists generally assess both.
+**Effect modification on what scale?** Effect modification can occur on the additive scale (risk differences differ) or the multiplicative scale (risk ratios differ). These don't always agree — a variable can modify on one scale but not the other. Epidemiologists generally assess both, and the additive scale is especially relevant for public health (it tells you how many cases would be prevented).
             """)
 
         with st.expander("How to Detect Effect Modification"):
@@ -3862,7 +3864,9 @@ Sex **modifies** the effect of aspirin. The overall (crude) RR would be somewher
 3. **Compare** stratum-specific estimates: if they differ substantially, effect modification is present
 4. **Statistical test:** Wald test or likelihood ratio test for interaction term in regression (p < 0.05 suggests effect modification)
 
-**Rule of thumb:** If stratum-specific estimates differ by >1.5-fold (for multiplicative measures) or by a clinically meaningful amount, report them separately rather than pooling.
+**Rule of thumb (use with caution):** If stratum-specific estimates differ by >1.5-fold (for multiplicative measures) or by a clinically meaningful amount, report them separately rather than pooling. **There is no universal cutoff** — judgments about effect modification depend on clinical and public health context, not just arithmetic.
+
+**Caveat about statistical interaction:** A statistically significant interaction term is *not* the same thing as a biologically or clinically meaningful interaction. Statistical interaction depends on sample size, scale (additive vs multiplicative), and modeling choices. A large study can produce a "significant" interaction that is too small to matter clinically; a small study can miss a real interaction. Always interpret the *magnitude* and *direction* of effect modification, not just the p-value.
             """)
 
         with st.expander("Confounding vs. Effect Modification — Quick Reference"):
@@ -3870,11 +3874,101 @@ Sex **modifies** the effect of aspirin. The overall (crude) RR would be somewher
 | Feature | Confounding | Effect Modification |
 |---|---|---|
 | What is it? | Distortion of the true association | Real variation in the association |
+| The question it answers | *"Is the association distorted?"* | *"For whom does the exposure matter most?"* |
 | Goal? | Remove it | Report it |
 | Stratum-specific measures | Similar across strata (after control) | Differ across strata |
 | Pooled estimate appropriate? | Yes, after adjustment | No — report separately |
 | Example | Age confounds occupation-mortality | Sex modifies aspirin effect |
             """)
+
+        # Visual comparison of stratum patterns — this is the conceptual heart
+        st.markdown("#### Visual Comparison — What the Strata Look Like")
+        st.markdown("The clearest way to distinguish confounding from effect modification is to look at the **pattern of stratum-specific estimates** relative to the crude estimate:")
+
+        import streamlit.components.v1 as _em_compare_comp
+        em_compare_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 380" style="width:100%;max-width:760px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;display:block;margin:0 auto;">
+
+  <!-- ============ LEFT PANEL: CONFOUNDING ============ -->
+  <rect x="20" y="20" width="340" height="340" rx="10" fill="#fff7ed" stroke="#ea580c" stroke-width="2"/>
+  <text x="190" y="48" font-size="15" font-weight="700" fill="#9a3412" text-anchor="middle">CONFOUNDING</text>
+  <text x="190" y="68" font-size="11" font-style="italic" fill="#9a3412" text-anchor="middle">Strata agree — both differ from crude</text>
+
+  <!-- Number line for confounding -->
+  <line x1="60" y1="240" x2="320" y2="240" stroke="#374151" stroke-width="2"/>
+  <line x1="190" y1="232" x2="190" y2="248" stroke="#9ca3af" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="190" y="270" font-size="10" fill="#6b7280" text-anchor="middle">RR = 1.0 (null)</text>
+
+  <!-- Crude estimate marker (confounding) - far from null -->
+  <circle cx="280" cy="120" r="8" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+  <text x="280" y="105" font-size="11" font-weight="700" fill="#7f1d1d" text-anchor="middle">Crude RR</text>
+  <text x="280" y="142" font-size="10" fill="#7f1d1d" text-anchor="middle">~2.5 (biased)</text>
+
+  <!-- Stratum 1 (close to truth) -->
+  <circle cx="160" cy="180" r="7" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2"/>
+  <text x="160" y="165" font-size="10" font-weight="600" fill="#1e3a8a" text-anchor="middle">Stratum 1</text>
+  <text x="160" y="200" font-size="9" fill="#1e3a8a" text-anchor="middle">RR ≈ 1.1</text>
+
+  <!-- Stratum 2 (also close to truth) -->
+  <circle cx="180" cy="200" r="7" fill="#1d4ed8" stroke="#1e3a8a" stroke-width="2"/>
+  <text x="220" y="200" font-size="10" font-weight="600" fill="#1e3a8a">Stratum 2: RR ≈ 1.2</text>
+
+  <!-- Arrow showing crude pulled away from truth -->
+  <path d="M 175 188 Q 230 145 270 125" stroke="#ea580c" stroke-width="2" fill="none" stroke-dasharray="5,3"/>
+  <text x="240" y="170" font-size="10" font-style="italic" fill="#9a3412">crude is distorted</text>
+
+  <!-- Interpretation box -->
+  <rect x="40" y="290" width="300" height="55" rx="6" fill="#fff" stroke="#ea580c" stroke-width="1"/>
+  <text x="190" y="308" font-size="11" font-weight="700" fill="#9a3412" text-anchor="middle">RR₁ ≈ RR₂, both ≠ crude</text>
+  <text x="190" y="325" font-size="10" fill="#7c2d12" text-anchor="middle">→ Adjust and report a single pooled</text>
+  <text x="190" y="338" font-size="10" fill="#7c2d12" text-anchor="middle">(Mantel-Haenszel or regression) estimate</text>
+
+  <!-- ============ RIGHT PANEL: EFFECT MODIFICATION ============ -->
+  <rect x="400" y="20" width="340" height="340" rx="10" fill="#f0fdf4" stroke="#15803d" stroke-width="2"/>
+  <text x="570" y="48" font-size="15" font-weight="700" fill="#14532d" text-anchor="middle">EFFECT MODIFICATION</text>
+  <text x="570" y="68" font-size="11" font-style="italic" fill="#14532d" text-anchor="middle">Strata genuinely differ from each other</text>
+
+  <!-- Number line for effect modification -->
+  <line x1="440" y1="240" x2="700" y2="240" stroke="#374151" stroke-width="2"/>
+  <line x1="570" y1="232" x2="570" y2="248" stroke="#9ca3af" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="570" y="270" font-size="10" fill="#6b7280" text-anchor="middle">RR = 1.0 (null)</text>
+
+  <!-- Crude estimate marker (effect modification) - in between -->
+  <circle cx="540" cy="155" r="8" fill="#dc2626" stroke="#7f1d1d" stroke-width="2"/>
+  <text x="540" y="140" font-size="11" font-weight="700" fill="#7f1d1d" text-anchor="middle">Crude RR</text>
+  <text x="540" y="178" font-size="10" fill="#7f1d1d" text-anchor="middle">~0.75 (misleading avg)</text>
+
+  <!-- Stratum 1: strong effect -->
+  <circle cx="465" cy="200" r="7" fill="#15803d" stroke="#14532d" stroke-width="2"/>
+  <text x="465" y="185" font-size="10" font-weight="600" fill="#14532d" text-anchor="middle">Men</text>
+  <text x="465" y="220" font-size="9" fill="#14532d" text-anchor="middle">RR ≈ 0.6</text>
+
+  <!-- Stratum 2: weak effect -->
+  <circle cx="640" cy="200" r="7" fill="#15803d" stroke="#14532d" stroke-width="2"/>
+  <text x="640" y="185" font-size="10" font-weight="600" fill="#14532d" text-anchor="middle">Women</text>
+  <text x="640" y="220" font-size="9" fill="#14532d" text-anchor="middle">RR ≈ 0.95</text>
+
+  <!-- Arrows showing strata diverge -->
+  <path d="M 540 165 Q 500 185 470 195" stroke="#15803d" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+  <path d="M 540 165 Q 590 185 635 195" stroke="#15803d" stroke-width="1.5" fill="none" stroke-dasharray="4,3"/>
+
+  <!-- Interpretation box -->
+  <rect x="420" y="290" width="300" height="55" rx="6" fill="#fff" stroke="#15803d" stroke-width="1"/>
+  <text x="570" y="308" font-size="11" font-weight="700" fill="#14532d" text-anchor="middle">RR₁ ≠ RR₂</text>
+  <text x="570" y="325" font-size="10" fill="#14532d" text-anchor="middle">→ Do NOT pool. Report stratum-specific</text>
+  <text x="570" y="338" font-size="10" fill="#14532d" text-anchor="middle">estimates because the effect genuinely differs</text>
+</svg>"""
+        _em_compare_comp.html(f"<div style='font-family:sans-serif;'>{em_compare_svg}</div>", height=400, scrolling=False)
+
+        st.markdown("""
+**Reading the diagram:**
+
+- **Left (Confounding):** The two stratum-specific RRs are close to each other (both near 1.1–1.2) but the crude RR sits much higher (~2.5). The crude is being pulled away from the truth by the confounder. After adjustment, the stratum-specific estimates agree on the real effect, and a single pooled estimate is appropriate.
+
+- **Right (Effect Modification):** The two stratum-specific RRs are genuinely different (men: 0.6, women: 0.95). The crude RR sits *between* them — a misleading "average" that doesn't describe either group well. There is no single number that summarizes the relationship; the strata need to be reported separately.
+
+**The diagnostic question to ask:** *Do the stratum-specific estimates agree with each other?* If yes → likely confounding (adjust and pool). If no → effect modification (don't pool; report separately).
+        """)
 
     elif conf_section == "4️⃣ Interactive: Stratified Analysis":
         st.subheader("Interactive Stratified Analysis")

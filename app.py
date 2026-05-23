@@ -5474,12 +5474,22 @@ With prevalence at {round(prev*100,1)}%, the test performs well clinically — P
 
     elif screen_section == "3️⃣ Likelihood Ratios & Fagan Nomogram":
         st.subheader("Likelihood Ratios — Updating Probability with Test Results")
+
+        st.markdown("""
+<div style="background:#eef2ff;border-left:4px solid #4f46e5;padding:16px 18px;margin:8px 0 22px 0;border-radius:0 8px 8px 0;">
+<div style="font-size:15px;font-weight:700;color:#312e81;margin-bottom:6px;">🎯 The central idea of diagnostic testing</div>
+<div style="font-size:14px;color:#312e81;line-height:1.65;">
+Diagnostic testing <b>updates probability</b> rather than proving disease. Every test result moves a patient from a pre-test probability to a post-test probability — it rarely creates certainty. Strong tests move probability a lot; weak tests barely move it at all. <b>Likelihood ratios quantify exactly how much a test moves probability</b>, independent of who you are testing.
+</div>
+</div>
+        """, unsafe_allow_html=True)
+
         st.markdown("""
 Sensitivity, specificity, PPV, and NPV all depend on the prevalence of disease in the population being tested. **Likelihood ratios (LRs)** are different — they describe the test's inherent discriminating ability and can be applied to any patient with a known pre-test probability.
 
-**LR+ = Sensitivity ÷ (1 − Specificity)** — how much more likely a positive result is in a diseased person vs. a healthy person
+**LR+ = Sensitivity ÷ (1 − Specificity)** — the ratio of positive test rates among diseased vs. non-diseased individuals (how much a positive result raises probability)
 
-**LR− = (1 − Sensitivity) ÷ Specificity** — how much less likely a negative result is in a diseased person vs. a healthy person
+**LR− = (1 − Sensitivity) ÷ Specificity** — the ratio of negative test rates among diseased vs. non-diseased individuals (how much a negative result lowers probability)
         """)
 
         st.markdown("""
@@ -5625,24 +5635,31 @@ The **Fagan nomogram** is a graphical tool that performs the pre-test → post-t
   {lr_tick_svg}
   {post_tick_svg}
 
-  <!-- Pivot line through all three points -->
-  <line x1="{x_pre}" y1="{round(y_pre,1)}" x2="{x_post}" y2="{round(y_post,1)}"
-        stroke="{line_color}" stroke-width="2.5" stroke-dasharray="6,3" opacity="0.7"/>
-
-  <!-- Dots at each scale -->
-  <circle cx="{x_pre}"  cy="{round(y_pre,1)}"  r="7" fill="{line_color}" stroke="white" stroke-width="2"/>
-  <circle cx="{x_lr}"   cy="{round(y_lr,1)}"   r="6" fill="#f59e0b"      stroke="white" stroke-width="2"/>
-  <circle cx="{x_post}" cy="{round(y_post,1)}"  r="7" fill="{line_color}" stroke="white" stroke-width="2"/>
-
-  <!-- Value labels at dots -->
-  <text x="{x_pre-14}" y="{round(y_pre-9,1)}" font-size="10" font-weight="700" fill="{line_color}" text-anchor="middle">{round(pre_prob*100,1)}%</text>
-  <text x="{x_lr}"     y="{round(y_lr-9,1)}"  font-size="10" font-weight="700" fill="#b45309"       text-anchor="middle">LR={round(lr_val,2)}</text>
-  <text x="{x_post+14}" y="{round(y_post-9,1)}" font-size="10" font-weight="700" fill="{line_color}" text-anchor="middle">{round(post_prob*100,1)}%</text>
-
-  <!-- LR=1 reference line -->
+  <!-- LR=1 reference line (drawn BEFORE pivot so pivot sits on top) -->
   <line x1="{x_lr-4}" y1="{round(lr_to_y(1),1)}" x2="{x_lr+4}" y2="{round(lr_to_y(1),1)}"
         stroke="#ef4444" stroke-width="2"/>
   <text x="{x_lr-40}" y="{round(lr_to_y(1)+4,1)}" font-size="9" fill="#ef4444" font-weight="600">LR=1</text>
+
+  <!-- Pivot line through all three points: white halo + colored line for legibility over ticks -->
+  <line x1="{x_pre}" y1="{round(y_pre,1)}" x2="{x_post}" y2="{round(y_post,1)}"
+        stroke="white" stroke-width="6" opacity="0.85"/>
+  <line x1="{x_pre}" y1="{round(y_pre,1)}" x2="{x_post}" y2="{round(y_post,1)}"
+        stroke="{line_color}" stroke-width="3.5" stroke-dasharray="7,3" opacity="0.95"/>
+
+  <!-- Dots at each scale -->
+  <circle cx="{x_pre}"  cy="{round(y_pre,1)}"  r="8" fill="{line_color}" stroke="white" stroke-width="2.5"/>
+  <circle cx="{x_lr}"   cy="{round(y_lr,1)}"   r="7" fill="#f59e0b"      stroke="white" stroke-width="2.5"/>
+  <circle cx="{x_post}" cy="{round(y_post,1)}"  r="8" fill="{line_color}" stroke="white" stroke-width="2.5"/>
+
+  <!-- Value labels at dots: placed outside the scale to avoid tick label collision; white halo for legibility -->
+  <text x="{x_pre-22}" y="{round(y_pre+4,1)}" font-size="11" font-weight="700" fill="white" stroke="white" stroke-width="3.5" text-anchor="end" paint-order="stroke">{round(pre_prob*100,1)}%</text>
+  <text x="{x_pre-22}" y="{round(y_pre+4,1)}" font-size="11" font-weight="700" fill="{line_color}" text-anchor="end">{round(pre_prob*100,1)}%</text>
+
+  <text x="{x_lr}"     y="{round(y_lr-14,1)}" font-size="11" font-weight="700" fill="white" stroke="white" stroke-width="3.5" text-anchor="middle" paint-order="stroke">LR={round(lr_val,2)}</text>
+  <text x="{x_lr}"     y="{round(y_lr-14,1)}" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">LR={round(lr_val,2)}</text>
+
+  <text x="{x_post+22}" y="{round(y_post+4,1)}" font-size="11" font-weight="700" fill="white" stroke="white" stroke-width="3.5" text-anchor="start" paint-order="stroke">{round(post_prob*100,1)}%</text>
+  <text x="{x_post+22}" y="{round(y_post+4,1)}" font-size="11" font-weight="700" fill="{line_color}" text-anchor="start">{round(post_prob*100,1)}%</text>
 
   <!-- Bottom note -->
   <text x="{NW//2}" y="{NH-8}" font-size="9" fill="#94a3b8" text-anchor="middle" font-style="italic">
@@ -5686,13 +5703,20 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
         lr_q1 = st.radio(
             "**Scenario:** A 55-year-old woman with chest pain has a pre-test probability of coronary artery disease of 40%. Her exercise stress test is positive. The LR+ for this test is 4.5. What is her approximate post-test probability?",
             ["— Select —", "~20% — the test lowered probability", "~50% — barely changed",
-             "~75% — LR+ of 4.5 substantially raises a 40% pre-test probability", "~95% — almost certain"],
+             "~75% — meaningfully increases the 40% pre-test probability but does not confirm disease", "~95% — almost certain"],
             key="lr_q1"
         )
-        if lr_q1 == "~75% — LR+ of 4.5 substantially raises a 40% pre-test probability":
-            st.success("""✅ Correct. Pre-test odds = 0.40/0.60 = 0.667. Post-test odds = 0.667 × 4.5 = 3.0. Post-test probability = 3.0/4.0 = 75%. A positive stress test in a patient with intermediate pre-test probability substantially raises the probability — but note it's still not 100%, which is why further testing may follow.""")
+        if lr_q1 == "~75% — meaningfully increases the 40% pre-test probability but does not confirm disease":
+            st.success("""✅ **Correct.** Pre-test odds = 0.40 ÷ 0.60 = 0.667. Post-test odds = 0.667 × 4.5 = 3.0. Post-test probability = 3.0 ÷ 4.0 = **75%**.
+
+**Why this matters clinically:** A positive stress test meaningfully raises probability (40% → 75%) but **does not confirm disease** — there is still a 25% chance she does not have CAD. This is exactly why a positive stress test typically leads to confirmatory testing (coronary CT angiography or catheterization), not directly to treatment. Strong tests update probability significantly without producing certainty.
+
+**Why the other options are wrong:**
+- *~20%:* This would imply the test *lowered* probability — but LR+ > 1 always raises probability.
+- *~50%:* An LR+ of 4.5 is a moderate-to-strong rule-in; it cannot leave probability essentially unchanged.
+- *~95%:* This would require either a much higher LR+ (>20) or a much higher pre-test probability. Overestimating post-test probability is a common clinical reasoning error and can lead to overtreatment.""")
         elif lr_q1 != "— Select —":
-            st.error("❌ Work through the math: Pre-test odds = 0.4/0.6 = 0.667. Post-test odds = 0.667 × 4.5 = 3.0. Post-test probability = 3.0/(1+3.0) = 75%.")
+            st.error("❌ Work through the math: Pre-test odds = 0.4 ÷ 0.6 = 0.667. Post-test odds = 0.667 × 4.5 = 3.0. Post-test probability = 3.0 ÷ (1+3.0) = **75%**. Try the Fagan nomogram above with these values to verify visually.")
 
         lr_q2 = st.radio(
             "**Scenario:** A patient has a 30% pre-test probability of pulmonary embolism. A D-dimer test is negative. The LR− for D-dimer is 0.08. What does this mean clinically?",
@@ -5704,9 +5728,16 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
             key="lr_q2"
         )
         if lr_q2 == "Post-test probability drops to ~3% — PE is effectively ruled out":
-            st.success("""✅ Correct. Pre-test odds = 0.3/0.7 = 0.429. Post-test odds = 0.429 × 0.08 = 0.034. Post-test probability = 0.034/1.034 ≈ 3.3%. A negative D-dimer in a patient with moderate pre-test probability reduces the probability to ~3% — below the threshold for anticoagulation. This illustrates the power of LR− for rule-out. D-dimer's high sensitivity (low LR−) is why it's used as a rule-out test.""")
+            st.success("""✅ **Correct.** Pre-test odds = 0.3 ÷ 0.7 = 0.429. Post-test odds = 0.429 × 0.08 = 0.034. Post-test probability = 0.034 ÷ 1.034 ≈ **3.3%**.
+
+**Why this matters clinically:** A negative D-dimer in a patient with moderate pre-test probability reduces the probability to ~3% — below the threshold at which clinicians would typically pursue CT angiography or initiate anticoagulation. This illustrates the power of a strong LR− for *rule-out*. D-dimer's high sensitivity (and therefore low LR−) is precisely why it is used as a screening test to safely exclude PE in low-to-moderate risk patients.
+
+**Why the other options are wrong:**
+- *~30%:* An LR− of 0.08 is one of the strongest rule-out values in medicine — it cannot leave probability unchanged.
+- *Probability rises:* LR− < 1 always *lowers* probability when the test is negative.
+- *LR− can't be used for ruling out:* The opposite is true — LR− is specifically designed for rule-out decisions. Strong LR− (≤0.1) is more useful for ruling out than weak LR+ values are for ruling in.""")
         elif lr_q2 != "— Select —":
-            st.error("❌ LR− below 0.1 is a strong rule-out. Pre-test odds = 0.3/0.7 = 0.429. Post-test odds = 0.429 × 0.08 = 0.034. Post-test probability ≈ 3.3%.")
+            st.error("❌ LR− ≤ 0.1 is a strong rule-out. Pre-test odds = 0.3 ÷ 0.7 = 0.429. Post-test odds = 0.429 × 0.08 = 0.034. Post-test probability ≈ **3.3%**. Try the Fagan nomogram above with pre-test = 30% and LR− = 0.08 to verify visually.")
 
 
     elif screen_section == "4️⃣ Prevalence Effect on PPV":

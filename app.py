@@ -771,9 +771,9 @@ The **natural history of disease** describes the progression of a disease proces
   <!-- Timeline line -->
   <line x1="130" y1="65" x2="600" y2="65" stroke="#475569" stroke-width="2"/>
 
-  <!-- Disease begins -->
+  <!-- Subclinical disease begins -->
   <circle cx="130" cy="65" r="5" fill="#94a3b8"/>
-  <text x="130" y="48" font-size="10" fill="#64748b" text-anchor="middle">Disease begins</text>
+  <text x="130" y="48" font-size="10" fill="#64748b" text-anchor="middle">Subclinical disease begins</text>
 
   <!-- Diagnosis at symptoms (later) -->
   <circle cx="460" cy="65" r="7" fill="#dc2626"/>
@@ -796,9 +796,9 @@ The **natural history of disease** describes the progression of a disease proces
   <!-- Timeline line -->
   <line x1="130" y1="165" x2="600" y2="165" stroke="#475569" stroke-width="2"/>
 
-  <!-- Disease begins (same position as top) -->
+  <!-- Subclinical disease begins (same position as top) -->
   <circle cx="130" cy="165" r="5" fill="#94a3b8"/>
-  <text x="130" y="148" font-size="10" fill="#64748b" text-anchor="middle">Disease begins</text>
+  <text x="130" y="148" font-size="10" fill="#64748b" text-anchor="middle">Subclinical disease begins</text>
 
   <!-- Earlier diagnosis via screening -->
   <circle cx="250" cy="165" r="7" fill="#2563eb"/>
@@ -814,14 +814,15 @@ The **natural history of disease** describes the progression of a disease proces
   <line x1="600" y1="188" x2="600" y2="196" stroke="#2563eb" stroke-width="1.5"/>
   <text x="425" y="206" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">"5 years survival"</text>
 
-  <!-- ============ ALIGNMENT MARKER: vertical line connecting both death points ============ -->
-  <line x1="600" y1="80" x2="600" y2="150" stroke="#1f2937" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
+  <!-- ============ DEATH ALIGNMENT MARKER ============ -->
+  <line x1="600" y1="80" x2="600" y2="150" stroke="#475569" stroke-width="1" stroke-dasharray="3,3" opacity="0.55"/>
+  <text x="618" y="118" font-size="9" fill="#64748b" font-style="italic">Same death time</text>
 
-  <!-- ============ LEAD TIME annotation between the two diagnosis points ============ -->
-  <line x1="250" y1="115" x2="460" y2="115" stroke="#f59e0b" stroke-width="2"/>
-  <line x1="250" y1="110" x2="250" y2="120" stroke="#f59e0b" stroke-width="2"/>
-  <line x1="460" y1="110" x2="460" y2="120" stroke="#f59e0b" stroke-width="2"/>
-  <text x="355" y="129" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">Lead time — extra time of "knowing," not "living"</text>
+  <!-- ============ LEAD TIME annotation — softened so it reads as interpretation layer ============ -->
+  <line x1="250" y1="118" x2="460" y2="118" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4,3"/>
+  <line x1="250" y1="114" x2="250" y2="122" stroke="#cbd5e1" stroke-width="1.2"/>
+  <line x1="460" y1="114" x2="460" y2="122" stroke="#cbd5e1" stroke-width="1.2"/>
+  <text x="355" y="131" font-size="10" fill="#94a3b8" font-style="italic" text-anchor="middle">Lead time — extra time of "knowing," not "living"</text>
 
 </svg>"""
             st.markdown(f"<div style='margin:14px 0;'></div>", unsafe_allow_html=True)

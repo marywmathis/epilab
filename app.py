@@ -4206,9 +4206,11 @@ Prevalence, incidence, and disease duration are linked by a simple but important
 **P ≈ I × D**
 
 Where:
-- **P** = Prevalence
-- **I** = Incidence rate
-- **D** = Average disease duration
+- **P (Prevalence)** = the share of people who *have* the disease right now — existing cases at a single point in time
+- **I (Incidence rate)** = how fast *new* cases are appearing — new cases per population per unit of time
+- **D (Average disease duration)** = how long a person typically lives with the disease — from onset until recovery, cure, or death
+
+In plain terms: how common a disease is at any moment depends on how often people get it *and* how long they stay sick once they do.
 
 This relationship holds when prevalence is low (<10%) and the disease is at steady state.
         """)

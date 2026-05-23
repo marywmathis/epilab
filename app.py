@@ -1253,72 +1253,228 @@ No. Waning immunity (through time, new variants, or birth of new susceptibles) r
     elif found_section == "5️⃣ Outbreak Investigation — The 10 Steps":
         st.subheader("The 10-Step Outbreak Investigation")
         st.markdown("""
-When a cluster of cases is reported, epidemiologists follow a systematic process. The steps are not strictly sequential — several happen simultaneously — but the framework ensures nothing is missed.
+When a cluster of cases is reported, epidemiologists follow a systematic process. The steps are not strictly sequential — several happen simultaneously, and investigations are iterative rather than perfectly linear — but the framework ensures nothing is missed.
         """)
 
-        STEPS = [
-            ("1", "Prepare for Field Work", "#1e40af", "🧳",
-             "Before going anywhere: review the literature on the suspected disease, consult with experts, assemble supplies and lab materials, arrange logistics, ensure legal and ethical authority to investigate.",
-             "Key questions: What is already known about this disease? What lab tests are needed? Who has authority to implement control measures?"),
-            ("2", "Establish the Existence of an Outbreak", "#1d4ed8", "📊",
-             "Determine whether the number of cases exceeds the expected (baseline) level. Compare reported cases to historical rates for the same time, place, and population.",
-             "An epidemic threshold is one way to flag unusual case counts — one common approach uses mean + 2 standard deviations of historical baseline data, though different surveillance systems use different methods (percentile ranks, moving averages, CUSUM). Not all clusters are true outbreaks — some are artifacts of improved surveillance or reporting."),
-            ("3", "Verify the Diagnosis", "#2563eb", "🔬",
-             "Confirm that cases represent the disease suspected. Review clinical findings, lab results, and case histories. Prevent false alarms from lab error, reporting artifacts, or misdiagnosis.",
-             "Contact the lab, review pathology, interview clinicians. Ensure the diagnostic criteria are applied consistently across cases."),
-            ("4", "Construct a Working Case Definition", "#3b82f6", "📋",
-             "Define who counts as a case. A case definition has four components: person (who), place (where), time (when), and clinical criteria (what symptoms/lab findings).",
-             """**Case definition levels:**
+        # ═══════════════════════════════════════════════════════════════
+        # WORKFLOW DIAGRAM: all 10 steps grouped into 4 phases, horizontal
+        # ═══════════════════════════════════════════════════════════════
+        workflow_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 220" style="width:100%;max-width:980px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+
+  <!-- Phase 1: Recognition (blue) — steps 1-3 -->
+  <rect x="10" y="40" width="240" height="140" rx="10" fill="#eff6ff" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="130" y="58" font-size="11" font-weight="700" fill="#1e3a8a" text-anchor="middle" letter-spacing="0.5">PHASE 1 — RECOGNITION</text>
+  <circle cx="50" cy="100" r="20" fill="#2563eb"/>
+  <text x="50" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">1</text>
+  <text x="50" y="138" font-size="10" fill="#1e3a8a" text-anchor="middle" font-weight="600">Prepare</text>
+  <circle cx="130" cy="100" r="20" fill="#2563eb"/>
+  <text x="130" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">2</text>
+  <text x="130" y="138" font-size="10" fill="#1e3a8a" text-anchor="middle" font-weight="600">Confirm</text>
+  <text x="130" y="151" font-size="10" fill="#1e3a8a" text-anchor="middle" font-weight="600">outbreak</text>
+  <circle cx="210" cy="100" r="20" fill="#2563eb"/>
+  <text x="210" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">3</text>
+  <text x="210" y="138" font-size="10" fill="#1e3a8a" text-anchor="middle" font-weight="600">Verify Dx</text>
+  <line x1="70" y1="100" x2="110" y2="100" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="150" y1="100" x2="190" y2="100" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Arrow between phases -->
+  <line x1="252" y1="105" x2="262" y2="105" stroke="#64748b" stroke-width="2"/>
+  <polygon points="262,100 270,105 262,110" fill="#64748b"/>
+
+  <!-- Phase 2: Identification (purple) — steps 4-6 -->
+  <rect x="272" y="40" width="240" height="140" rx="10" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5"/>
+  <text x="392" y="58" font-size="11" font-weight="700" fill="#6b21a8" text-anchor="middle" letter-spacing="0.5">PHASE 2 — IDENTIFICATION</text>
+  <circle cx="312" cy="100" r="20" fill="#9333ea"/>
+  <text x="312" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">4</text>
+  <text x="312" y="138" font-size="10" fill="#6b21a8" text-anchor="middle" font-weight="600">Case</text>
+  <text x="312" y="151" font-size="10" fill="#6b21a8" text-anchor="middle" font-weight="600">definition</text>
+  <circle cx="392" cy="100" r="20" fill="#9333ea"/>
+  <text x="392" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">5</text>
+  <text x="392" y="138" font-size="10" fill="#6b21a8" text-anchor="middle" font-weight="600">Find cases</text>
+  <circle cx="472" cy="100" r="20" fill="#9333ea"/>
+  <text x="472" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">6</text>
+  <text x="472" y="138" font-size="10" fill="#6b21a8" text-anchor="middle" font-weight="600">Describe</text>
+  <text x="472" y="151" font-size="10" fill="#6b21a8" text-anchor="middle" font-weight="600">(person/place/time)</text>
+  <line x1="332" y1="100" x2="372" y2="100" stroke="#94a3b8" stroke-width="1.5"/>
+  <line x1="412" y1="100" x2="452" y2="100" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Arrow between phases -->
+  <line x1="514" y1="105" x2="524" y2="105" stroke="#64748b" stroke-width="2"/>
+  <polygon points="524,100 532,105 524,110" fill="#64748b"/>
+
+  <!-- Phase 3: Hypothesis (amber) — steps 7-8 -->
+  <rect x="534" y="40" width="180" height="140" rx="10" fill="#fffbeb" stroke="#d97706" stroke-width="1.5"/>
+  <text x="624" y="58" font-size="11" font-weight="700" fill="#78350f" text-anchor="middle" letter-spacing="0.5">PHASE 3 — HYPOTHESIS</text>
+  <circle cx="574" cy="100" r="20" fill="#d97706"/>
+  <text x="574" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">7</text>
+  <text x="574" y="138" font-size="10" fill="#78350f" text-anchor="middle" font-weight="600">Generate</text>
+  <text x="574" y="151" font-size="10" fill="#78350f" text-anchor="middle" font-weight="600">hypotheses</text>
+  <circle cx="674" cy="100" r="20" fill="#d97706"/>
+  <text x="674" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">8</text>
+  <text x="674" y="138" font-size="10" fill="#78350f" text-anchor="middle" font-weight="600">Test</text>
+  <text x="674" y="151" font-size="10" fill="#78350f" text-anchor="middle" font-weight="600">hypotheses</text>
+  <line x1="594" y1="100" x2="654" y2="100" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Arrow between phases -->
+  <line x1="716" y1="105" x2="726" y2="105" stroke="#64748b" stroke-width="2"/>
+  <polygon points="726,100 734,105 726,110" fill="#64748b"/>
+
+  <!-- Phase 4: Action (green) — steps 9-10 -->
+  <rect x="736" y="40" width="220" height="140" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="846" y="58" font-size="11" font-weight="700" fill="#14532d" text-anchor="middle" letter-spacing="0.5">PHASE 4 — ACTION</text>
+  <circle cx="786" cy="100" r="20" fill="#16a34a"/>
+  <text x="786" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">9</text>
+  <text x="786" y="138" font-size="10" fill="#14532d" text-anchor="middle" font-weight="600">Control</text>
+  <text x="786" y="151" font-size="10" fill="#14532d" text-anchor="middle" font-weight="600">measures</text>
+  <circle cx="896" cy="100" r="20" fill="#16a34a"/>
+  <text x="896" y="106" font-size="14" font-weight="700" fill="white" text-anchor="middle">10</text>
+  <text x="896" y="138" font-size="10" fill="#14532d" text-anchor="middle" font-weight="600">Communicate</text>
+  <text x="896" y="151" font-size="10" fill="#14532d" text-anchor="middle" font-weight="600">findings</text>
+  <line x1="806" y1="100" x2="876" y2="100" stroke="#94a3b8" stroke-width="1.5"/>
+
+  <!-- Title above -->
+  <text x="490" y="22" font-size="13" font-weight="700" fill="#1f2937" text-anchor="middle">Outbreak Investigation Workflow — 10 Steps Across 4 Phases</text>
+
+  <!-- Iteration note below -->
+  <text x="490" y="205" font-size="10" font-style="italic" fill="#64748b" text-anchor="middle">↻ Investigations are iterative — control measures begin before certainty; steps overlap and revisit one another.</text>
+</svg>"""
+        import streamlit.components.v1 as _wf_comp
+        _wf_comp.html(workflow_svg, height=240, scrolling=False)
+
+        st.divider()
+
+        # ═══════════════════════════════════════════════════════════════
+        # PHASE-GROUPED TABS — replaces 10 stacked accordions
+        # ═══════════════════════════════════════════════════════════════
+        phase_tabs = st.tabs([
+            "🔵 Phase 1 — Recognition (Steps 1–3)",
+            "🟣 Phase 2 — Identification (Steps 4–6)",
+            "🟡 Phase 3 — Hypothesis (Steps 7–8)",
+            "🟢 Phase 4 — Action (Steps 9–10)"
+        ])
+
+        # ─────────────── PHASE 1: RECOGNITION ───────────────
+        with phase_tabs[0]:
+            st.markdown("**Phase 1 establishes that an outbreak is real and that you're prepared to investigate it.** Before any field work begins, you confirm cases exceed expected levels and verify the diagnosis is correct.")
+
+            with st.expander("🧳 **Step 1: Prepare for Field Work**", expanded=True):
+                st.markdown("**Before going anywhere:** review the literature on the suspected disease, consult with experts, assemble supplies and lab materials, arrange logistics, ensure legal and ethical authority to investigate.")
+                st.markdown("*Key questions:* What is already known about this disease? What lab tests are needed? Who has authority to implement control measures?")
+
+            with st.expander("📊 **Step 2: Establish the Existence of an Outbreak**"):
+                st.markdown("**Determine whether the number of cases exceeds the expected number of cases for this population, time, and place.** Compare reported cases to historical rates for the same population, time window, and geography.")
+                st.markdown("An epidemic threshold is one way to flag unusual case counts — one common approach uses mean + 2 standard deviations of historical baseline data, though different surveillance systems use different methods (percentile ranks, moving averages, CUSUM). Not all clusters are true outbreaks — some are artifacts of improved surveillance or reporting.")
+
+            with st.expander("🔬 **Step 3: Verify the Diagnosis**"):
+                st.markdown("**Confirm that cases represent the disease suspected.** Review clinical findings, lab results, and case histories. Prevent false alarms from lab error, reporting artifacts, or misdiagnosis.")
+                st.markdown("Contact the lab, review pathology, interview clinicians. Ensure the diagnostic criteria are applied consistently across cases.")
+
+        # ─────────────── PHASE 2: IDENTIFICATION ───────────────
+        with phase_tabs[1]:
+            st.markdown("**Phase 2 defines who counts as a case, finds them, and characterizes what's happening.** This is where descriptive epidemiology (person, place, time) does its central work.")
+
+            with st.expander("📋 **Step 4: Construct a Working Case Definition**", expanded=True):
+                st.markdown("**Define who counts as a case.** A case definition has four components: person (who), place (where), time (when), and clinical criteria (what symptoms/lab findings).")
+                st.markdown("""
+**Case definition levels:**
 - **Confirmed:** Laboratory-confirmed disease
 - **Probable:** Clinical criteria met + epidemiological link
 - **Suspected:** Some clinical criteria, no lab or epi link
 
-Case definitions should be sensitive early in an outbreak (to find cases) and refined later as the picture clarifies. A definition that is too narrow misses cases; too broad includes non-cases."""),
-            ("5", "Find Cases Systematically — Case Finding", "#60a5fa", "🔍",
-             "Actively search for additional cases beyond those already reported. Passive surveillance misses cases. Active case finding uses lab records, hospital records, school absenteeism data, and direct community outreach.",
-             "Ask every case: 'Do you know anyone else who is ill?' Review emergency department logs, lab submissions, and pharmacy records for syndromic patterns."),
-            ("6", "Describe the Outbreak — Descriptive Epidemiology", "#7c3aed", "📈",
-             "Characterize cases by person, place, and time. Draw an epidemic curve. Map cases geographically. Describe demographics of cases (age, sex, occupation, behaviors).",
-             """**The epidemic curve** tells you:
+Case definitions should be sensitive early in an outbreak (to find cases) and refined later as the picture clarifies. **A definition that is too narrow misses cases; too broad includes non-cases.**
+                """)
+
+            with st.expander("🔍 **Step 5: Find Cases Systematically — Case Finding**"):
+                st.markdown("**Actively search for additional cases beyond those already reported.** Passive surveillance misses cases. Active case finding uses lab records, hospital records, school absenteeism data, and direct community outreach.")
+                st.markdown("""
+| Approach | Description | Tradeoff |
+|---|---|---|
+| **Passive surveillance** | Wait for cases to be reported through existing channels | Cheaper but misses cases |
+| **Active surveillance** | Investigators actively contact providers, labs, schools, communities to find cases | More resource-intensive but more complete |
+
+Ask every case: *'Do you know anyone else who is ill?'* Review emergency department logs, lab submissions, and pharmacy records for syndromic patterns.
+                """)
+
+            with st.expander("📈 **Step 6: Describe the Outbreak — Descriptive Epidemiology**"):
+                st.markdown("**Characterize cases by person, place, and time.** Draw an epidemic curve. Map cases geographically. Describe demographics of cases (age, sex, occupation, behaviors).")
+                st.markdown("""
+**The epidemic curve tells you:**
 - *Shape:* Point source vs. propagated vs. mixed
 - *Timing:* When did the outbreak peak?
 - *Incubation period:* Width of the curve approximates the incubation range
-- *Are new cases still occurring?* Is the outbreak ongoing?"""),
-            ("7", "Develop Hypotheses", "#9333ea", "💡",
-             "Based on descriptive data, generate hypotheses about the source, mode of transmission, and risk factors. What do cases have in common? Where were they? What did they eat or do?",
-             "Hypotheses should be specific and testable. 'The contaminated chicken salad served at Table 3 at the Saturday event caused illness' is a testable hypothesis. 'Something at the event caused illness' is not."),
-            ("8", "Evaluate Hypotheses — Analytic Epidemiology", "#a855f7", "🧮",
-             "Test hypotheses using analytic study designs. In a defined cohort (e.g., event attendees), calculate attack rates and RRs for each potential vehicle. In a community outbreak, conduct a case-control study.",
-             """**Cohort approach:** All attendees form the cohort. Calculate food-specific attack rates (AR exposed vs. AR unexposed) and RR for each food item. The food with the highest RR and lowest p-value is the likely vehicle.
+- *Are new cases still occurring?* Is the outbreak ongoing?
+                """)
 
-**Case-control approach:** Cases (ill people) vs. controls (well people). Calculate OR for each exposure. Used when the at-risk population cannot be enumerated."""),
-            ("9", "Implement Control Measures", "#dc2626", "🛑",
-             "Control measures should begin as soon as possible — do not wait for a complete investigation. Implement measures targeted at the most likely source while investigation continues.",
-             """**Control by chain of infection link:**
-- Source: recall contaminated product, close restaurant, treat reservoir
-- Transmission: handwashing advisories, isolation, quarantine
-- Host: prophylaxis, vaccination, advisories to at-risk populations
+        # ─────────────── PHASE 3: HYPOTHESIS ───────────────
+        with phase_tabs[2]:
+            st.markdown("**Phase 3 moves from description to inference.** Descriptive data suggests *what might be happening*; analytic data tests *whether it actually is*. This is the major epistemologic transition in outbreak work.")
 
-Document all control measures and their timing for the outbreak report."""),
-            ("10", "Communicate Findings", "#16a34a", "📣",
-             "Write an outbreak investigation report. Communicate findings to public health authorities, the media (if appropriate), affected communities, and the scientific literature.",
-             "The report should include: background, methods, results (epidemic curve, attack rates, OR/RR tables), conclusions, and recommendations. Timely communication prevents additional cases and builds public trust."),
-        ]
+            st.markdown("""
+<div style="background:#fffbeb;border-left:4px solid #d97706;padding:14px 18px;border-radius:0 8px 8px 0;margin:14px 0;font-size:14px;color:#78350f;line-height:1.6;">
+<b>The crucial distinction:</b><br>
+<b>Hypothesis generation (Step 7)</b> uses descriptive patterns to propose explanations. This is exploratory and does not test the hypothesis — it produces candidates worth testing.<br>
+<b>Hypothesis testing (Step 8)</b> uses analytic study designs (cohort or case-control) with statistical comparison to determine whether the hypothesis is supported by data.
+</div>
+            """, unsafe_allow_html=True)
 
-        for step in STEPS:
-            num, title, color, icon, desc, detail = step
-            with st.expander(f"{icon} **Step {num}: {title}**"):
-                st.markdown(f"**{desc}**")
-                st.markdown(detail)
+            with st.expander("💡 **Step 7: Develop Hypotheses**", expanded=True):
+                st.markdown("**Based on descriptive data, generate hypotheses about the source, mode of transmission, and risk factors.** What do cases have in common? Where were they? What did they eat or do?")
+                st.markdown("""
+Hypotheses should be **specific and testable**. Examples:
+
+- *Vague (not testable):* "Something at the event caused illness."
+- *Specific (testable):* "Most ill persons attended the same wedding banquet on Saturday evening."
+- *More specific:* "The contaminated chicken salad served at Table 3 at the Saturday wedding caused illness."
+
+The more specific the hypothesis, the more directly it can be tested in Step 8.
+                """)
+
+            with st.expander("🧮 **Step 8: Evaluate Hypotheses — Analytic Epidemiology**"):
+                st.markdown("**Test hypotheses using analytic study designs.** In a defined cohort (e.g., event attendees), calculate attack rates and RRs for each potential vehicle. In a community outbreak, conduct a case-control study.")
+                st.markdown("""
+**Cohort approach:** All attendees form the cohort. Calculate food-specific attack rates (AR exposed vs. AR unexposed) and RR for each food item. The food with the highest RR and lowest p-value is the likely vehicle.
+
+**Case-control approach:** Cases (ill people) vs. controls (well people). Calculate OR for each exposure. Used when the at-risk population cannot be enumerated.
+
+**Worked example:** At a banquet investigation, food-specific attack rates show: chicken AR=8%, salad AR=12%, **potato salad AR=84% (highest among exposures with strong RR)**. Potato salad is the likely vehicle. Confirm with lab testing of remaining product if available.
+                """)
+
+        # ─────────────── PHASE 4: ACTION ───────────────
+        with phase_tabs[3]:
+            st.markdown("**Phase 4 translates findings into prevention and communication.** This is where outbreak investigation becomes public health action.")
+
+            with st.expander("🛑 **Step 9: Implement Control Measures**", expanded=True):
+                st.markdown("**Control measures should begin as soon as possible — do not wait for complete investigation certainty.** Implement measures targeted at the most likely source while investigation continues.")
+                st.markdown("""
+**Control by chain of infection link:**
+- **Source:** recall contaminated product, close restaurant, treat reservoir
+- **Transmission:** handwashing advisories, isolation, quarantine
+- **Host:** prophylaxis, vaccination, advisories to at-risk populations
+
+Document all control measures and their timing for the outbreak report. *Public health decisions are routinely made under partial information — waiting for certainty produces preventable cases.*
+                """)
+
+            with st.expander("📣 **Step 10: Communicate Findings**"):
+                st.markdown("**Write an outbreak investigation report.** Communicate findings to public health authorities, the media (if appropriate), affected communities, and the scientific literature.")
+                st.markdown("The report should include: background, methods, results (epidemic curve, attack rates, OR/RR tables), conclusions, and recommendations. **Timely communication prevents additional cases and builds public trust.**")
 
         st.divider()
         with st.expander("📋 Quick Reference — The 10 Steps"):
-            steps_table = "| Step | Name | Key Action |\n|---|---|---|\n"
-            for step in STEPS:
-                num, title, color, icon, desc, detail = step
-                first_sentence = desc.split(".")[0] + "."
-                steps_table += f"| **{num}** | {title} | {first_sentence} |\n"
-            st.markdown(steps_table)
+            st.markdown("""
+| Step | Phase | Name | Key Action |
+|---|---|---|---|
+| **1** | Recognition | Prepare for Field Work | Review literature, assemble supplies, ensure authority |
+| **2** | Recognition | Establish the Existence of an Outbreak | Confirm cases exceed expected counts for this population/time/place |
+| **3** | Recognition | Verify the Diagnosis | Confirm cases represent the disease suspected |
+| **4** | Identification | Construct a Working Case Definition | Define who counts as a case (person/place/time/clinical) |
+| **5** | Identification | Find Cases Systematically | Active case finding beyond passive surveillance |
+| **6** | Identification | Describe the Outbreak | Person, place, time; draw epidemic curve |
+| **7** | Hypothesis | Develop Hypotheses | Generate specific, testable hypotheses from descriptive data |
+| **8** | Hypothesis | Evaluate Hypotheses | Test using analytic study designs (cohort, case-control) |
+| **9** | Action | Implement Control Measures | Act on likely source — do not wait for complete certainty |
+| **10** | Action | Communicate Findings | Report to authorities, communities, scientific literature |
+            """)
 
     # ── SECTION 5: PICO ──
     elif found_section == "6️⃣ PICO Framework":

@@ -11888,6 +11888,12 @@ Each case serves as **their own control** — exposure during a hazard period (j
 
 **RCT (Randomized Controlled Trial)**
 Participants **randomly assigned** to treatment or control. Gold standard for causation. Randomization distributes known and unknown confounders.
+
+**Block Randomization / Stratified Randomization**
+Variants of randomization designed to improve balance in smaller trials. *Block randomization* allocates participants in small blocks (e.g., blocks of 4) so that treatment groups stay numerically balanced throughout enrollment. *Stratified randomization* performs randomization separately within strata of important variables (e.g., sex, study site) to guarantee balance on those variables. Both reduce the chance imbalance that pure random assignment can produce in small samples.
+
+**Conditional Logistic Regression**
+The appropriate analysis for matched case-control studies. Standard logistic regression assumes independent observations; matched designs violate this because matched sets are dependent by construction. Conditional logistic regression preserves the matching structure and produces valid odds ratios. Failure to use a matched analysis for matched data is a common, often-undetected error that biases estimates and underestimates standard errors.
         """)
 
     with st.expander("⚠️ Bias"):
@@ -11927,6 +11933,9 @@ The outcome actually causes the exposure, not the other way around. Common in cr
 
 **Confounding by Indication**
 The reason for receiving a treatment (the indication) is itself associated with the outcome, creating spurious associations. Classic example: sicker patients receive more aggressive treatment → treatment appears harmful in crude analyses. Controlled by adjusting for disease severity.
+
+**Over-adjustment Bias**
+Bias introduced by adjusting for a variable that should be left alone — most commonly a mediator (a variable on the causal pathway between exposure and outcome) or a collider. Over-adjustment can introduce bias *into* a previously unbiased estimate. The instinct "more variables in the model is safer" is wrong; adjustment decisions require an understanding of the causal structure (DAG).
         """)
 
     with st.expander("🔀 Confounding & Effect Modification"):
@@ -11934,9 +11943,42 @@ The reason for receiving a treatment (the indication) is itself associated with 
 **Confounding**
 A variable that distorts the apparent association between exposure and outcome. Must be: (1) associated with exposure in the source population, (2) independently associated with outcome, (3) not on the causal pathway between exposure and outcome.
 
+**Source Population**
+The population from which the study participants are drawn — and the population to which causal inferences are intended to apply. The confounding criteria are evaluated *within the source population*, not in some abstract general population. A variable can confound in one source population but not another.
+
+**Crude Estimate**
+The measure of association (RR, OR, RD, etc.) calculated from the data without adjustment for any confounders. Often biased when confounding is present.
+
+**Adjusted Estimate**
+The measure of association calculated after controlling for one or more confounders, by stratification, regression, matching, or related methods. Compared with the crude estimate to detect and quantify confounding.
+
+**Negative Confounding (Suppression)**
+Confounding that pulls the crude estimate *toward* the null (or even reverses it) relative to the true effect. The adjusted estimate is then *larger* than the crude estimate. Occurs when the confounder is positively associated with the exposure and negatively associated with the outcome (or vice versa). Counter to the common student assumption that adjustment always weakens estimates.
+
+**Backdoor Path**
+In a DAG, any non-causal path from exposure to outcome that begins with an arrow pointing *into* the exposure. Backdoor paths create spurious associations between exposure and outcome that need to be blocked through adjustment. The "backdoor criterion" (Pearl) formally specifies which sets of variables to condition on to block all such paths.
+
 **Confounder Control — Design:** Randomization, restriction, matching.
 
 **Confounder Control — Analysis:** Stratification (Mantel-Haenszel), multivariable regression, propensity scores.
+
+**Randomization (as confounding control)**
+Random assignment of exposure status, available only in RCTs. The only method that controls for *unmeasured* confounders. In large samples, randomization tends to balance groups on all characteristics (measured and unmeasured); in small samples, chance imbalance can still occur, which is why block or stratified randomization is often used.
+
+**Restriction**
+Limiting the study population to a single level of a potential confounder (e.g., enrolling only non-smokers). Completely eliminates confounding by that variable but reduces sample size, limits generalizability, and prevents the restricted variable from being studied as an exposure or effect modifier.
+
+**Matching**
+Pairing each case with one or more controls (or each exposed with one or more unexposed) on values of suspected confounders. Controls confounding by design but requires a matched analysis (e.g., conditional logistic regression for case-control studies). Matching at the design stage does *not* automatically remove confounding unless analyzed appropriately.
+
+**Stratification (Mantel-Haenszel)**
+Analytic confounding control: stratify the data by levels of the confounder, calculate stratum-specific estimates, and pool them with the Mantel-Haenszel method if they're similar. Transparent and reveals effect modification, but unwieldy with many confounders.
+
+**Multivariable Regression**
+Include confounders as covariates in a regression model (logistic, Poisson, Cox). The exposure coefficient is adjusted for all covariates simultaneously. Statistically "holds other variables constant" — asks what the exposure-outcome relationship would look like if individuals were identical on the covariates. Can handle many confounders but requires modeling assumptions (linearity, additivity, no severe multicollinearity).
+
+**Propensity Score Methods**
+Estimate each subject's probability of being exposed given their measured confounders (the propensity score), then match, weight, or stratify by it. The intuition: create exposed and unexposed groups that *look more comparable* on measured characteristics — mimicking what randomization does naturally. Cannot control for unmeasured confounders.
 
 **Mantel-Haenszel Method**
 Stratified analysis technique that produces a pooled (weighted average) estimate of RR or OR across strata of a confounder. Compares the crude pooled estimate to stratum-specific estimates to assess confounding. If the Mantel-Haenszel adjusted estimate differs meaningfully from the crude estimate (>10%), the stratification variable is a confounder.
@@ -11993,6 +12035,30 @@ Causation requires asking: what would have happened to the same person if their 
 
 **Reverse Causation**
 See Bias section. The outcome causes the exposure — a particular threat in cross-sectional studies.
+
+**Component Cause**
+A factor that contributes to disease but alone cannot produce it. Must combine with other components to complete a sufficient cause. Most exposures studied in epidemiology (smoking, diet, activity, etc.) are component causes, not necessary causes.
+
+**Sufficient Cause**
+A minimal complete set of component causes that, acting together, inevitably produces disease. "Sufficient" = given the full set, disease is certain. "Minimal" = removing any one component makes the set insufficient. Visually represented as a "pie" in Rothman's model.
+
+**Necessary Cause**
+A component that appears in *every* sufficient cause of a disease — without it, the disease cannot occur. Examples: HIV is necessary for AIDS, HPV is necessary for cervical cancer, *M. tuberculosis* is necessary for TB. Common in infectious disease, rare in chronic disease.
+
+**Mediation Analysis**
+Formal statistical methods (e.g., counterfactual mediation, natural direct/indirect effects) for decomposing a total exposure effect into the portion operating *through* a mediator and the portion operating through other pathways. Required when researchers want to estimate the direct effect of an exposure (the effect not mediated by a particular intermediate variable) — simply adding the mediator to a standard regression does not correctly estimate this.
+
+**Total Effect**
+The full effect of an exposure on an outcome through all pathways (direct + mediated). Estimated by **not** adjusting for mediators. The right quantity when asking "does exercise reduce CVD risk?"
+
+**Direct Effect**
+The portion of the total effect that operates through pathways other than a specified mediator. Estimated by formal mediation analysis, not by adding the mediator to a regression model.
+
+**Indirect (Mediated) Effect**
+The portion of the total effect that operates *through* a specified mediator. Total = Direct + Indirect.
+
+**Sensitivity Analysis**
+A robustness check that re-runs the analysis under different modeling choices, adjustment sets, or assumptions to see how much the conclusion depends on those choices. Reporting how results change across plausible specifications strengthens credibility: a finding that holds across multiple reasonable analyses is more convincing than one that depends on a single specification.
         """)
 
     with st.expander("📊 Disease Frequency Measures"):
@@ -12032,6 +12098,12 @@ Begins as a point source, followed by person-to-person transmission. Initial sha
 
 **Incubation Period**
 Time from exposure to symptom onset. The range of onset times in a point-source outbreak approximates the plausible incubation period range for that pathogen.
+
+**Years of Potential Life Lost (YPLL)**
+A measure of *premature* mortality: for each death, the number of years lost between the age at death and a chosen reference age (often 75). Summed across deaths to capture the population burden of early death. Diseases that kill at young ages (injuries, congenital conditions, suicide) contribute disproportionately to YPLL even when they account for fewer total deaths than late-life conditions. Better than crude mortality counts for setting public health priorities focused on premature death.
+
+**Cohort Effect**
+A pattern in disease rates that reflects when a generation was *born* rather than their current age — capturing shared exposures (e.g., tobacco availability, infectious disease environments, dietary changes) that affect a birth cohort throughout life. Distinct from age effects (which depend on current age) and period effects (which depend on the calendar year). Age-period-cohort analysis attempts to disentangle the three.
         """)
 
     with st.expander("🔬 Screening & Diagnostic Tests"):
@@ -12073,6 +12145,15 @@ Post-test probability = Post-test odds ÷ (1 + Post-test odds).
 
 **Bayes' Theorem (clinical)**
 The formal framework for updating probability with new evidence. In clinical testing: Post-test odds = Pre-test odds × Likelihood Ratio.
+
+**ROC Curve (Receiver Operating Characteristic)**
+A plot of sensitivity (y-axis) against 1 − specificity (x-axis) across all possible test cutpoints. Visualizes the sensitivity-specificity tradeoff. A test with no discriminating ability falls on the diagonal; a perfect test reaches the top-left corner. Used to choose an optimal cutpoint and to compare tests independent of any particular threshold.
+
+**AUC (Area Under the ROC Curve)**
+A single-number summary of test discrimination across all cutpoints. AUC = 0.5 → no better than chance; AUC = 1.0 → perfect discrimination. Common benchmarks: 0.7–0.8 acceptable; 0.8–0.9 good; ≥0.9 excellent. Independent of disease prevalence and threshold choice, making it useful for comparing tests — but does not, by itself, indicate clinical usefulness in any particular population.
+
+**Youden's J Statistic**
+J = Sensitivity + Specificity − 1. Ranges from 0 (no discrimination) to 1 (perfect). Used to identify an "optimal" cutpoint on the ROC curve by maximizing combined sensitivity and specificity. Treats false positives and false negatives as equally costly — appropriate only when that assumption holds.
         """)
 
     with st.expander("📐 Measures of Association"):
@@ -12249,6 +12330,9 @@ Protecting patients from unnecessary or harmful interventions — overdiagnosis,
 
 **Lead-Time Bias**
 When screening appears to extend survival only because disease is detected earlier, not because treatment is more effective. Total lifespan is unchanged — the clock starts earlier. Use mortality rates (not survival time) to evaluate screening effectiveness.
+
+**Overdiagnosis**
+The detection of disease that would never have caused harm in the patient's lifetime if left undetected — typically indolent disease found by screening that the patient would have died *with* but not *from*. Overdiagnosis is a real harm because it leads to overtreatment (surgery, radiation, anxiety, costs) for people who would not have benefited from intervention. A central concern in screening for slow-growing cancers (e.g., low-grade prostate cancer, ductal carcinoma in situ, small thyroid nodules). Distinct from a false positive: in overdiagnosis, the disease *is* present, but its identification provides no benefit.
 
 **Chain of Infection**
 Six-link framework for infectious disease transmission: (1) Agent, (2) Reservoir, (3) Portal of Exit, (4) Mode of Transmission, (5) Portal of Entry, (6) Susceptible Host. Breaking any one link prevents transmission.

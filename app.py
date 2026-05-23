@@ -3701,6 +3701,76 @@ The crude estimate was being pulled toward the null by a confounder that worked 
         st.subheader("Methods to Control Confounding")
         st.markdown("Confounding can be controlled at the **design stage** or the **analysis stage**.")
 
+        st.success("**The unifying principle:** All confounding-control methods — whether at the design stage or the analysis stage — attempt to make exposed and unexposed groups more *comparable*. The methods differ in *how* they create comparability, but the goal is the same.")
+
+        # Synthesis flow diagram — gives students an organizational map before the details
+        st.markdown("#### How the Methods Fit Together")
+        import streamlit.components.v1 as _ctrl_flow_comp
+        ctrl_flow_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 420" style="width:100%;max-width:760px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;display:block;margin:0 auto;">
+  <defs>
+    <marker id="cf_arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#4b5563"/>
+    </marker>
+  </defs>
+
+  <!-- Top: Confounder present -->
+  <rect x="280" y="15" width="200" height="44" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
+  <text x="380" y="35" font-size="13" font-weight="700" fill="#92400e" text-anchor="middle">Confounder Present</text>
+  <text x="380" y="51" font-size="10" fill="#78350f" text-anchor="middle">(threat to comparability)</text>
+
+  <!-- Arrows down from top to two branches -->
+  <line x1="340" y1="59" x2="170" y2="90" stroke="#4b5563" stroke-width="2" marker-end="url(#cf_arrow)"/>
+  <line x1="420" y1="59" x2="590" y2="90" stroke="#4b5563" stroke-width="2" marker-end="url(#cf_arrow)"/>
+
+  <!-- Left branch header: Design Stage -->
+  <rect x="40" y="90" width="280" height="40" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="180" y="108" font-size="13" font-weight="700" fill="#1e3a8a" text-anchor="middle">🔧 DESIGN STAGE — Prevent</text>
+  <text x="180" y="122" font-size="10" fill="#1e3a8a" text-anchor="middle">Build comparability before data collection</text>
+
+  <!-- Left branch methods -->
+  <rect x="55" y="145" width="250" height="32" rx="5" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="180" y="166" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Randomization (RCTs only)</text>
+
+  <rect x="55" y="185" width="250" height="32" rx="5" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="180" y="206" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Restriction</text>
+
+  <rect x="55" y="225" width="250" height="32" rx="5" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="180" y="246" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Matching</text>
+
+  <!-- Right branch header: Analysis Stage -->
+  <rect x="440" y="90" width="280" height="40" rx="6" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
+  <text x="580" y="108" font-size="13" font-weight="700" fill="#14532d" text-anchor="middle">📊 ANALYSIS STAGE — Adjust</text>
+  <text x="580" y="122" font-size="10" fill="#14532d" text-anchor="middle">Recover comparability after data collection</text>
+
+  <!-- Right branch methods -->
+  <rect x="455" y="145" width="250" height="32" rx="5" fill="#fff" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="580" y="166" font-size="12" font-weight="600" fill="#15803d" text-anchor="middle">Stratification (Mantel-Haenszel)</text>
+
+  <rect x="455" y="185" width="250" height="32" rx="5" fill="#fff" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="580" y="206" font-size="12" font-weight="600" fill="#15803d" text-anchor="middle">Multivariable Regression</text>
+
+  <rect x="455" y="225" width="250" height="32" rx="5" fill="#fff" stroke="#22c55e" stroke-width="1.5"/>
+  <text x="580" y="246" font-size="12" font-weight="600" fill="#15803d" text-anchor="middle">Propensity Score Methods</text>
+
+  <!-- Converging arrows to "Adjusted Estimate" -->
+  <line x1="180" y1="257" x2="320" y2="310" stroke="#4b5563" stroke-width="2" marker-end="url(#cf_arrow)"/>
+  <line x1="580" y1="257" x2="440" y2="310" stroke="#4b5563" stroke-width="2" marker-end="url(#cf_arrow)"/>
+
+  <!-- Adjusted estimate box -->
+  <rect x="260" y="312" width="240" height="44" rx="8" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
+  <text x="380" y="332" font-size="13" font-weight="700" fill="#3730a3" text-anchor="middle">More Comparable Estimate</text>
+  <text x="380" y="348" font-size="10" fill="#312e81" text-anchor="middle">(closer to the causal effect)</text>
+
+  <!-- Caveat -->
+  <text x="380" y="385" font-size="11" font-style="italic" fill="#6b7280" text-anchor="middle">⚠️ Residual confounding usually remains in observational studies —</text>
+  <text x="380" y="400" font-size="11" font-style="italic" fill="#6b7280" text-anchor="middle">adjustment improves but rarely eliminates the problem.</text>
+</svg>"""
+        _ctrl_flow_comp.html(f"<div style='font-family:sans-serif;'>{ctrl_flow_svg}</div>", height=440, scrolling=False)
+
+        st.markdown("Below, each method is detailed with **how it works**, its **strengths**, and its **limitations**.")
+        st.markdown("")
+
         col1, col2 = st.columns(2)
         with col1:
             st.markdown("#### 🔧 Design Stage")
@@ -3708,11 +3778,11 @@ The crude estimate was being pulled toward the null by a confounder that worked 
                 st.markdown("""
 **When:** RCTs only
 
-**How:** Random assignment distributes confounders — both measured and unmeasured — equally across groups. If the sample is large enough, groups are balanced on all characteristics.
+**How:** Random assignment distributes confounders — both measured and unmeasured — across groups by chance. **In large samples**, randomization tends to balance groups on all characteristics, both known and unknown. In smaller trials, chance imbalance can still occur, which is why baseline characteristics ("Table 1") are checked and why stratified or block randomization is often used.
 
-**Strength:** Controls for confounders you don't even know about.
+**Strength:** The only method that controls for confounders you don't even know about.
 
-**Limitation:** Only available in experimental studies.
+**Limitation:** Only available in experimental studies; not guaranteed to balance in small trials.
                 """)
             with st.expander("Restriction"):
                 st.markdown("""
@@ -3720,7 +3790,7 @@ The crude estimate was being pulled toward the null by a confounder that worked 
 
 **Strength:** Simple; prevents confounding completely for that variable.
 
-**Limitation:** Reduces sample size; limits generalizability; can't control for confounders you haven't thought of.
+**Limitation:** Reduces sample size; limits generalizability; can't control for confounders you haven't thought of; **and you cannot study the restricted variable as an exposure or effect modifier** (if you restrict to non-smokers, you cannot examine smoking effects in your data).
                 """)
             with st.expander("Matching"):
                 st.markdown("""
@@ -3728,7 +3798,7 @@ The crude estimate was being pulled toward the null by a confounder that worked 
 
 **Strength:** Controls confounding by design; increases efficiency in case-control studies.
 
-**Limitation:** Can't match on many variables; matched design must be analyzed with matched methods (conditional logistic regression); can't study matched variables as exposures; overmatching possible.
+**Limitation:** Can't match on many variables; **matching at the design stage does not automatically eliminate confounding — the matched design must be analyzed with matched methods** (conditional logistic regression for matched case-control studies); can't study matched variables as exposures; overmatching possible.
                 """)
 
         with col2:
@@ -3745,17 +3815,21 @@ The crude estimate was being pulled toward the null by a confounder that worked 
                 st.markdown("""
 **How:** Include confounders as covariates in a regression model (logistic, Poisson, Cox). The coefficient for the exposure is adjusted for all covariates simultaneously.
 
+**Plain language:** Regression statistically "holds other variables constant" while estimating the exposure-outcome association — it asks, *if two people were identical on all the covariates but differed in exposure, how different would their outcome be?*
+
 **Strength:** Can control many confounders at once; flexible.
 
 **Limitation:** Requires assumptions (linearity, no multicollinearity); residual confounding if variables are measured poorly; more of a black box than stratification.
                 """)
             with st.expander("Propensity Score Methods"):
                 st.markdown("""
-**How:** Estimate each subject's probability of being exposed given their confounders (propensity score). Match, weight, or stratify by propensity score.
+**How:** Estimate each subject's probability of being exposed given their confounders (the propensity score). Match, weight, or stratify by propensity score.
+
+**Plain language:** The goal is to create exposed and unexposed groups that *look more comparable* on measured characteristics — mimicking what randomization does naturally in an RCT.
 
 **Strength:** Can handle many confounders; creates balance similar to randomization for measured variables.
 
-**Limitation:** Cannot control for unmeasured confounders; complex; less intuitive.
+**Limitation:** Cannot control for unmeasured confounders; complex; less intuitive than stratification.
                 """)
 
         st.info("**Residual confounding:** Even after adjustment, if confounders are measured imperfectly, some confounding remains. This is almost always present in observational studies to some degree.")

@@ -4719,8 +4719,8 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
         <rect x="258" y="95" width="11" height="55" fill="#2563eb" rx="1"/>
         <rect x="271" y="108" width="11" height="42" fill="#60a5fa" rx="1"/>
         <!-- Wave labels -->
-        <text x="69" y="110" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W1</text>
-        <text x="122" y="90" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W2</text>
+        <text x="69" y="100" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W1</text>
+        <text x="122" y="78" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W2</text>
         <text x="190" y="52" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W3</text>
         <text x="258" y="86" font-size="10" fill="#1d4ed8" text-anchor="middle" font-weight="600">W4</text>
         <!-- Incubation period spacing indicator: line connecting W1 to W2 peaks -->
@@ -4769,15 +4769,15 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
         <rect x="267" y="134" width="13" height="16" fill="#ede9fe" rx="1.5"/>
         <!-- Annotations -->
         <text x="91" y="58" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="bold">Point source</text>
-        <text x="170" y="75" font-size="10" fill="#7c3aed" text-anchor="middle" font-weight="bold">Secondary spread</text>
+        <text x="170" y="75" font-size="10" fill="#5b21b6" text-anchor="middle" font-weight="bold">Secondary spread</text>
         <!-- Causal arrow: clean left-to-right arc showing temporal progression -->
         <defs>
           <marker id="purpleArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c3aed"/>
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#5b21b6"/>
           </marker>
         </defs>
-        <path d="M 130 95 Q 138 88 148 95" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#purpleArrow)"/>
-        <text x="139" y="82" font-size="8" fill="#7c3aed" text-anchor="middle" font-style="italic">leads to</text>
+        <path d="M 130 95 Q 138 88 148 95" stroke="#5b21b6" stroke-width="1.8" fill="none" stroke-dasharray="4,2" marker-end="url(#purpleArrow)"/>
+        <text x="139" y="82" font-size="9" fill="#5b21b6" text-anchor="middle" font-style="italic" font-weight="600">leads to</text>
         <!-- X-axis label -->
         <text x="172" y="186" font-size="10" fill="#374151" text-anchor="middle" font-weight="600">Time</text>
       </svg>
@@ -4800,8 +4800,9 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
         <!-- Axes -->
         <line x1="40" y1="150" x2="305" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
         <line x1="40" y1="20" x2="40" y2="150" stroke="#9ca3af" stroke-width="1.5"/>
-        <!-- Epidemic threshold (red dashed) -->
+        <!-- Epidemic threshold (red dashed) with inline label -->
         <line x1="40" y1="80" x2="305" y2="80" stroke="#dc2626" stroke-width="1.3" stroke-dasharray="4,3"/>
+        <text x="172" y="74" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="bold">Epidemic threshold</text>
         <!-- Endemic baseline (gray dashed) -->
         <line x1="40" y1="120" x2="305" y2="120" stroke="#94a3b8" stroke-width="1.3" stroke-dasharray="5,3"/>
         <!-- Endemic bars: fluctuate around baseline, never crossing threshold -->

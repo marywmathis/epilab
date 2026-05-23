@@ -480,43 +480,37 @@ Remove or modify any one element, and the disease dynamic changes.
 
         import streamlit.components.v1 as _tri_comp
         _tri_comp.html("""
-<style>
-  .tri-title { color: #1a202c; }
-  .tri-caption { fill: #64748b; }
-  @media (prefers-color-scheme: dark) {
-    .tri-title { color: #f1f5f9; }
-    .tri-caption { fill: #94a3b8; }
-  }
-</style>
 <div style="font-family:sans-serif;text-align:center;padding:10px 0;">
-<div class="tri-title" style="font-weight:700;font-size:13px;margin-bottom:10px;">The Epidemiology Triangle</div>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 340" width="500" height="340">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 380" width="500" height="380">
+  <!-- Title rendered as SVG text with white halo for guaranteed contrast in both light AND dark mode -->
+  <text x="250" y="20" font-size="15" font-weight="700" fill="#475569" stroke="white" stroke-width="3" paint-order="stroke" text-anchor="middle">The Epidemiology Triangle</text>
+
   <!-- Triangle fill -->
-  <polygon points="250,28 40,300 460,300" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <polygon points="250,68 40,340 460,340" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
   <!-- Triangle sides colored -->
-  <line x1="250" y1="28" x2="40" y2="300" stroke="#1565c0" stroke-width="2.5" stroke-dasharray="7,4"/>
-  <line x1="250" y1="28" x2="460" y2="300" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="7,4"/>
-  <line x1="40" y1="300" x2="460" y2="300" stroke="#c62828" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <line x1="250" y1="68" x2="40" y2="340" stroke="#1565c0" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <line x1="250" y1="68" x2="460" y2="340" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <line x1="40" y1="340" x2="460" y2="340" stroke="#c62828" stroke-width="2.5" stroke-dasharray="7,4"/>
 
   <!-- AGENT top -->
-  <rect x="185" y="8" width="130" height="52" rx="9" fill="#fce4ec" stroke="#c62828" stroke-width="2.5"/>
-  <text x="250" y="31" font-size="14" font-weight="700" fill="#c62828" text-anchor="middle">AGENT</text>
-  <text x="250" y="49" font-size="10" fill="#888" text-anchor="middle">What causes disease</text>
+  <rect x="185" y="48" width="130" height="52" rx="9" fill="#fce4ec" stroke="#c62828" stroke-width="2.5"/>
+  <text x="250" y="71" font-size="14" font-weight="700" fill="#c62828" text-anchor="middle">AGENT</text>
+  <text x="250" y="89" font-size="10" fill="#888" text-anchor="middle">What causes disease</text>
 
   <!-- HOST bottom-left -->
-  <rect x="8" y="274" width="120" height="52" rx="9" fill="#e3f2fd" stroke="#1565c0" stroke-width="2.5"/>
-  <text x="68" y="297" font-size="14" font-weight="700" fill="#1565c0" text-anchor="middle">HOST</text>
-  <text x="68" y="314" font-size="10" fill="#888" text-anchor="middle">Who gets disease</text>
+  <rect x="8" y="314" width="120" height="52" rx="9" fill="#e3f2fd" stroke="#1565c0" stroke-width="2.5"/>
+  <text x="68" y="337" font-size="14" font-weight="700" fill="#1565c0" text-anchor="middle">HOST</text>
+  <text x="68" y="354" font-size="10" fill="#888" text-anchor="middle">Who gets disease</text>
 
   <!-- ENVIRONMENT bottom-right -->
-  <rect x="372" y="274" width="120" height="52" rx="9" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
-  <text x="432" y="297" font-size="14" font-weight="700" fill="#2e7d32" text-anchor="middle">ENVIRONMENT</text>
-  <text x="432" y="314" font-size="10" fill="#888" text-anchor="middle">Where it occurs</text>
+  <rect x="372" y="314" width="120" height="52" rx="9" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+  <text x="432" y="337" font-size="14" font-weight="700" fill="#2e7d32" text-anchor="middle">ENVIRONMENT</text>
+  <text x="432" y="354" font-size="10" fill="#888" text-anchor="middle">Where it occurs</text>
 
   <!-- TIME center ellipse -->
-  <ellipse cx="250" cy="190" rx="62" ry="36" fill="#fff8e1" stroke="#f9a825" stroke-width="2.5"/>
-  <text x="250" y="185" font-size="13" font-weight="700" fill="#f57f17" text-anchor="middle">TIME</text>
-  <text x="250" y="202" font-size="10" fill="#999" text-anchor="middle">When it unfolds</text>
+  <ellipse cx="250" cy="230" rx="62" ry="36" fill="#fff8e1" stroke="#f9a825" stroke-width="2.5"/>
+  <text x="250" y="225" font-size="13" font-weight="700" fill="#f57f17" text-anchor="middle">TIME</text>
+  <text x="250" y="242" font-size="10" fill="#999" text-anchor="middle">When it unfolds</text>
 
   <!-- Arrows: TIME → vertices -->
   <defs>
@@ -524,12 +518,12 @@ Remove or modify any one element, and the disease dynamic changes.
       <path d="M0,0 L9,4.5 L0,9 Z" fill="#f9a825"/>
     </marker>
   </defs>
-  <line x1="250" y1="154" x2="250" y2="66" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
-  <line x1="192" y1="202" x2="118" y2="284" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
-  <line x1="308" y1="202" x2="382" y2="284" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="250" y1="194" x2="250" y2="106" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="192" y1="242" x2="118" y2="324" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
+  <line x1="308" y1="242" x2="382" y2="324" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
 
-  <!-- Caption -->
-  <text x="250" y="335" font-size="9" class="tri-caption" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
+  <!-- Caption with same white-halo treatment -->
+  <text x="250" y="375" font-size="10" fill="#64748b" stroke="white" stroke-width="2.5" paint-order="stroke" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
 </svg>
 </div>
         """, height=420, scrolling=False)

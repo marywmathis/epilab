@@ -4681,7 +4681,7 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
     </div>
     <div class="key-box">
       <b>Shape:</b> Single sharp peak, rapid rise and fall<br>
-      <b>Duration:</b> Width ≈ one incubation period<br>
+      <b>Duration:</b> Cases usually occur within one incubation period<br>
       <b>No secondary waves</b> — exposure ended
     </div>
   </div>
@@ -4732,7 +4732,7 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
     </div>
     <div class="key-box">
       <b>Shape:</b> Successive waves, each growing then shrinking<br>
-      <b>Wave spacing:</b> ≈ one incubation period apart<br>
+      <b>Wave spacing:</b> ≈ one incubation period between wave peaks<br>
       <b>Continues</b> until immunity exhausted or transmission interrupted
     </div>
   </div>
@@ -4770,14 +4770,14 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
         <!-- Annotations -->
         <text x="91" y="58" font-size="10" fill="#dc2626" text-anchor="middle" font-weight="bold">Point source</text>
         <text x="170" y="75" font-size="10" fill="#7c3aed" text-anchor="middle" font-weight="bold">Secondary spread</text>
-        <!-- Causal arrow from point source to secondary wave with arrowhead -->
+        <!-- Causal arrow: clean left-to-right arc showing temporal progression -->
         <defs>
           <marker id="purpleArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
             <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c3aed"/>
           </marker>
         </defs>
-        <path d="M 128 100 Q 135 85 145 105" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#purpleArrow)"/>
-        <text x="132" y="82" font-size="8" fill="#7c3aed" text-anchor="middle" font-style="italic">leads to</text>
+        <path d="M 130 95 Q 138 88 148 95" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="4,2" marker-end="url(#purpleArrow)"/>
+        <text x="139" y="82" font-size="8" fill="#7c3aed" text-anchor="middle" font-style="italic">leads to</text>
         <!-- X-axis label -->
         <text x="172" y="186" font-size="10" fill="#374151" text-anchor="middle" font-weight="600">Time</text>
       </svg>

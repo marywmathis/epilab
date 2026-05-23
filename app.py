@@ -4842,7 +4842,7 @@ Each pattern has a distinct shape. The **dotted baseline** shows the expected ba
 </body>
 </html>
 """
-        _comp4.html(four_panel_html, height=700, scrolling=False)
+        _comp4.html(four_panel_html, height=1100, scrolling=False)
 
         st.markdown("""
 **Reading the baseline:** The dotted gray line represents the **expected endemic level** — how many cases occur in any given time period without an unusual event. Cases above the baseline represent excess cases attributable to the outbreak or epidemic. An **epidemic threshold** (red dashes, shown in the endemic panel) represents one possible alert level — a common teaching heuristic uses 2 standard deviations above the historical mean, though real surveillance systems use varied approaches. When cases cross the threshold, formal outbreak investigation is triggered.

@@ -4224,11 +4224,18 @@ Prevalence can be low even for serious diseases if they are rapidly fatal (short
         """)
 
         with st.expander("🔢 Interactive: Explore the Relationship"):
+            st.markdown("""
+<div style="background:#f0f9ff;border-left:3px solid #0284c7;padding:12px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;font-size:14px;color:#0c4a6e;line-height:1.6;">
+<b>Before you move the sliders, notice the structure:</b><br>
+Prevalence rises when <b>new cases occur more often</b> (↑ incidence) <i>or</i> when <b>people live with the disease longer</b> (↑ duration) — or both.
+</div>
+            """, unsafe_allow_html=True)
             inc = st.slider("Incidence rate (per 1,000/year)", 1, 50, 10)
             dur = st.slider("Average disease duration (years)", 1, 30, 5)
             prev_est = (inc/1000) * dur
-            st.metric("Estimated Prevalence", f"{round(prev_est*100,1)}%")
+            st.metric("Approximate prevalence at a point in time", f"{round(prev_est*100,1)}%")
             st.markdown(f"P ≈ I × D = {inc/1000} × {dur} = {round(prev_est,4)} ≈ {round(prev_est*100,1)}%")
+            st.caption("Assumes a stable population at steady state — incidence, duration, and population size roughly constant. Real populations rarely meet this exactly, so treat P ≈ I × D as a structural approximation, not an exact equality.")
 
         with st.expander("Examples"):
             st.markdown("""
@@ -4236,8 +4243,8 @@ Prevalence can be low even for serious diseases if they are rapidly fatal (short
 |---|---|---|---|
 | Flu | High (each winter) | Short (~1 week) | Low at any point |
 | HIV (pre-treatment era) | Lower | Long (years) | High relative to incidence |
-| HIV (modern treatment) | Lower | Very long (decades) | Even higher — people live longer |
-| Ebola (outbreak) | High during outbreak | Short (fatal quickly) | Low |
+| HIV (modern treatment) | Lower | Very long (decades) | Higher prevalence despite similar incidence |
+| Ebola (outbreak) | High during outbreak | Short (fatal quickly) | Usually low at any single point in time |
 
 **Treatment and prevalence:** Effective treatment that extends life (but doesn't cure) **increases prevalence** — more people live longer with the disease. This is why diabetes and HIV prevalence have risen even as incidence has stabilized or fallen.
             """)

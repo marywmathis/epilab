@@ -5056,8 +5056,50 @@ Each "pie" represents one sufficient cause — a complete causal mechanism. Each
 - This model explains why effect modification (interaction) is the rule, not the exception
             """)
 
+        # Explicit visual contrast for the most-confused distinction in the model
+        st.markdown("#### 🔑 Necessary vs. Sufficient — The Critical Distinction")
+        st.markdown("These two words sound similar but mean opposite things in causal logic. Students consistently conflate them, so it's worth being explicit:")
+
+        ncol1, ncol2 = st.columns(2)
+        with ncol1:
+            st.markdown("""
+<div style="background:#eff6ff;border:2px solid #1d4ed8;border-radius:10px;padding:16px;height:100%;">
+<div style="font-weight:700;font-size:15px;color:#1e3a8a;margin-bottom:8px;">NECESSARY</div>
+<div style="font-size:13px;color:#1e3a8a;line-height:1.5;">
+<b>Must be present</b> for disease to occur.<br><br>
+Disease cannot happen <i>without</i> it.<br><br>
+Appears in <i>every</i> sufficient cause.<br><br>
+<b>Examples:</b><br>
+• HIV → AIDS<br>
+• HPV → cervical cancer<br>
+• Mycobacterium tuberculosis → TB
+</div>
+</div>
+            """, unsafe_allow_html=True)
+        with ncol2:
+            st.markdown("""
+<div style="background:#fef3c7;border:2px solid #d97706;border-radius:10px;padding:16px;height:100%;">
+<div style="font-weight:700;font-size:15px;color:#92400e;margin-bottom:8px;">SUFFICIENT</div>
+<div style="font-size:13px;color:#92400e;line-height:1.5;">
+<b>Alone (with co-acting components) inevitably produces</b> disease.<br><br>
+Given the complete set, disease is <i>certain</i>.<br><br>
+A full pie — every slice present.<br><br>
+<b>Note:</b><br>
+• A single factor is <i>almost never</i> sufficient by itself<br>
+• "Sufficient cause" usually means a combination of components<br>
+• Rare in epidemiology
+</div>
+</div>
+            """, unsafe_allow_html=True)
+
+        st.info("""
+**The key insight:** A cause can be **necessary but not sufficient** (HPV is needed for cervical cancer, but most HPV infections don't cause cancer — other components must combine). A cause can be **sufficient but not necessary** (a complete set of components inevitably produces disease, but other complete sets exist too). And many real exposures are **neither necessary nor sufficient** — they're just component causes that participate in some pathways. Smoking is the classic example: it isn't required for lung cancer (some get it without smoking), and it isn't enough on its own (most smokers don't get lung cancer), but it's the most powerful component cause we know of.
+        """)
+
         st.divider()
         st.markdown("### 🥧 The Pies — Visual Model")
+        st.markdown("**How to read these diagrams:** Each full pie below represents *one sufficient causal mechanism* — a complete way that lung cancer can arise. Each slice is a component cause. Disease only occurs when an entire pie is completed (all slices present). The three pies shown are *example* mechanisms; in reality, dozens or hundreds of sufficient causes may exist for any chronic disease, most of them never fully described.")
+        st.warning("⚠️ **These pies are conceptual models, not literal physical structures.** Component causes don't exist as discrete biological pieces you could measure individually. The pie diagram is a way of *reasoning* about how multiple factors combine to produce disease, not a microscope view of how disease actually happens biochemically.")
 
         pies_html = """
 <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;margin:16px 0;background:#fff;">
@@ -5226,6 +5268,53 @@ This means:
             """)
 
         st.divider()
+        st.markdown("### Infectious vs. Chronic Disease — Why Causation Looks Different")
+        st.markdown("Rothman's model elegantly explains why infectious and chronic disease epidemiology *feel* so different. The same conceptual framework applies to both, but the structure of the pies differs:")
+
+        ic1, ic2 = st.columns(2)
+        with ic1:
+            st.markdown("""
+<div style="background:#ecfeff;border:2px solid #0891b2;border-radius:10px;padding:16px;height:100%;">
+<div style="font-weight:700;font-size:14px;color:#155e75;margin-bottom:10px;">🦠 INFECTIOUS DISEASE</div>
+<div style="font-size:13px;color:#155e75;line-height:1.55;">
+<b>Often has a strong necessary cause</b> (the pathogen).<br><br>
+<b>Examples:</b><br>
+• TB requires <i>M. tuberculosis</i><br>
+• HIV is necessary for AIDS<br>
+• Measles requires the measles virus<br><br>
+<b>What this implies:</b><br>
+• Every sufficient causal pie contains the pathogen<br>
+• Removing the pathogen prevents <i>all</i> disease pathways<br>
+• A single intervention (vaccination, treatment) can eradicate disease<br>
+• Causal claims are often straightforward<br><br>
+<i>But:</i> who gets sick after exposure still depends on co-acting components (immune status, dose, nutrition, etc.) — the pathogen is necessary but not sufficient alone.
+</div>
+</div>
+            """, unsafe_allow_html=True)
+        with ic2:
+            st.markdown("""
+<div style="background:#fef3c7;border:2px solid #d97706;border-radius:10px;padding:16px;height:100%;">
+<div style="font-weight:700;font-size:14px;color:#92400e;margin-bottom:10px;">🫀 CHRONIC DISEASE</div>
+<div style="font-size:13px;color:#92400e;line-height:1.55;">
+<b>Usually has no single necessary cause</b> — many interchangeable pathways.<br><br>
+<b>Examples:</b><br>
+• Lung cancer can arise from smoking, radon, asbestos, genetics, or combinations<br>
+• Heart disease has dozens of contributing pathways<br>
+• Type 2 diabetes involves diet, activity, genes, microbiome, stress, and more<br><br>
+<b>What this implies:</b><br>
+• Removing one component (even a strong one) only blocks pathways containing it<br>
+• No single intervention prevents all cases<br>
+• Causal claims are <i>population-level probabilistic statements</i>, not individual certainties<br>
+• Multiple complementary interventions are needed
+</div>
+</div>
+            """, unsafe_allow_html=True)
+
+        st.info("""
+**Pedagogical insight:** This is why infectious-disease epidemiology can sometimes feel more *deterministic* ("the bacteria caused TB") while chronic-disease epidemiology feels more *probabilistic* ("smoking increases the risk of lung cancer"). It's not that the science is sloppier in chronic disease — it's that the underlying causal structure has many parallel pathways rather than one shared bottleneck. Rothman's pies make this asymmetry visible.
+        """)
+
+        st.divider()
         with st.expander("🔢 Quantifying Interaction — Synergy and Antagonism"):
             st.markdown("""
 **Additive interaction (the epidemiologic standard):**
@@ -5243,6 +5332,76 @@ The joint effect is less than the sum of individual effects. Less common — may
 **Why additive, not multiplicative?**
 Rothman argues that the biologically meaningful scale for interaction is additive (excess cases), not multiplicative (ratio). Two factors that simply multiply each other's effects are acting independently on separate sufficient causes.
             """)
+
+        with st.expander("⏳ Induction vs. Latency — The Causal Timeline"):
+            st.markdown("These two terms get confused constantly because both describe 'time between things,' but they describe *different* gaps on the disease timeline. The distinction matters because each shapes study design and interpretation differently.")
+
+            import streamlit.components.v1 as _timeline_comp
+            timeline_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 280" style="width:100%;max-width:720px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;display:block;margin:0 auto;">
+
+  <!-- Timeline base -->
+  <line x1="60" y1="160" x2="660" y2="160" stroke="#374151" stroke-width="2"/>
+
+  <!-- Tick marks for three key events -->
+  <line x1="100" y1="150" x2="100" y2="180" stroke="#0891b2" stroke-width="3"/>
+  <line x1="320" y1="150" x2="320" y2="180" stroke="#d97706" stroke-width="3"/>
+  <line x1="560" y1="150" x2="560" y2="180" stroke="#c62828" stroke-width="3"/>
+
+  <!-- Event labels (above) -->
+  <text x="100" y="135" font-size="12" font-weight="700" fill="#0891b2" text-anchor="middle">Sufficient cause</text>
+  <text x="100" y="120" font-size="11" font-weight="700" fill="#0891b2" text-anchor="middle">completes</text>
+  <text x="100" y="105" font-size="10" font-style="italic" fill="#155e75" text-anchor="middle">(last component acts)</text>
+
+  <text x="320" y="135" font-size="12" font-weight="700" fill="#d97706" text-anchor="middle">Disease begins</text>
+  <text x="320" y="120" font-size="11" font-weight="700" fill="#d97706" text-anchor="middle">(pathology starts)</text>
+  <text x="320" y="105" font-size="10" font-style="italic" fill="#92400e" text-anchor="middle">(biological initiation)</text>
+
+  <text x="560" y="135" font-size="12" font-weight="700" fill="#c62828" text-anchor="middle">Disease detected</text>
+  <text x="560" y="120" font-size="11" font-weight="700" fill="#c62828" text-anchor="middle">(diagnosis)</text>
+  <text x="560" y="105" font-size="10" font-style="italic" fill="#991b1b" text-anchor="middle">(symptoms / screening)</text>
+
+  <!-- Period brackets below the timeline -->
+  <!-- Induction period bracket -->
+  <line x1="100" y1="200" x2="100" y2="210" stroke="#0891b2" stroke-width="2"/>
+  <line x1="100" y1="210" x2="320" y2="210" stroke="#0891b2" stroke-width="2"/>
+  <line x1="320" y1="200" x2="320" y2="210" stroke="#0891b2" stroke-width="2"/>
+  <text x="210" y="232" font-size="13" font-weight="700" fill="#0891b2" text-anchor="middle">INDUCTION PERIOD</text>
+  <text x="210" y="250" font-size="11" fill="#155e75" text-anchor="middle">from causal completion → disease initiation</text>
+  <text x="210" y="266" font-size="10" font-style="italic" fill="#155e75" text-anchor="middle">(the body is "becoming sick" but no disease yet)</text>
+
+  <!-- Latency period bracket -->
+  <line x1="320" y1="200" x2="320" y2="210" stroke="#c62828" stroke-width="2"/>
+  <line x1="320" y1="210" x2="560" y2="210" stroke="#c62828" stroke-width="2"/>
+  <line x1="560" y1="200" x2="560" y2="210" stroke="#c62828" stroke-width="2"/>
+  <text x="440" y="232" font-size="13" font-weight="700" fill="#c62828" text-anchor="middle">LATENCY PERIOD</text>
+  <text x="440" y="250" font-size="11" fill="#991b1b" text-anchor="middle">from disease initiation → detection</text>
+  <text x="440" y="266" font-size="10" font-style="italic" fill="#991b1b" text-anchor="middle">(disease present but not yet diagnosed)</text>
+
+  <!-- Title -->
+  <text x="360" y="30" font-size="14" font-weight="700" fill="#1f2937" text-anchor="middle">The Disease Timeline — Two Different Gaps</text>
+  <text x="360" y="50" font-size="11" font-style="italic" fill="#6b7280" text-anchor="middle">Both are real; they are not the same thing.</text>
+
+  <!-- Arrow showing time direction -->
+  <text x="660" y="180" font-size="10" fill="#6b7280" text-anchor="end">time →</text>
+</svg>"""
+            _timeline_comp.html(f"<div style='font-family:sans-serif;'>{timeline_svg}</div>", height=300, scrolling=False)
+
+            st.markdown("""
+**Why the distinction matters:**
+
+- **Induction period** is the gap between the moment the sufficient causal mechanism is *completed* (the last component acts) and the moment disease actually begins. This is a property of the *causal biology* — how long it takes the assembled mechanism to produce pathology.
+
+- **Latency period** is the gap between disease initiation and when we *detect* it (through symptoms, screening, or diagnosis). This is a property of the *disease itself plus our ability to detect it* — better screening shortens latency without changing biology.
+
+**A concrete example:** Suppose smoking, asbestos, and unknown components combine in 1990 to complete a sufficient cause for lung cancer. The actual malignant cells might begin forming around 2005 (a 15-year induction). Symptoms appear and the diagnosis is made in 2015 (a 10-year latency). The patient and clinician see only the final diagnosis; the 25-year causal timeline is invisible to them.
+
+**Practical implications:**
+- Studies must follow exposed populations *long enough* to capture both periods, or they will underestimate risk
+- An intervention applied during the induction period may still prevent disease; once disease has initiated, latency-period interventions are about earlier detection rather than prevention
+- "Why didn't anything happen for so long?" is often the wrong question — both periods are biologically normal
+            """)
+
 
         with st.expander("📋 Key Terms — Rothman's Model"):
             st.markdown("""

@@ -4325,27 +4325,31 @@ The same variable can play any of these roles depending on the causal structure 
         dag_choice = st.selectbox("Select a DAG structure:", DAG_TYPES, key="dag_choice")
         st.divider()
 
+        # Consistent sans-serif font stack for all DAG visuals — matches Streamlit's default body font
+        DAG_FONT = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+
         def dag_box(label, sublabel, color_bg, color_border):
             return f"""<div style="display:inline-flex;flex-direction:column;align-items:center;
                 justify-content:center;padding:12px 18px;background:{color_bg};
                 border:2px solid {color_border};border-radius:10px;min-width:110px;
-                text-align:center;font-size:13px;font-weight:700;line-height:1.3;">
-                {label}<br><span style="font-size:10px;font-weight:400;color:#666;">{sublabel}</span>
+                text-align:center;font-size:13px;font-weight:700;line-height:1.3;
+                font-family:{DAG_FONT};">
+                {label}<br><span style="font-size:10px;font-weight:400;color:#666;font-family:{DAG_FONT};">{sublabel}</span>
                 </div>"""
 
         def dag_arrow(label="", color="#555", vertical=False):
             if vertical:
                 return f"""<div style="display:flex;flex-direction:column;align-items:center;
-                    padding:2px 0;color:{color};font-size:11px;">
+                    padding:2px 0;color:{color};font-size:11px;font-family:{DAG_FONT};">
                     <div style="width:2px;height:30px;background:{color};"></div>
                     <div style="font-size:16px;line-height:1;color:{color};">▼</div>
-                    {"<div style='font-size:10px;color:#888;'>"+label+"</div>" if label else ""}
+                    {"<div style='font-size:10px;color:#888;font-family:"+DAG_FONT+";'>"+label+"</div>" if label else ""}
                     </div>"""
             else:
-                return f"""<div style="display:flex;align-items:center;gap:2px;padding:0 6px;color:{color};font-size:11px;">
+                return f"""<div style="display:flex;align-items:center;gap:2px;padding:0 6px;color:{color};font-size:11px;font-family:{DAG_FONT};">
                     <div style="height:2px;width:40px;background:{color};"></div>
                     <div style="font-size:16px;line-height:1;">▶</div>
-                    {"<div style='font-size:10px;color:#888;'>"+label+"</div>" if label else ""}
+                    {"<div style='font-size:10px;color:#888;font-family:"+DAG_FONT+";'>"+label+"</div>" if label else ""}
                     </div>"""
 
         if dag_choice == "Confounder":
@@ -4360,8 +4364,8 @@ A **confounder** is a common cause of both the exposure and the outcome. It crea
             """)
 
             dag_html = f"""
-<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Confounder DAG: Smoking confounds Coffee → Heart Disease</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:{DAG_FONT};">
+  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;font-family:{DAG_FONT};">Confounder DAG: Smoking confounds Coffee → Heart Disease</div>
   <div style="display:flex;flex-direction:column;align-items:center;gap:0;">
     <div>{dag_box("Smoking","Confounder","#fff3e0","#ef6c00")}</div>
     <div style="display:flex;gap:80px;margin-top:4px;">
@@ -4379,16 +4383,24 @@ A **confounder** is a common cause of both the exposure and the outcome. It crea
       <div style="display:flex;flex-direction:column;align-items:center;">
         <div style="height:2px;width:60px;background:#dc2626;"></div>
         <div style="font-size:14px;color:#dc2626;">▶</div>
-        <div style="font-size:10px;color:#dc2626;font-style:italic;">spurious</div>
+        <div style="font-size:10px;color:#dc2626;font-style:italic;font-family:{DAG_FONT};">spurious</div>
       </div>
       {dag_box("Heart Disease","Outcome","#fce4ec","#c62828")}
     </div>
   </div>
-  <div style="margin-top:16px;font-size:11px;color:#718096;background:#fff;border-radius:6px;padding:8px 12px;display:inline-block;">
+  <div style="margin-top:16px;font-size:11px;color:#718096;background:#fff;border-radius:6px;padding:8px 12px;display:inline-block;font-family:{DAG_FONT};">
     🔴 <b>Backdoor path:</b> Coffee ← Smoking → Heart Disease &nbsp;|&nbsp; ✅ <b>Fix:</b> Adjust for Smoking to block this path
   </div>
 </div>"""
             st.markdown(dag_html, unsafe_allow_html=True)
+
+            st.info("""
+**💬 Plain-language explanation:**
+
+Imagine you notice that people who drink coffee seem to have more heart attacks. Before blaming the coffee, ask: *what else is true about coffee drinkers?* It turns out coffee drinkers in older studies were also more likely to be smokers — and smoking is what was actually damaging their hearts. The coffee wasn't the villain; it was just keeping bad company.
+
+A **confounder** is exactly that: a third variable hanging around that's connected to both the thing you're studying and the outcome you're worried about. It makes one thing *look* like it causes another, when really there's a hidden character pulling the strings. Adjusting for the confounder is how you separate the coffee from the smoking and ask: *if everyone in the comparison were smokers (or everyone were non-smokers), would coffee still look harmful?*
+            """)
 
             st.success("✅ **What to do:** Adjust for the confounder (stratify, regression, matching). This blocks the backdoor path and isolates the true causal effect.")
             st.error("❌ **What NOT to do:** Adjust for a variable on the causal pathway — that would be over-adjustment (see Mediator).")
@@ -4415,9 +4427,9 @@ A **mediator** (or intermediate variable) lies **on the causal pathway** between
             """)
 
             dag_html = f"""
-<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Mediator DAG: Physical Activity → Blood Pressure → CVD</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 200" width="520" height="200" style="font-family:sans-serif;">
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:{DAG_FONT};">
+  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;font-family:{DAG_FONT};">Mediator DAG: Physical Activity → Blood Pressure → CVD</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 200" width="520" height="200" style="font-family:{DAG_FONT};">
     <defs>
       <marker id="ma" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2e7d32"/></marker>
       <marker id="mr" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#c62828"/></marker>
@@ -4454,6 +4466,16 @@ A **mediator** (or intermediate variable) lies **on the causal pathway** between
 </div>"""
             import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=250, scrolling=False)
 
+            st.info("""
+**💬 Plain-language explanation:**
+
+Think about *how* exercise helps your heart. Part of the answer is that exercise lowers your blood pressure, and lower blood pressure means less wear and tear on your heart. So when you study "does exercise prevent heart disease?", blood pressure isn't a sneaky third variable — it's part of the story. It's one of the ways the exercise *does its job*.
+
+A **mediator** is a stepping stone *on the road* between cause and effect. If you adjust for it, you're statistically removing one of the very mechanisms you wanted to measure — like trying to ask "how does turning on the stove make water boil?" but holding the temperature of the burner constant. You've just blocked the answer.
+
+The rule of thumb: if you want to know the *total* effect of exercise on heart disease, don't adjust for blood pressure. If you specifically want to know "does exercise help through paths *other than* blood pressure?", you need a different technique called mediation analysis — not just throwing it in the model.
+            """)
+
             st.error("❌ **Critical mistake:** If you adjust for blood pressure when studying physical activity → CVD, you block the main causal pathway. Your estimate of the physical activity effect becomes biased (over-adjustment bias).")
             st.success("✅ **What to do:** Decide your question first. Total effect? Don't adjust for mediator. Direct effect only? Use mediation analysis methods, not simple regression adjustment.")
 
@@ -4477,9 +4499,9 @@ A **collider** is a variable that is caused by **both** the exposure and the out
             """)
 
             dag_html = f"""
-<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Collider DAG: Talent and Hard Work → Success (collider)</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 230" width="560" height="230" style="font-family:sans-serif;">
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:{DAG_FONT};">
+  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;font-family:{DAG_FONT};">Collider DAG: Talent and Hard Work → Success (collider)</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 230" width="560" height="230" style="font-family:{DAG_FONT};">
     <defs>
       <marker id="cp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#7b1fa2"/></marker>
       <marker id="cg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2e7d32"/></marker>
@@ -4511,6 +4533,20 @@ A **collider** is a variable that is caused by **both** the exposure and the out
   </svg>
 </div>"""
             import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=360, scrolling=False)
+
+            st.info("""
+**💬 Plain-language explanation:**
+
+This one is the most counterintuitive of the bunch — and the most likely to bite a careful researcher.
+
+Picture two things that have *nothing to do with each other* in the real world: say, being naturally talented at basketball and working really hard at it. In the general population, talent and effort are unrelated — plenty of talented people are lazy, plenty of mediocre people grind. Now look at only **NBA players**. To make it to the NBA, you basically need at least one of those two things in spades. If you're not naturally gifted, you must have worked obsessively. If you didn't work that hard, you must be a freak athlete.
+
+So in the NBA sample, talent and hard work look *negatively* correlated — even though they're independent in the general population. We didn't measure anything wrong. We just looked at a slice of people who all "made it," and that selection created a fake relationship that doesn't exist in reality.
+
+A **collider** is a variable that's caused by two other things — and *selecting on it or adjusting for it* creates a spurious link between those things. The most common way to do this by accident is to restrict your sample to "people who showed up at a hospital" or "people who survived" or "people who responded to the survey." If both your exposure and your outcome influence who ends up in the sample, you've just opened a backdoor.
+
+The rule: don't adjust for or restrict on something that exposure and outcome *both* influence.
+            """)
 
             st.error("❌ **Collider bias:** Conditioning on a collider opens a spurious path. This happens when you: restrict your sample by outcome (selection bias), adjust for a variable caused by both exposure and outcome, or use a mediator that is also a collider.")
             st.success("✅ **What to do:** Do NOT adjust for colliders. Identify them in your DAG before analysis. Berkson's bias and healthy worker effect are real-world examples of collider bias.")
@@ -4549,14 +4585,14 @@ A **moderator** (or effect modifier) is a variable that changes the **magnitude 
             """)
 
             dag_html = f"""
-<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;">Moderator DAG: Sex modifies the Aspirin → Heart Attack association</div>
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:{DAG_FONT};">
+  <div style="font-weight:700;font-size:13px;margin-bottom:20px;color:#1a202c;font-family:{DAG_FONT};">Moderator DAG: Sex modifies the Aspirin → Heart Attack association</div>
   <div style="display:flex;align-items:center;justify-content:center;gap:0;">
     {dag_box("Aspirin Use","Exposure","#e3f2fd","#1565c0")}
-    <div style="display:flex;flex-direction:column;align-items:center;padding:0 12px;position:relative;">
+    <div style="display:flex;flex-direction:column;align-items:center;padding:0 12px;position:relative;font-family:{DAG_FONT};">
       <div style="height:2px;width:80px;background:#c62828;"></div>
       <div style="font-size:14px;color:#c62828;">▶</div>
-      <div style="font-size:10px;color:#555;font-style:italic;">effect size varies</div>
+      <div style="font-size:10px;color:#555;font-style:italic;font-family:{DAG_FONT};">effect size varies</div>
     </div>
     {dag_box("Heart Attack","Outcome","#fce4ec","#c62828")}
   </div>
@@ -4564,10 +4600,10 @@ A **moderator** (or effect modifier) is a variable that changes the **magnitude 
     <div style="display:flex;flex-direction:column;align-items:center;">
       {dag_box("Sex","Moderator","#fff8e1","#f9a825")}
       <div style="font-size:20px;color:#f9a825;margin-top:4px;">↕</div>
-      <div style="font-size:10px;color:#f9a825;font-weight:600;">modifies the arrow strength</div>
+      <div style="font-size:10px;color:#f9a825;font-weight:600;font-family:{DAG_FONT};">modifies the arrow strength</div>
     </div>
   </div>
-  <div style="margin-top:16px;display:flex;gap:16px;justify-content:center;font-size:12px;">
+  <div style="margin-top:16px;display:flex;gap:16px;justify-content:center;font-size:12px;font-family:{DAG_FONT};">
     <div style="background:#e3f2fd;border-radius:6px;padding:8px 12px;">
       <b>Men:</b> RR = 0.60 (40% risk reduction) ✅
     </div>
@@ -4575,9 +4611,19 @@ A **moderator** (or effect modifier) is a variable that changes the **magnitude 
       <b>Women:</b> RR = 0.95 (no meaningful effect) ❌
     </div>
   </div>
-  <div style="margin-top:10px;font-size:11px;color:#718096;">A single pooled RR would be misleading for both sexes. Report stratum-specific estimates.</div>
+  <div style="margin-top:10px;font-size:11px;color:#718096;font-family:{DAG_FONT};">A single pooled RR would be misleading for both sexes. Report stratum-specific estimates.</div>
 </div>"""
             import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=240, scrolling=False)
+
+            st.info("""
+**💬 Plain-language explanation:**
+
+Sometimes a treatment really does work better for some people than others — and that's not a measurement error or a hidden bias, that's just *reality*. A daily low-dose aspirin meaningfully reduces heart attack risk in men, but in women the protective effect is much weaker (and aspirin carries bleeding risks that may outweigh benefits for many women). That's not the data lying. That's the biology and pharmacology being different across groups.
+
+A **moderator** (also called an **effect modifier**) is a variable that changes *how strongly* the exposure affects the outcome — for different groups, the dose-response curve looks different. The whole point isn't to remove it, it's to **report it**, because pooling everyone together gives you a useless average ("aspirin reduces risk by 22.5%") that doesn't accurately describe either men or women.
+
+This is one of the most important distinctions in epidemiology: *confounding is a problem to fix, effect modification is a finding to report*. Confounding bias means your number is wrong. Effect modification means a single number can't capture the truth — you need to give a number per subgroup.
+            """)
 
             st.warning("⚠️ **Important:** The moderator arrow points TO the exposure-outcome path (it modifies the relationship), not directly to the outcome. This distinguishes it from a confounder (which is a common cause).")
             st.success("✅ **What to do:** Stratify by the modifier and report separate estimates. A single adjusted estimate obscures a clinically important difference.")
@@ -4609,9 +4655,9 @@ It's called M-bias because the DAG has an M shape.
             """)
 
             dag_html = f"""
-<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">M-Bias DAG — The M shape</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 210" width="560" height="210" style="font-family:sans-serif;">
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:{DAG_FONT};">
+  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;font-family:{DAG_FONT};">M-Bias DAG — The M shape</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 210" width="560" height="210" style="font-family:{DAG_FONT};">
     <defs>
       <marker id="mg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#9e9e9e"/></marker>
       <marker id="mr2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#c62828"/></marker>
@@ -4657,6 +4703,18 @@ It's called M-bias because the DAG has an M shape.
 </div>"""
             import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=340, scrolling=False)
 
+            st.info("""
+**💬 Plain-language explanation:**
+
+This is the trap that catches careful researchers. The instinct in epidemiology is "when in doubt, adjust for it." More variables in the model feels safer — like you're being thorough. M-bias is the warning shot that this instinct can backfire.
+
+Imagine you're studying whether alcohol use causes depression. You have a variable called "marital problems," which you measured *before* either alcohol or depression set in. It looks like a perfectly innocent control variable — it's pre-treatment, plausibly related to both, doesn't lie on the pathway. Why not include it?
+
+Here's the catch: marital problems can be *caused by two different things you didn't measure* — say, family-of-origin instability (which also affects your drinking) and an underlying mood vulnerability (which also affects your risk of depression). When you control for marital problems, you're conditioning on something downstream of both of those hidden causes. And just like with the collider example, that **opens a backdoor path** between the alcohol exposure and the depression outcome — one that wasn't there in the unadjusted analysis.
+
+You actually made things *worse* by being careful. The lesson: not every "control variable" earns its keep. You can't reason about which variables to include just by looking at the data; you have to draw out the causal structure first. M-bias is the strongest argument for why DAGs are worth the trouble.
+            """)
+
             st.error("❌ **M-bias trap:** Including a pre-treatment variable that looks 'harmless' can actually introduce bias if it's a collider on a path between unmeasured common causes. This is why you need a DAG — you can't detect this from the data alone.")
             st.info("💡 **Practical implication:** Not all pre-treatment variables should be adjusted for. Draw your DAG first. If a variable is a collider on any path, do not adjust for it.")
 
@@ -4672,9 +4730,9 @@ A **proxy** (or surrogate) is a measured variable that stands in for an unmeasur
             """)
 
             dag_html = f"""
-<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;">
-  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;">Proxy DAG: Education proxies for SES</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 230" width="560" height="230" style="font-family:sans-serif;">
+<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:{DAG_FONT};">
+  <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;font-family:{DAG_FONT};">Proxy DAG: Education proxies for SES</div>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 230" width="560" height="230" style="font-family:{DAG_FONT};">
     <defs>
       <marker id="pg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#9e9e9e"/></marker>
       <marker id="po" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#e65100"/></marker>
@@ -4705,6 +4763,16 @@ A **proxy** (or surrogate) is a measured variable that stands in for an unmeasur
   </svg>
 </div>"""
             import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=280, scrolling=False)
+
+            st.info("""
+**💬 Plain-language explanation:**
+
+Sometimes the thing you really want to measure can't actually be measured directly. *Socioeconomic status*, for example, is a real thing that affects health — but there's no SES blood test. You can't write down someone's "SES = 7.3" on a chart. So researchers use something measurable that's related to it, like years of education or household income. That stand-in is called a **proxy**.
+
+The trade-off is honesty: a proxy is *almost* what you wanted, but not quite. Years of education captures a lot of what SES means in someone's life — but two people with identical schooling can have wildly different SES if one grew up in poverty and the other inherited wealth. So when you adjust for education hoping to control for SES confounding, you're getting *partial* credit. Some confounding still slips through the gap between "education" and "true SES." That leftover bias is called **residual confounding**, and it's one reason epidemiologists are humble about observational findings: you almost never get a perfectly measured confounder, so some bias almost always remains.
+
+The lesson for reading studies: when authors say "we adjusted for socioeconomic factors using education and income," ask yourself how good those measures really are at capturing what matters. A weak proxy means more residual confounding. This is also why combining multiple proxies (education + income + occupation) does better than relying on just one.
+            """)
 
             st.warning("⚠️ **Proxy limitations:** Adjusting for a proxy only partially controls for the underlying variable. The weaker the proxy-variable relationship, the more residual confounding remains. This is why residual confounding is almost always present in observational studies.")
 

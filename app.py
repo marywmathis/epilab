@@ -1008,7 +1008,7 @@ Where:
 **Interpretation:**
 - R₀ < 1 → epidemic dies out
 - R₀ = 1 → endemic equilibrium
-- R₀ > 1 → epidemic grows
+- R₀ > 1 → epidemic grows (each infected person infects more than one additional person on average)
 
 **Examples:**
 | Disease | R₀ estimate (approximate, context-dependent) |
@@ -1034,12 +1034,14 @@ Where:
 
 **HIT = 1 − (1/R₀)**
 
+*In plain terms: the proportion of the population that needs to be immune to interrupt sustained spread.* Below this threshold, each infectious person infects more than one other person on average — outbreaks can be sustained. At or above this threshold, average transmission falls below 1, and outbreaks cannot be sustained over time.
+
 Examples:
 | Disease | R₀ | HIT |
 |---|---|---|
 | Measles | 15 | 93% |
 | Polio | 6 | 83% |
-| COVID-19 | 3 | 67% |
+| COVID-19 (original) | 3 | 67% |
 | Influenza | 1.3 | 23% |
 
 **Sources of herd immunity:**
@@ -1052,25 +1054,155 @@ Examples:
 
         st.divider()
 
-        # Interactive R₀ calculator
+        # ═══════════════════════════════════════════════════════════════
+        # VISUAL INTUITION: what R₀ = 2 vs 15 actually means
+        # ═══════════════════════════════════════════════════════════════
+        st.markdown("### Visualizing R₀ — What the Numbers Actually Mean")
+        st.markdown("R₀ is an *exponent*. Small differences in R₀ produce dramatic differences in how fast disease spreads. Three generations of transmission from one infected person:")
+
+        # Compact branching visual showing generational growth for 3 pathogens
+        branching_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 320" style="width:100%;max-width:720px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+
+  <!-- Column headers -->
+  <text x="180" y="22" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">Generation 1</text>
+  <text x="380" y="22" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">Generation 2</text>
+  <text x="600" y="22" font-size="11" font-weight="700" fill="#475569" text-anchor="middle">Generation 3</text>
+
+  <!-- ============ MEASLES (R₀ ≈ 15) ============ -->
+  <text x="20" y="78" font-size="12" font-weight="700" fill="#991b1b">Measles</text>
+  <text x="20" y="93" font-size="10" fill="#991b1b">R₀ ≈ 15</text>
+
+  <!-- Gen 1 (1 case) -->
+  <circle cx="180" cy="82" r="9" fill="#dc2626"/>
+  <text x="180" y="105" font-size="10" font-weight="700" fill="#991b1b" text-anchor="middle">1 case</text>
+
+  <!-- Gen 2 (15 cases) - draw 15 small dots arranged in a cluster -->
+  <g fill="#dc2626" opacity="0.85">
+    <circle cx="350" cy="68" r="3"/><circle cx="362" cy="64" r="3"/><circle cx="374" cy="68" r="3"/>
+    <circle cx="386" cy="64" r="3"/><circle cx="398" cy="68" r="3"/><circle cx="410" cy="64" r="3"/>
+    <circle cx="350" cy="82" r="3"/><circle cx="362" cy="78" r="3"/><circle cx="374" cy="82" r="3"/>
+    <circle cx="386" cy="78" r="3"/><circle cx="398" cy="82" r="3"/><circle cx="410" cy="78" r="3"/>
+    <circle cx="362" cy="92" r="3"/><circle cx="380" cy="92" r="3"/><circle cx="398" cy="92" r="3"/>
+  </g>
+  <text x="380" y="113" font-size="10" font-weight="700" fill="#991b1b" text-anchor="middle">15 cases</text>
+
+  <!-- Gen 3 (225 cases) - dense cluster -->
+  <rect x="540" y="58" width="120" height="40" fill="#dc2626" opacity="0.7" rx="3"/>
+  <text x="600" y="83" font-size="14" font-weight="700" fill="white" text-anchor="middle">225 cases</text>
+  <text x="600" y="113" font-size="10" font-weight="700" fill="#991b1b" text-anchor="middle">→ explosive growth</text>
+
+  <!-- Arrow between gens -->
+  <line x1="200" y1="82" x2="335" y2="82" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="425" y1="82" x2="535" y2="78" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- Divider -->
+  <line x1="20" y1="130" x2="700" y2="130" stroke="#e5e7eb" stroke-width="1"/>
+
+  <!-- ============ COVID-19 ORIGINAL (R₀ ≈ 2.5) ============ -->
+  <text x="20" y="170" font-size="12" font-weight="700" fill="#b45309">COVID-19</text>
+  <text x="20" y="184" font-size="10" fill="#b45309">(original)</text>
+  <text x="20" y="197" font-size="10" fill="#b45309">R₀ ≈ 2.5</text>
+
+  <!-- Gen 1 -->
+  <circle cx="180" cy="178" r="9" fill="#f59e0b"/>
+  <text x="180" y="200" font-size="10" font-weight="700" fill="#b45309" text-anchor="middle">1 case</text>
+
+  <!-- Gen 2 (~2-3 cases) -->
+  <g fill="#f59e0b">
+    <circle cx="368" cy="172" r="5"/><circle cx="380" cy="180" r="5"/><circle cx="392" cy="172" r="5"/>
+  </g>
+  <text x="380" y="200" font-size="10" font-weight="700" fill="#b45309" text-anchor="middle">~2.5 cases</text>
+
+  <!-- Gen 3 (~6 cases) -->
+  <g fill="#f59e0b">
+    <circle cx="572" cy="170" r="5"/><circle cx="586" cy="178" r="5"/><circle cx="600" cy="170" r="5"/>
+    <circle cx="614" cy="178" r="5"/><circle cx="588" cy="186" r="5"/><circle cx="606" cy="186" r="5"/>
+  </g>
+  <text x="595" y="200" font-size="10" font-weight="700" fill="#b45309" text-anchor="middle">~6 cases</text>
+  <text x="595" y="214" font-size="10" font-style="italic" fill="#b45309" text-anchor="middle">→ moderate growth</text>
+
+  <line x1="200" y1="178" x2="345" y2="178" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="405" y1="178" x2="555" y2="178" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+
+  <!-- Divider -->
+  <line x1="20" y1="232" x2="700" y2="232" stroke="#e5e7eb" stroke-width="1"/>
+
+  <!-- ============ SEASONAL FLU (R₀ ≈ 1.3) ============ -->
+  <text x="20" y="270" font-size="12" font-weight="700" fill="#1e40af">Flu</text>
+  <text x="20" y="284" font-size="10" fill="#1e40af">(seasonal)</text>
+  <text x="20" y="297" font-size="10" fill="#1e40af">R₀ ≈ 1.3</text>
+
+  <!-- Gen 1 -->
+  <circle cx="180" cy="278" r="9" fill="#2563eb"/>
+  <text x="180" y="300" font-size="10" font-weight="700" fill="#1e40af" text-anchor="middle">1 case</text>
+
+  <!-- Gen 2 (~1.3) -->
+  <g fill="#2563eb">
+    <circle cx="374" cy="278" r="5"/><circle cx="388" cy="278" r="5"/>
+  </g>
+  <text x="380" y="300" font-size="10" font-weight="700" fill="#1e40af" text-anchor="middle">~1.3 cases</text>
+
+  <!-- Gen 3 (~1.7) -->
+  <g fill="#2563eb">
+    <circle cx="586" cy="278" r="5"/><circle cx="600" cy="278" r="5"/>
+  </g>
+  <text x="595" y="300" font-size="10" font-weight="700" fill="#1e40af" text-anchor="middle">~1.7 cases</text>
+  <text x="595" y="314" font-size="10" font-style="italic" fill="#1e40af" text-anchor="middle">→ slow, sustained spread</text>
+
+  <line x1="200" y1="278" x2="350" y2="278" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+  <line x1="405" y1="278" x2="555" y2="278" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,3"/>
+
+</svg>"""
+        import streamlit.components.v1 as _branch_comp
+        _branch_comp.html(branching_svg, height=340, scrolling=False)
+        st.caption("Same three generations of spread — three very different outcomes. This is why a 5× difference in R₀ produces a 100× difference in cumulative cases. R₀ is an exponent, not a rate.")
+
+        st.divider()
+
+        # ═══════════════════════════════════════════════════════════════
+        # INTERACTIVE CALCULATOR — visually emphasized as the conceptual core
+        # ═══════════════════════════════════════════════════════════════
         st.markdown("### 🔢 Interactive R₀ & Herd Immunity Calculator")
+        st.caption("Move the sliders to see how R₀ and current immunity interact to determine whether an epidemic grows or dies out.")
+
         col_a, col_b = st.columns(2)
         with col_a:
             r0_val = st.slider("R₀ value", 1.0, 20.0, 3.0, 0.1, key="r0_slider")
             hit = (1 - 1/r0_val) * 100
             st.metric("Herd Immunity Threshold", f"{round(hit, 1)}%")
-            st.caption(f"Need ≥{round(hit,1)}% immune to stop epidemic spread")
+            st.caption(f"≥{round(hit,1)}% of the population must be immune to interrupt sustained spread")
         with col_b:
             current_immunity = st.slider("Current population immunity (%)", 0, 100, 60, 1, key="immunity_slider")
             effective_r = r0_val * (1 - current_immunity/100)
-            st.metric("Effective R (Rₑ)", round(effective_r, 2),
-                      delta="epidemic growing" if effective_r > 1 else "epidemic declining")
+            st.metric("Effective R (Rₑ)", round(effective_r, 2))
+
+            # Color-coded Re interpretation — the conceptual hammer
             if effective_r > 1:
-                st.error(f"Rₑ = {round(effective_r,2)} > 1 — epidemic will grow. Need {round(hit-current_immunity,1)}% more immune.")
+                gap = round(hit - current_immunity, 1)
+                st.markdown(f"""
+<div style="background:#fef2f2;border:2px solid #dc2626;border-radius:8px;padding:14px 16px;margin-top:8px;">
+<div style="font-size:13px;font-weight:700;color:#991b1b;text-transform:uppercase;letter-spacing:0.4px;">⚠️ Epidemic will grow</div>
+<div style="font-size:20px;font-weight:700;color:#991b1b;line-height:1.2;margin-top:4px;">Rₑ = {round(effective_r, 2)} &gt; 1</div>
+<div style="font-size:13px;color:#7f1d1d;margin-top:6px;line-height:1.5;">Each infected person infects <b>more than one</b> additional person on average. Need <b>{gap}% more</b> of the population immune to reach the herd immunity threshold.</div>
+</div>
+                """, unsafe_allow_html=True)
             elif effective_r < 1:
-                st.success(f"Rₑ = {round(effective_r,2)} < 1 — epidemic will decline. Herd immunity achieved.")
+                st.markdown(f"""
+<div style="background:#f0fdf4;border:2px solid #16a34a;border-radius:8px;padding:14px 16px;margin-top:8px;">
+<div style="font-size:13px;font-weight:700;color:#14532d;text-transform:uppercase;letter-spacing:0.4px;">✅ Epidemic will decline</div>
+<div style="font-size:20px;font-weight:700;color:#14532d;line-height:1.2;margin-top:4px;">Rₑ = {round(effective_r, 2)} &lt; 1</div>
+<div style="font-size:13px;color:#166534;margin-top:6px;line-height:1.5;">Each infected person infects <b>fewer than one</b> additional person on average. Herd immunity threshold reached — sustained transmission cannot occur in the broader population.</div>
+</div>
+                """, unsafe_allow_html=True)
             else:
-                st.warning("Rₑ ≈ 1 — endemic equilibrium.")
+                st.markdown(f"""
+<div style="background:#fefce8;border:2px solid #ca8a04;border-radius:8px;padding:14px 16px;margin-top:8px;">
+<div style="font-size:13px;font-weight:700;color:#713f12;text-transform:uppercase;letter-spacing:0.4px;">⚖️ Endemic equilibrium</div>
+<div style="font-size:20px;font-weight:700;color:#713f12;line-height:1.2;margin-top:4px;">Rₑ ≈ 1</div>
+<div style="font-size:13px;color:#854d0e;margin-top:6px;line-height:1.5;">Each infected person infects exactly one other on average — disease persists at a stable level.</div>
+</div>
+                """, unsafe_allow_html=True)
 
         with st.expander("🔢 The math behind effective R"):
             st.markdown(f"""
@@ -1084,15 +1216,37 @@ Each infectious person can only transmit to susceptible contacts, so the effecti
             """)
 
         st.divider()
-        with st.expander("⚠️ Limitations and Misconceptions"):
+
+        # Hero callout: the most common misunderstanding
+        st.markdown("""
+<div style="background:#fef3c7;border:2px solid #f59e0b;border-radius:10px;padding:18px 22px;margin:14px 0;">
+<div style="font-size:13px;color:#78350f;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">The most common misunderstanding</div>
+<div style="font-size:22px;color:#78350f;font-weight:700;line-height:1.2;margin-top:6px;">Herd immunity does NOT mean disease disappears</div>
+<div style="font-size:14px;color:#78350f;margin-top:8px;line-height:1.6;">
+Reaching the herd immunity threshold means <b>sustained transmission cannot occur</b> in the broader population — not that transmission stops entirely. Local outbreaks can still happen, especially in pockets where susceptibles cluster (unvaccinated communities, schools, congregate settings). The threshold marks the point at which outbreaks become <i>less sustainable</i>, not impossible.
+</div>
+</div>
+        """, unsafe_allow_html=True)
+
+        with st.expander("⚠️ Limitations and Common Misconceptions"):
             st.markdown("""
-**R₀ is not fixed:** It changes with behavior, interventions, population density, and viral evolution. Delta and Omicron variants of COVID-19 had much higher R₀ than the original strain.
+**Misconception 1: Herd immunity = 100% protection.**
+No. Even above the herd immunity threshold, susceptible individuals can still be infected if they encounter an infectious person. The threshold describes *population dynamics*, not individual guarantees. Susceptible people in a "herd-immune" population are still at risk — they're just less likely to encounter infection because chains of transmission can't sustain themselves.
 
-**Herd immunity is not binary:** It's a threshold, and population immunity is heterogeneous. Even above the HIT, local clusters of susceptibles can sustain outbreaks.
+**Misconception 2: Vaccines must be 100% effective to reduce transmission.**
+No. Vaccines that reduce *either* the probability of infection *or* the duration/intensity of infectiousness contribute to lowering effective R. A 70%-effective vaccine in 80% of the population can produce meaningful herd protection even though no individual is perfectly protected.
 
-**Vaccine-induced vs. infection-induced immunity:** Both contribute to population immunity and both count toward the herd immunity threshold. Vaccination is the preferred and safest route — it confers protection without the disease burden, mortality, and long-term complications of natural infection. Policy discussions sometimes consider the contribution of prior infection to population immunity, particularly when vaccination coverage is incomplete.
+**Misconception 3: Population averages tell the whole story.**
+No. National or state-level immunity figures hide local variation. A 95% national vaccination rate is meaningless if a specific school district sits at 50%. Local outbreaks happen in those clusters even when overall numbers look fine. This is why measles outbreaks recur in specific communities despite high national vaccination coverage.
 
-**Waning immunity:** As immunity wanes (through time or new variants), effective R rises. Booster programs exist to maintain Rₑ < 1.
+**Misconception 4: R₀ is a fixed property of the virus.**
+No. R₀ depends on the *pathogen-population interaction*: contact patterns, density, ventilation, behavior, baseline health. The same virus has different R₀ values in different settings and time periods. Pathogen evolution (e.g., Omicron) also shifts R₀ — variants are not the same disease epidemiologically even when they're the same disease biologically.
+
+**Misconception 5: Vaccine-induced and infection-induced immunity are interchangeable.**
+Both contribute to population immunity, but vaccination is the preferred and safest route — it confers protection without the disease burden, mortality, and long-term complications of natural infection (long COVID, post-polio syndrome, measles immune amnesia).
+
+**Misconception 6: Once herd immunity is reached, it stays reached.**
+No. Waning immunity (through time, new variants, or birth of new susceptibles) raises effective R over time. Booster programs and ongoing vaccination of new cohorts exist to maintain Rₑ < 1.
             """)
 
     # ── SECTION 4: OUTBREAK INVESTIGATION 10 STEPS ──

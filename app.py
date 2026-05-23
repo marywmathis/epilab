@@ -10593,6 +10593,22 @@ The student health center has seen 47 students with vomiting and diarrhea in 48 
             """)
             st.info("💡 **Step 1 of 10:** Prepare for field work + Establish the outbreak exists")
 
+            with st.expander("📨 Field notes from the morning briefing (click to read)"):
+                st.markdown("""
+*7:42 AM email from the Dean of Student Life:*
+> "I'm getting calls from parents. The dorm RAs say residential life is a mess. Can we get a statement out by noon?"
+
+*8:15 AM voicemail from dining services director:*
+> "We have a full kitchen running for 4,000 meals a day. If you're going to shut us down I need to know now, but I'd really rather not — students will lose meal plan access."
+
+*8:30 AM, your supervisor:*
+> "The lab won't have a typed result for 48–72 hours. What's your read on the clinical picture? We need to make a call this morning."
+
+*Your line list so far:* 47 case-patients, 12 with incomplete contact information. Two student-athletes refused to be interviewed. The dining hall doesn't track who eats which meal — you'll have to reconstruct exposure from interviews.
+
+This is what outbreak investigation looks like before all the data is in: incomplete, time-pressured, and full of stakeholders with different priorities. You make the best call you can with what you have.
+                """)
+
             q1 = st.radio("**Decision 1A:** Based on the information above, does an outbreak exist?", [
                 "— Select —",
                 "Yes — 47 cases vs. expected 2–3/week clearly exceeds baseline",
@@ -10609,6 +10625,15 @@ The student health center has seen 47 students with vomiting and diarrhea in 48 
             elif q1 == "No — wait for lab results before declaring an outbreak":
                 st.error("""
 ❌ **Incorrect.** Waiting for lab results before acting is a common error that allows outbreaks to grow. Epidemiologic criteria (cases exceeding expected baseline by time, place, and person) are sufficient to declare and investigate an outbreak. Lab confirmation identifies the agent — it doesn't define whether an outbreak is occurring.
+                """)
+                st.warning("""
+📋 **What happens next (field consequence):**
+
+While you wait for the lab to type the agent (48–72 hours for norovirus), the dining hall continues serving food prepared by the same staff. By Thursday morning, 18 additional students have presented with vomiting and diarrhea. The campus newspaper publishes a story headlined *"Health Department Silent as GI Outbreak Spreads."* The dean's office calls the health department director.
+
+When the lab results finally arrive — confirming what your clinical picture already strongly suggested — you've lost 48 hours of control opportunity, the case count has grown by ~40%, and you're now responding from a position of public scrutiny rather than initiative.
+
+**The lesson:** Lab confirmation refines the agent; epidemiology declares the outbreak. Acting on strong clinical and epidemiologic signal early is almost always the right call.
                 """)
 
             elif q1 == "Maybe — need to interview students first":
@@ -10670,6 +10695,13 @@ You currently have:
             elif q2a == "Narrow (confirmed lab-positive only) — precise but will miss most cases":
                 st.error("""
 ❌ **Incorrect.** Lab-confirmed cases only would capture maybe 5–10% of the true outbreak. Most norovirus cases are never lab-confirmed. Requiring confirmation before counting cases would make your attack rates meaningless and delay control measures by days to weeks.
+                """)
+                st.warning("""
+📋 **What happens next (field consequence):**
+
+You build your case file using only the 5 lab-confirmed cases. Your attack rate calculations use a numerator of 5 instead of 47 — making every food-specific RR look tiny and statistically unstable. None of the food items reaches your significance threshold. Your report concludes "no clear vehicle identified" and the dining hall continues normal operations. Three days later, the regional CDC office requests your line list and recalculates using clinical case definition — the salad bar / Caesar dressing signal is obvious. Your investigation is reopened under outside oversight.
+
+**The lesson:** Case definitions trade specificity for sensitivity, and early in an investigation, *sensitivity wins*. You can tighten the definition later. You cannot recover cases you never counted.
                 """)
 
             if q2a != "— Select —":
@@ -11062,6 +11094,14 @@ The vehicles are not the most *popular* foods — they're the foods where eating
                 """)
             elif q5a != "— Select —":
                 st.error("❌ Two cases in direct contact with ill students, without dining hall exposure, indicates person-to-person transmission has begun. This is a critical inflection point requiring expanded control measures.")
+                if q5a == "The outbreak is over — these are unrelated":
+                    st.warning("""
+📋 **What happens next (field consequence):**
+
+You stand down active surveillance and tell residential life "we're past the peak." Over the next four days, 23 more cases emerge — almost all in residence halls and shared bathrooms. Two of them are immunocompromised students who require hospitalization. The campus newspaper runs a follow-up story. The state health department sends an epidemiologist to take over coordination.
+
+**The lesson:** Person-to-person transmission can extend a "point-source" outbreak for weeks. Norovirus sheds in stool for up to 2–3 weeks after symptoms resolve, and the infectious dose is tiny. Declaring an outbreak over because the *food* exposure has ended is a classic mistake.
+                    """)
 
             if q5a != "— Select —":
                 st.divider()
@@ -11078,8 +11118,22 @@ The vehicles are not the most *popular* foods — they're the foods where eating
                     score = sum([cm1, cm3, cm4, cm5, cm6])
                     if cm2:
                         st.error("❌ Closing the university is not proportionate and would not be recommended at this case count. Targeted interventions are appropriate.")
+                        st.warning("""
+📋 **What happens next (field consequence):**
+
+Your recommendation to close the university escalates to the provost. The decision is reversed within hours because the legal, financial, and political costs are not justified by the public health risk. You lose credibility with university leadership and with your own department, making future recommendations harder to get implemented. Meanwhile, the actual outbreak was a targeted-vehicle problem that could have been addressed by removing one menu item and excluding one food handler.
+
+**The lesson:** Public health response is about *proportionality*. Match the intervention to the risk. Over-response wastes scarce institutional trust as surely as under-response wastes scarce time.
+                        """)
                     if not cm1:
                         st.error("❌ Removing the identified vehicle (Caesar dressing) is the single most important immediate step.")
+                        st.warning("""
+📋 **What happens next (field consequence):**
+
+The Caesar dressing remains on the menu through Friday's lunch service. 14 additional students develop symptoms after eating Wednesday or Thursday meals. When the connection is finally made and the dressing is pulled, your earlier investigation report becomes a case study in *delayed targeted action*. The dining hall director, who had been ready to act on your recommendation, asks why you didn't make one.
+
+**The lesson:** Once you've identified a plausible vehicle, *remove it.* You don't need certainty — you need a defensible decision under uncertainty. The cost of pulling one item that turns out to be innocent is small. The cost of leaving an actual vehicle in service is large.
+                        """)
                     if score >= 4 and cm1 and not cm2:
                         st.success(f"""
 ✅ **Well done.** You selected {score+1}/5 appropriate measures. The key actions are: (1) remove the vehicle, (2) exclude ill food handlers, (3) reinforce hand hygiene, (4) isolate ill students and advise hygiene, (5) enhance disinfection. Testing all food items is low-yield at this stage — focus resources on the identified vehicle and secondary spread.
@@ -11088,6 +11142,21 @@ The vehicles are not the most *popular* foods — they're the foods where eating
                         st.info(f"You selected {score+1} measures. Consider also: {'excluding ill food handlers, ' if not cm3 else ''}{'reinforcing hand hygiene, ' if not cm4 else ''}{'guidance to ill students, ' if not cm5 else ''}{'enhanced disinfection' if not cm6 else ''}")
 
             st.divider()
+            st.info("""
+🧭 **A note on real-world outbreak investigation:**
+
+This scenario closed cleanly: a specific vehicle was identified, lab samples confirmed the agent, environmental swabs were positive, and a single ill food handler completed the causal story. That kind of resolution does happen — but it isn't the norm. In a substantial fraction of real foodborne outbreaks, investigators:
+
+- Never identify the specific vehicle with certainty (food has often been disposed of by the time the outbreak is recognized)
+- Get only partial cooperation with interviews (recall fades, students refuse, staff fear consequences)
+- Find no environmental samples that test positive (cleaning has already happened)
+- End up with statistically suggestive but not definitive attack-rate evidence
+
+In those cases, the appropriate conclusion is *best available inference*, not certainty. The investigator's job is to act on the strongest defensible interpretation of incomplete evidence — not to wait for perfect evidence that may never arrive.
+
+This scenario gave you a clean signal because it's your first one. Later scenarios get messier.
+            """)
+
             with st.expander("📋 Resolution & What You Applied"):
                 st.markdown("""
 **Outcome:** The Caesar dressing was prepared using raw shell eggs contaminated with norovirus from the ill food handler. 47 primary cases. 8 secondary cases in the following 4 days. All recovered. No deaths.
@@ -11165,6 +11234,23 @@ A parent calls the county health department: their 7-year-old is home from schoo
 
 **Exposure timeline:** Returned from trip → attended school for 3 days before rash appeared (highly infectious during prodrome).
             """)
+
+            with st.expander("📨 Field notes from this morning (click to read)"):
+                st.markdown("""
+*Voicemail from the school principal at 6:55 AM:*
+> "Three more kids called out today with rash and fever. Parents are asking if we should close. I have a board meeting at 4 PM and I need something to tell them."
+
+*Email from a parent-advocacy group:*
+> "Several of our families do not vaccinate for religious/personal reasons and we expect their privacy and education access to be respected. Any exclusion policy will be challenged."
+
+*Local TV news request:* A reporter is at the school gate. They want to know if this is "the start of an outbreak" and whether the school is safe. They're going to film whether or not you talk to them.
+
+*State health department, your supervisor:* "CDC will want a preliminary report by Friday. Don't speculate publicly on origin. Focus on case finding and post-exposure prophylaxis."
+
+*Your case file:* Vaccine records are paper-based and incomplete for ~80 of 450 students. The school nurse retired in June and her replacement started two weeks ago. Some immunization histories will have to be reconstructed from parents' memory or pediatrician records.
+
+This is measles in 2026: highly preventable, scientifically straightforward, and politically charged. Your call is medical and epidemiologic. The implementation will be neither.
+                """)
 
             q1 = st.radio("**Decision 1A:** How long was the index case potentially infectious at school before diagnosis?", [
                 "— Select —",
@@ -11294,6 +11380,22 @@ You now have 7 confirmed cases. The index case attended school for 3 days during
                 """)
             elif q3a != "— Select —":
                 st.error("❌ For airborne pathogens, exposure duration and ventilation are critical determinants of risk. Not all contacts are equal.")
+                if q3a == "All contacts are equal — anyone in the school is at equal risk":
+                    st.warning("""
+📋 **What happens next (field consequence):**
+
+You treat all 450 students as equal-risk contacts. The exclusion order is broad; the parent advocacy group sues, citing disproportionate impact. Your team spends three days reviewing every student's vaccination record instead of prioritizing the classroom and bus contacts — where the real transmission risk concentrates. By Day 14, two secondary cases emerge from the index case's classroom; another from the bus. None of them were prioritized for post-exposure prophylaxis because everyone was treated identically.
+
+**The lesson:** *Risk stratification* is not a luxury — it's how you allocate scarce resources (vaccine doses, staff time, legal capital) toward the people most likely to benefit. Treating everyone as equal-risk is statistically and operationally equivalent to having no plan at all.
+                    """)
+                elif q3a == "Only direct face-to-face contact counts — hallway contacts are not at risk":
+                    st.warning("""
+📋 **What happens next (field consequence):**
+
+You exclude only students who shared a classroom with the index case. Three weeks later, a secondary case emerges in a child who shared a 20-minute gymnasium block with the index but was in a different homeroom. Your investigation re-opens. The state epidemiologist asks why you didn't apply the standard 2-hour airborne contact window for measles.
+
+**The lesson:** Measles isn't a droplet pathogen — virus remains suspended in air for up to 2 hours after the infectious person leaves the space. Face-to-face proximity is *not* the right contact-tracing criterion for measles. Pathogen-specific transmission characteristics drive contact definitions.
+                    """)
 
             if q3a != "— Select —":
                 st.divider()
@@ -11327,6 +11429,22 @@ You now have 7 confirmed cases. The index case attended school for 3 days during
                     """)
                 elif q3b != "— Select —":
                     st.error("❌ 'Wait and see' allows further transmission during the incubation period. Exclusion or post-exposure vaccination is the appropriate public health intervention.")
+                    if q3b == "Nothing unless they develop symptoms":
+                        st.warning("""
+📋 **What happens next (field consequence):**
+
+Unvaccinated students continue attending school. Three of them develop measles over the next 10 days — each one then attends school during their own prodrome, exposing additional susceptibles. By Day 21 you have 23 cases instead of 12. A second classroom is now affected. The state health department deploys an epidemiologic team to take over case finding. Your initial decision becomes the headline finding in the after-action review.
+
+**The lesson:** With measles, the prodrome (infectious period before rash) means *"wait for symptoms"* equals *"wait for new transmission events."* Post-exposure vaccination within 72 hours or 21-day exclusion are not aggressive responses — they're the standard of care because the alternative is exponential spread.
+                        """)
+                    elif q3b == "Vaccinate everyone regardless of prior status":
+                        st.warning("""
+📋 **What happens next (field consequence):**
+
+You request enough MMR doses for the entire school (450 students). The state immunization program flags that you're already short on supply for the regional pediatric vaccine schedule. Doses get diverted from routine well-child appointments to give second or third doses to already-immunized students. Two months later, the regional clinic reports gaps in routine MMR administration for *new* children entering kindergarten.
+
+**The lesson:** Already-immune students gain little from additional doses; the marginal benefit of vaccinating them is near zero. Targeting the unvaccinated is both more effective and more ethical use of scarce vaccine supply. *More* is not always better in public health response.
+                        """)
 
 
             next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
@@ -11486,6 +11604,21 @@ It's Sunday evening. The county health department receives 4 calls from individu
 You need to systematically characterize who is sick before you can analyze the data. The **line list** is the epidemiologist's most important tool — one row per case, one column per variable.
             """)
             st.info("💡 **Step 4 of 10:** Construct a working case definition")
+
+            with st.expander("📨 Field notes from a community investigation (click to read)"):
+                st.markdown("""
+*Voicemail from the church pastor:*
+> "I want to help any way I can, but I'd appreciate it if we could keep this quiet. Some of our members are upset and a few are blaming each other for who brought what. The lady who made the chicken salad is in tears."
+
+*From a community member who declined to be interviewed:*
+> "I'm not going to fill out your form. I know what I ate and I'm fine. Leave us alone."
+
+*Your interview team reports:* Several attendees cannot remember exactly which dishes they ate. The potluck had 14 dishes on a buffet line; some people grazed multiple plates. Three attendees insist they "only had a little bit" of items they're now embarrassed to admit eating. Two cases have already started antibiotics on their own without consulting a doctor — which will make stool culture interpretation harder.
+
+*Your supervisor:* "There's no kitchen to inspect here — everything was made in people's homes and brought in plastic containers that have already been washed. We're working with what people remember. Get the line list as complete as you can and let's see what the food histories tell us."
+
+*Reality check:* Compared to a dining-hall outbreak (Scenario 1), community potluck investigations are messier — no central food preparation, no employee records, no environmental swabs, and interviewees are friends and neighbors who may protect each other. You will almost certainly not get a clean answer. Aim for the best defensible inference.
+                """)
 
             st.markdown("#### ✏️ Interactive case definition builder")
             col1, col2 = st.columns(2)
@@ -11682,6 +11815,14 @@ For each food item, the table below shows how many attendees ate it, and of thos
                 """)
             elif q3a != "— Select —":
                 st.error("❌ Focus on the items with the highest RR AND the lowest AR unexposed. Potato salad actually has similar attack rates in those who ate vs. didn't eat (suggesting no association with illness).")
+                if q3a == "Potato salad — high number ate it":
+                    st.warning("""
+📋 **What happens next (field consequence):**
+
+You report potato salad as the suspected vehicle. The church member who brought it — a long-standing parishioner — is publicly identified. A local newspaper picks up the story. Two days later, when the actual analysis (chicken salad and deviled eggs, both from the same household and the same cutting board) is completed, your report has to be retracted. The potato-salad family asks the church for an apology. Trust in your investigation drops.
+
+**The lesson:** This is the **popularity trap** — exactly the same mistake some students make in Scenario 1 with the hot entrée. *Absolute case counts don't identify a vehicle. The ratio of attack rates does.* A widely-eaten innocent food will produce many cases simply because most people ate it. You have to compare AR in those who ate it to AR in those who didn't. When AR exposed ≈ AR unexposed, the item is irrelevant *regardless of how many cases ate it.*
+                    """)
 
             if q3a != "— Select —":
                 st.divider()

@@ -760,83 +760,78 @@ The **natural history of disease** describes the progression of a disease proces
 **Lead-time bias** occurs when screening appears to extend survival, but only because disease is detected earlier — not because treatment is more effective.
             """)
 
-            # Visual timeline: makes the conceptual core immediately obvious
+            # Visual timeline: two parallel lines, same death point, shifted diagnosis
             lead_time_svg = """
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 230" style="width:100%;max-width:720px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
-  <!-- Time axis bottom -->
-  <line x1="80" y1="200" x2="660" y2="200" stroke="#475569" stroke-width="1.5" marker-end="url(#arrTime)"/>
-  <text x="370" y="220" font-size="11" fill="#475569" font-weight="600" text-anchor="middle">⏱ Time →</text>
 
-  <defs>
-    <marker id="arrTime" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
-      <path d="M0,0 L9,4.5 L0,9 Z" fill="#475569"/>
-    </marker>
-  </defs>
+  <!-- ============ WITHOUT SCREENING (top timeline) ============ -->
+  <text x="20" y="58" font-size="12" font-weight="700" fill="#475569">Without</text>
+  <text x="20" y="73" font-size="12" font-weight="700" fill="#475569">screening</text>
 
-  <!-- WITHOUT SCREENING: diagnosis later, shorter apparent survival, same death point -->
-  <text x="20" y="55" font-size="11" font-weight="700" fill="#475569">Without</text>
-  <text x="20" y="68" font-size="11" font-weight="700" fill="#475569">screening</text>
+  <!-- Timeline line -->
+  <line x1="130" y1="65" x2="600" y2="65" stroke="#475569" stroke-width="2"/>
 
-  <!-- Disease starts (subclinical) -->
-  <line x1="120" y1="40" x2="120" y2="80" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
-  <text x="120" y="32" font-size="9" fill="#64748b" text-anchor="middle">Disease begins</text>
-  <text x="120" y="95" font-size="8" fill="#94a3b8" text-anchor="middle">(subclinical)</text>
+  <!-- Disease begins -->
+  <circle cx="130" cy="65" r="5" fill="#94a3b8"/>
+  <text x="130" y="48" font-size="10" fill="#64748b" text-anchor="middle">Disease begins</text>
 
   <!-- Diagnosis at symptoms (later) -->
-  <circle cx="440" cy="60" r="8" fill="#dc2626" stroke="white" stroke-width="2"/>
-  <text x="440" y="32" font-size="10" font-weight="700" fill="#dc2626" text-anchor="middle">Diagnosed</text>
-  <text x="440" y="45" font-size="9" fill="#dc2626" text-anchor="middle">(at symptoms)</text>
+  <circle cx="460" cy="65" r="7" fill="#dc2626"/>
+  <text x="460" y="48" font-size="11" font-weight="700" fill="#dc2626" text-anchor="middle">Diagnosis at symptoms</text>
 
-  <!-- Survival arrow from diagnosis to death -->
-  <line x1="448" y1="60" x2="568" y2="60" stroke="#dc2626" stroke-width="2"/>
-  <text x="508" y="55" font-size="10" font-weight="700" fill="#dc2626" text-anchor="middle">"2 years survival"</text>
+  <!-- Death endpoint -->
+  <line x1="600" y1="50" x2="600" y2="80" stroke="#1f2937" stroke-width="2.5"/>
+  <text x="600" y="48" font-size="11" font-weight="700" fill="#1f2937" text-anchor="middle">Death</text>
 
-  <!-- Death marker -->
-  <line x1="580" y1="40" x2="580" y2="80" stroke="#1f2937" stroke-width="2"/>
-  <text x="580" y="32" font-size="10" font-weight="700" fill="#1f2937" text-anchor="middle">Death</text>
+  <!-- "2 years survival" bracket between diagnosis and death -->
+  <line x1="460" y1="92" x2="600" y2="92" stroke="#dc2626" stroke-width="1.5"/>
+  <line x1="460" y1="88" x2="460" y2="96" stroke="#dc2626" stroke-width="1.5"/>
+  <line x1="600" y1="88" x2="600" y2="96" stroke="#dc2626" stroke-width="1.5"/>
+  <text x="530" y="106" font-size="11" font-weight="700" fill="#dc2626" text-anchor="middle">"2 years survival"</text>
 
-  <!-- Divider -->
-  <line x1="80" y1="115" x2="660" y2="115" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- ============ WITH SCREENING (bottom timeline) ============ -->
+  <text x="20" y="158" font-size="12" font-weight="700" fill="#475569">With</text>
+  <text x="20" y="173" font-size="12" font-weight="700" fill="#475569">screening</text>
 
-  <!-- WITH SCREENING: earlier diagnosis, same death point, longer apparent survival -->
-  <text x="20" y="150" font-size="11" font-weight="700" fill="#475569">With</text>
-  <text x="20" y="163" font-size="11" font-weight="700" fill="#475569">screening</text>
+  <!-- Timeline line -->
+  <line x1="130" y1="165" x2="600" y2="165" stroke="#475569" stroke-width="2"/>
 
-  <!-- Same disease-start point -->
-  <line x1="120" y1="135" x2="120" y2="175" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
-  <text x="120" y="127" font-size="9" fill="#64748b" text-anchor="middle">Disease begins</text>
-  <text x="120" y="188" font-size="8" fill="#94a3b8" text-anchor="middle">(subclinical)</text>
+  <!-- Disease begins (same position as top) -->
+  <circle cx="130" cy="165" r="5" fill="#94a3b8"/>
+  <text x="130" y="148" font-size="10" fill="#64748b" text-anchor="middle">Disease begins</text>
 
   <!-- Earlier diagnosis via screening -->
-  <circle cx="260" cy="155" r="8" fill="#2563eb" stroke="white" stroke-width="2"/>
-  <text x="260" y="127" font-size="10" font-weight="700" fill="#2563eb" text-anchor="middle">Diagnosed</text>
-  <text x="260" y="140" font-size="9" fill="#2563eb" text-anchor="middle">(by screening)</text>
+  <circle cx="250" cy="165" r="7" fill="#2563eb"/>
+  <text x="250" y="148" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">Screening detects</text>
 
-  <!-- Survival arrow from earlier diagnosis to same death point -->
-  <line x1="268" y1="155" x2="568" y2="155" stroke="#2563eb" stroke-width="2"/>
-  <text x="418" y="150" font-size="10" font-weight="700" fill="#2563eb" text-anchor="middle">"5 years survival"</text>
+  <!-- Same death endpoint, aligned vertically with top -->
+  <line x1="600" y1="150" x2="600" y2="180" stroke="#1f2937" stroke-width="2.5"/>
+  <text x="600" y="148" font-size="11" font-weight="700" fill="#1f2937" text-anchor="middle">Death</text>
 
-  <!-- SAME death marker -->
-  <line x1="580" y1="135" x2="580" y2="175" stroke="#1f2937" stroke-width="2"/>
-  <text x="580" y="127" font-size="10" font-weight="700" fill="#1f2937" text-anchor="middle">Death</text>
+  <!-- "5 years survival" bracket between earlier diagnosis and same death -->
+  <line x1="250" y1="192" x2="600" y2="192" stroke="#2563eb" stroke-width="1.5"/>
+  <line x1="250" y1="188" x2="250" y2="196" stroke="#2563eb" stroke-width="1.5"/>
+  <line x1="600" y1="188" x2="600" y2="196" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="425" y="206" font-size="11" font-weight="700" fill="#2563eb" text-anchor="middle">"5 years survival"</text>
 
-  <!-- Vertical comparison line connecting both death points -->
-  <line x1="580" y1="80" x2="580" y2="135" stroke="#1f2937" stroke-width="1" stroke-dasharray="2,2"/>
+  <!-- ============ ALIGNMENT MARKER: vertical line connecting both death points ============ -->
+  <line x1="600" y1="80" x2="600" y2="150" stroke="#1f2937" stroke-width="1" stroke-dasharray="3,3" opacity="0.6"/>
 
-  <!-- Annotation: lead time = the gap between diagnosis points -->
-  <line x1="260" y1="105" x2="440" y2="105" stroke="#f59e0b" stroke-width="1.5"/>
-  <line x1="260" y1="100" x2="260" y2="110" stroke="#f59e0b" stroke-width="1.5"/>
-  <line x1="440" y1="100" x2="440" y2="110" stroke="#f59e0b" stroke-width="1.5"/>
-  <text x="350" y="113" font-size="10" font-weight="700" fill="#b45309" text-anchor="middle">← LEAD TIME (extra time of "knowing," not "living") →</text>
+  <!-- ============ LEAD TIME annotation between the two diagnosis points ============ -->
+  <line x1="250" y1="115" x2="460" y2="115" stroke="#f59e0b" stroke-width="2"/>
+  <line x1="250" y1="110" x2="250" y2="120" stroke="#f59e0b" stroke-width="2"/>
+  <line x1="460" y1="110" x2="460" y2="120" stroke="#f59e0b" stroke-width="2"/>
+  <text x="355" y="129" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">Lead time — extra time of "knowing," not "living"</text>
+
 </svg>"""
             st.markdown(f"<div style='margin:14px 0;'>{lead_time_svg}</div>", unsafe_allow_html=True)
 
             st.markdown("""
-**Reading the diagram:** Both patients have the same disease, same biology, and **die at the same time**. The only difference is *when they learn they have the disease*. Screening detected it 3 years earlier (the lead time). On paper, "survival from diagnosis" jumped from 2 years to 5 years — but no one actually lived longer.
+**Reading the diagram:** Both patients have the same disease, same biology, and **die at the same time** (the dashed vertical line marks the shared endpoint). The only difference is *when they learn they have the disease*. Screening detected it earlier — that gap is the **lead time**. In survival statistics, "survival from diagnosis" jumped from 2 years to 5 years — but no one actually lived longer.
 
 **Example walk-through:** Without screening, a cancer is detected at symptoms and the patient lives 2 more years (total disease duration: 10 years). With screening, cancer detected 3 years earlier — patient lives 5 more years from diagnosis. But total lifespan is unchanged. It *looks* like survival improved (5 > 2 years), but no extra time was gained — we just moved the diagnosis earlier.
 
-**The fix:** Use mortality rates (not survival time) to evaluate screening effectiveness, or compare age-standardized disease-specific mortality in screened vs. unscreened populations.
+**The fix:** Use mortality rates, not survival time alone, to evaluate screening effectiveness. Compare age-standardized disease-specific mortality in screened vs. unscreened populations — that comparison cannot be fooled by lead time.
             """)
 
         with st.expander("📋 Levels of Prevention — Quick Reference"):

@@ -824,7 +824,9 @@ The **natural history of disease** describes the progression of a disease proces
   <text x="355" y="129" font-size="11" font-weight="700" fill="#b45309" text-anchor="middle">Lead time — extra time of "knowing," not "living"</text>
 
 </svg>"""
-            st.markdown(f"<div style='margin:14px 0;'>{lead_time_svg}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='margin:14px 0;'></div>", unsafe_allow_html=True)
+            import streamlit.components.v1 as _lead_comp
+            _lead_comp.html(lead_time_svg, height=250, scrolling=False)
 
             st.markdown("""
 **Reading the diagram:** Both patients have the same disease, same biology, and **die at the same time** (the dashed vertical line marks the shared endpoint). The only difference is *when they learn they have the disease*. Screening detected it earlier — that gap is the **lead time**. In survival statistics, "survival from diagnosis" jumped from 2 years to 5 years — but no one actually lived longer.
@@ -2291,7 +2293,8 @@ In observational studies, the investigator must identify and control for every c
   <!-- Bottom caption -->
   <text x="410" y="270" font-size="11" fill="#166534" font-style="italic" font-weight="600" text-anchor="middle">Everyone stays in their originally randomized group — regardless of what happened next.</text>
 </svg>"""
-            st.markdown(f"<div style='margin:14px 0;'>{itt_flow_svg}</div>", unsafe_allow_html=True)
+            import streamlit.components.v1 as _itt_comp
+            _itt_comp.html(itt_flow_svg, height=310, scrolling=False)
             st.caption("The green dashed paths show ITT in action: dropouts, non-adherents, and even participants who crossed over to the other treatment are all counted in their original assigned group.")
 
             st.markdown("""

@@ -1151,165 +1151,245 @@ elif current_page == "study_designs":
         st.subheader("The Core Question: How Did Sampling Begin?")
         st.info("The single most important question in identifying a study design is: **where did the researcher start sampling from?** Exposure? Outcome? Neither? Individual or group?")
 
-        col_a, col_b, col_c = st.columns(3)
-        with col_a:
-            st.markdown("#### 🟩 Cohort")
-            st.markdown("**Starts with:** Exposure status")
-            st.markdown("**Logic:** Groups defined by exposure → followed to see who develops outcome")
-            st.markdown("**Prospective:** Collect data going forward")
-            st.markdown("**Retrospective:** Use historical records — exposure still defined *before* outcome")
-            st.markdown("```\n① Exposure defined\n        ↓\n② Outcome measured\n```")
-            st.success("Produces: **RR / IRR**")
-            st.markdown("*Best for: common exposures, multiple outcomes*")
+        overview_tabs = st.tabs([
+            "📋 Designs at a Glance",
+            "🔍 Each Design in Depth",
+            "⚠️ The Ecological Fallacy",
+            "🧠 Practice Scenarios"
+        ])
 
-        with col_b:
-            st.markdown("#### 🟦 Case-Control")
-            st.markdown("**Starts with:** Outcome status")
-            st.markdown("**Logic:** Cases (have disease) + Controls (don't) → look **backward** at past exposure")
-            st.markdown("**Matched variant:** Each case paired with controls on confounders — controls confounding by design")
-            st.markdown("```\n① Past exposure (recalled)\n        ↑\n② Start: disease yes/no\n```")
-            st.info("Produces: **OR**")
-            st.markdown("*Best for: rare diseases, long latency*")
+        # ─────────────────────────────────────────────────────────────
+        # TAB 1: DESIGNS AT A GLANCE — the compact mental-model overview
+        # ─────────────────────────────────────────────────────────────
+        with overview_tabs[0]:
+            st.markdown("Six designs, organized by **where sampling begins**. This is how experts mentally identify a study design — start with the sampling frame, then everything else follows.")
 
-        with col_c:
-            st.markdown("#### 🟧 Cross-Sectional")
-            st.markdown("**Starts with:** A random sample")
-            st.markdown("**Logic:** Exposure and outcome measured **simultaneously** — a snapshot")
-            st.markdown("**Cannot** establish temporal order (which came first?)")
+            col_a, col_b, col_c = st.columns(3)
+            with col_a:
+                st.markdown("#### 🟩 Cohort")
+                st.markdown("**Starts with:** Exposure status")
+                st.markdown("**Logic:** Start with exposure status → follow forward to outcome")
+                st.markdown("```\n① Exposure defined\n        ↓\n② Outcome measured\n```")
+                st.success("Produces: **RR / IRR**")
+                st.markdown("*Best for: common exposures, multiple outcomes*")
+
+            with col_b:
+                st.markdown("#### 🟦 Case-Control")
+                st.markdown("**Starts with:** Outcome status")
+                st.markdown("**Logic:** Cases (have disease) + Controls (don't) → look **backward** at past exposure")
+                st.markdown("```\n① Past exposure (recalled)\n        ↑\n② Start: disease yes/no\n```")
+                st.info("Produces: **OR**")
+                st.markdown("*Cannot directly calculate incidence or risk*")
+                st.markdown("*Best for: rare diseases, long latency*")
+
+            with col_c:
+                st.markdown("#### 🟧 Cross-Sectional")
+                st.markdown("**Starts with:** A random sample")
+                st.markdown("**Logic:** Exposure and outcome measured **simultaneously** → temporality unclear")
+                st.markdown("```\nExposure ─┐\n          ├─ same moment\nOutcome  ─┘\n```")
+                st.warning("Produces: **PR**")
+                st.markdown("*Best for: prevalence estimates, hypothesis generation*")
+
             st.markdown("")
-            st.markdown("```\nExposure ─┐\n          ├─ same moment\nOutcome  ─┘\n```")
-            st.warning("Produces: **PR**")
-            st.markdown("*Best for: prevalence estimates, hypothesis generation*")
+            col_d, col_e, col_f = st.columns(3)
+            with col_d:
+                st.markdown("#### 🌍 Ecological")
+                st.markdown("**Starts with:** Group-level aggregates")
+                st.markdown("**Logic:** Compare average exposure and average outcome **across groups** (countries, cities, time periods)")
+                st.markdown("```\nGroup A: rate → rate\nGroup B: rate → rate\n   Compare across\n```")
+                st.error("⚠️ **Ecological fallacy** risk")
+                st.markdown("*Group-level only — cannot infer individual risk*")
 
-        st.divider()
+            with col_e:
+                st.markdown("#### 🟪 Case-Crossover")
+                st.markdown("**Starts with:** Cases only (people who had the event)")
+                st.markdown("**Logic:** Each person serves as their own control — compare hazard period vs. control period within the same person")
+                st.markdown("```\nControl period → Hazard period\n  (same person, different times)\n```")
+                st.info("Produces: **OR**")
+                st.markdown("*Good for transient exposures triggering acute events*")
 
-        # Ecological study
-        st.markdown("#### 🌍 Ecological Study")
-        ecol1, ecol2, ecol3 = st.columns(3)
-        with ecol1:
-            st.markdown("**Unit of analysis:** Groups or populations — not individuals")
-            st.markdown("**Logic:** Compare average exposure and average outcome rates across groups (countries, cities, time periods)")
-            st.markdown("**Examples:** Country-level fat intake vs. breast cancer rates; air pollution index vs. city-wide asthma hospitalizations")
-        with ecol2:
-            st.markdown("**Timeline:**")
-            st.markdown("```\nGroup A: Exposure rate → Outcome rate\nGroup B: Exposure rate → Outcome rate\nGroup C: Exposure rate → Outcome rate\n         ↓\n   Compare across groups\n```")
-            st.markdown("*Data come from registries, surveillance systems, or administrative records*")
-        with ecol3:
-            st.markdown("**Best for:** Hypothesis generation, policy surveillance, studying exposures that vary at the population level (water fluoridation, legislation)")
-            st.markdown("**Not for:** Establishing individual-level causation")
-            st.error("⚠️ **Ecological fallacy** — group-level associations may not hold at the individual level")
-            st.markdown("Produces: **Correlation coefficient / Rate ratio**")
+            with col_f:
+                st.markdown("#### 🔵 RCT")
+                st.markdown("**Starts with:** Random assignment")
+                st.markdown("**Logic:** Randomization distributes known and unknown confounders equally across groups")
+                st.markdown("```\nRandomize → Intervention vs Control\n        ↓\n    Compare outcomes\n```")
+                st.success("Produces: **RR / HR / RD**")
+                st.markdown("*Strongest design for causal inference*")
 
-        st.warning("""
-**⚠️ The Ecological Fallacy (Aggregation Bias)**
+            st.divider()
+            with st.expander("📊 Side-by-side comparison table"):
+                comparison_df = pd.DataFrame({
+                    "Design": ["Cohort","Case-Control","Cross-Sectional","Ecological","Case-Crossover","RCT"],
+                    "Unit of analysis": ["Individual","Individual","Individual","Group / Population","Individual (self-matched)","Individual"],
+                    "Sampling starts from": ["Exposure","Outcome","Population sample","Population aggregates","Cases only","Random assignment"],
+                    "Temporal direction": ["Forward (or records)","Backward","Simultaneous","Varies","Both (same person)","Forward"],
+                    "Measure produced": ["RR / IRR","OR","PR","Correlation / Rate ratio","OR","RR / HR / RD"],
+                    "Best for": ["Common exposures, multiple outcomes","Rare diseases, long latency","Prevalence, hypothesis generation","Policy surveillance, hypothesis generation","Transient exposures triggering acute events","Causal evidence, interventions"],
+                    "Main weakness": ["Expensive; loss to follow-up","Recall bias; control selection; no incidence","No temporality","Ecological fallacy — can't infer individual risk","Only transient exposures","Expensive; ethical limits; external validity"]
+                })
+                st.table(comparison_df)
 
-Just because countries with higher fat intake have higher breast cancer rates does NOT mean individuals who eat more fat have higher breast cancer risk. The association at the group level may be driven by confounding variables that also vary between countries (wealth, screening rates, reproductive factors), not by fat intake itself.
+        # ─────────────────────────────────────────────────────────────
+        # TAB 2: EACH DESIGN IN DEPTH — the expanded explanations
+        # ─────────────────────────────────────────────────────────────
+        with overview_tabs[1]:
+            st.markdown("Expand each design for full details, examples, and design-specific considerations.")
 
-**Classic example:** Countries with more TVs per capita have lower infant mortality — TVs don't protect infants. Wealth causes both.
-        """)
+            with st.expander("🟩 Cohort Study — exposure-defined groups followed forward"):
+                st.markdown("**Sampling begins with:** Exposure status. Groups are defined by exposure, then followed to see who develops the outcome.")
+                st.markdown("**Prospective cohort:** Start with exposure status → follow forward to outcome over time, collecting new data.")
+                st.markdown("**Retrospective cohort:** Same logic, but reconstructed from historical records — exposure is still defined *before* outcome, just using existing data.")
+                st.markdown("**Measure produced:** Relative Risk (RR) and Incidence Rate Ratio (IRR) — both meaningful because incidence can be calculated directly from the exposure-defined groups.")
+                st.markdown("**Classic example:** Doll & Hill's British Doctors Study (1951–2001) — followed 40,000 physicians by smoking status to determine lung cancer incidence.")
+                st.markdown("**Strengths:** Establishes temporality. Can study multiple outcomes from one exposure. Direct incidence measurement.")
+                st.markdown("**Limitations:** Expensive and slow when outcomes are rare or have long latency. Loss to follow-up can introduce bias.")
 
-        st.divider()
-        st.markdown("#### 🟪 Case-Crossover")
-        ccol1, ccol2, ccol3 = st.columns(3)
-        with ccol1:
-            st.markdown("**Starts with:** Cases only (people who had the event)")
-            st.markdown("**Logic:** Compare each person's exposure just before their event (hazard period) vs. at a matched control time for the same person (no event)")
-        with ccol2:
-            st.markdown("**Timeline:**")
-            st.markdown("```\nControl period  →  Hazard period\n(same person,      (just before\n no event)          the event)\n```")
-            st.markdown("*Eliminates between-person confounding — each person is their own control*")
-        with ccol3:
-            st.markdown("**Best for:** Transient exposures with acute effects (air pollution → MI, alcohol → injury)")
-            st.markdown("**Not for:** Chronic, stable exposures")
-            st.markdown("Produces: **OR**")
-        st.markdown("*Key question: Was the person more exposed just before the event than during a typical period?*")
+            with st.expander("🟦 Case-Control Study — outcome-defined groups looking backward"):
+                st.markdown("**Sampling begins with:** Outcome status. Cases (people with disease) and controls (people without) are recruited separately, then asked about past exposures.")
+                st.markdown("**Matched variant:** Each case is paired with one or more controls on potential confounders (age, sex, neighborhood). This controls confounding **by design** rather than statistically.")
+                st.markdown("**Measure produced:** Odds Ratio (OR) only. **Cannot directly calculate incidence or risk** because the sampling fraction of cases vs. controls is set by the researcher, not by population frequency.")
+                st.markdown("**Classic example:** Herbst, Ulfelder, & Poskanzer (1971) — 8 cases of rare vaginal adenocarcinoma in young women, matched controls; identified in utero DES exposure as the cause.")
+                st.markdown("**Strengths:** Efficient for rare diseases. Can study multiple exposures for one outcome. Fast and inexpensive.")
+                st.markdown("**Limitations:** Recall bias (cases remember exposures differently than controls). Control selection is difficult. Cannot estimate absolute risk.")
 
-        st.divider()
-        st.markdown("#### 🔵 Randomized Controlled Trial (RCT)")
-        rcol1, rcol2 = st.columns(2)
-        with rcol1:
-            st.markdown("**Logic:** Participants **randomly assigned** to intervention or control. Randomization distributes known and unknown confounders equally across groups.")
-            st.markdown("**Gold standard** for establishing causation.")
-        with rcol2:
-            st.markdown("**Limitations:** Expensive, ethical constraints (can't randomize harmful exposures), Hawthorne effect, may not generalize (external validity)")
-            st.markdown("Produces: **RR / HR / RD**")
+            with st.expander("🟧 Cross-Sectional Study — snapshot of a population"):
+                st.markdown("**Sampling begins with:** A random sample of the population. Exposure and outcome are measured at the same time.")
+                st.markdown("**Core limitation:** Exposure and outcome measured simultaneously → **temporality unclear**. You cannot tell whether the exposure preceded the outcome, the outcome preceded the exposure, or both reflect a shared underlying cause.")
+                st.markdown("**Measure produced:** Prevalence Ratio (PR) or Prevalence Odds Ratio (POR). These describe co-occurrence, not causation.")
+                st.markdown("**Classic example:** NHANES (National Health and Nutrition Examination Survey) — produces national prevalence estimates of conditions like diabetes, hypertension, obesity.")
+                st.markdown("**Strengths:** Fast and inexpensive. Excellent for prevalence estimates and hypothesis generation. Useful for descriptive epidemiology and resource planning.")
+                st.markdown("**Limitations:** No temporality. Cannot study disease incidence. Survivor bias — people who died before the snapshot are not represented.")
 
-        with st.expander("📊 Study Design Comparison Table"):
-            comparison_df = pd.DataFrame({
-                "Design": ["Cohort","Case-Control","Cross-Sectional","Ecological","Case-Crossover","RCT"],
-                "Unit of analysis": ["Individual","Individual","Individual","Group / Population","Individual (self-matched)","Individual"],
-                "Sampling starts from": ["Exposure","Outcome","Population sample","Population aggregates","Cases only","Random assignment"],
-                "Temporal direction": ["Forward (or records)","Backward","Simultaneous","Varies","Both (same person)","Forward"],
-                "Measure produced": ["RR / IRR","OR","PR","Correlation / Rate ratio","OR","RR / HR / RD"],
-                "Best for": ["Common exposures, multiple outcomes","Rare diseases, long latency","Prevalence, hypothesis generation","Policy surveillance, hypothesis generation","Transient exposures, acute effects","Causal evidence, interventions"],
-                "Main weakness": ["Expensive; loss to follow-up","Recall bias; control selection","No temporality","Ecological fallacy — can't infer individual risk","Only transient exposures","Expensive; ethical limits; external validity"]
-            })
-            st.table(comparison_df)
+            with st.expander("🟪 Case-Crossover Study — each person is their own control"):
+                st.markdown("**Sampling begins with:** Cases only — people who experienced the event of interest.")
+                st.markdown("**Core idea:** Compare each person's exposure status during the **hazard period** (just before the event) to the same person's exposure during a matched **control period** (a typical time when no event occurred).")
+                st.markdown("**Key advantage:** Each person serves as their own control. This eliminates all between-person confounding — genetics, baseline behaviors, comorbidities, anything stable about the person cancels out.")
+                st.markdown("**Anchor concept:** **Good for transient exposures triggering acute events** — air pollution and MI, heavy alcohol and injury, vigorous exertion and cardiac arrest. The design fails for chronic, stable exposures because there's no contrast within the person.")
+                st.markdown("**Measure produced:** Odds Ratio (OR) — typically conditional/matched OR.")
+                st.markdown("**Classic example:** Mittleman et al. (1993) — found that vigorous physical exertion in the hour before MI conferred a transient ~5-fold increase in MI risk, using the patient as their own control.")
+                st.markdown("**Limitations:** Only useful when exposure varies within-person over short time scales. Cannot study chronic exposures (diabetes status, occupation).")
 
+            with st.expander("🔵 Randomized Controlled Trial (RCT) — assignment by chance"):
+                st.markdown("**Sampling begins with:** Random assignment to intervention or control groups.")
+                st.markdown("**Why randomization matters:** It distributes both **known and unknown** confounders equally across groups, on average. This is the only design where you can control for confounders you don't know about.")
+                st.markdown("**Strongest design for causal inference** — when an RCT is feasible and well-conducted, it produces evidence less vulnerable to confounding than any observational study.")
+                st.markdown("**Measure produced:** Relative Risk (RR), Hazard Ratio (HR), Risk Difference (RD), or Mean Difference depending on the outcome type.")
+                st.markdown("**Classic example:** Salk polio vaccine trial (1954) — 1.8 million children randomized to vaccine vs. placebo. Established vaccine efficacy with a clarity that no observational study could match.")
+                st.markdown("**Limitations:** Expensive. Often slow. Ethical constraints — cannot randomize harmful exposures (smoking, sedentary lifestyle). Hawthorne effect (people behave differently when observed). External validity — highly selected trial participants may not represent real-world populations.")
 
-        st.divider()
-        st.markdown("#### ⚠️ The Ecologic Fallacy")
-        st.error("""
-**The ecologic fallacy** occurs when you draw conclusions about *individuals* from data measured at the *group (ecologic) level*.
+        # ─────────────────────────────────────────────────────────────
+        # TAB 3: ECOLOGICAL FALLACY — isolated, prominent, complete
+        # ─────────────────────────────────────────────────────────────
+        with overview_tabs[2]:
+            st.markdown("""
+<div style="background:#fef2f2;border:2px solid #fca5a5;border-radius:12px;padding:22px 26px;margin:8px 0 18px 0;">
+<div style="font-size:13px;color:#7f1d1d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">The single most common inferential error in epidemiology</div>
+<div style="font-size:26px;color:#991b1b;font-weight:700;line-height:1.2;margin-top:6px;">The Ecological Fallacy</div>
+<div style="font-size:15px;color:#7f1d1d;margin-top:10px;line-height:1.6;">
+<b>The association at the group level may not reflect the association at the individual level.</b><br>
+When you observe a pattern across groups (countries, cities, time periods), you cannot conclude that the same pattern holds for individuals within those groups.
+</div>
+</div>
+            """, unsafe_allow_html=True)
 
-**Classic example:** Countries with higher fat consumption have higher rates of breast cancer. But this does not mean that *individuals* who eat more fat get more breast cancer — other individual-level factors (age, genetics, reproductive history) may explain the pattern, and the group-level correlation may be confounded in ways that can't be detected from group data alone.
+            st.markdown("#### Why it happens")
+            st.markdown("""
+Ecological data measure **averages or rates for groups**. Individual variation *within* those groups is invisible. An association that exists at the group level may:
+- **disappear** at the individual level (no real individual relationship),
+- **reverse** at the individual level (Simpson's paradox),
+- or be **spurious** — driven by confounders that vary between groups but not within them.
+            """)
 
-**Why it happens:** Ecologic data measure *averages* or *rates* for groups. Individual variation within those groups is invisible. An association that exists at the group level may disappear, reverse, or be spurious when studied at the individual level.
+            st.markdown("#### Three classic examples")
 
-**When ecologic studies are appropriate:**
-- Generating hypotheses for individual-level studies
-- Studying exposures that are truly group-level (e.g., air quality laws, water fluoridation policy)
-- Surveillance when individual data are unavailable
+            col_x, col_y, col_z = st.columns(3)
+            with col_x:
+                st.markdown("""
+<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:0 8px 8px 0;height:100%;">
+<div style="font-size:13px;font-weight:700;color:#78350f;">📺 TVs and infant mortality</div>
+<div style="font-size:13px;color:#78350f;margin-top:8px;line-height:1.55;">Countries with more TVs per capita have <b>lower</b> infant mortality. TVs don't protect infants — <b>wealth causes both</b>. Classic ecological confounding.</div>
+</div>
+                """, unsafe_allow_html=True)
+            with col_y:
+                st.markdown("""
+<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:0 8px 8px 0;height:100%;">
+<div style="font-size:13px;font-weight:700;color:#78350f;">🍫 Chocolate and Nobel Prizes</div>
+<div style="font-size:13px;color:#78350f;margin-top:8px;line-height:1.55;">Countries with higher chocolate consumption win more Nobel Prizes per capita (Messerli, 2012). Chocolate doesn't cause cognition — <b>wealth drives both consumption and research investment</b>.</div>
+</div>
+                """, unsafe_allow_html=True)
+            with col_z:
+                st.markdown("""
+<div style="background:#fef3c7;border-left:4px solid #f59e0b;padding:14px 16px;border-radius:0 8px 8px 0;height:100%;">
+<div style="font-size:13px;font-weight:700;color:#78350f;">🥩 Fat and breast cancer</div>
+<div style="font-size:13px;color:#78350f;margin-top:8px;line-height:1.55;">Countries with higher fat consumption have higher breast cancer rates. But within-country individual-level studies show <b>much weaker (or no)</b> fat-cancer association. Wealth, screening, reproductive patterns all confound.</div>
+</div>
+                """, unsafe_allow_html=True)
 
-**The rule:** Ecologic correlations cannot substitute for individual-level associations. Always note the unit of analysis and be explicit about what level the conclusions apply to.
-        """)
-
-        epi_scenarios = [
-            {
-                "q": "**Scenario 1:** A study finds that counties with more fast food restaurants per capita have higher obesity rates. A researcher concludes that people who eat at fast food restaurants are more likely to be obese. This is:",
-                "opts": ["— Select —",
-                         "A valid causal inference from ecologic data",
-                         "The ecologic fallacy — individual-level conclusions drawn from group-level data",
-                         "Confounding by income",
-                         "Selection bias"],
-                "correct": "The ecologic fallacy — individual-level conclusions drawn from group-level data",
-                "fb_correct": "✅ Correct. County-level restaurant density and county-level obesity rate are group measures. Whether individuals who eat at fast food chains are more obese than individuals in those same counties who don't — that's an individual-level question the ecologic data cannot answer.",
-                "fb_wrong": "❌ The primary error is drawing individual-level conclusions from group-level data. The unit of analysis is counties; the inference is about individuals. Income confounding may exist too, but the structural error is the ecologic fallacy.",
-                "key": "eco_q1"
-            },
-            {
-                "q": "**Scenario 2:** Countries with higher chocolate consumption per capita win more Nobel Prizes per capita. A journalist concludes that eating chocolate makes people smarter. What is the most likely explanation?",
-                "opts": ["— Select —",
-                         "Chocolate consumption causes cognitive improvement — a valid biological mechanism",
-                         "The ecologic fallacy — wealth (a country-level variable) drives both chocolate consumption and Nobel Prize rates",
-                         "Reverse causation — winning Nobel Prizes causes people to eat more chocolate",
-                         "This is a valid randomized finding"],
-                "correct": "The ecologic fallacy — wealth (a country-level variable) drives both chocolate consumption and Nobel Prize rates",
-                "fb_correct": "✅ Correct. This is a famous real example (Messerli, 2012 — published somewhat tongue-in-cheek). Wealthy countries have both higher per-capita chocolate consumption AND higher per-capita Nobel Prizes, because wealth drives investment in education and research. The correlation is ecologic confounding. No individual-level data support a chocolate-intelligence link. Classic ecologic fallacy + confounding at the group level.",
-                "fb_wrong": "❌ Wealthy nations have both higher chocolate consumption AND greater investment in education and research. A country-level correlation driven by a common cause (wealth) cannot support individual-level causal claims. This is the ecologic fallacy compounded by ecologic confounding.",
-                "key": "eco_q2"
-            },
-            {
-                "q": "**Scenario 3:** A researcher uses county-level data to study the relationship between opioid prescribing rates and opioid overdose death rates. She finds a strong positive correlation (r = 0.74). She wants to use this to estimate the individual-level risk of overdose among people who receive opioid prescriptions. Is this appropriate?",
-                "opts": ["— Select —",
-                         "Yes — the correlation is strong, so the inference is valid",
-                         "No — this is an ecologic correlation; it cannot directly estimate individual-level risk",
-                         "Yes — county-level data are more reliable than individual data",
-                         "It depends on whether the data are from the same year"],
-                "correct": "No — this is an ecologic correlation; it cannot directly estimate individual-level risk",
-                "fb_correct": "✅ Correct. The county-level correlation is informative for policy (target high-prescribing counties for intervention) but cannot estimate the individual-level probability of overdose among people who receive a prescription. That requires individual-level data with person-level exposure and outcome. The ecologic correlation is real and useful — but it answers a different question than individual risk.",
-                "fb_wrong": "❌ Ecologic correlations — even strong ones — cannot substitute for individual-level associations. The same county-level pattern could exist even if the highest-prescribing doctors serve the lowest-risk patients. Individual data are needed for individual-level inference.",
-                "key": "eco_q3"
-            },
-        ]
-
-        for scen in epi_scenarios:
-            ans = st.radio(scen["q"], scen["opts"], key=scen["key"])
-            if ans == scen["correct"]:
-                st.success(scen["fb_correct"])
-            elif ans != "— Select —":
-                st.error(scen["fb_wrong"])
             st.markdown("")
+            st.markdown("#### When ecological studies *are* appropriate")
+            st.markdown("""
+Ecological studies aren't wrong — they're useful, just for **specific questions**:
+- **Generating hypotheses** for individual-level studies to test
+- **Studying truly group-level exposures** (water fluoridation laws, air-quality legislation, tobacco taxes) — exposures that exist at the population level by definition
+- **Surveillance** when individual data are unavailable or impractical to collect
+- **Policy evaluation** — comparing outcomes before/after a policy change across jurisdictions
+            """)
+
+            st.markdown("#### The rule")
+            st.info("**Ecological correlations cannot substitute for individual-level associations.** Always state the unit of analysis and be explicit about what level the conclusions apply to.")
+
+        # ─────────────────────────────────────────────────────────────
+        # TAB 4: PRACTICE SCENARIOS
+        # ─────────────────────────────────────────────────────────────
+        with overview_tabs[3]:
+            st.markdown("Three scenarios testing the most commonly misapplied inference — group-level patterns mistaken for individual-level claims.")
+
+            epi_scenarios = [
+                {
+                    "q": "**Scenario 1:** A study finds that counties with more fast food restaurants per capita have higher obesity rates. A researcher concludes that people who eat at fast food restaurants are more likely to be obese. This is:",
+                    "opts": ["— Select —",
+                             "A valid causal inference from ecological data",
+                             "The ecological fallacy — individual-level conclusions drawn from group-level data",
+                             "Confounding by income",
+                             "Selection bias"],
+                    "correct": "The ecological fallacy — individual-level conclusions drawn from group-level data",
+                    "fb_correct": "✅ **Correct.** County-level restaurant density and county-level obesity rate are group measures. Whether individuals who eat at fast food chains are more obese than individuals in those same counties who don't — that's an individual-level question the ecological data cannot answer.",
+                    "fb_wrong": "❌ The primary error is drawing individual-level conclusions from group-level data. The unit of analysis is counties; the inference is about individuals. Income confounding may exist too, but the structural error is the ecological fallacy.",
+                    "key": "eco_q1"
+                },
+                {
+                    "q": "**Scenario 2:** Countries with higher chocolate consumption per capita win more Nobel Prizes per capita. A journalist concludes that eating chocolate makes people smarter. What is the most likely explanation?",
+                    "opts": ["— Select —",
+                             "Chocolate consumption causes cognitive improvement — a valid biological mechanism",
+                             "The ecological fallacy — wealth (a country-level variable) drives both chocolate consumption and Nobel Prize rates",
+                             "Reverse causation — winning Nobel Prizes causes people to eat more chocolate",
+                             "This is a valid randomized finding"],
+                    "correct": "The ecological fallacy — wealth (a country-level variable) drives both chocolate consumption and Nobel Prize rates",
+                    "fb_correct": "✅ **Correct.** This is a famous real example (Messerli, 2012 — published somewhat tongue-in-cheek). Wealthy countries have both higher per-capita chocolate consumption AND higher per-capita Nobel Prizes, because wealth drives investment in education and research. The correlation is ecological confounding. No individual-level data support a chocolate–intelligence link.",
+                    "fb_wrong": "❌ Wealthy nations have both higher chocolate consumption AND greater investment in education and research. A country-level correlation driven by a common cause (wealth) cannot support individual-level causal claims. This is the ecological fallacy compounded by ecological confounding.",
+                    "key": "eco_q2"
+                },
+                {
+                    "q": "**Scenario 3:** A researcher uses county-level data to study the relationship between opioid prescribing rates and opioid overdose death rates. She finds a strong positive correlation (r = 0.74). She wants to use this to estimate the individual-level risk of overdose among people who receive opioid prescriptions. Is this appropriate?",
+                    "opts": ["— Select —",
+                             "Yes — the correlation is strong, so the inference is valid",
+                             "No — this is an ecological correlation; it cannot directly estimate individual-level risk",
+                             "Yes — county-level data are more reliable than individual data",
+                             "It depends on whether the data are from the same year"],
+                    "correct": "No — this is an ecological correlation; it cannot directly estimate individual-level risk",
+                    "fb_correct": "✅ **Correct.** The county-level correlation is informative for policy (target high-prescribing counties for intervention) but cannot estimate the individual-level probability of overdose among people who receive a prescription. That requires individual-level data with person-level exposure and outcome. The ecological correlation is real and useful — but it answers a different question than individual risk.",
+                    "fb_wrong": "❌ Ecological correlations — even strong ones — cannot substitute for individual-level associations. The same county-level pattern could exist even if the highest-prescribing doctors serve the lowest-risk patients. Individual data are needed for individual-level inference.",
+                    "key": "eco_q3"
+                },
+            ]
+
+            for scen in epi_scenarios:
+                ans = st.radio(scen["q"], scen["opts"], key=scen["key"])
+                if ans == scen["correct"]:
+                    st.success(scen["fb_correct"])
+                elif ans != "— Select —":
+                    st.error(scen["fb_wrong"])
+                st.markdown("")
 
 
     elif section == "2️⃣ Design Selector":

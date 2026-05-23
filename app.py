@@ -851,7 +851,7 @@ The **natural history of disease** describes the progression of a disease proces
     elif found_section == "3️⃣ Chain of Infection & Infectious Disease":
         st.subheader("The Chain of Infection")
         st.markdown("""
-Infectious disease transmission requires an unbroken **chain of infection** — six linked components. Breaking any single link prevents transmission. This framework guides outbreak investigation and infection control.
+Infectious disease transmission requires an unbroken **chain of infection** — six linked components. This framework guides outbreak investigation and infection control.
         """)
 
         chain_html = """
@@ -875,7 +875,7 @@ Infectious disease transmission requires an unbroken **chain of infection** — 
   <div style="text-align:center;width:110px;">
     <div style="background:#fefce8;border:2px solid #ca8a04;border-radius:50%;width:80px;height:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:28px;">🚪</div>
     <div style="font-weight:700;font-size:11px;color:#ca8a04;margin-top:6px;">3. PORTAL OF EXIT</div>
-    <div style="font-size:10px;color:#555;margin-top:2px;">How agent leaves reservoir<br>(respiratory, fecal, blood)</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">How pathogen leaves<br><b>infected source</b><br>(respiratory, fecal, blood)</div>
   </div>
   <div style="font-size:20px;color:#94a3b8;padding:0 4px;margin-bottom:20px;">→</div>
 
@@ -889,7 +889,7 @@ Infectious disease transmission requires an unbroken **chain of infection** — 
   <div style="text-align:center;width:110px;">
     <div style="background:#eff6ff;border:2px solid #2563eb;border-radius:50%;width:80px;height:80px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:28px;">🚪</div>
     <div style="font-weight:700;font-size:11px;color:#2563eb;margin-top:6px;">5. PORTAL OF ENTRY</div>
-    <div style="font-size:10px;color:#555;margin-top:2px;">How agent enters host<br>(respiratory, GI, skin break)</div>
+    <div style="font-size:10px;color:#555;margin-top:2px;">How pathogen enters<br><b>next host</b><br>(respiratory, GI, skin break)</div>
   </div>
   <div style="font-size:20px;color:#94a3b8;padding:0 4px;margin-bottom:20px;">→</div>
 
@@ -900,7 +900,11 @@ Infectious disease transmission requires an unbroken **chain of infection** — 
   </div>
 
 </div>
-<div style="text-align:center;margin-top:10px;font-size:11px;color:#718096;">Breaking any single link prevents transmission ✂️</div>
+
+<!-- Organizing principle: visually emphasized -->
+<div style="margin-top:16px;background:#fef3c7;border-left:4px solid #f59e0b;padding:12px 16px;border-radius:0 8px 8px 0;text-align:center;font-size:14px;font-weight:700;color:#78350f;">
+  ✂️ Breaking any single link prevents transmission — this is the organizing principle of all infection control.
+</div>
 </div>"""
         st.markdown(chain_html, unsafe_allow_html=True)
 
@@ -909,35 +913,66 @@ Infectious disease transmission requires an unbroken **chain of infection** — 
         with col1:
             st.markdown("#### Modes of Transmission")
             st.markdown("""
-**Direct transmission:**
+**Respiratory transmission exists on a spectrum** — particle size, distance, and ventilation all matter — rather than as perfectly separate categories.
+
+**Direct transmission** (no intermediate)
 - *Direct contact:* Physical touching, sexual contact, biting
 - *Droplet spread:* Large droplets (>5μm) travel short distances (<1m) — classically influenza
-- *Short-range aerosol/respiratory particle transmission:* A spectrum of particle sizes; inhalation at close range and in poorly ventilated spaces is now recognized as the primary route for COVID-19, which does not fit neatly into the historic droplet/airborne binary
-- *Direct inoculation:* Needlestick, animal bite
+- *Short-range aerosol / respiratory particle transmission:* A spectrum of particle sizes; inhalation at close range and in poorly ventilated spaces is now recognized as the primary route for COVID-19, which does not fit neatly into the historic droplet/airborne binary
 
-**Indirect transmission:**
+**Indirect transmission** (through intermediate)
 - *Airborne:* Droplet nuclei (<5μm) suspended in air, travel >1m — TB, measles, chickenpox
 - *Vehicle-borne:* Contaminated food, water, blood products — Salmonella, hepatitis A
 - *Vector-borne:* Biological (agent replicates in vector — malaria, dengue) or mechanical (agent carried without replication — housefly + feces)
 - *Fomite:* Contaminated inanimate objects — C. diff on hospital surfaces
+
+**Bloodborne / percutaneous:** Needlestick, animal bite, transfusion — pathogen enters through breached skin or directly into bloodstream (HIV, hepatitis B/C)
 
 **Vertical transmission:** Mother to child — in utero, during delivery, breastfeeding (HIV, CMV, syphilis)
             """)
 
         with col2:
             st.markdown("#### Breaking the Chain — Intervention Points")
-            st.markdown("""
-| Link | Intervention examples |
-|---|---|
-| **Agent** | Antivirals, antibiotics, pasteurization |
-| **Reservoir** | Animal control, treating infected individuals |
-| **Portal of exit** | Respiratory precautions, wound coverage |
-| **Transmission** | Hand hygiene, masks, condoms, vector control |
-| **Portal of entry** | PPE, food safety, safe injection practices |
-| **Host** | Vaccination, chemoprophylaxis, nutrition |
-
-**Most effective interventions** target multiple links simultaneously. Vaccination addresses the host *and* reduces the reservoir when coverage is high enough to achieve herd immunity.
-            """)
+            # Color-coded intervention table matching chain link colors
+            intervention_table_html = """
+<table style="border-collapse:collapse;width:100%;margin-top:8px;font-family:-apple-system,sans-serif;font-size:13px;">
+<thead>
+  <tr style="background:#f3f4f6;">
+    <th style="border:1px solid #d1d5db;padding:8px 10px;text-align:left;font-weight:700;color:#1f2937;">Link</th>
+    <th style="border:1px solid #d1d5db;padding:8px 10px;text-align:left;font-weight:700;color:#1f2937;">Intervention examples</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#fef2f2;color:#991b1b;font-weight:700;">🦠 Agent</td>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#fef2f2;color:#7f1d1d;">Antivirals, antibiotics, pasteurization, disinfection</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#fff7ed;color:#9a3412;font-weight:700;">🏠 Reservoir</td>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#fff7ed;color:#7c2d12;">Animal control, treating infected individuals, water/soil sanitation</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#fefce8;color:#854d0e;font-weight:700;">🚪 Portal of exit</td>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#fefce8;color:#713f12;">Respiratory precautions, wound coverage, isolation of infected</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#f0fdf4;color:#15803d;font-weight:700;">✈️ Transmission</td>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#f0fdf4;color:#14532d;">Hand hygiene, masks, ventilation, condoms, vector control</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#eff6ff;color:#1d4ed8;font-weight:700;">🚪 Portal of entry</td>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#eff6ff;color:#1e3a8a;">PPE, food safety, safe injection practices, intact skin</td>
+  </tr>
+  <tr>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#fdf4ff;color:#7e22ce;font-weight:700;">🧑 Susceptible host</td>
+    <td style="border:1px solid #d1d5db;padding:8px 10px;background:#fdf4ff;color:#6b21a8;">Vaccination, chemoprophylaxis, nutrition, immune support</td>
+  </tr>
+</tbody>
+</table>
+<div style="margin-top:12px;font-size:13px;color:#374151;line-height:1.6;">
+<b>Most effective interventions</b> target multiple links simultaneously. Vaccination, for example, addresses the host <i>and</i> reduces the reservoir when coverage is high enough to achieve herd immunity.
+</div>"""
+            st.markdown(intervention_table_html, unsafe_allow_html=True)
 
         st.divider()
         with st.expander("🦟 Vector-Borne Disease — Biological vs. Mechanical"):

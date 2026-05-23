@@ -1479,9 +1479,18 @@ Document all control measures and their timing for the outbreak report. *Public 
     # ── SECTION 5: PICO ──
     elif found_section == "6️⃣ PICO Framework":
         st.subheader("The PICO Framework — Structuring Research Questions")
+
+        # Hero callout: the intellectual core of the page, made visually dominant
         st.markdown("""
-A well-formed research question is the foundation of a good study. The **PICO framework** breaks any clinical or epidemiologic question into four components that map directly onto study design decisions.
-        """)
+<div style="background:#eef2ff;border-left:4px solid #4f46e5;padding:14px 18px;margin:10px 0 18px 0;border-radius:0 8px 8px 0;">
+<div style="font-size:13px;font-weight:700;color:#312e81;text-transform:uppercase;letter-spacing:0.4px;">The intellectual core of PICO</div>
+<div style="font-size:15px;color:#312e81;line-height:1.65;margin-top:4px;">
+<b>A well-structured question naturally suggests an appropriate study design.</b> PICO is not a memorization acronym — it is a thinking tool. The way you structure each component (who, what exposure, what comparison, what outcome) constrains and reveals which study design will actually answer the question.
+</div>
+</div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("A well-formed research question is the foundation of a good study. The **PICO framework** breaks any clinical or epidemiologic question into four components that map directly onto study design decisions.")
 
         pico_html = """
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:16px 0;">
@@ -1499,6 +1508,10 @@ A well-formed research question is the foundation of a good study. The **PICO fr
     <div style="font-weight:700;font-size:16px;color:#166534;margin-bottom:6px;">Intervention / Exposure</div>
     <div style="font-size:13px;color:#14532d;line-height:1.6;">
       What is the exposure, intervention, or risk factor of interest?<br><br>
+      <div style="background:white;border-radius:4px;padding:8px 10px;margin:6px 0;font-size:12.5px;border:1px solid #bbf7d0;">
+      <b style="color:#15803d;">Clinical epidemiology</b> → <b>Intervention</b> (treatment, drug, procedure deliberately assigned)<br>
+      <b style="color:#15803d;">Observational / population epidemiology</b> → <b>Exposure</b> (risk factor, environmental agent, behavior already occurring)
+      </div>
       <b>Questions to ask:</b> What is the treatment or exposure? What is the dose/intensity? What is the timing?<br><br>
       <b>Example:</b> "Structured dietary counseling program (12 sessions over 6 months)"
     </div>
@@ -1509,6 +1522,9 @@ A well-formed research question is the foundation of a good study. The **PICO fr
     <div style="font-size:13px;color:#78350f;line-height:1.6;">
       What is the alternative? What are you comparing the intervention/exposure to?<br><br>
       <b>Questions to ask:</b> Usual care? No treatment? A different exposure level? A different drug?<br><br>
+      <div style="background:white;border-radius:4px;padding:8px 10px;margin:6px 0;font-size:12.5px;border:1px solid #fde68a;">
+      <b style="color:#b45309;">No comparison group?</b> → that's a <b>descriptive study</b> (case report, case series, cross-sectional prevalence estimate). Not all studies require formal controls — but you must know which kind you're doing and what claims you can therefore support.
+      </div>
       <b>Example:</b> "Standard written dietary advice (one session at diagnosis)"
     </div>
   </div>
@@ -1517,6 +1533,12 @@ A well-formed research question is the foundation of a good study. The **PICO fr
     <div style="font-weight:700;font-size:16px;color:#6b21a8;margin-bottom:6px;">Outcome</div>
     <div style="font-size:13px;color:#581c87;line-height:1.6;">
       What are you measuring? What change are you hoping to detect?<br><br>
+      <div style="background:white;border-radius:4px;padding:8px 10px;margin:6px 0;font-size:12.5px;border:1px solid #e9d5ff;">
+      Good outcomes are:<br>
+      • <b style="color:#7e22ce;">Measurable</b> (you can actually count or assay it)<br>
+      • <b style="color:#7e22ce;">Clinically or public-health meaningful</b> (matters to patients or populations)<br>
+      • <b style="color:#7e22ce;">Clearly timed</b> (specifies <i>when</i> the outcome is assessed)
+      </div>
       <b>Questions to ask:</b> Primary outcome? Secondary outcomes? How measured? Over what time period?<br><br>
       <b>Example:</b> "HbA1c reduction at 12 months; secondary: body weight, medication adherence"
     </div>
@@ -1552,7 +1574,7 @@ This question immediately suggests: **RCT** (if assigning intervention) or **coh
             st.markdown("""
 **PICOT** — adds **T (Time):** Over what follow-up period?
 
-**PICOS** — adds **S (Study design):** What design is appropriate?
+**PICOS** — adds **S (Study design):** What design is appropriate? **Systematic reviews typically use PICOS inclusion criteria** to specify exactly which study designs qualify for the review (e.g., "RCTs only" vs. "RCTs and prospective cohort studies").
 
 **PECO** — used in environmental/observational epi:
 - P = Population
@@ -1564,14 +1586,58 @@ This question immediately suggests: **RCT** (if assigning intervention) or **coh
             """)
 
         with st.expander("✏️ PICO Builder — Write Your Own"):
-            st.markdown("Use the fields below to structure a research question:")
+            st.markdown("Use the fields below to structure a research question. Once all four are filled, you'll get the assembled question *and* a hint about what study design it implies.")
             p = st.text_input("P — Population/Patient:", placeholder="e.g., HIV-positive adults on ART in sub-Saharan Africa", key="pico_p")
             i = st.text_input("I — Intervention/Exposure:", placeholder="e.g., daily high-dose vitamin D supplementation", key="pico_i")
-            c = st.text_input("C — Comparison:", placeholder="e.g., placebo", key="pico_c")
+            c = st.text_input("C — Comparison:", placeholder="e.g., placebo (or 'no comparison' for descriptive)", key="pico_c")
             o = st.text_input("O — Outcome:", placeholder="e.g., CD4 count at 6 months; tuberculosis incidence", key="pico_o")
             if p and i and c and o:
-                st.success(f"**Your PICO question:**\n\nIn {p} ({p and 'P'}), does {i} ({i and 'I'}), compared to {c} ({c and 'C'}), affect {o} ({o and 'O'})?")
+                st.markdown(f"**Your PICO question:**")
                 st.markdown(f"> *\"In {p}, does {i}, compared to {c}, affect {o}?\"*")
+
+                # Design-implication feedback: surface the implied design based on what was written
+                _c_lower = c.lower().strip()
+                _i_lower = i.lower().strip()
+                _o_lower = o.lower().strip()
+
+                hints = []
+
+                # Check for descriptive (no comparison)
+                if any(phrase in _c_lower for phrase in ["no comparison", "none", "no control", "n/a", "no group"]):
+                    hints.append("**No comparison group → descriptive study** (case report, case series, or cross-sectional prevalence). You can describe the population but cannot test causal claims.")
+                else:
+                    # Check for intervention vs. exposure language
+                    intervention_keywords = ["randomi", "assign", "trial", "administer", "treatment with", "prescribe", "given", "receive"]
+                    exposure_keywords = ["exposure to", "exposed", "history of", "smoker", "consume", "live near", "work in", "current users"]
+
+                    if any(k in _i_lower for k in intervention_keywords):
+                        hints.append("**I sounds like an assigned intervention → RCT** is the strongest design if feasible and ethical.")
+                    elif any(k in _i_lower for k in exposure_keywords):
+                        hints.append("**I sounds like an observed exposure → cohort or case-control study** (RCT not appropriate when exposure cannot/should not be randomized).")
+                    else:
+                        hints.append("**Consider:** is your I an *assigned* intervention (→ RCT) or an *observed* exposure (→ cohort/case-control)? Clarifying this points toward the design.")
+
+                # Check outcome characteristics
+                if any(phrase in _o_lower for phrase in ["rare", "uncommon"]):
+                    hints.append("**Outcome described as rare → case-control study** is typically more efficient than cohort.")
+                if any(phrase in _o_lower for phrase in ["incidence", "new cases", "develop"]):
+                    hints.append("**Outcome measured as incidence → cohort study** (or RCT) — incidence requires forward follow-up of disease-free individuals.")
+                if any(phrase in _o_lower for phrase in ["prevalence", "burden", "how many have"]):
+                    hints.append("**Outcome measured as prevalence → cross-sectional study** — snapshot of disease burden at one point in time.")
+                if any(phrase in _o_lower for phrase in ["survival", "mortality", "death", "time to"]):
+                    hints.append("**Outcome involves time-to-event → cohort or RCT with survival analysis** (Kaplan-Meier, Cox regression).")
+
+                # Time/follow-up clarity check
+                time_keywords = ["months", "weeks", "years", "days", "at follow-up", "at endpoint"]
+                if not any(k in _o_lower for k in time_keywords):
+                    hints.append("⚠️ **Consider clarifying when the outcome is assessed.** Specifying the time horizon (e.g., 'at 6 months' or 'over 2 years') makes the question testable.")
+
+                if hints:
+                    st.markdown("**Implied study design hints:**")
+                    for h in hints:
+                        st.markdown(f"- {h}")
+
+                st.caption("💡 This is a heuristic guide — the actual best design also depends on feasibility, ethics, available data, and the strength of evidence you need.")
 
     st.markdown("---")
     st.markdown("*Strong epidemiologists ask the right question before choosing the right method.*")

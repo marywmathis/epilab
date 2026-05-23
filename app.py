@@ -480,8 +480,16 @@ Remove or modify any one element, and the disease dynamic changes.
 
         import streamlit.components.v1 as _tri_comp
         _tri_comp.html("""
+<style>
+  .tri-title { color: #1a202c; }
+  .tri-caption { fill: #64748b; }
+  @media (prefers-color-scheme: dark) {
+    .tri-title { color: #f1f5f9; }
+    .tri-caption { fill: #94a3b8; }
+  }
+</style>
 <div style="font-family:sans-serif;text-align:center;padding:10px 0;">
-<div style="font-weight:700;font-size:13px;margin-bottom:10px;color:#1a202c;">The Epidemiology Triangle</div>
+<div class="tri-title" style="font-weight:700;font-size:13px;margin-bottom:10px;">The Epidemiology Triangle</div>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 340" width="500" height="340">
   <!-- Triangle fill -->
   <polygon points="250,28 40,300 460,300" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
@@ -521,7 +529,7 @@ Remove or modify any one element, and the disease dynamic changes.
   <line x1="308" y1="202" x2="382" y2="284" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
 
   <!-- Caption -->
-  <text x="250" y="335" font-size="9" fill="#94a3b8" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
+  <text x="250" y="335" font-size="9" class="tri-caption" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
 </svg>
 </div>
         """, height=420, scrolling=False)

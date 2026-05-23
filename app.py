@@ -3572,11 +3572,71 @@ elif current_page == "confounding":
         st.markdown("""
 A **confounder** is a variable that distorts the apparent association between an exposure and an outcome. Three conditions must all be true:
 
-1. The confounder is **associated with the exposure** (in the source population)
+1. The confounder is **associated with the exposure** among the people being studied (source population)
 2. The confounder is **associated with the outcome** (independent of the exposure)
 3. The confounder is **not on the causal pathway** between exposure and outcome (it's not an intermediate step)
         """)
         st.info("**Intuition:** A confounder provides an alternative explanation for your finding. The apparent association between exposure and outcome might be entirely or partly due to both being linked to the confounder.")
+
+        st.warning("**Confounding is not a measurement flaw.** Unlike information bias, confounding can exist even when exposure and outcome are measured perfectly. It reflects a *mixing of effects* from a third variable — not an error in the data.")
+
+        # Inline DAG — confounding has a specific causal shape worth showing visually
+        st.markdown("#### The Causal Structure — Visualized")
+        st.markdown("Confounding has a specific causal shape. The confounder is a **common cause** of both the exposure and the outcome, creating a *backdoor path* that produces a spurious association between them:")
+
+        import streamlit.components.v1 as _conf_dag_comp
+        conf_dag_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 280" style="width:100%;max-width:560px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;display:block;margin:0 auto;">
+  <defs>
+    <marker id="cf_solid" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#ef6c00"/>
+    </marker>
+    <marker id="cf_dashed" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="280" y="22" font-size="13" font-weight="700" fill="#1f2937" text-anchor="middle">Coffee &amp; Heart Disease — Confounded by Smoking</text>
+
+  <!-- Smoking (confounder) — top center -->
+  <rect x="220" y="40" width="120" height="50" rx="8" fill="#fff3e0" stroke="#ef6c00" stroke-width="2.5"/>
+  <text x="280" y="62" font-size="13" font-weight="700" fill="#ef6c00" text-anchor="middle">Smoking</text>
+  <text x="280" y="80" font-size="10" fill="#9a3412" text-anchor="middle">CONFOUNDER (common cause)</text>
+
+  <!-- Coffee (exposure) — bottom left -->
+  <rect x="40" y="190" width="140" height="50" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
+  <text x="110" y="212" font-size="13" font-weight="700" fill="#1565c0" text-anchor="middle">Coffee</text>
+  <text x="110" y="230" font-size="10" fill="#1e40af" text-anchor="middle">Exposure (E)</text>
+
+  <!-- Heart Disease (outcome) — bottom right -->
+  <rect x="380" y="190" width="140" height="50" rx="8" fill="#fce4ec" stroke="#c62828" stroke-width="2"/>
+  <text x="450" y="212" font-size="13" font-weight="700" fill="#c62828" text-anchor="middle">Heart Disease</text>
+  <text x="450" y="230" font-size="10" fill="#991b1b" text-anchor="middle">Outcome (Y)</text>
+
+  <!-- Smoking → Coffee (real causal arrow) -->
+  <line x1="240" y1="92" x2="140" y2="188" stroke="#ef6c00" stroke-width="2.5" marker-end="url(#cf_solid)"/>
+  <text x="170" y="135" font-size="10" fill="#9a3412" font-style="italic">causes</text>
+
+  <!-- Smoking → Heart Disease (real causal arrow) -->
+  <line x1="320" y1="92" x2="420" y2="188" stroke="#ef6c00" stroke-width="2.5" marker-end="url(#cf_solid)"/>
+  <text x="375" y="135" font-size="10" fill="#9a3412" font-style="italic">causes</text>
+
+  <!-- Coffee → Heart Disease (apparent/spurious — dashed) -->
+  <line x1="184" y1="215" x2="376" y2="215" stroke="#9ca3af" stroke-width="2" stroke-dasharray="7,4" marker-end="url(#cf_dashed)"/>
+  <text x="280" y="208" font-size="10" fill="#6b7280" font-style="italic" text-anchor="middle">apparent association</text>
+  <text x="280" y="232" font-size="9" fill="#6b7280" font-style="italic" text-anchor="middle">(what we observe — but the cause is upstream)</text>
+
+  <!-- Backdoor path annotation -->
+  <text x="280" y="265" font-size="11" font-weight="600" fill="#7c2d12" text-anchor="middle">Backdoor path: Coffee ← Smoking → Heart Disease</text>
+</svg>"""
+        _conf_dag_comp.html(f"<div style='font-family:sans-serif;'>{conf_dag_svg}</div>", height=300, scrolling=False)
+
+        st.markdown("""
+**Reading the diagram:** The solid orange arrows show *real* causal relationships — smoking causes both coffee drinking (smokers cluster behaviors) and heart disease. The dashed gray arrow shows the **apparent association** we observe between coffee and heart disease — but it's not a direct causal effect. The "signal" is leaking through smoking. Adjusting for smoking **blocks this backdoor path**, revealing that coffee itself has little to no effect on heart disease.
+
+**Why adjustment works:** Adjustment attempts to compare exposed and unexposed individuals who are otherwise similar with respect to the confounder. By holding smoking constant (through stratification, matching, or regression), we isolate the effect of coffee from the effect of smoking.
+        """)
 
         with st.expander("☕ Classic Example: Coffee & Heart Disease", expanded=True):
             st.markdown("""

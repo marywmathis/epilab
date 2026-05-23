@@ -5762,25 +5762,156 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
             ppv_vals.append(round(ppv_v * 100, 1))
             npv_vals.append(round(npv_v * 100, 1))
 
-        result_df = pd.DataFrame({
-            "Prevalence": [f"{round(p*100,1)}%" for p in prevalences],
-            "PPV": [f"{v}%" for v in ppv_vals],
-            "NPV": [f"{v}%" for v in npv_vals],
-        })
-        st.table(result_df)
+        # Build inline PPV/NPV curve SVG — the visual punch
+        import streamlit.components.v1 as _prev_comp
+        CW, CH = 720, 320
+        margin_l, margin_r, margin_t, margin_b = 60, 60, 30, 50
+        plot_w = CW - margin_l - margin_r
+        plot_h = CH - margin_t - margin_b
 
-        st.warning(f"""
-**Key insight:** With sensitivity = {round(sens_fixed*100,0):.0f}% and specificity = {round(spec_fixed*100,0):.0f}%:
-- At 0.1% prevalence (mass population screening): PPV = {ppv_vals[0]}% — most positives are false alarms
-- At 10% prevalence (high-risk clinic): PPV = {ppv_vals[5]}%
-- At 50% prevalence (symptomatic patients): PPV = {ppv_vals[8]}%
+        # X axis: log-spaced prevalence (0.001 → 0.50)
+        import math as _pmath
+        log_min, log_max = _pmath.log10(0.001), _pmath.log10(0.5)
+        def x_for_prev(p):
+            lp = _pmath.log10(p)
+            return margin_l + ((lp - log_min) / (log_max - log_min)) * plot_w
+        def y_for_pct(v):
+            return margin_t + (1 - v/100) * plot_h
 
-The test hasn't changed — only the population it's applied to.
-        """)
+        # Build path strings for PPV and NPV
+        ppv_path = " ".join([f"{'M' if i==0 else 'L'} {x_for_prev(prevalences[i]):.1f} {y_for_pct(ppv_vals[i]):.1f}" for i in range(len(prevalences))])
+        npv_path = " ".join([f"{'M' if i==0 else 'L'} {x_for_prev(prevalences[i]):.1f} {y_for_pct(npv_vals[i]):.1f}" for i in range(len(prevalences))])
 
+        # X-axis tick labels
+        x_ticks_svg = ""
+        for p in prevalences:
+            xt = x_for_prev(p)
+            x_ticks_svg += f'<line x1="{xt:.1f}" y1="{margin_t+plot_h}" x2="{xt:.1f}" y2="{margin_t+plot_h+4}" stroke="#9ca3af" stroke-width="1"/>'
+            x_ticks_svg += f'<text x="{xt:.1f}" y="{margin_t+plot_h+16}" font-size="9" fill="#6b7280" text-anchor="middle">{round(p*100,1)}%</text>'
+
+        # Y-axis tick labels (0, 25, 50, 75, 100)
+        y_ticks_svg = ""
+        for yv in [0, 25, 50, 75, 100]:
+            yt = y_for_pct(yv)
+            y_ticks_svg += f'<line x1="{margin_l-4}" y1="{yt:.1f}" x2="{margin_l}" y2="{yt:.1f}" stroke="#9ca3af" stroke-width="1"/>'
+            y_ticks_svg += f'<text x="{margin_l-8}" y="{yt+3:.1f}" font-size="9" fill="#6b7280" text-anchor="end">{yv}%</text>'
+            y_ticks_svg += f'<line x1="{margin_l}" y1="{yt:.1f}" x2="{margin_l+plot_w}" y2="{yt:.1f}" stroke="#f1f5f9" stroke-width="1"/>'
+
+        # Annotated markers at 0.1%, 10%, 50% on PPV curve
+        annotations_svg = ""
+        for i, label in [(0, "0.1%"), (5, "10%"), (8, "50%")]:
+            cx = x_for_prev(prevalences[i])
+            cy = y_for_pct(ppv_vals[i])
+            color = "#dc2626" if ppv_vals[i] < 50 else ("#f59e0b" if ppv_vals[i] < 80 else "#16a34a")
+            annotations_svg += f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="6" fill="{color}" stroke="white" stroke-width="2"/>'
+            # Position label above or below to avoid collision
+            ly = cy - 14 if ppv_vals[i] > 50 else cy + 22
+            annotations_svg += f'<text x="{cx:.1f}" y="{ly:.1f}" font-size="11" font-weight="700" fill="{color}" text-anchor="middle" stroke="white" stroke-width="3" paint-order="stroke">PPV={ppv_vals[i]}%</text>'
+            annotations_svg += f'<text x="{cx:.1f}" y="{ly:.1f}" font-size="11" font-weight="700" fill="{color}" text-anchor="middle">PPV={ppv_vals[i]}%</text>'
+
+        curve_svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{CW}" height="{CH}" style="background:white;border:1px solid #e5e7eb;border-radius:8px;">
+  <!-- Axes -->
+  <line x1="{margin_l}" y1="{margin_t}" x2="{margin_l}" y2="{margin_t+plot_h}" stroke="#9ca3af" stroke-width="1.5"/>
+  <line x1="{margin_l}" y1="{margin_t+plot_h}" x2="{margin_l+plot_w}" y2="{margin_t+plot_h}" stroke="#9ca3af" stroke-width="1.5"/>
+  {y_ticks_svg}
+  {x_ticks_svg}
+  <!-- Axis labels -->
+  <text x="{margin_l+plot_w/2:.1f}" y="{CH-10}" font-size="11" fill="#374151" text-anchor="middle" font-weight="600">Disease Prevalence (log scale)</text>
+  <text x="20" y="{margin_t+plot_h/2:.1f}" font-size="11" fill="#374151" text-anchor="middle" font-weight="600" transform="rotate(-90, 20, {margin_t+plot_h/2:.1f})">Predictive Value</text>
+  <!-- NPV curve (high, falls slightly) -->
+  <path d="{npv_path}" fill="none" stroke="#16a34a" stroke-width="2.5" opacity="0.85"/>
+  <!-- PPV curve (low at left, rises steeply) -->
+  <path d="{ppv_path}" fill="none" stroke="#2563eb" stroke-width="3"/>
+  <!-- Annotated PPV markers -->
+  {annotations_svg}
+  <!-- Legend -->
+  <g transform="translate({margin_l+30}, {margin_t+plot_h*0.45:.1f})">
+    <rect x="-8" y="-12" width="146" height="22" fill="white" stroke="#e5e7eb" rx="3" opacity="0.95"/>
+    <line x1="0" y1="0" x2="20" y2="0" stroke="#2563eb" stroke-width="3"/>
+    <text x="26" y="3" font-size="11" fill="#1e3a8a" font-weight="600">PPV</text>
+    <line x1="60" y1="0" x2="80" y2="0" stroke="#16a34a" stroke-width="2.5"/>
+    <text x="86" y="3" font-size="11" fill="#15803d" font-weight="600">NPV</text>
+  </g>
+</svg>"""
+        _prev_comp.html(f"<div style='font-family:sans-serif;'>{curve_svg}</div>", height=CH+10, scrolling=False)
+
+        # Color-graded HTML table — PPV column is the focal point
+        def ppv_color(v):
+            if v < 50: return ("#fef2f2", "#b91c1c")  # red - alarming
+            elif v < 80: return ("#fef3c7", "#92400e")  # amber - caution
+            else: return ("#f0fdf4", "#15803d")  # green - acceptable
+
+        rows_html = ""
+        for i in range(len(prevalences)):
+            bg, fg = ppv_color(ppv_vals[i])
+            rows_html += f"""<tr>
+  <td style="border:1px solid #e5e7eb;padding:8px 12px;font-size:13px;color:#374151;">{round(prevalences[i]*100,1)}%</td>
+  <td style="border:1px solid #e5e7eb;padding:8px 12px;font-size:14px;font-weight:700;background:{bg};color:{fg};">{ppv_vals[i]}%</td>
+  <td style="border:1px solid #e5e7eb;padding:8px 12px;font-size:13px;color:#374151;">{npv_vals[i]}%</td>
+</tr>"""
+
+        table_html = f"""<table style="border-collapse:collapse;width:100%;max-width:600px;margin:16px 0;">
+<thead>
+  <tr style="background:#f3f4f6;">
+    <th style="border:1px solid #d1d5db;padding:10px 12px;text-align:left;font-size:13px;color:#1f2937;">Prevalence</th>
+    <th style="border:1px solid #d1d5db;padding:10px 12px;text-align:left;font-size:13px;color:#1e3a8a;background:#dbeafe;">PPV ← <span style="font-weight:400;font-style:italic;font-size:11px;">watch this column</span></th>
+    <th style="border:1px solid #d1d5db;padding:10px 12px;text-align:left;font-size:13px;color:#1f2937;">NPV</th>
+  </tr>
+</thead>
+<tbody>
+{rows_html}
+</tbody>
+</table>"""
+        st.markdown(table_html, unsafe_allow_html=True)
+
+        # Hero callout for the shocking low-prevalence PPV result
+        if ppv_vals[0] < 10:
+            st.markdown(f"""
+<div style="background:#fef2f2;border:2px solid #fca5a5;border-radius:10px;padding:18px 20px;margin:18px 0;">
+<div style="display:flex;align-items:center;gap:12px;">
+  <div style="font-size:36px;line-height:1;">⚠️</div>
+  <div>
+    <div style="font-size:13px;color:#7f1d1d;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">The screening paradox</div>
+    <div style="font-size:24px;color:#991b1b;font-weight:700;line-height:1.2;margin-top:4px;">PPV = {ppv_vals[0]}% at 0.1% prevalence</div>
+    <div style="font-size:14px;color:#7f1d1d;margin-top:6px;line-height:1.5;">With sensitivity = {round(sens_fixed*100,0):.0f}% and specificity = {round(spec_fixed*100,0):.0f}% — a strong test — <b>more than {round(100-ppv_vals[0],0):.0f}% of positive results in a low-prevalence population are false alarms</b>. The test hasn't changed; only the population has.</div>
+  </div>
+</div>
+</div>
+            """, unsafe_allow_html=True)
+
+        st.markdown(f"""
+<div style="background:#fffbeb;border-left:4px solid #f59e0b;padding:14px 16px;margin:14px 0;border-radius:0 8px 8px 0;font-size:13.5px;color:#78350f;line-height:1.7;">
+<b>Same test, three populations:</b><br>
+• Mass screening (0.1% prevalence) → PPV = <b>{ppv_vals[0]}%</b> — most positives are false alarms<br>
+• High-risk clinic (10% prevalence) → PPV = <b>{ppv_vals[5]}%</b> — meaningful but still uncertain<br>
+• Symptomatic patients (50% prevalence) → PPV = <b>{ppv_vals[8]}%</b> — positives are usually true
+</div>
+        """, unsafe_allow_html=True)
+
+        # Explicit NPV inverse insight — the dual relationship students usually miss
+        st.markdown(f"""
+<div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px 16px;margin:14px 0;border-radius:0 8px 8px 0;font-size:13.5px;color:#14532d;line-height:1.6;">
+<b>The inverse story — don't miss this:</b> Notice the NPV column. At low prevalence (0.1%), NPV is essentially {npv_vals[0]}% — <b>a negative test in a low-prevalence population is extremely reliable</b>. This is why screening tests are most valuable for <i>ruling out</i> disease in low-risk populations and most dangerous for <i>ruling in</i> disease. Low prevalence makes positive results untrustworthy and negative results highly trustworthy at the same time.
+</div>
+        """, unsafe_allow_html=True)
+
+        st.divider()
+        st.markdown("#### Why does this happen? The arithmetic of false positives")
+
+        # Break the dense paragraph into three escalating callouts
         st.markdown("""
-**Why does this happen?** In a low-prevalence population, there are very few true cases but an enormous number of disease-free people. Even a test with high specificity — meaning its false positive *rate* is low — will produce a large absolute *number* of false positives when applied to millions of non-cases. A 95% specific test still incorrectly flags 5% of non-cases as positive; in a population of 1,000,000 non-cases, that's 50,000 false positives regardless of how few true cases exist. The problem is not the test's performance — it's the mismatch between the test's false positive rate and the vast size of the non-case pool. This is the mathematical basis for why mass screening of low-risk populations often produces more harm (unnecessary follow-up, anxiety, procedures) than benefit.
-        """)
+<div style="background:#f9fafb;border-left:3px solid #6b7280;padding:12px 16px;margin:10px 0;border-radius:0 6px 6px 0;font-size:14px;color:#1f2937;line-height:1.6;">
+<b>Step 1 — Where the false positives come from:</b> A 95%-specific test still incorrectly flags <b>5% of non-cases as positive</b>. That false-positive rate is small in proportion, but it acts on the entire non-case pool.
+</div>
+
+<div style="background:#fef3c7;border-left:3px solid #f59e0b;padding:12px 16px;margin:10px 0;border-radius:0 6px 6px 0;font-size:14px;color:#78350f;line-height:1.6;">
+<b>Step 2 — The arithmetic:</b> 95% specificity sounds excellent. But in <b>1,000,000 healthy people</b>, 5% false positives = <b>50,000 false alarms</b> — regardless of how few true cases exist.
+</div>
+
+<div style="background:#fee2e2;border-left:3px solid #dc2626;padding:12px 16px;margin:10px 0;border-radius:0 6px 6px 0;font-size:14px;color:#7f1d1d;line-height:1.6;">
+<b>Step 3 — Why the test is fine, but the program fails:</b> The problem is not the test's performance. It is the <b>mismatch between the test's false-positive rate and the vast size of the non-case pool</b>. This is the mathematical basis for why mass screening of low-risk populations often produces more harm (unnecessary follow-up, anxiety, procedures) than benefit — and why screening programs must be matched carefully to populations.
+</div>
+        """, unsafe_allow_html=True)
 
     elif screen_section == "5️⃣ Wilson & Jungner Criteria":
         st.subheader("Wilson & Jungner Criteria for Screening Programs")

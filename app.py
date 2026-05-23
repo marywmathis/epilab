@@ -1821,217 +1821,239 @@ Can take any value within a range, including decimals. Measured, not counted.
 
 
     elif section == "3️⃣ RCT & Evidence Hierarchy":
-        st.subheader("Evidence Hierarchy")
-        st.markdown("Not all study designs provide equally strong evidence for causation. The hierarchy reflects **internal validity** — how confident can we be the exposure causes the outcome? Higher levels have stronger designs for ruling out alternative explanations.")
+        st.subheader("RCT & Evidence Hierarchy")
+        st.markdown("Four ideas determine how strongly we can infer causation from a study: where the study sits in the evidence hierarchy, how it handles randomization, whether it uses blinding, and how it analyzes the participants. Each tab below covers one.")
 
-        import streamlit.components.v1 as _comp_eh
+        rct_tabs = st.tabs([
+            "📊 Evidence Hierarchy",
+            "🎲 Randomization",
+            "👓 Blinding",
+            "🎯 Intent-to-Treat"
+        ])
 
-        LEVELS = [
-            {
-                "num": 1,
-                "title": "Systematic Reviews & Meta-Analyses",
-                "badge": "STRONGEST",
-                "badge_color": "#16a34a",
-                "desc": "Pool and synthesize results across multiple RCTs using statistical methods. When studies are consistent, this provides the most reliable overall estimate of an effect.",
-                "strengths": ["Reduces impact of any single study's chance findings", "Quantifies heterogeneity across studies", "Most comprehensive evidence base"],
-                "limits": ["Only as good as the studies included", "Publication bias can distort pooled estimates", "Heterogeneity can make pooling misleading"],
-                "measure": "Pooled RR / OR / HR",
-                "bar_pct": 100,
-                "bar_color": "#1d4ed8",
-                "num_bg": "#1e3a8a",
-            },
-            {
-                "num": 2,
-                "title": "Randomized Controlled Trials (RCTs)",
-                "badge": "GOLD STANDARD",
-                "badge_color": "#b45309",
-                "desc": "Random assignment distributes both measured and unmeasured confounders equally across groups. The only design that can establish causation without residual confounding concern.",
-                "strengths": ["Controls for known and unknown confounders", "Clear temporal order", "Blinding possible"],
-                "limits": ["Expensive and time-consuming", "Ethical limits (can't randomize harmful exposures)", "May not reflect real-world populations"],
-                "measure": "RR / HR / Risk Difference",
-                "bar_pct": 86,
-                "bar_color": "#1d4ed8",
-                "num_bg": "#1e40af",
-            },
-            {
-                "num": 3,
-                "title": "Prospective Cohort Studies",
-                "badge": "OBSERVATIONAL",
-                "badge_color": "#0369a1",
-                "desc": "Participants classified by exposure at baseline, then followed forward to measure new outcomes. Establishes temporal order — exposure clearly precedes outcome.",
-                "strengths": ["Clear temporality", "Can study multiple outcomes", "Measures incidence directly"],
-                "limits": ["Residual confounding possible", "Expensive for rare diseases", "Loss to follow-up bias"],
-                "measure": "RR / IRR / HR",
-                "bar_pct": 74,
-                "bar_color": "#2563eb",
-                "num_bg": "#1d4ed8",
-            },
-            {
-                "num": 4,
-                "title": "Retrospective Cohort / Case-Control",
-                "badge": "OBSERVATIONAL",
-                "badge_color": "#0369a1",
-                "desc": "Retrospective cohort uses historical records; case-control recruits by outcome status and looks back at exposure. Both are efficient but introduce more opportunities for bias.",
-                "strengths": ["Efficient for rare outcomes (case-control)", "Faster and cheaper than prospective", "Can use existing data"],
-                "limits": ["Recall bias (case-control)", "Selection bias in control group", "Confounding harder to rule out"],
-                "measure": "OR (case-control) / RR (retro cohort)",
-                "bar_pct": 62,
-                "bar_color": "#3b82f6",
-                "num_bg": "#2563eb",
-            },
-            {
-                "num": 5,
-                "title": "Cross-Sectional Studies",
-                "badge": "OBSERVATIONAL",
-                "badge_color": "#0369a1",
-                "desc": "Exposure and outcome measured simultaneously in a single snapshot. Cannot determine which came first — useful for estimating prevalence and generating hypotheses.",
-                "strengths": ["Fast and inexpensive", "Good for prevalence estimates", "Useful for generating hypotheses"],
-                "limits": ["Cannot establish temporality", "Prevalence-incidence bias", "Not suitable for rare conditions"],
-                "measure": "Prevalence Ratio (PR)",
-                "bar_pct": 48,
-                "bar_color": "#60a5fa",
-                "num_bg": "#3b82f6",
-            },
-            {
-                "num": 6,
-                "title": "Ecological Studies",
-                "badge": "GROUP-LEVEL",
-                "badge_color": "#6d28d9",
-                "desc": "Exposure and outcome measured at the group or population level — not for individuals. Compares aggregate rates across countries, cities, or time periods. Cannot establish individual-level causation.",
-                "strengths": ["Inexpensive — uses existing data", "Good for generating hypotheses", "Useful for studying population-level exposures (policy, water supply, legislation)", "Can study exposures with little individual variation"],
-                "limits": ["Ecological fallacy — group association ≠ individual risk", "Cannot control for individual-level confounders", "Correlation does not imply causation at individual level", "Aggregation bias can mask or create spurious associations"],
-                "measure": "Correlation coefficient / Rate ratio",
-                "bar_pct": 34,
-                "bar_color": "#818cf8",
-                "num_bg": "#4f46e5",
-            },
-            {
-                "num": 7,
-                "title": "Case Reports & Expert Opinion",
-                "badge": "LOWEST",
-                "badge_color": "#9a3412",
-                "desc": "Individual case descriptions or consensus opinions without a systematic comparison group. Essential for identifying new conditions and rare adverse events, but cannot establish causation.",
-                "strengths": ["Critical for identifying new diseases", "Detects rare adverse drug reactions", "Generates hypotheses quickly"],
-                "limits": ["No comparison group", "High potential for bias", "Cannot quantify associations"],
-                "measure": "Descriptive only",
-                "bar_pct": 20,
-                "bar_color": "#93c5fd",
-                "num_bg": "#60a5fa",
-            },
-        ]
+        # ─────────────────────────────────────────────────────────────
+        # SUB-TAB 1: EVIDENCE HIERARCHY
+        # ─────────────────────────────────────────────────────────────
+        with rct_tabs[0]:
+            st.markdown("Not all study designs provide equally strong evidence for causation. The hierarchy reflects **internal validity** — how confident can we be the exposure causes the outcome? Higher levels have stronger designs for ruling out alternative explanations.")
 
-        _is_dark = False  # theme system removed — always light
-        _card_bg    = "#1e2130" if _is_dark else "#ffffff"
-        _card_bdr   = "#2e3246" if _is_dark else "#e5e7eb"
-        _body_txt   = "#d1d5db" if _is_dark else "#374151"
-        _head_txt   = "#f1f5f9" if _is_dark else "#111827"
-        _sub_bg     = "#252836" if _is_dark else "#f8fafc"
-        _sub_bdr    = "#3a3f52" if _is_dark else "#e2e8f0"
-        _str_head   = "#4ade80" if _is_dark else "#166534"
-        _lim_head   = "#f87171" if _is_dark else "#991b1b"
-        _meas_bg    = "#1a1d27" if _is_dark else "#f0f9ff"
-        _meas_txt   = "#93c5fd" if _is_dark else "#1e40af"
-        _meas_bdr   = "#2563eb" if _is_dark else "#bfdbfe"
-
-        cards_html = ""
-        for lv in LEVELS:
-            strengths_li = "".join(f'<li>{s}</li>' for s in lv["strengths"])
-            limits_li    = "".join(f'<li>{l}</li>' for l in lv["limits"])
-            cards_html += f"""
-<div class="card">
-  <div class="card-header">
-    <div class="num-badge" style="background:{lv['num_bg']};">{lv['num']}</div>
-    <div class="header-mid">
-      <div class="card-title">{lv['title']}</div>
-      <div class="card-desc">{lv['desc']}</div>
-    </div>
-    <span class="badge" style="background:{lv['badge_color']}22;color:{lv['badge_color']};border:1px solid {lv['badge_color']}55;">{lv['badge']}</span>
-  </div>
-  <div class="bar-row">
-    <div class="bar-track">
-      <div class="bar-fill" style="width:{lv['bar_pct']}%;background:linear-gradient(90deg,{lv['bar_color']},{lv['bar_color']}99);"></div>
-    </div>
-    <span class="bar-label">Evidence strength</span>
-  </div>
-  <div class="card-body">
-    <div class="sl-box">
-      <div class="sl-head" style="color:{_str_head};">✓ Strengths</div>
-      <ul>{strengths_li}</ul>
-    </div>
-    <div class="sl-box">
-      <div class="sl-head" style="color:{_lim_head};">✗ Limitations</div>
-      <ul>{limits_li}</ul>
-    </div>
-    <div class="measure-pill" style="background:{_meas_bg};color:{_meas_txt};border:1px solid {_meas_bdr};">
-      <span style="font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;opacity:0.7;">Typical measure</span>
-      <span style="font-weight:700;margin-left:8px;">{lv['measure']}</span>
-    </div>
-  </div>
-</div>"""
-
-        full_html = f"""<!DOCTYPE html><html><head><style>
-* {{ box-sizing:border-box; margin:0; padding:0; }}
-body {{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:transparent; padding:4px 0 12px 0; }}
-.card {{
-  background:{_card_bg};
-  border:1px solid {_card_bdr};
-  border-radius:12px;
-  margin:0 0 10px 0;
-  overflow:hidden;
-  transition:box-shadow 0.2s;
-}}
-.card:hover {{ box-shadow: 0 4px 16px rgba(0,0,0,{"0.4" if _is_dark else "0.08"}); }}
-.card-header {{
-  display:flex; align-items:flex-start; gap:14px;
-  padding:14px 16px 10px 16px;
-}}
-.num-badge {{
-  width:32px; height:32px; border-radius:8px;
-  display:flex; align-items:center; justify-content:center;
-  font-size:15px; font-weight:800; color:white; flex-shrink:0;
-}}
-.header-mid {{ flex:1; min-width:0; }}
-.card-title {{ font-size:15px; font-weight:700; color:{_head_txt}; line-height:1.3; }}
-.card-desc  {{ font-size:12.5px; color:{_body_txt}; margin-top:3px; line-height:1.5; }}
-.badge {{
-  flex-shrink:0; font-size:9.5px; font-weight:700;
-  letter-spacing:0.08em; text-transform:uppercase;
-  padding:3px 8px; border-radius:20px; white-space:nowrap; margin-top:2px;
-}}
-.bar-row {{
-  display:flex; align-items:center; gap:10px;
-  padding:0 16px 10px 62px;
-}}
-.bar-track {{
-  flex:1; height:5px; background:{_sub_bdr}; border-radius:3px; overflow:hidden;
-}}
-.bar-fill {{ height:100%; border-radius:3px; }}
-.bar-label {{ font-size:10px; color:{_body_txt}; opacity:0.6; white-space:nowrap; }}
-.card-body {{
-  background:{_sub_bg};
-  border-top:1px solid {_sub_bdr};
-  padding:12px 16px;
-  display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start;
-}}
-.sl-box {{ flex:1; min-width:180px; }}
-.sl-head {{ font-size:11px; font-weight:700; margin-bottom:5px; }}
-.sl-box ul {{ list-style:none; padding:0; }}
-.sl-box li {{ font-size:12px; color:{_body_txt}; line-height:1.5; padding:1px 0; }}
-.sl-box li::before {{ content:"· "; color:#94a3b8; }}
-.measure-pill {{
-  display:flex; align-items:center; border-radius:6px;
-  padding:7px 12px; font-size:12.5px;
-  align-self:flex-end; white-space:nowrap;
-}}
-</style></head><body>
-{cards_html}
-</body></html>"""
-
-        _comp_eh.html(full_html, height=len(LEVELS) * 195 + 20, scrolling=True)
-
-        st.divider()
-        with st.expander("💡 Important caveats about the hierarchy"):
+            # Promoted from caveats expander - this framing belongs visible, not buried
             st.markdown("""
+<div style="background:#eff6ff;border-left:4px solid #2563eb;padding:14px 18px;margin:10px 0 18px 0;border-radius:0 8px 8px 0;">
+<div style="font-size:13px;font-weight:700;color:#1e3a8a;text-transform:uppercase;letter-spacing:0.4px;">Read this first</div>
+<div style="font-size:14px;color:#1e3a8a;margin-top:4px;line-height:1.6;">
+<b>The hierarchy depends on the question being asked.</b> RCTs are strongest for interventions. Cohort studies are better for harmful exposures (which can't be randomized). Case-control studies are better for rare diseases. Qualitative designs are better for questions about lived experience. The "best" design is the one that matches the question, not the one nearest the top of the ladder.
+</div>
+</div>
+            """, unsafe_allow_html=True)
+
+            import streamlit.components.v1 as _comp_eh
+
+            LEVELS = [
+                {
+                    "num": 1,
+                    "title": "Systematic Reviews & Meta-Analyses",
+                    "badge": "STRONGEST",
+                    "badge_color": "#16a34a",
+                    "desc": "A systematic review identifies and appraises all eligible studies on a question. A meta-analysis combines results quantitatively across multiple studies using statistical methods. When studies are consistent, this provides the most reliable overall estimate of an effect.",
+                    "strengths": ["Reduces impact of any single study's chance findings", "Quantifies heterogeneity across studies", "Most comprehensive evidence base"],
+                    "limits": ["Only as good as the studies included", "Publication bias can distort pooled estimates", "Heterogeneity can make pooling misleading"],
+                    "measure": "Pooled RR / OR / HR",
+                    "bar_pct": 100,
+                    "bar_color": "#1d4ed8",
+                    "num_bg": "#1e3a8a",
+                },
+                {
+                    "num": 2,
+                    "title": "Randomized Controlled Trials (RCTs)",
+                    "badge": "GOLD STANDARD",
+                    "badge_color": "#b45309",
+                    "desc": "Random assignment distributes both measured and unmeasured confounders equally across groups. The only design that can establish causation without residual confounding concern.",
+                    "strengths": ["Controls for known and unknown confounders", "Clear temporal order", "Blinding possible"],
+                    "limits": ["Expensive and time-consuming", "Ethical limits (can't randomize harmful exposures)", "May not reflect real-world populations"],
+                    "measure": "RR / HR / Risk Difference",
+                    "bar_pct": 86,
+                    "bar_color": "#1d4ed8",
+                    "num_bg": "#1e40af",
+                },
+                {
+                    "num": 3,
+                    "title": "Prospective Cohort Studies",
+                    "badge": "OBSERVATIONAL",
+                    "badge_color": "#0369a1",
+                    "desc": "Participants classified by exposure at baseline, then followed forward to measure new outcomes. Establishes temporal order — exposure clearly precedes outcome.",
+                    "strengths": ["Clear temporality", "Can study multiple outcomes", "Measures incidence directly"],
+                    "limits": ["Residual confounding possible", "Expensive for rare diseases", "Loss to follow-up bias"],
+                    "measure": "RR / IRR / HR",
+                    "bar_pct": 74,
+                    "bar_color": "#2563eb",
+                    "num_bg": "#1d4ed8",
+                },
+                {
+                    "num": 4,
+                    "title": "Retrospective Cohort / Case-Control",
+                    "badge": "OBSERVATIONAL",
+                    "badge_color": "#0369a1",
+                    "desc": "Retrospective cohort uses historical records; case-control recruits by outcome status and looks back at exposure. Both are efficient but introduce more opportunities for bias.",
+                    "strengths": ["Efficient for rare outcomes (case-control)", "Faster and cheaper than prospective", "Can use existing data"],
+                    "limits": ["Recall bias (case-control)", "Selection bias in control group", "Confounding harder to rule out"],
+                    "measure": "OR (case-control) / RR (retro cohort)",
+                    "bar_pct": 62,
+                    "bar_color": "#3b82f6",
+                    "num_bg": "#2563eb",
+                },
+                {
+                    "num": 5,
+                    "title": "Cross-Sectional Studies",
+                    "badge": "OBSERVATIONAL",
+                    "badge_color": "#0369a1",
+                    "desc": "Exposure and outcome measured simultaneously in a single snapshot. Cannot determine which came first — useful for estimating prevalence and generating hypotheses.",
+                    "strengths": ["Fast and inexpensive", "Good for prevalence estimates", "Useful for generating hypotheses"],
+                    "limits": ["Cannot establish temporality", "Prevalence-incidence bias", "Not suitable for rare conditions"],
+                    "measure": "Prevalence Ratio (PR)",
+                    "bar_pct": 48,
+                    "bar_color": "#60a5fa",
+                    "num_bg": "#3b82f6",
+                },
+                {
+                    "num": 6,
+                    "title": "Ecological Studies",
+                    "badge": "GROUP-LEVEL",
+                    "badge_color": "#6d28d9",
+                    "desc": "Exposure and outcome measured at the group or population level — not for individuals. Compares aggregate rates across countries, cities, or time periods. Cannot establish individual-level causation.",
+                    "strengths": ["Inexpensive — uses existing data", "Good for generating hypotheses", "Useful for studying population-level exposures (policy, water supply, legislation)", "Can study exposures with little individual variation"],
+                    "limits": ["Ecological fallacy — group association ≠ individual risk", "Cannot control for individual-level confounders", "Correlation does not imply causation at individual level", "Aggregation bias can mask or create spurious associations"],
+                    "measure": "Correlation coefficient / Rate ratio",
+                    "bar_pct": 34,
+                    "bar_color": "#818cf8",
+                    "num_bg": "#4f46e5",
+                },
+                {
+                    "num": 7,
+                    "title": "Case Reports & Expert Opinion",
+                    "badge": "LOWEST",
+                    "badge_color": "#9a3412",
+                    "desc": "Individual case descriptions or consensus opinions without a systematic comparison group. Essential for identifying new conditions and rare adverse events, but cannot establish causation.",
+                    "strengths": ["Critical for identifying new diseases", "Detects rare adverse drug reactions", "Generates hypotheses quickly"],
+                    "limits": ["No comparison group", "High potential for bias", "Cannot quantify associations"],
+                    "measure": "Descriptive only",
+                    "bar_pct": 20,
+                    "bar_color": "#93c5fd",
+                    "num_bg": "#60a5fa",
+                },
+            ]
+
+            _is_dark = False  # theme system removed — always light
+            _card_bg    = "#1e2130" if _is_dark else "#ffffff"
+            _card_bdr   = "#2e3246" if _is_dark else "#e5e7eb"
+            _body_txt   = "#d1d5db" if _is_dark else "#374151"
+            _head_txt   = "#f1f5f9" if _is_dark else "#111827"
+            _sub_bg     = "#252836" if _is_dark else "#f8fafc"
+            _sub_bdr    = "#3a3f52" if _is_dark else "#e2e8f0"
+            _str_head   = "#4ade80" if _is_dark else "#166534"
+            _lim_head   = "#f87171" if _is_dark else "#991b1b"
+            _meas_bg    = "#1a1d27" if _is_dark else "#f0f9ff"
+            _meas_txt   = "#93c5fd" if _is_dark else "#1e40af"
+            _meas_bdr   = "#2563eb" if _is_dark else "#bfdbfe"
+
+            cards_html = ""
+            for lv in LEVELS:
+                strengths_li = "".join(f'<li>{s}</li>' for s in lv["strengths"])
+                limits_li    = "".join(f'<li>{l}</li>' for l in lv["limits"])
+                cards_html += f"""
+    <div class="card">
+      <div class="card-header">
+        <div class="num-badge" style="background:{lv['num_bg']};">{lv['num']}</div>
+        <div class="header-mid">
+          <div class="card-title">{lv['title']}</div>
+          <div class="card-desc">{lv['desc']}</div>
+        </div>
+        <span class="badge" style="background:{lv['badge_color']}22;color:{lv['badge_color']};border:1px solid {lv['badge_color']}55;">{lv['badge']}</span>
+      </div>
+      <div class="bar-row">
+        <div class="bar-track">
+          <div class="bar-fill" style="width:{lv['bar_pct']}%;background:linear-gradient(90deg,{lv['bar_color']},{lv['bar_color']}99);"></div>
+        </div>
+        <span class="bar-label">Evidence strength</span>
+      </div>
+      <div class="card-body">
+        <div class="sl-box">
+          <div class="sl-head" style="color:{_str_head};">✓ Strengths</div>
+          <ul>{strengths_li}</ul>
+        </div>
+        <div class="sl-box">
+          <div class="sl-head" style="color:{_lim_head};">✗ Limitations</div>
+          <ul>{limits_li}</ul>
+        </div>
+        <div class="measure-pill" style="background:{_meas_bg};color:{_meas_txt};border:1px solid {_meas_bdr};">
+          <span style="font-size:10px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;opacity:0.7;">Typical measure</span>
+          <span style="font-weight:700;margin-left:8px;">{lv['measure']}</span>
+        </div>
+      </div>
+    </div>"""
+
+            full_html = f"""<!DOCTYPE html><html><head><style>
+    * {{ box-sizing:border-box; margin:0; padding:0; }}
+    body {{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; background:transparent; padding:4px 0 12px 0; }}
+    .card {{
+      background:{_card_bg};
+      border:1px solid {_card_bdr};
+      border-radius:12px;
+      margin:0 0 10px 0;
+      overflow:hidden;
+      transition:box-shadow 0.2s;
+    }}
+    .card:hover {{ box-shadow: 0 4px 16px rgba(0,0,0,{"0.4" if _is_dark else "0.08"}); }}
+    .card-header {{
+      display:flex; align-items:flex-start; gap:14px;
+      padding:14px 16px 10px 16px;
+    }}
+    .num-badge {{
+      width:32px; height:32px; border-radius:8px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:15px; font-weight:800; color:white; flex-shrink:0;
+    }}
+    .header-mid {{ flex:1; min-width:0; }}
+    .card-title {{ font-size:15px; font-weight:700; color:{_head_txt}; line-height:1.3; }}
+    .card-desc  {{ font-size:12.5px; color:{_body_txt}; margin-top:3px; line-height:1.5; }}
+    .badge {{
+      flex-shrink:0; font-size:9.5px; font-weight:700;
+      letter-spacing:0.08em; text-transform:uppercase;
+      padding:3px 8px; border-radius:20px; white-space:nowrap; margin-top:2px;
+    }}
+    .bar-row {{
+      display:flex; align-items:center; gap:10px;
+      padding:0 16px 10px 62px;
+    }}
+    .bar-track {{
+      flex:1; height:5px; background:{_sub_bdr}; border-radius:3px; overflow:hidden;
+    }}
+    .bar-fill {{ height:100%; border-radius:3px; }}
+    .bar-label {{ font-size:10px; color:{_body_txt}; opacity:0.6; white-space:nowrap; }}
+    .card-body {{
+      background:{_sub_bg};
+      border-top:1px solid {_sub_bdr};
+      padding:12px 16px;
+      display:flex; flex-wrap:wrap; gap:12px; align-items:flex-start;
+    }}
+    .sl-box {{ flex:1; min-width:180px; }}
+    .sl-head {{ font-size:11px; font-weight:700; margin-bottom:5px; }}
+    .sl-box ul {{ list-style:none; padding:0; }}
+    .sl-box li {{ font-size:12px; color:{_body_txt}; line-height:1.5; padding:1px 0; }}
+    .sl-box li::before {{ content:"· "; color:#94a3b8; }}
+    .measure-pill {{
+      display:flex; align-items:center; border-radius:6px;
+      padding:7px 12px; font-size:12.5px;
+      align-self:flex-end; white-space:nowrap;
+    }}
+    </style></head><body>
+    {cards_html}
+    </body></html>"""
+
+            _comp_eh.html(full_html, height=len(LEVELS) * 195 + 20, scrolling=True)
+
+            with st.expander("💡 More caveats about reading the hierarchy"):
+                st.markdown("""
 **The hierarchy is about internal validity, not overall usefulness.** Higher levels give stronger evidence for causation, but this doesn't make lower levels unimportant:
 
 - **Case reports** are often the first signal of a new disease or drug reaction — without them, we'd never know to design an RCT
@@ -2040,19 +2062,20 @@ body {{ font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; back
 - **External validity** (generalizability) often favors observational studies — RCT participants are highly selected
 
 Think of the hierarchy as a guide for *how much confounding you need to worry about*, not as a ranking of which studies matter.
-            """)
+                """)
 
-
-
-        st.divider()
-        st.subheader("Randomization — Why It Works")
-        st.markdown("""
+        # ─────────────────────────────────────────────────────────────
+        # SUB-TAB 2: RANDOMIZATION
+        # ─────────────────────────────────────────────────────────────
+        with rct_tabs[1]:
+            st.markdown("### Randomization — Why It Works")
+            st.markdown("""
 **Randomization** is the defining feature of an RCT, and its power is frequently misunderstood. It does not simply create similar groups — it does something more fundamental: it **distributes all confounders — measured and unmeasured — equally between groups by chance**.
 
 In observational studies, the investigator must identify and control for every confounder. In a randomized trial, randomization handles all confounders *automatically* — including ones the investigator doesn't know about and couldn't measure.
-        """)
+            """)
 
-        st.markdown("""
+            st.markdown("""
 | | Observational study | Randomized trial |
 |---|---|---|
 | **How groups are formed** | Participants choose exposure (or it's assigned by circumstance) | Exposure assigned by random chance |
@@ -2060,64 +2083,151 @@ In observational studies, the investigator must identify and control for every c
 | **Unmeasured confounders** | Remain a threat; cannot be adjusted | Balanced by randomization |
 | **Causal inference** | Limited — association, not proven causation | Stronger basis for causal inference |
 | **Feasibility** | Can study exposures that can't be randomized (smoking, poverty) | Cannot randomize harmful or impossible exposures |
-        """)
+            """)
 
-        st.warning("""
+            st.warning("""
 ⚠️ **Randomization works in expectation, not perfectly in every trial.** In small trials, chance imbalance in key variables can still occur. This is why researchers check baseline characteristics (Table 1 in a paper) and why small trials are less convincing than large ones. It's also why randomization is done in blocks and may be stratified by important variables (e.g., sex, site) to improve balance.
-        """)
+            """)
 
-        st.divider()
-        st.subheader("Blinding")
-        st.markdown("""
+        # ─────────────────────────────────────────────────────────────
+        # SUB-TAB 3: BLINDING
+        # ─────────────────────────────────────────────────────────────
+        with rct_tabs[2]:
+            st.markdown("### Blinding")
+            st.markdown("""
 **Blinding** (also called *masking*) prevents knowledge of treatment assignment from influencing outcomes, behavior, or assessment. Unblinded trials are susceptible to multiple biases.
-        """)
+            """)
 
-        st.markdown("""
+            st.markdown("""
 | Type | Who is blinded | What bias it prevents |
 |---|---|---|
 | **Single-blind** | Participant only | Placebo effect; behavioral change based on knowing assignment |
 | **Double-blind** | Participant + investigator / assessor | Above + differential assessment and recording bias |
 | **Triple-blind** | Participant + investigator + data analyst | Above + analysis bias (selective reporting, outcome switching) |
 | **Open-label** | No blinding | Appropriate when blinding is impossible (e.g., surgical vs. no surgery) |
-        """)
+            """)
 
-        st.info("""
-🔑 **The placebo effect** is the measurable, real improvement in health outcomes that occurs when a participant *believes* they are receiving an effective treatment. It is not imaginary — it produces documented physiological changes. Double-blinding controls for it by ensuring both arms receive an indistinguishable treatment (active drug vs. identical-appearing placebo).
+            st.info("""
+🔑 **Three biases that blinding addresses:**
 
-**Performance bias:** Even without outcome reporting issues, knowing your treatment assignment can change behavior. Participants who know they received the "real" treatment may comply more, exercise more, or seek less supplementary care — all of which confound the result.
-        """)
+**Placebo effect** — the measurable, real improvement in health outcomes that occurs when a participant *believes* they are receiving an effective treatment. It is not imaginary — it produces documented physiological changes. Double-blinding controls for it by ensuring both arms receive an indistinguishable treatment (active drug vs. identical-appearing placebo).
 
-        st.divider()
-        st.subheader("Intent-to-Treat Analysis")
-        st.markdown("""
+**Performance bias** — even without outcome reporting issues, knowing your treatment assignment can change behavior. Participants who know they received the "real" treatment may comply more, exercise more, or seek less supplementary care — all of which confound the result.
+
+**Observer/assessment bias** — observer expectations can unconsciously influence outcome assessment. An assessor who knows the patient received the active treatment may interpret ambiguous findings (a borderline lab value, a subjective symptom score, the severity of an x-ray finding) more favorably for that arm. This is why assessor blinding matters specifically — it protects the *measurement* of the outcome, not just the participant's experience of it.
+            """)
+
+        # ─────────────────────────────────────────────────────────────
+        # SUB-TAB 4: INTENT-TO-TREAT
+        # ─────────────────────────────────────────────────────────────
+        with rct_tabs[3]:
+            st.markdown("### Intent-to-Treat Analysis")
+            st.markdown("""
 **Intent-to-treat (ITT) analysis** analyzes participants in the group to which they were *randomized*, regardless of whether they actually received the treatment, complied with it, or dropped out.
 
 **Why it matters:** If you only analyze participants who completed treatment as assigned (*per-protocol* analysis), you reintroduce selection bias — the kind of people who comply with or tolerate treatment may differ systematically from those who don't.
+            """)
 
+            # Visual flow diagram - the ITT rule made concrete
+            itt_flow_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 290" style="width:100%;max-width:820px;font-family:-apple-system,sans-serif;background:#fafafa;border:1px solid #e5e7eb;border-radius:8px;">
+  <!-- Top: randomization box -->
+  <rect x="330" y="14" width="160" height="42" rx="8" fill="#dbeafe" stroke="#2563eb" stroke-width="1.5"/>
+  <text x="410" y="32" font-size="11" fill="#1e3a8a" font-weight="700" text-anchor="middle">100 participants</text>
+  <text x="410" y="48" font-size="11" fill="#1e3a8a" font-weight="700" text-anchor="middle">RANDOMIZED</text>
+
+  <!-- Arrows down to assignment boxes -->
+  <line x1="410" y1="56" x2="210" y2="80" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <line x1="410" y1="56" x2="610" y2="80" stroke="#64748b" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+
+  <defs>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#64748b"/>
+    </marker>
+  </defs>
+
+  <!-- Left assignment box: Treatment -->
+  <rect x="130" y="80" width="160" height="38" rx="6" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="210" y="98" font-size="11" fill="#78350f" font-weight="700" text-anchor="middle">Assigned: Treatment</text>
+  <text x="210" y="112" font-size="11" fill="#78350f" text-anchor="middle">n = 50</text>
+
+  <!-- Right assignment box: Control -->
+  <rect x="530" y="80" width="160" height="38" rx="6" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="610" y="98" font-size="11" fill="#14532d" font-weight="700" text-anchor="middle">Assigned: Control</text>
+  <text x="610" y="112" font-size="11" fill="#14532d" text-anchor="middle">n = 50</text>
+
+  <!-- Treatment arm: split into completed / non-adherent / dropped out (wider spacing now) -->
+  <line x1="210" y1="118" x2="80" y2="148" stroke="#94a3b8" stroke-width="1" marker-end="url(#arrowGray)"/>
+  <line x1="210" y1="118" x2="210" y2="148" stroke="#94a3b8" stroke-width="1" marker-end="url(#arrowGray)"/>
+  <line x1="210" y1="118" x2="340" y2="148" stroke="#94a3b8" stroke-width="1" marker-end="url(#arrowGray)"/>
+
+  <text x="80" y="162" font-size="10" fill="#475569" text-anchor="middle">Completed (35)</text>
+  <text x="210" y="162" font-size="10" fill="#475569" text-anchor="middle">Non-adherent (10)</text>
+  <text x="340" y="162" font-size="10" fill="#475569" text-anchor="middle">Dropped out (5)</text>
+
+  <!-- Control arm: split similarly with wider spacing -->
+  <line x1="610" y1="118" x2="480" y2="148" stroke="#94a3b8" stroke-width="1" marker-end="url(#arrowGray)"/>
+  <line x1="610" y1="118" x2="610" y2="148" stroke="#94a3b8" stroke-width="1" marker-end="url(#arrowGray)"/>
+  <line x1="610" y1="118" x2="740" y2="148" stroke="#94a3b8" stroke-width="1" marker-end="url(#arrowGray)"/>
+
+  <text x="480" y="162" font-size="10" fill="#475569" text-anchor="middle">Completed (42)</text>
+  <text x="610" y="162" font-size="10" fill="#475569" text-anchor="middle">Crossed to Tx (5)</text>
+  <text x="740" y="162" font-size="10" fill="#475569" text-anchor="middle">Dropped out (3)</text>
+
+  <!-- ITT analysis brackets - converging all back to original assignment -->
+  <path d="M 80 172 Q 80 195 210 195" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,2"/>
+  <path d="M 210 172 L 210 195" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,2"/>
+  <path d="M 340 172 Q 340 195 210 195" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,2"/>
+
+  <path d="M 480 172 Q 480 195 610 195" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,2"/>
+  <path d="M 610 172 L 610 195" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,2"/>
+  <path d="M 740 172 Q 740 195 610 195" fill="none" stroke="#16a34a" stroke-width="2" stroke-dasharray="4,2"/>
+
+  <!-- ITT analysis result boxes -->
+  <rect x="130" y="200" width="160" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="210" y="218" font-size="11" fill="#14532d" font-weight="700" text-anchor="middle">ITT analysis:</text>
+  <text x="210" y="232" font-size="11" fill="#14532d" font-weight="700" text-anchor="middle">all 50 in Treatment</text>
+
+  <rect x="530" y="200" width="160" height="42" rx="6" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+  <text x="610" y="218" font-size="11" fill="#14532d" font-weight="700" text-anchor="middle">ITT analysis:</text>
+  <text x="610" y="232" font-size="11" fill="#14532d" font-weight="700" text-anchor="middle">all 50 in Control</text>
+
+  <!-- Bottom caption -->
+  <text x="410" y="270" font-size="11" fill="#166534" font-style="italic" font-weight="600" text-anchor="middle">Everyone stays in their originally randomized group — regardless of what happened next.</text>
+</svg>"""
+            st.markdown(f"<div style='margin:14px 0;'>{itt_flow_svg}</div>", unsafe_allow_html=True)
+            st.caption("The green dashed paths show ITT in action: dropouts, non-adherents, and even participants who crossed over to the other treatment are all counted in their original assigned group.")
+
+            st.markdown("""
 | Analysis approach | Who is analyzed | Preserves randomization? | Best answers |
 |---|---|---|---|
 | **Intent-to-treat** | Everyone as randomized | ✅ Yes | "Does offering this treatment improve outcomes in the real world?" |
 | **Per-protocol** | Only those who completed treatment as assigned | ❌ No — selection bias re-enters | "Does the treatment work in ideal conditions?" |
 | **As-treated** | Grouped by what they actually received | ❌ No — observational | Similar to per-protocol; susceptible to confounding |
-        """)
+            """)
 
-        st.success("""
+            st.success("""
 ✅ **The rule:** ITT is the primary analysis in most RCTs because it mirrors real-world effectiveness. Per-protocol is often reported as a secondary/sensitivity analysis. A trial that only reports per-protocol results, especially when dropout rates differ between arms, should be read with caution.
-        """)
+            """)
 
-        rct_q = st.radio(
-            "**Concept check:** In a trial of a new antidepressant, 30% of participants in the treatment group stop taking the medication due to side effects. An ITT analysis would:",
-            ["— Select —",
-             "Exclude the dropouts — they didn't actually receive the full treatment",
-             "Include all randomized participants in their original groups, including dropouts",
-             "Move dropouts to the control group since they didn't receive treatment",
-             "Run a separate analysis for completers only and report that as the primary result"],
-            key="rct_q_itt"
-        )
-        if rct_q == "Include all randomized participants in their original groups, including dropouts":
-            st.success("✅ Correct. ITT includes everyone as randomized. The 30% who stopped taking medication are still analyzed in the treatment group. This preserves the randomization and gives an estimate of real-world effectiveness — including the reality that 30% won't tolerate the drug. Excluding them would introduce selection bias (those who drop out due to side effects are likely different from those who don't).")
-        elif rct_q != "— Select —":
-            st.error("❌ ITT means 'analyze as randomized.' Everyone stays in their assigned group regardless of compliance or dropout. Excluding non-compliers reintroduces selection bias and answers a different question (efficacy in ideal conditions) rather than effectiveness in the real world.")
+            rct_q = st.radio(
+                "**Concept check:** In a trial of a new antidepressant, 30% of participants in the treatment group stop taking the medication due to side effects. An ITT analysis would:",
+                ["— Select —",
+                 "Exclude the dropouts — they didn't actually receive the full treatment",
+                 "Include all randomized participants in their original groups, including dropouts",
+                 "Move dropouts to the control group since they didn't receive treatment",
+                 "Run a separate analysis for completers only and report that as the primary result"],
+                key="rct_q_itt"
+            )
+            if rct_q == "Include all randomized participants in their original groups, including dropouts":
+                st.success("""✅ **Correct.** ITT includes everyone as randomized. The 30% who stopped taking medication are still analyzed in the treatment group. This preserves the randomization and gives an estimate of real-world effectiveness — including the reality that 30% won't tolerate the drug.
+
+**Why the other options are wrong:**
+- *"Exclude the dropouts":* This reintroduces selection bias. People who drop out due to side effects systematically differ from those who tolerate the drug — they may be older, sicker, or more sensitive to medication. Excluding them makes the remaining treatment group look healthier than the population that would actually be offered the drug.
+- *"Move dropouts to the control group":* This is the worst option of all. Moving non-compliers to the comparison arm breaks the random assignment in a non-random way — both arms now contain a non-random mixture of people, and any treatment effect estimate becomes uninterpretable.
+- *"Run a separate completers analysis as the primary result":* Per-protocol analyses answer a different question (efficacy in ideal conditions) and should be reported as secondary or sensitivity analyses — never as the primary result, especially when dropout rates differ between arms.""")
+            elif rct_q != "— Select —":
+                st.error("❌ ITT means 'analyze as randomized.' Everyone stays in their assigned group regardless of compliance or dropout. Excluding non-compliers reintroduces selection bias and answers a different question (efficacy in ideal conditions) rather than effectiveness in the real world.")
 
 
     st.markdown("---")

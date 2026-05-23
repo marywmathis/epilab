@@ -5375,9 +5375,39 @@ elif current_page == "screening":
             col1, col2, col3, col4, col5 = st.columns(5)
             col1.metric("Sensitivity", f"{round(sens*100,1)}%")
             col2.metric("Specificity", f"{round(spec*100,1)}%")
-            col3.metric("PPV", f"{round(ppv*100,1)}%")
+            # Visually emphasize PPV when it's low — this is usually the "aha" insight
+            if ppv < 0.5:
+                col3.markdown(f"""
+<div style="background:#fff7ed;border:1px solid #fdba74;border-radius:8px;padding:10px 12px;">
+  <div style="font-size:12px;color:#9a3412;font-weight:600;margin-bottom:2px;">PPV</div>
+  <div style="font-size:28px;font-weight:700;color:#c2410c;line-height:1;">{round(ppv*100,1)}%</div>
+  <div style="font-size:11px;color:#9a3412;margin-top:4px;font-style:italic;">Less than half of positive tests are true cases</div>
+</div>
+                """, unsafe_allow_html=True)
+            else:
+                col3.metric("PPV", f"{round(ppv*100,1)}%")
             col4.metric("NPV", f"{round(npv*100,1)}%")
             col5.metric("Prevalence", f"{round(prev*100,1)}%")
+
+            # Central conceptual takeaway — anchors what students should learn from these numbers
+            if ppv < 0.5:
+                st.markdown(f"""
+<div style="background:#eff6ff;border-left:4px solid #2563eb;padding:14px 16px;margin:18px 0;border-radius:0 8px 8px 0;">
+<div style="font-size:14px;font-weight:700;color:#1e3a8a;margin-bottom:6px;">🎯 Clinical meaning</div>
+<div style="font-size:14px;color:#1e3a8a;line-height:1.6;">
+In low-prevalence populations, <b>even good tests produce many false positives</b>. Here, Sensitivity ({round(sens*100,1)}%) and Specificity ({round(spec*100,1)}%) are reasonable — but because only {round(prev*100,1)}% of those tested actually have the disease, most positive results are false alarms. This is why screening tests are usually paired with confirmatory testing, and why <b>good test properties ≠ good clinical performance in every population</b>.
+</div>
+</div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown(f"""
+<div style="background:#eff6ff;border-left:4px solid #2563eb;padding:14px 16px;margin:18px 0;border-radius:0 8px 8px 0;">
+<div style="font-size:14px;font-weight:700;color:#1e3a8a;margin-bottom:6px;">🎯 Clinical meaning</div>
+<div style="font-size:14px;color:#1e3a8a;line-height:1.6;">
+With prevalence at {round(prev*100,1)}%, the test performs well clinically — PPV of {round(ppv*100,1)}% means most positive results reflect true disease. <b>The same test in a lower-prevalence population would show a lower PPV</b> even with identical sensitivity and specificity. Test properties are fixed; clinical usefulness depends on who you are testing.
+</div>
+</div>
+                """, unsafe_allow_html=True)
 
             # LR row
             st.markdown("##### Likelihood Ratios")
@@ -5420,7 +5450,7 @@ elif current_page == "screening":
 - **LR+ 2–5** → modest increase; useful but not definitive
 - **LR− ≤ 0.1** → negative result strongly decreases disease probability
 - **LR− 0.2–0.5** → modest decrease; useful but not definitive
-- **LR = 1.0** → test result changes nothing
+- **LR = 1.0** → test provides no diagnostic information
                 """)
 
             st.divider()
@@ -5437,7 +5467,7 @@ elif current_page == "screening":
 | Specificity | d ÷ (b+d) | {d} ÷ {total_no_disease} | **{round(spec*100,1)}%** |
 | PPV | a ÷ (a+b) | {a} ÷ {total_pos} | **{round(ppv*100,1)}%** |
 | NPV | d ÷ (c+d) | {d} ÷ {total_neg} | **{round(npv*100,1)}%** |
-| Accuracy | (a+d) ÷ N | {a+d} ÷ {N} | **{round(acc*100,1)}%** |
+| Accuracy *(can be misleading in low-prevalence populations)* | (a+d) ÷ N | {a+d} ÷ {N} | **{round(acc*100,1)}%** |
 | LR+ | Sens ÷ (1−Spec) | {round(sens,3)} ÷ {round(1-spec,3)} | **{lrp_str}** |
 | LR− | (1−Sens) ÷ Spec | {round(1-sens,3)} ÷ {round(spec,3)} | **{lrn_str}** |
                 """)

@@ -133,6 +133,88 @@ def send_password_reset(email: str):
         )
 
 
+import streamlit.components.v1 as components
+
+def _hash_to_query_redirect():
+    """
+    Streamlit can't read URL hash fragments (#access_token=...). Supabase
+    sends password reset links with the token in the hash. This component
+    runs a tiny piece of JavaScript that converts the hash into query
+    parameters so Streamlit can read them.
+    """
+    components.html(
+        """
+        <script>
+        (function() {
+            var h = window.location.hash;
+            if (!h || h.indexOf("access_token") === -1) return;
+            var qs = h.substring(1);
+            var newUrl = window.location.pathname + "?" + qs;
+            window.parent.location.replace(newUrl);
+        })();
+        </script>
+        """,
+        height=0,
+    )
+
+
+def _detect_recovery_mode():
+    """
+    Check the query params for a recovery token. If found, switch the
+    login UI into 'reset' mode and store the tokens in session state.
+    """
+    try:
+        params = st.query_params
+    except Exception:
+        return
+    flow_type = params.get("type", "")
+    access_token = params.get("access_token", "")
+    refresh_token = params.get("refresh_token", "")
+    if flow_type == "recovery" and access_token:
+        st.session_state["auth_mode"] = "reset"
+        st.session_state["recovery_access_token"] = access_token
+        st.session_state["recovery_refresh_token"] = refresh_token
+        try:
+            st.query_params.clear()
+        except Exception:
+            pass
+
+
+def do_update_password(new_password: str):
+    """
+    Use the recovery access token to set a new password, then auto-sign-in
+    the user. Returns (success, message).
+    """
+    if len(new_password) < 8:
+        return False, "Password must be at least 8 characters."
+    access_token = st.session_state.get("recovery_access_token", "")
+    refresh_token = st.session_state.get("recovery_refresh_token", "")
+    if not access_token:
+        return False, "Reset link expired or invalid. Please request a new one."
+    supabase = get_supabase_client()
+    try:
+        supabase.auth.set_session(access_token, refresh_token or access_token)
+        update_result = supabase.auth.update_user({"password": new_password})
+        user = update_result.user
+        if not user:
+            return False, "Could not update password. Please request a new reset link."
+        profile = load_user_profile(supabase, user.id)
+        st.session_state["authenticated"] = True
+        st.session_state["user_id"] = user.id
+        st.session_state["user_email"] = user.email
+        st.session_state["user_full_name"] = profile.get("full_name") or user.email
+        st.session_state["user_role"] = profile.get("role") or "student"
+        st.session_state["user_institution"] = profile.get("institution") or ""
+        st.session_state["current_user"] = profile.get("full_name") or user.email
+        for k in ("recovery_access_token", "recovery_refresh_token", "auth_mode"):
+            if k in st.session_state:
+                del st.session_state[k]
+        return True, ""
+    except Exception as e:
+        msg = str(e).lower()
+        if "expired" in msg or "invalid" in msg:
+            return False, "Reset link expired or invalid. Please request a new one."
+        return False, "Could not update password. Please try again or request a new reset link."
 def login_screen():
     col_l, col_m, col_r = st.columns([1, 2, 1])
     with col_m:

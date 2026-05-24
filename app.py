@@ -7,49 +7,131 @@ import random
 import os
 import json
 
+# Load .env file for local development (Railway provides env vars directly)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # python-dotenv not installed on Railway, that's fine
+
+from supabase import create_client, Client
+
 st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 
 # ==================================================
-# LOGIN GATE
+# SUPABASE AUTH
 # ==================================================
 
-def load_users():
-    """
-    Load users from three sources in priority order:
-    1. Railway environment variable EPILAB_USERS (JSON string) — for buyer deployments
-    2. Streamlit Cloud secrets [users] section — for course deployment
-    3. Hardcoded fallback — for local development only
+SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
+SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
 
-    Railway env var format (set in Railway dashboard):
-    EPILAB_USERS = {"buyer001": "pass123", "buyer002": "pass456"}
-    """
-    # 1. Railway / any platform environment variable
-    env_users_raw = os.environ.get("EPILAB_USERS", "")
-    if env_users_raw:
-        try:
-            return json.loads(env_users_raw)
-        except Exception:
-            pass
+@st.cache_resource
+def get_supabase_client() -> Client:
+    """Create a single Supabase client instance, cached across reruns."""
+    if not SUPABASE_URL or not SUPABASE_ANON_KEY:
+        st.error(
+            "Configuration error: Supabase credentials are not set. "
+            "Please contact support."
+        )
+        st.stop()
+    return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-    # 2. Streamlit Cloud secrets
+
+def load_user_profile(supabase: Client, user_id: str) -> dict:
+    """
+    Fetch the user's profile row (full_name, role, institution) from
+    the public.profiles table. Returns a dict with safe defaults if the
+    profile row doesn't exist yet.
+    """
     try:
-        cloud_users = st.secrets.get("users", {})
-        if cloud_users:
-            return dict(cloud_users)
+        result = (
+            supabase.table("profiles")
+            .select("full_name, role, institution, email")
+            .eq("id", user_id)
+            .single()
+            .execute()
+        )
+        return result.data or {}
     except Exception:
-        pass
+        # Profile row missing or query failed — return safe defaults.
+        # Auth still works; the user just sees fewer personalized details.
+        return {}
 
-    # 3. Local development fallback — NOT used in either production deployment
-    return {
-        "marymathis": "epilab2024",
-        "student1":   "epilab2024",
-        "student2":   "epilab2024",
-        "guest":      "epilab2024",
-    }
 
-def check_credentials(username, password):
-    users = load_users()
-    return username in users and users[username] == password
+def do_login(email: str, password: str):
+    """
+    Attempt to sign in via Supabase email/password.
+    Returns (success, message). On success, populates st.session_state.
+    """
+    supabase = get_supabase_client()
+    try:
+        auth_response = supabase.auth.sign_in_with_password(
+            {"email": email, "password": password}
+        )
+    except Exception as e:
+        msg = str(e).lower()
+        if "email not confirmed" in msg:
+            return False, (
+                "Please confirm your email address before signing in. "
+                "Check your inbox (and spam folder) for the confirmation link."
+            )
+        if "invalid login credentials" in msg:
+            return False, "Incorrect email or password."
+        return False, "Sign-in failed. Please try again or contact support."
+
+    user = auth_response.user
+    session = auth_response.session
+    if not user or not session:
+        return False, "Sign-in failed. Please try again."
+
+    # Load profile details (role, full_name, institution) from public.profiles
+    profile = load_user_profile(supabase, user.id)
+
+    st.session_state["authenticated"] = True
+    st.session_state["user_id"] = user.id
+    st.session_state["user_email"] = user.email
+    st.session_state["user_full_name"] = profile.get("full_name") or user.email
+    st.session_state["user_role"] = profile.get("role") or "student"
+    st.session_state["user_institution"] = profile.get("institution") or ""
+    # For display compatibility with the existing sidebar code
+    st.session_state["current_user"] = profile.get("full_name") or user.email
+    return True, ""
+
+
+def do_logout():
+    """Sign out from Supabase and clear all auth-related session state."""
+    try:
+        supabase = get_supabase_client()
+        supabase.auth.sign_out()
+    except Exception:
+        pass  # If sign-out fails server-side, still clear local session
+    for key in [
+        "authenticated", "user_id", "user_email", "user_full_name",
+        "user_role", "user_institution", "current_user",
+    ]:
+        if key in st.session_state:
+            del st.session_state[key]
+
+
+def send_password_reset(email: str):
+    """Trigger a password reset email via Supabase (routes through Resend)."""
+    if not email or "@" not in email:
+        return False, "Please enter a valid email address."
+    supabase = get_supabase_client()
+    try:
+        supabase.auth.reset_password_for_email(email)
+        return True, (
+            "If an account exists for that email, a password reset link "
+            "has been sent. Check your inbox (and spam folder)."
+        )
+    except Exception:
+        # Always return the same message whether the email exists or not,
+        # to avoid leaking which emails are registered.
+        return True, (
+            "If an account exists for that email, a password reset link "
+            "has been sent. Check your inbox (and spam folder)."
+        )
+
 
 def login_screen():
     col_l, col_m, col_r = st.columns([1, 2, 1])
@@ -58,16 +140,60 @@ def login_screen():
         st.markdown("## 🧭 Epidemiology Decision Simulator")
         st.markdown("*EpiLab Interactive — licensed access only*")
         st.divider()
-        st.markdown("**Please log in to continue.**")
-        username = st.text_input("Username", key="login_username")
-        password = st.text_input("Password", type="password", key="login_password")
-        if st.button("Log In", type="primary", use_container_width=True):
-            if check_credentials(username, password):
-                st.session_state["authenticated"] = True
-                st.session_state["current_user"] = username
+
+        # Toggle between login and forgot-password views
+        mode = st.session_state.get("auth_mode", "login")
+
+        if mode == "forgot":
+            st.markdown("**Reset your password**")
+            st.caption("Enter your email and we'll send you a reset link.")
+            reset_email = st.text_input("Email", key="reset_email")
+            col_a, col_b = st.columns(2)
+            with col_a:
+                if st.button(
+                    "Send reset link",
+                    type="primary",
+                    use_container_width=True,
+                    key="send_reset_btn",
+                ):
+                    ok, msg = send_password_reset(reset_email.strip())
+                    if ok:
+                        st.success(msg)
+                    else:
+                        st.error(msg)
+            with col_b:
+                if st.button(
+                    "← Back to sign in",
+                    use_container_width=True,
+                    key="back_to_login_btn",
+                ):
+                    st.session_state["auth_mode"] = "login"
+                    st.rerun()
+        else:
+            st.markdown("**Please sign in to continue.**")
+            email = st.text_input("Email", key="login_email")
+            password = st.text_input(
+                "Password", type="password", key="login_password"
+            )
+            if st.button(
+                "Sign In",
+                type="primary",
+                use_container_width=True,
+                key="signin_btn",
+            ):
+                ok, msg = do_login(email.strip().lower(), password)
+                if ok:
+                    st.rerun()
+                else:
+                    st.error(msg)
+            if st.button(
+                "Forgot password?",
+                use_container_width=True,
+                key="forgot_pw_btn",
+            ):
+                st.session_state["auth_mode"] = "forgot"
                 st.rerun()
-            else:
-                st.error("Incorrect username or password.")
+
         st.markdown("<br>", unsafe_allow_html=True)
         st.caption("Access issues? Contact support.")
 

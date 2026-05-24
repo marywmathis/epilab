@@ -12,3 +12,6 @@ env/
 # OS files
 .DS_Store
 Thumbs.db
+# Local secret files — never commit
+temp_*.txt
+*.key

@@ -216,6 +216,46 @@ def do_update_password(new_password: str):
             return False, "Reset link expired or invalid. Please request a new one."
         return False, "Could not update password. Please try again or request a new reset link."
 def login_screen():
+    _hash_to_query_redirect()
+    _detect_recovery_mode()
+    if st.session_state.get("auth_mode") == "reset":
+        col_l, col_m, col_r = st.columns([1, 2, 1])
+        with col_m:
+            st.markdown("<br><br>", unsafe_allow_html=True)
+            st.markdown("## 🧭 Epidemiology Decision Simulator")
+            st.markdown("*EpiLab Interactive — licensed access only*")
+            st.divider()
+            st.markdown("**Set a new password**")
+            st.caption("Choose a new password for your account.")
+            new_pw = st.text_input(
+                "New password",
+                type="password",
+                key="reset_new_pw",
+                help="Must be at least 8 characters.",
+            )
+            confirm_pw = st.text_input(
+                "Confirm new password",
+                type="password",
+                key="reset_confirm_pw",
+            )
+            if st.button(
+                "Set new password",
+                type="primary",
+                use_container_width=True,
+                key="set_new_pw_btn",
+            ):
+                if new_pw != confirm_pw:
+                    st.error("Passwords don't match. Please try again.")
+                elif len(new_pw) < 8:
+                    st.error("Password must be at least 8 characters.")
+                else:
+                    ok, msg = do_update_password(new_pw)
+                    if ok:
+                        st.success("Password updated. Signing you in…")
+                        st.rerun()
+                    else:
+                        st.error(msg)
+        return
     col_l, col_m, col_r = st.columns([1, 2, 1])
     with col_m:
         st.markdown("<br><br>", unsafe_allow_html=True)

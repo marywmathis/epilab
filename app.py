@@ -168,12 +168,10 @@ def _detect_recovery_mode():
     except Exception:
         return
     flow_type = params.get("type", "")
-    access_token = params.get("access_token", "")
-    refresh_token = params.get("refresh_token", "")
-    if flow_type == "recovery" and access_token:
+    token_hash = params.get("token_hash", "")
+    if flow_type == "recovery" and token_hash:
         st.session_state["auth_mode"] = "reset"
-        st.session_state["recovery_access_token"] = access_token
-        st.session_state["recovery_refresh_token"] = refresh_token
+        st.session_state["recovery_token_hash"] = token_hash
         try:
             st.query_params.clear()
         except Exception:
@@ -187,15 +185,20 @@ def do_update_password(new_password: str):
     """
     if len(new_password) < 8:
         return False, "Password must be at least 8 characters."
-    access_token = st.session_state.get("recovery_access_token", "")
-    refresh_token = st.session_state.get("recovery_refresh_token", "")
-    if not access_token:
+    token_hash = st.session_state.get("recovery_token_hash", "")
+    if not token_hash:
         return False, "Reset link expired or invalid. Please request a new one."
     supabase = get_supabase_client()
     try:
-        supabase.auth.set_session(access_token, refresh_token or access_token)
+        # Exchange the one-time token_hash for a real auth session.
+        verify_result = supabase.auth.verify_otp(
+            {"token_hash": token_hash, "type": "recovery"}
+        )
+        if not verify_result.user or not verify_result.session:
+            return False, "Reset link expired or invalid. Please request a new one."
+        # Now update the password using the active session.
         update_result = supabase.auth.update_user({"password": new_password})
-        user = update_result.user
+        user = update_result.user or verify_result.user
         if not user:
             return False, "Could not update password. Please request a new reset link."
         profile = load_user_profile(supabase, user.id)
@@ -206,7 +209,7 @@ def do_update_password(new_password: str):
         st.session_state["user_role"] = profile.get("role") or "student"
         st.session_state["user_institution"] = profile.get("institution") or ""
         st.session_state["current_user"] = profile.get("full_name") or user.email
-        for k in ("recovery_access_token", "recovery_refresh_token", "auth_mode"):
+        for k in ("recovery_token_hash", "auth_mode"):
             if k in st.session_state:
                 del st.session_state[k]
         return True, ""

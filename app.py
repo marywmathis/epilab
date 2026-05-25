@@ -5967,8 +5967,10 @@ elif current_page == "disease_frequency":
         ])
 
         if calc_type == "Prevalence":
-            cases = st.number_input("Number with condition", min_value=0, value=1200)
-            pop = st.number_input("Total population", min_value=1, value=10000)
+            _prev_state = get_scenario_state("disease_frequency.prevalence_calc", defaults={"cases": 1200, "pop": 10000})
+            cases = st.number_input("Number with condition", min_value=0, value=int(_prev_state["cases"]))
+            pop = st.number_input("Total population", min_value=1, value=int(_prev_state["pop"]))
+            autosave_scenario("disease_frequency.prevalence_calc", {"cases": int(cases), "pop": int(pop)})
             if st.button("Calculate Prevalence"):
                 prev = cases/pop
                 st.metric("Prevalence", f"{round(prev*100,2)}%")
@@ -5976,9 +5978,9 @@ elif current_page == "disease_frequency":
                 st.success(f"{cases} existing cases in a population of {pop:,} → Prevalence = {round(prev*100,2)}%")
 
         elif calc_type == "Cumulative Incidence (Attack Rate)":
-            new_cases = st.number_input("New cases during period", min_value=0, value=300)
-            pop_at_risk = st.number_input("Disease-free population at start", min_value=1, value=5000)
-            time_label = st.text_input("Time period (for labeling)", "5-year")
+            _ci_state = get_scenario_state("disease_frequency.cumulative_incidence_calc", defaults={"new_cases": 300, "pop_at_risk": 5000, "time_label": "5-year"}); new_cases = st.number_input("New cases during period", min_value=0, value=int(_ci_state["new_cases"]))
+            pop_at_risk = st.number_input("Disease-free population at start", min_value=1, value=int(_ci_state["pop_at_risk"]))
+            time_label = st.text_input("Time period (for labeling)", _ci_state["time_label"]); autosave_scenario("disease_frequency.cumulative_incidence_calc", {"new_cases": int(new_cases), "pop_at_risk": int(pop_at_risk), "time_label": str(time_label)})
             if st.button("Calculate Cumulative Incidence"):
                 ci = new_cases / pop_at_risk
                 st.metric(f"{time_label} Cumulative Incidence", f"{round(ci*100,2)}%")
@@ -5996,9 +5998,9 @@ elif current_page == "disease_frequency":
             ], horizontal=True, key="pt_mode")
 
             if pt_mode == "📋 Enter summary totals":
-                new_cases   = st.number_input("New cases", min_value=0, value=87)
-                person_time = st.number_input("Total person-years at risk", min_value=0.1, value=24500.0, step=100.0)
-                multiplier  = st.selectbox("Express rate per:", [1000, 10000, 100000])
+                _ir_state = get_scenario_state("disease_frequency.incidence_rate_summary", defaults={"new_cases": 87, "person_time": 24500.0, "multiplier": 1000}); new_cases   = st.number_input("New cases", min_value=0, value=int(_ir_state["new_cases"]))
+                person_time = st.number_input("Total person-years at risk", min_value=0.1, value=float(_ir_state["person_time"]), step=100.0)
+                multiplier  = st.selectbox("Express rate per:", [1000, 10000, 100000], index=[1000, 10000, 100000].index(int(_ir_state["multiplier"])) if int(_ir_state["multiplier"]) in [1000, 10000, 100000] else 0); autosave_scenario("disease_frequency.incidence_rate_summary", {"new_cases": int(new_cases), "person_time": float(person_time), "multiplier": int(multiplier)})
                 if st.button("Calculate Incidence Rate", key="ir_summary"):
                     ir = new_cases / person_time * multiplier
                     st.metric(f"Incidence Rate (per {multiplier:,} person-years)", round(ir, 2))
@@ -6197,8 +6199,8 @@ vs. the correct person-time rate: **{round(ir,2)} per {multiplier:,} person-year
                         """)
 
         elif calc_type == "Case Fatality Rate (CFR)":
-            deaths = st.number_input("Deaths from disease", min_value=0, value=142)
-            total_cases = st.number_input("Total diagnosed cases", min_value=1, value=1800)
+            _cfr_state = get_scenario_state("disease_frequency.cfr_calc", defaults={"deaths": 142, "total_cases": 1800}); deaths = st.number_input("Deaths from disease", min_value=0, value=int(_cfr_state["deaths"]))
+            total_cases = st.number_input("Total diagnosed cases", min_value=1, value=int(_cfr_state["total_cases"])); autosave_scenario("disease_frequency.cfr_calc", {"deaths": int(deaths), "total_cases": int(total_cases)})
             if st.button("Calculate CFR"):
                 cfr = deaths / total_cases
                 st.metric("Case Fatality Rate", f"{round(cfr*100,2)}%")
@@ -6239,8 +6241,8 @@ Prevalence can be low even for serious diseases if they are rapidly fatal (short
 Prevalence rises when <b>new cases occur more often</b> (↑ incidence) <i>or</i> when <b>people live with the disease longer</b> (↑ duration) — or both.
 </div>
             """, unsafe_allow_html=True)
-            inc = st.slider("Incidence rate (per 1,000/year)", 1, 50, 10)
-            dur = st.slider("Average disease duration (years)", 1, 30, 5)
+            _pid_state = get_scenario_state("disease_frequency.p_i_d_explorer", defaults={"inc": 10, "dur": 5}); inc = st.slider("Incidence rate (per 1,000/year)", 1, 50, int(_pid_state["inc"]))
+            dur = st.slider("Average disease duration (years)", 1, 30, int(_pid_state["dur"])); autosave_scenario("disease_frequency.p_i_d_explorer", {"inc": int(inc), "dur": int(dur)})
             prev_est = (inc/1000) * dur
             st.metric("Approximate prevalence at a point in time", f"{round(prev_est*100,1)}%")
             st.markdown(f"P ≈ I × D = {inc/1000} × {dur} = {round(prev_est,4)} ≈ {round(prev_est*100,1)}%")

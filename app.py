@@ -3801,13 +3801,15 @@ Percent agreement is inflated by **chance agreement**. Two raters randomly class
 
         st.markdown("#### 🔢 Interactive Kappa Calculator")
         st.markdown("Enter the 2×2 agreement table between two raters:")
+        _kappa_state = get_scenario_state("bias.cohen_kappa", defaults={"a": 45, "b": 10, "c": 5, "d": 40})
         k1, k2 = st.columns(2)
         with k1:
-            a = st.number_input("Both rate POSITIVE (a)", min_value=0, value=45, key="kap_a")
-            b = st.number_input("Rater 1 positive, Rater 2 negative (b)", min_value=0, value=10, key="kap_b")
+            a = st.number_input("Both rate POSITIVE (a)", min_value=0, value=int(_kappa_state["a"]), key="kap_a")
+            b = st.number_input("Rater 1 positive, Rater 2 negative (b)", min_value=0, value=int(_kappa_state["b"]), key="kap_b")
         with k2:
-            c = st.number_input("Rater 1 negative, Rater 2 positive (c)", min_value=0, value=5, key="kap_c")
-            d = st.number_input("Both rate NEGATIVE (d)", min_value=0, value=40, key="kap_d")
+            c = st.number_input("Rater 1 negative, Rater 2 positive (c)", min_value=0, value=int(_kappa_state["c"]), key="kap_c")
+            d = st.number_input("Both rate NEGATIVE (d)", min_value=0, value=int(_kappa_state["d"]), key="kap_d")
+        autosave_scenario("bias.cohen_kappa", {"a": int(a), "b": int(b), "c": int(c), "d": int(d)})
 
         N = a + b + c + d
         if N > 0:

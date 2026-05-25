@@ -58,6 +58,87 @@ def load_user_profile(supabase: Client, user_id: str) -> dict:
         return {}
 
 
+def save_scenario_state(scenario_key: str, state: dict) -> bool:
+    """
+    Upsert the scenario state for the current user. Returns True on
+    success, False on failure (failure is silent — user keeps working).
+    """
+    if not st.session_state.get("authenticated"):
+        return False
+    user_id = st.session_state.get("user_id")
+    if not user_id:
+        return False
+    supabase = get_supabase_client()
+    try:
+        supabase.table("scenario_progress").upsert(
+            {
+                "user_id": user_id,
+                "scenario_key": scenario_key,
+                "state": state,
+            },
+            on_conflict="user_id,scenario_key",
+        ).execute()
+        return True
+    except Exception:
+        return False
+
+
+def load_scenario_state(scenario_key: str) -> dict:
+    """
+    Fetch the saved scenario state for the current user. Returns an
+    empty dict if no saved state exists or the query fails.
+    """
+    if not st.session_state.get("authenticated"):
+        return {}
+    user_id = st.session_state.get("user_id")
+    if not user_id:
+        return {}
+    supabase = get_supabase_client()
+    try:
+        result = (
+            supabase.table("scenario_progress")
+            .select("state")
+            .eq("user_id", user_id)
+            .eq("scenario_key", scenario_key)
+            .maybe_single()
+            .execute()
+        )
+        if result and result.data:
+            return result.data.get("state") or {}
+        return {}
+    except Exception:
+        return {}
+
+
+def get_scenario_state(scenario_key: str, defaults: dict) -> dict:
+    """
+    Initialize and return the state dict for a scenario. On first call
+    in a session, loads from Supabase (merging with defaults). On
+    subsequent calls within the same session, returns the cached version
+    from st.session_state. autosave_scenario() handles writes back.
+    """
+    cache_key = f"_scenario_state__{scenario_key}"
+    if cache_key not in st.session_state:
+        loaded = load_scenario_state(scenario_key)
+        merged = {**defaults, **loaded}
+        st.session_state[cache_key] = merged
+    return st.session_state[cache_key]
+
+
+def autosave_scenario(scenario_key: str, state: dict) -> None:
+    """
+    Write the scenario state to Supabase on every rerun. Detects no-op
+    saves (same state as last write) to avoid pointless writes.
+    """
+    cache_key = f"_scenario_state__{scenario_key}"
+    last_saved_key = f"_scenario_lastsaved__{scenario_key}"
+    st.session_state[cache_key] = state
+    if st.session_state.get(last_saved_key) == state:
+        return
+    if save_scenario_state(scenario_key, state):
+        st.session_state[last_saved_key] = dict(state)
+
+
 def do_login(email: str, password: str):
     """
     Attempt to sign in via Supabase email/password.

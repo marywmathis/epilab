@@ -9399,11 +9399,11 @@ Convention: aim for 80% or 90% power (β = 0.20 or 0.10).
 
         col1, col2 = st.columns(2)
         with col1:
-            true_rr = st.slider("True Risk Ratio (effect size)", 1.1, 4.0, 2.0, 0.1)
-            r0 = st.slider("Baseline risk in unexposed (%)", 1, 40, 10) / 100
-            alpha = st.select_slider("Alpha (α)", options=[0.01, 0.05, 0.10], value=0.05)
+            _power_state = get_scenario_state("hypothesis_testing.power_explorer", defaults={"true_rr": 2.0, "r0_pct": 10, "alpha": 0.05, "n_per_group": 200}); true_rr = st.slider("True Risk Ratio (effect size)", 1.1, 4.0, float(_power_state["true_rr"]), 0.1)
+            r0 = st.slider("Baseline risk in unexposed (%)", 1, 40, int(_power_state["r0_pct"])) / 100
+            alpha = st.select_slider("Alpha (α)", options=[0.01, 0.05, 0.10], value=float(_power_state["alpha"]) if float(_power_state["alpha"]) in [0.01, 0.05, 0.10] else 0.05)
         with col2:
-            n_per_group = st.slider("Sample size per group", 20, 2000, 200, 10)
+            n_per_group = st.slider("Sample size per group", 20, 2000, int(_power_state["n_per_group"]), 10); autosave_scenario("hypothesis_testing.power_explorer", {"true_rr": float(true_rr), "r0_pct": int(round(r0*100)), "alpha": float(alpha), "n_per_group": int(n_per_group)})
 
         # Approximate power calculation for two-proportion z-test
         r1 = r0 * true_rr

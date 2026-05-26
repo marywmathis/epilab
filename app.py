@@ -8832,10 +8832,10 @@ elif current_page == "advanced_measures":
             elif scenario == "Aspirin & GI Bleeding (NNH)": r_treatment,r_control,label_treatment,label_control = 0.025,0.010,"Daily aspirin","No aspirin"
             else: r_treatment,r_control,label_treatment,label_control = 0.22,0.08,"Cessation program","No program"
         else:
-            label_treatment = st.text_input("Treatment group", "Treatment")
-            label_control = st.text_input("Control group", "Control")
-            r_treatment = st.number_input(f"Risk ({label_treatment})", min_value=0.001, max_value=1.0, value=0.04, step=0.01)
-            r_control = st.number_input(f"Risk ({label_control})", min_value=0.001, max_value=1.0, value=0.06, step=0.01)
+            _nnt_state = get_scenario_state("advanced_measures.nnt_nnh_manual", defaults={"label_treatment": "Treatment", "label_control": "Control", "r_treatment": 0.04, "r_control": 0.06}); label_treatment = st.text_input("Treatment group", _nnt_state["label_treatment"])
+            label_control = st.text_input("Control group", _nnt_state["label_control"])
+            r_treatment = st.number_input(f"Risk ({label_treatment})", min_value=0.001, max_value=1.0, value=float(_nnt_state["r_treatment"]), step=0.01)
+            r_control = st.number_input(f"Risk ({label_control})", min_value=0.001, max_value=1.0, value=float(_nnt_state["r_control"]), step=0.01); autosave_scenario("advanced_measures.nnt_nnh_manual", {"label_treatment": str(label_treatment), "label_control": str(label_control), "r_treatment": float(r_treatment), "r_control": float(r_control)})
         if st.button("Calculate NNT/NNH"):
             risk_diff = abs(r_treatment - r_control)
             if risk_diff > 0:

@@ -8755,8 +8755,8 @@ elif current_page == "advanced_measures":
             elif scenario == "Physical Inactivity & T2D": Pe, RR = 0.46, 1.5
             else: Pe, RR = 0.42, 2.0
         else:
-            Pe = st.number_input("Exposure prevalence (Pe)", min_value=0.001, max_value=0.999, value=0.30, step=0.01)
-            RR = st.number_input("Risk Ratio (RR)", min_value=0.01, value=2.0, step=0.1)
+            _par_state = get_scenario_state("advanced_measures.par_manual", defaults={"Pe": 0.30, "RR": 2.0}); Pe = st.number_input("Exposure prevalence (Pe)", min_value=0.001, max_value=0.999, value=float(_par_state["Pe"]), step=0.01)
+            RR = st.number_input("Risk Ratio (RR)", min_value=0.01, value=float(_par_state["RR"]), step=0.1); autosave_scenario("advanced_measures.par_manual", {"Pe": float(Pe), "RR": float(RR)})
         if st.button("Calculate PAR"):
             PAR_pct = (Pe * (RR - 1)) / (1 + Pe * (RR - 1)) * 100
             col1,col2,col3 = st.columns(3)
@@ -8813,8 +8813,8 @@ elif current_page == "advanced_measures":
             elif scenario == "Unvaccinated & Measles": r_exposed, r_unexposed = 0.90, 0.02
             else: r_exposed, r_unexposed = 0.08, 0.03
         else:
-            r_exposed = st.number_input("Risk in exposed", min_value=0.001, max_value=1.0, value=0.12, step=0.01)
-            r_unexposed = st.number_input("Risk in unexposed", min_value=0.001, max_value=1.0, value=0.04, step=0.01)
+            _ar_state = get_scenario_state("advanced_measures.ar_manual", defaults={"r_exposed": 0.12, "r_unexposed": 0.04}); r_exposed = st.number_input("Risk in exposed", min_value=0.001, max_value=1.0, value=float(_ar_state["r_exposed"]), step=0.01)
+            r_unexposed = st.number_input("Risk in unexposed", min_value=0.001, max_value=1.0, value=float(_ar_state["r_unexposed"]), step=0.01); autosave_scenario("advanced_measures.ar_manual", {"r_exposed": float(r_exposed), "r_unexposed": float(r_unexposed)})
         if st.button("Calculate AR & AR%"):
             ar = r_exposed - r_unexposed; ar_pct = (ar / r_exposed) * 100
             col1,col2,col3,col4 = st.columns(4)

@@ -139,6 +139,31 @@ def autosave_scenario(scenario_key: str, state: dict) -> None:
         st.session_state[last_saved_key] = dict(state)
 
 
+def delete_scenario_state(scenario_key: str) -> bool:
+    """
+    Reset a scenario completely: delete from Supabase, clear the
+    in-memory cache, and clear the last-saved cache. Used by Reset
+    buttons to wipe a scenario's state across all storage layers.
+    """
+    if not st.session_state.get("authenticated"):
+        return False
+    user_id = st.session_state.get("user_id")
+    if not user_id:
+        return False
+    # Clear in-memory caches first so the next render starts fresh
+    cache_key = f"_scenario_state__{scenario_key}"
+    last_saved_key = f"_scenario_lastsaved__{scenario_key}"
+    st.session_state.pop(cache_key, None)
+    st.session_state.pop(last_saved_key, None)
+    # Delete from Supabase
+    supabase = get_supabase_client()
+    try:
+        supabase.table("scenario_progress").delete().eq("user_id", user_id).eq("scenario_key", scenario_key).execute()
+        return True
+    except Exception:
+        return False
+
+
 def do_login(email: str, password: str):
     """
     Attempt to sign in via Supabase email/password.
@@ -9036,6 +9061,8 @@ elif current_page == "hypothesis_testing":
             for k in list(st.session_state.keys()):
                 if any(k.startswith(p) for p in ["h0_","h1_","tails_","ht_section","chi2_slider","dof_select","tail_radio"]):
                     del st.session_state[k]
+            for _sid in ["h1","h2","h3","h4","h5","h6","h7","h8"]:
+                delete_scenario_state(f"hypothesis_testing.hypothesis_builder.{_sid}")
             st.rerun()
     st.markdown("Build your understanding of hypothesis testing, interpreting p-values, and statistical power.")
 

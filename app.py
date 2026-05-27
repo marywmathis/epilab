@@ -12655,6 +12655,17 @@ Risk in exposed − risk in unexposed. Absolute excess risk. More clinically mea
 
 **Confidence Interval (CI)**
 Range of plausible values for the true effect estimate. 95% CI: if the study were repeated many times, 95% of CIs would contain the true value. CI excluding null value (1 for ratios, 0 for differences) → p < 0.05.
+
+**Null Values & Negative Numbers**
+Ratios center on 1.0; differences center on 0. Ratios (RR, OR, HR, IRR, SMR) are always positive — they compare two positive quantities. Differences (Risk Difference, Mean Difference, Attributable Risk, β coefficients, log-transformed ratios) can be negative.
+
+| Measure | Null | Negative possible? |
+|---|---|---|
+| RR, OR, HR, IRR, SMR | 1.0 | No |
+| Risk/Mean Difference, AR, β coefficients | 0 | Yes |
+| Log-transformed ratios (ln HR, ln OR) | 0 | Yes |
+
+**Common mistake:** Reading a ratio's CI as if it were a difference. For HR = 0.79 with 95% CI (0.60, 0.95), the CI does **not** cross 1 → statistically significant. Reading this as crossing zero (and concluding "non-significant") is wrong: zero is not the null for a ratio.
         """)
 
     with st.expander("📉 Advanced Epi Measures"):

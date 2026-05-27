@@ -9651,6 +9651,8 @@ elif current_page == "practice_design":
     with col_hdr: st.caption(f"**{len(PRACTICE_SCENARIOS)} scenarios** — randomized order. Reset to shuffle.")
     with col_rst:
         if st.button("🔄 Reset", key="reset_prac4"):
+            for _sc in PRACTICE_SCENARIOS:
+                delete_scenario_state(f"practice_design.{_sc['id']}")
             st.session_state["prac_reset_count"] += 1
             keys_to_delete = [k for k in st.session_state.keys() if k.startswith("prac_") and k not in ["prac_scenario_order","prac_reset_count"]]
             for k in keys_to_delete: del st.session_state[k]
@@ -9665,16 +9667,28 @@ elif current_page == "practice_design":
         submitted_key = f"prac_{sid}_submitted_{rc4}"
         already_submitted = st.session_state.get(submitted_key, False)
 
-        design_choice = st.selectbox("What is the study design?", design_options, key=f"prac_{sid}_design_{rc4}", disabled=already_submitted)
-        outcome_choice = st.selectbox("What is the outcome variable type?", outcome_options, key=f"prac_{sid}_outcome_{rc4}", disabled=already_submitted)
-        exposure_choice = st.selectbox("What is the exposure variable type?", exposure_options, key=f"prac_{sid}_exposure_{rc4}", disabled=already_submitted)
+        _prac_state = get_scenario_state(f"practice_design.{sid}", defaults={"design": "— Select —", "outcome": "— Select —", "exposure": "— Select —", "submitted": False})
+        _design_idx = design_options.index(_prac_state["design"]) if _prac_state.get("design") in design_options else 0
+        _outcome_idx = outcome_options.index(_prac_state["outcome"]) if _prac_state.get("outcome") in outcome_options else 0
+        _exposure_idx = exposure_options.index(_prac_state["exposure"]) if _prac_state.get("exposure") in exposure_options else 0
+        if _prac_state.get("submitted") and not already_submitted:
+            st.session_state[submitted_key] = True
+            already_submitted = True
+
+        design_choice = st.selectbox("What is the study design?", design_options, index=_design_idx, key=f"prac_{sid}_design_{rc4}", disabled=already_submitted)
+        outcome_choice = st.selectbox("What is the outcome variable type?", outcome_options, index=_outcome_idx, key=f"prac_{sid}_outcome_{rc4}", disabled=already_submitted)
+        exposure_choice = st.selectbox("What is the exposure variable type?", exposure_options, index=_exposure_idx, key=f"prac_{sid}_exposure_{rc4}", disabled=already_submitted)
+
+        autosave_scenario(f"practice_design.{sid}", {"design": str(design_choice), "outcome": str(outcome_choice), "exposure": str(exposure_choice), "submitted": bool(already_submitted)})
 
         all_selected = all(st.session_state.get(f"prac_{sid}_{f}_{rc4}") not in [None,"— Select —"] for f in ["design","outcome","exposure"])
 
         if not already_submitted:
             if all_selected:
                 if st.button("Submit My Answers", key=f"submit_{sid}_{rc4}", type="primary"):
-                    st.session_state[submitted_key] = True; st.rerun()
+                    st.session_state[submitted_key] = True
+                    autosave_scenario(f"practice_design.{sid}", {"design": str(design_choice), "outcome": str(outcome_choice), "exposure": str(exposure_choice), "submitted": True})
+                    st.rerun()
             else:
                 st.caption("⬆️ Make all three selections before submitting.")
 
@@ -9700,6 +9714,7 @@ elif current_page == "practice_design":
                     if wrong_hint: st.markdown(f"**Exposure Type** — You selected: *{ev}*\n\n{wrong_hint}")
                     st.markdown(f"✅ **Correct:** {sc['correct_exposure']} — {sc['exposure_hint']}")
                 if st.button("🔄 Try Again", key=f"retry_{sid}_{rc4}"):
+                    delete_scenario_state(f"practice_design.{sid}")
                     for f in ["design","outcome","exposure","submitted"]:
                         k = f"prac_{sid}_{f}_{rc4}"
                         if k in st.session_state: del st.session_state[k]

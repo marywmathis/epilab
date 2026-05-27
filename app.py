@@ -9903,6 +9903,8 @@ elif current_page == "practice_advanced":
     with col_hdr5: st.caption(f"**{len(ADV_SCENARIOS)} scenarios** — randomized.")
     with col_rst5:
         if st.button("🔄 Reset", key="reset_adv_prac"):
+            for _sc in ADV_SCENARIOS:
+                delete_scenario_state(f"practice_advanced.{_sc['id']}")
             st.session_state["adv_reset_count"] += 1
             keys_to_delete = [k for k in st.session_state.keys() if k.startswith("adv_") and k not in ["adv_scenario_order","adv_reset_count"]]
             for k in keys_to_delete: del st.session_state[k]
@@ -9916,12 +9918,26 @@ elif current_page == "practice_advanced":
         sid = sc["id"]
         submitted_key = f"adv_submitted_{sid}_{rc5}"
         already_submitted = st.session_state.get(submitted_key, False)
-        measure_choice = st.selectbox("Which advanced measure is most appropriate?", measure_options, key=f"adv_measure_{sid}_{rc5}", disabled=already_submitted)
+
+        _adv_state = get_scenario_state(f"practice_advanced.{sid}", defaults={"measure": "— Select —", "submitted": False})
+        _measure_idx = measure_options.index(_adv_state["measure"]) if _adv_state.get("measure") in measure_options else 0
+        if _adv_state.get("submitted") and not already_submitted:
+            st.session_state[submitted_key] = True
+            already_submitted = True
+
+        measure_choice = st.selectbox("Which advanced measure is most appropriate?", measure_options, index=_measure_idx, key=f"adv_measure_{sid}_{rc5}", disabled=already_submitted)
         selected = st.session_state.get(f"adv_measure_{sid}_{rc5}") not in [None, "— Select —"]
+
+        _adv_has_user_input = (measure_choice != "— Select —" or already_submitted)
+        if _adv_has_user_input:
+            autosave_scenario(f"practice_advanced.{sid}", {"measure": str(measure_choice), "submitted": bool(already_submitted)})
+
         if not already_submitted:
             if selected:
                 if st.button("Submit My Answer", key=f"adv_submit_{sid}_{rc5}", type="primary"):
-                    st.session_state[submitted_key] = True; st.rerun()
+                    st.session_state[submitted_key] = True
+                    autosave_scenario(f"practice_advanced.{sid}", {"measure": str(measure_choice), "submitted": True})
+                    st.rerun()
             else: st.caption("⬆️ Select a measure before submitting.")
 
         if already_submitted:
@@ -9933,6 +9949,7 @@ elif current_page == "practice_advanced":
                 if wrong_hint: st.markdown(f"**You selected:** *{measure_val}*\n\n{wrong_hint}")
                 st.markdown(f"✅ **Correct:** {sc['correct_measure']} — {sc['measure_hint']}")
                 if st.button("🔄 Try Again", key=f"adv_retry_{sid}_{rc5}"):
+                    delete_scenario_state(f"practice_advanced.{sid}")
                     for k_suffix in ["measure","submitted"]:
                         k = f"adv_{k_suffix}_{sid}_{rc5}"
                         if k in st.session_state: del st.session_state[k]

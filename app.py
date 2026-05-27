@@ -9346,27 +9346,32 @@ The CI gives more information — it shows the range of plausible effect sizes, 
             st.markdown(f"**{sc['title']}**")
             st.markdown(sc["description"])
             sid = sc["id"]
+            _hyp_state = get_scenario_state(f"hypothesis_testing.hypothesis_builder.{sid}", defaults={"null": None, "alt": None, "tails": None})
+            _null_idx = sc["null_options"].index(_hyp_state["null"]) if _hyp_state.get("null") in sc["null_options"] else None
+            _alt_idx = sc["alt_options"].index(_hyp_state["alt"]) if _hyp_state.get("alt") in sc["alt_options"] else None
+            _tails_idx = ["one-tailed", "two-tailed"].index(_hyp_state["tails"]) if _hyp_state.get("tails") in ["one-tailed", "two-tailed"] else None
             st.markdown("**Step 1: Select the correct null hypothesis (H₀):**")
-            null_choice = st.radio("H₀:", sc["null_options"], key=f"h0_{sid}", index=None, label_visibility="collapsed")
+            null_choice = st.radio("H₀:", sc["null_options"], key=f"h0_{sid}", index=_null_idx, label_visibility="collapsed")
             if null_choice is not None:
                 if sc["null_options"].index(null_choice) == sc["correct_null_idx"]:
                     st.success(sc["null_feedback"])
                 else:
                     st.error(sc["null_wrong_feedback"])
             st.markdown("**Step 2: Select the correct alternative hypothesis (H₁):**")
-            alt_choice = st.radio("H₁:", sc["alt_options"], key=f"h1_{sid}", index=None, label_visibility="collapsed")
+            alt_choice = st.radio("H₁:", sc["alt_options"], key=f"h1_{sid}", index=_alt_idx, label_visibility="collapsed")
             if alt_choice is not None:
                 if sc["alt_options"].index(alt_choice) == sc["correct_alt_idx"]:
                     st.success(sc["alt_feedback"])
                 else:
                     st.error(sc["alt_wrong_feedback"])
             st.markdown("**Step 3: Should this be a one-tailed or two-tailed test?**")
-            tails_choice = st.radio("Tails:", ["one-tailed", "two-tailed"], key=f"tails_{sid}", index=None, label_visibility="collapsed")
+            tails_choice = st.radio("Tails:", ["one-tailed", "two-tailed"], key=f"tails_{sid}", index=_tails_idx, label_visibility="collapsed")
             if tails_choice is not None:
                 if tails_choice == sc["correct_tails"]:
                     st.success(f"✅ Correct — **{sc['correct_tails']}**.")
                 else:
                     st.error(f"❌ This should be **{sc['correct_tails']}**.")
+            autosave_scenario(f"hypothesis_testing.hypothesis_builder.{sid}", {"null": null_choice, "alt": alt_choice, "tails": tails_choice})
             if null_choice is not None and alt_choice is not None and tails_choice is not None:
                 all_correct = (
                     sc["null_options"].index(null_choice) == sc["correct_null_idx"] and

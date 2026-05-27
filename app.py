@@ -3677,7 +3677,9 @@ A measure can be reliable without being valid (consistent but systematically wro
             type_choice = st.selectbox("What type of bias is this?", _type_options, index=_type_idx, key=f"bias_type_{sid}_{rc}", disabled=already_submitted)
             dir_choice = st.selectbox("How does it bias the result?", _dir_options, index=_dir_idx, key=f"bias_dir_{sid}_{rc}", disabled=already_submitted)
 
-            autosave_scenario(f"bias.direction_exercise.{sid}", {"type": str(type_choice), "dir": str(dir_choice), "submitted": bool(already_submitted)})
+            _bias_has_user_input = (type_choice != "— Select —" or dir_choice != "— Select —" or already_submitted)
+            if _bias_has_user_input:
+                autosave_scenario(f"bias.direction_exercise.{sid}", {"type": str(type_choice), "dir": str(dir_choice), "submitted": bool(already_submitted)})
 
             all_selected = type_choice not in [None,"— Select —"] and dir_choice not in [None,"— Select —"]
             if not already_submitted and all_selected:
@@ -9414,7 +9416,9 @@ The CI gives more information — it shows the range of plausible effect sizes, 
                     st.success(f"✅ Correct — **{sc['correct_tails']}**.")
                 else:
                     st.error(f"❌ This should be **{sc['correct_tails']}**.")
-            autosave_scenario(f"hypothesis_testing.hypothesis_builder.{sid}", {"null": null_choice, "alt": alt_choice, "tails": tails_choice})
+            _hyp_has_user_input = (null_choice is not None or alt_choice is not None or tails_choice is not None)
+            if _hyp_has_user_input:
+                autosave_scenario(f"hypothesis_testing.hypothesis_builder.{sid}", {"null": null_choice, "alt": alt_choice, "tails": tails_choice})
             if null_choice is not None and alt_choice is not None and tails_choice is not None:
                 all_correct = (
                     sc["null_options"].index(null_choice) == sc["correct_null_idx"] and
@@ -9679,7 +9683,9 @@ elif current_page == "practice_design":
         outcome_choice = st.selectbox("What is the outcome variable type?", outcome_options, index=_outcome_idx, key=f"prac_{sid}_outcome_{rc4}", disabled=already_submitted)
         exposure_choice = st.selectbox("What is the exposure variable type?", exposure_options, index=_exposure_idx, key=f"prac_{sid}_exposure_{rc4}", disabled=already_submitted)
 
-        autosave_scenario(f"practice_design.{sid}", {"design": str(design_choice), "outcome": str(outcome_choice), "exposure": str(exposure_choice), "submitted": bool(already_submitted)})
+        _has_user_input = (design_choice != "— Select —" or outcome_choice != "— Select —" or exposure_choice != "— Select —" or already_submitted)
+        if _has_user_input:
+            autosave_scenario(f"practice_design.{sid}", {"design": str(design_choice), "outcome": str(outcome_choice), "exposure": str(exposure_choice), "submitted": bool(already_submitted)})
 
         all_selected = all(st.session_state.get(f"prac_{sid}_{f}_{rc4}") not in [None,"— Select —"] for f in ["design","outcome","exposure"])
 

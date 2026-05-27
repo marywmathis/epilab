@@ -8864,7 +8864,7 @@ elif current_page == "advanced_measures":
             else: st.error(f"HR = {round(hr,2)}: {exposed_label} had {round((hr-1)*100,1)}% higher hazard of {outcome_label}. Significant.")
             draw_ci("HR", hr, ci_low_hr, ci_high_hr)
         else:
-            hr = st.number_input("HR", min_value=0.01, value=0.68, step=0.01)
+            _hr_state = get_scenario_state("advanced_measures.hr_manual", defaults={"hr": 0.68, "ci_low_hr": 0.54, "ci_high_hr": 0.85, "exposed_label": "Exposed", "outcome_label": "the outcome"}); hr = st.number_input("HR", min_value=0.01, value=float(_hr_state["hr"]), step=0.01)
             ci_low_hr = st.number_input("CI Lower", min_value=0.001, value=0.54, step=0.01)
             ci_high_hr = st.number_input("CI Upper", min_value=0.001, value=0.85, step=0.01)
             exposed_label = st.text_input("Exposed group", "Exposed")

@@ -3652,6 +3652,8 @@ A measure can be reliable without being valid (consistent but systematically wro
         col_hdr, col_rst = st.columns([5,1])
         with col_rst:
             if st.button("🔄 Reset", key="reset_bias"):
+                for _sid in ["b1","b2","b3","b4"]:
+                    delete_scenario_state(f"bias.direction_exercise.{_sid}")
                 st.session_state["bias_rc"] += 1
                 st.rerun()
 
@@ -3663,13 +3665,26 @@ A measure can be reliable without being valid (consistent but systematically wro
             submitted_key = f"bias_submitted_{sid}_{rc}"
             already_submitted = st.session_state.get(submitted_key, False)
 
-            type_choice = st.selectbox("What type of bias is this?", ["— Select —"] + sc["types"], key=f"bias_type_{sid}_{rc}", disabled=already_submitted)
-            dir_choice = st.selectbox("How does it bias the result?", ["— Select —"] + sc["directions"], key=f"bias_dir_{sid}_{rc}", disabled=already_submitted)
+            _bias_state = get_scenario_state(f"bias.direction_exercise.{sid}", defaults={"type": "— Select —", "dir": "— Select —", "submitted": False})
+            _type_options = ["— Select —"] + sc["types"]
+            _dir_options = ["— Select —"] + sc["directions"]
+            _type_idx = _type_options.index(_bias_state["type"]) if _bias_state.get("type") in _type_options else 0
+            _dir_idx = _dir_options.index(_bias_state["dir"]) if _bias_state.get("dir") in _dir_options else 0
+            if _bias_state.get("submitted") and not already_submitted:
+                st.session_state[submitted_key] = True
+                already_submitted = True
+
+            type_choice = st.selectbox("What type of bias is this?", _type_options, index=_type_idx, key=f"bias_type_{sid}_{rc}", disabled=already_submitted)
+            dir_choice = st.selectbox("How does it bias the result?", _dir_options, index=_dir_idx, key=f"bias_dir_{sid}_{rc}", disabled=already_submitted)
+
+            autosave_scenario(f"bias.direction_exercise.{sid}", {"type": str(type_choice), "dir": str(dir_choice), "submitted": bool(already_submitted)})
 
             all_selected = type_choice not in [None,"— Select —"] and dir_choice not in [None,"— Select —"]
             if not already_submitted and all_selected:
                 if st.button("Submit", key=f"bias_submit_{sid}_{rc}", type="primary"):
-                    st.session_state[submitted_key] = True; st.rerun()
+                    st.session_state[submitted_key] = True
+                    autosave_scenario(f"bias.direction_exercise.{sid}", {"type": str(type_choice), "dir": str(dir_choice), "submitted": True})
+                    st.rerun()
 
             if already_submitted:
                 tc = type_choice == sc["correct_type"]
@@ -3686,6 +3701,7 @@ A measure can be reliable without being valid (consistent but systematically wro
                         st.markdown(f"✅ Correct: **{sc['correct_direction']}**")
                 st.info(f"**Explanation:** {sc['explanation']}")
                 if st.button("🔄 Try Again", key=f"bias_retry_{sid}_{rc}"):
+                    delete_scenario_state(f"bias.direction_exercise.{sid}")
                     for k in [f"bias_type_{sid}_{rc}", f"bias_dir_{sid}_{rc}", submitted_key]:
                         if k in st.session_state: del st.session_state[k]
                     st.rerun()

@@ -8868,7 +8868,7 @@ elif current_page == "advanced_measures":
             ci_low_hr = st.number_input("CI Lower", min_value=0.001, value=float(_hr_state["ci_low_hr"]), step=0.01)
             ci_high_hr = st.number_input("CI Upper", min_value=0.001, value=float(_hr_state["ci_high_hr"]), step=0.01)
             exposed_label = st.text_input("Exposed group", _hr_state["exposed_label"])
-            outcome_label = st.text_input("Outcome", "the outcome")
+            outcome_label = st.text_input("Outcome", _hr_state["outcome_label"]); autosave_scenario("advanced_measures.hr_manual", {"hr": float(hr), "ci_low_hr": float(ci_low_hr), "ci_high_hr": float(ci_high_hr), "exposed_label": str(exposed_label), "outcome_label": str(outcome_label)})
             if st.button("Interpret HR"):
                 if ci_low_hr <= 1 <= ci_high_hr: st.warning(f"HR = {round(hr,2)} — CI includes 1. Not significant.")
                 elif hr < 1: st.success(f"HR = {round(hr,2)}: {round((1-hr)*100,1)}% lower hazard. Significant.")

@@ -164,6 +164,158 @@ def delete_scenario_state(scenario_key: str) -> bool:
         return False
 
 
+def fetch_submitted_scenarios(prefix: str) -> dict:
+    """
+    Return a dict mapping scenario_key -> state for all rows under the prefix
+    where state["submitted"] is True. Used for PDF exports.
+    """
+    if not st.session_state.get("authenticated"):
+        return {}
+    user_id = st.session_state.get("user_id")
+    if not user_id:
+        return {}
+    supabase = get_supabase_client()
+    try:
+        resp = supabase.table("scenario_progress").select("scenario_key,state").eq("user_id", user_id).like("scenario_key", f"{prefix}%").execute()
+        rows = resp.data or []
+        return {r["scenario_key"]: r["state"] for r in rows if r.get("state", {}).get("submitted")}
+    except Exception:
+        return {}
+
+
+def generate_practice_confounding_pdf(scenarios_list) -> bytes:
+    """
+    Generate a PDF of the student's submitted Practice Confounding answers.
+    Returns PDF bytes, or empty bytes if nothing to export.
+    scenarios_list is the in-memory CB_SCENARIOS list (passed in to avoid global ref).
+    """
+    submitted = fetch_submitted_scenarios("practice_confounding.")
+    if not submitted:
+        return b""
+
+    # Reportlab imports kept local so app startup isn't burdened
+    from io import BytesIO
+    from datetime import datetime
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib.colors import HexColor
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+    from reportlab.lib.enums import TA_LEFT
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=letter,
+        leftMargin=0.75*inch, rightMargin=0.75*inch,
+        topMargin=0.75*inch, bottomMargin=0.75*inch,
+        title="EpiLab — Practice Confounding & Bias"
+    )
+
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle(
+        "TitleCustom", parent=styles["Title"],
+        fontSize=18, textColor=HexColor("#1f2937"), spaceAfter=12
+    )
+    meta_style = ParagraphStyle(
+        "Meta", parent=styles["Normal"],
+        fontSize=10, textColor=HexColor("#6b7280"), spaceAfter=4
+    )
+    scenario_title_style = ParagraphStyle(
+        "ScenTitle", parent=styles["Heading2"],
+        fontSize=13, textColor=HexColor("#111827"),
+        spaceBefore=14, spaceAfter=6, alignment=TA_LEFT
+    )
+    body_style = ParagraphStyle(
+        "Body", parent=styles["BodyText"],
+        fontSize=10, textColor=HexColor("#1f2937"),
+        spaceAfter=6, leading=14
+    )
+    label_style = ParagraphStyle(
+        "Label", parent=styles["BodyText"],
+        fontSize=10, textColor=HexColor("#374151"),
+        spaceAfter=2, leading=13
+    )
+    correct_style = ParagraphStyle(
+        "Correct", parent=styles["BodyText"],
+        fontSize=10, textColor=HexColor("#065f46"),
+        spaceAfter=2, leading=13
+    )
+    incorrect_style = ParagraphStyle(
+        "Incorrect", parent=styles["BodyText"],
+        fontSize=10, textColor=HexColor("#991b1b"),
+        spaceAfter=2, leading=13
+    )
+
+    student_name = st.session_state.get("user_full_name") or st.session_state.get("user_email") or "Student"
+    date_str = datetime.now().strftime("%B %d, %Y")
+
+    story = []
+    story.append(Paragraph("Practice: Confounding &amp; Bias", title_style))
+    story.append(Paragraph(f"<b>Student:</b> {_pdf_escape(student_name)}", meta_style))
+    story.append(Paragraph(f"<b>Date:</b> {date_str}", meta_style))
+    story.append(Paragraph(f"<b>Submitted scenarios:</b> {len(submitted)} of {len(scenarios_list)}", meta_style))
+    story.append(Spacer(1, 0.15*inch))
+
+    # Render scenarios in the order defined in the in-memory list
+    for sc in scenarios_list:
+        sid = sc["id"]
+        key = f"practice_confounding.{sid}"
+        if key not in submitted:
+            continue
+        state = submitted[key]
+        student_answer = state.get("choice", "")
+        is_correct = (student_answer == sc.get("correct", ""))
+
+        story.append(Paragraph(_pdf_escape(sc["title"]), scenario_title_style))
+        story.append(Paragraph(f"<i>{_pdf_escape(sc.get('description',''))}</i>", body_style))
+        story.append(Paragraph(f"<b>Question:</b> {_pdf_escape(sc.get('question',''))}", label_style))
+        story.append(Paragraph(f"<b>Your answer:</b> {_pdf_escape(student_answer)}", label_style))
+        if is_correct:
+            story.append(Paragraph(f"<b>Result:</b> Correct ✓", correct_style))
+        else:
+            story.append(Paragraph(f"<b>Result:</b> Incorrect ✗", incorrect_style))
+            story.append(Paragraph(f"<b>Correct answer:</b> {_pdf_escape(sc.get('correct',''))}", correct_style))
+        story.append(Paragraph(f"<b>Explanation:</b> {_pdf_escape(sc.get('explanation',''))}", body_style))
+
+        # Follow-up if present and submitted
+        if "follow_up" in sc and state.get("fu_submitted"):
+            fu_student = state.get("fu_choice", "")
+            fu_correct = (fu_student == sc.get("correct_follow_up", ""))
+            story.append(Paragraph(f"<b>Follow-up:</b> {_pdf_escape(sc.get('follow_up',''))}", label_style))
+            story.append(Paragraph(f"<b>Your answer:</b> {_pdf_escape(fu_student)}", label_style))
+            if fu_correct:
+                story.append(Paragraph(f"<b>Result:</b> Correct ✓", correct_style))
+            else:
+                story.append(Paragraph(f"<b>Result:</b> Incorrect ✗", incorrect_style))
+                story.append(Paragraph(f"<b>Correct answer:</b> {_pdf_escape(sc.get('correct_follow_up',''))}", correct_style))
+            story.append(Paragraph(f"<b>Explanation:</b> {_pdf_escape(sc.get('follow_up_explanation',''))}", body_style))
+
+        story.append(Spacer(1, 0.1*inch))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
+
+
+def _pdf_escape(text: str) -> str:
+    """Escape characters that would confuse ReportLab's mini-HTML parser."""
+    if not text:
+        return ""
+    text = str(text)
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _pdf_filename(module_slug: str) -> str:
+    """Build a consistent filename: epilab_<student>_<module>_<YYYY-MM-DD>.pdf"""
+    from datetime import datetime
+    import re
+    raw_name = st.session_state.get("user_full_name") or st.session_state.get("user_email") or "student"
+    # Lowercase, strip non-alphanum to underscores
+    slug = re.sub(r"[^a-z0-9]+", "_", raw_name.lower()).strip("_") or "student"
+    date_str = datetime.now().strftime("%Y-%m-%d")
+    return f"epilab_{slug}_{module_slug}_{date_str}.pdf"
+
+
 def do_login(email: str, password: str):
     """
     Attempt to sign in via Supabase email/password.
@@ -10191,13 +10343,33 @@ elif current_page == "practice_confounding":
 
     if "cb_rc" not in st.session_state: st.session_state["cb_rc"] = 0
     rc = st.session_state["cb_rc"]
-    col_hdr, col_rst = st.columns([5,1])
+    col_hdr, col_exp, col_rst = st.columns([4, 1.3, 1])
     with col_hdr: st.caption(f"**{len(CB_SCENARIOS)} scenarios**")
+    with col_exp:
+        if st.button("📥 Export PDF", key="export_cb", help="Download your submitted answers as a PDF"):
+            pdf_bytes = generate_practice_confounding_pdf(CB_SCENARIOS)
+            if not pdf_bytes:
+                st.warning("No submitted answers yet. Submit at least one scenario before exporting.")
+            else:
+                st.session_state["_cb_pdf_bytes"] = pdf_bytes
+                st.session_state["_cb_pdf_ready"] = True
+    if st.session_state.get("_cb_pdf_ready") and st.session_state.get("_cb_pdf_bytes"):
+        with col_exp:
+            st.download_button(
+                "⬇️ Download",
+                data=st.session_state["_cb_pdf_bytes"],
+                file_name=_pdf_filename("practice_confounding"),
+                mime="application/pdf",
+                key="dl_cb_pdf",
+            )
     with col_rst:
         if st.button("🔄 Reset", key="reset_cb"):
             for _sc in CB_SCENARIOS:
                 delete_scenario_state(f"practice_confounding.{_sc['id']}")
-            st.session_state["cb_rc"] += 1; st.rerun()
+            st.session_state["cb_rc"] += 1
+            st.session_state.pop("_cb_pdf_bytes", None)
+            st.session_state.pop("_cb_pdf_ready", None)
+            st.rerun()
 
     for sc in CB_SCENARIOS:
         st.divider(); st.subheader(sc["title"]); st.markdown(sc["description"])

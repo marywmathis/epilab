@@ -316,6 +316,174 @@ def _pdf_filename(module_slug: str) -> str:
     return f"epilab_{slug}_{module_slug}_{date_str}.pdf"
 
 
+def _pdf_setup(module_title: str, total_scenarios: int, submitted_count: int):
+    """Return (doc, styles dict, header story) for a fresh PDF."""
+    from io import BytesIO
+    from datetime import datetime
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib.colors import HexColor
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
+    from reportlab.lib.enums import TA_LEFT
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(
+        buffer, pagesize=letter,
+        leftMargin=0.75*inch, rightMargin=0.75*inch,
+        topMargin=0.75*inch, bottomMargin=0.75*inch,
+        title=f"EpiLab — {module_title}"
+    )
+    base = getSampleStyleSheet()
+    styles = {
+        "title": ParagraphStyle("TitleCustom", parent=base["Title"], fontSize=18, textColor=HexColor("#1f2937"), spaceAfter=12),
+        "meta": ParagraphStyle("Meta", parent=base["Normal"], fontSize=10, textColor=HexColor("#6b7280"), spaceAfter=4),
+        "scenario_title": ParagraphStyle("ScenTitle", parent=base["Heading2"], fontSize=13, textColor=HexColor("#111827"), spaceBefore=14, spaceAfter=6, alignment=TA_LEFT),
+        "body": ParagraphStyle("Body", parent=base["BodyText"], fontSize=10, textColor=HexColor("#1f2937"), spaceAfter=6, leading=14),
+        "label": ParagraphStyle("Label", parent=base["BodyText"], fontSize=10, textColor=HexColor("#374151"), spaceAfter=2, leading=13),
+        "correct": ParagraphStyle("Correct", parent=base["BodyText"], fontSize=10, textColor=HexColor("#065f46"), spaceAfter=2, leading=13),
+        "incorrect": ParagraphStyle("Incorrect", parent=base["BodyText"], fontSize=10, textColor=HexColor("#991b1b"), spaceAfter=2, leading=13),
+    }
+    student_name = st.session_state.get("user_full_name") or st.session_state.get("user_email") or "Student"
+    date_str = datetime.now().strftime("%B %d, %Y")
+    header = [
+        Paragraph(_pdf_escape(module_title), styles["title"]),
+        Paragraph(f"<b>Student:</b> {_pdf_escape(student_name)}", styles["meta"]),
+        Paragraph(f"<b>Date:</b> {date_str}", styles["meta"]),
+        Paragraph(f"<b>Submitted scenarios:</b> {submitted_count} of {total_scenarios}", styles["meta"]),
+        Spacer(1, 0.15*inch),
+    ]
+    return doc, buffer, styles, header
+
+
+def generate_practice_design_pdf(scenarios_list) -> bytes:
+    """PDF for Practice — Study Design Identification (3 selectboxes per scenario)."""
+    submitted = fetch_submitted_scenarios("practice_design.")
+    if not submitted:
+        return b""
+    from reportlab.platypus import Paragraph, Spacer
+    from reportlab.lib.units import inch
+
+    doc, buffer, styles, story = _pdf_setup("Practice: Study Design Identification", len(scenarios_list), len(submitted))
+
+    for sc in scenarios_list:
+        sid = sc["id"]
+        key = f"practice_design.{sid}"
+        if key not in submitted:
+            continue
+        state = submitted[key]
+        story.append(Paragraph(_pdf_escape(sc["title"]), styles["scenario_title"]))
+        story.append(Paragraph(f"<i>{_pdf_escape(sc.get('description',''))}</i>", styles["body"]))
+
+        # Three answer rows
+        for field, correct_field, hint_field, label in [
+            ("design", "correct_design", "design_hint", "Study design"),
+            ("outcome", "correct_outcome", "outcome_hint", "Outcome variable type"),
+            ("exposure", "correct_exposure", "exposure_hint", "Exposure variable type"),
+        ]:
+            student_answer = state.get(field, "")
+            correct_answer = sc.get(correct_field, "")
+            is_correct = (student_answer == correct_answer)
+            story.append(Paragraph(f"<b>{label}</b>", styles["label"]))
+            story.append(Paragraph(f"&nbsp;&nbsp;Your answer: {_pdf_escape(student_answer)}", styles["label"]))
+            if is_correct:
+                story.append(Paragraph(f"&nbsp;&nbsp;Result: Correct ✓ — {_pdf_escape(sc.get(hint_field, ''))}", styles["correct"]))
+            else:
+                story.append(Paragraph(f"&nbsp;&nbsp;Result: Incorrect ✗", styles["incorrect"]))
+                story.append(Paragraph(f"&nbsp;&nbsp;Correct: {_pdf_escape(correct_answer)} — {_pdf_escape(sc.get(hint_field, ''))}", styles["correct"]))
+        story.append(Spacer(1, 0.1*inch))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
+
+
+def generate_practice_advanced_pdf(scenarios_list) -> bytes:
+    """PDF for Practice — Advanced Measures (1 selectbox per scenario)."""
+    submitted = fetch_submitted_scenarios("practice_advanced.")
+    if not submitted:
+        return b""
+    from reportlab.platypus import Paragraph, Spacer
+    from reportlab.lib.units import inch
+
+    doc, buffer, styles, story = _pdf_setup("Practice: Advanced Measures", len(scenarios_list), len(submitted))
+
+    for sc in scenarios_list:
+        sid = sc["id"]
+        key = f"practice_advanced.{sid}"
+        if key not in submitted:
+            continue
+        state = submitted[key]
+        student_answer = state.get("measure", "")
+        correct_answer = sc.get("correct_measure", "")
+        is_correct = (student_answer == correct_answer)
+
+        story.append(Paragraph(_pdf_escape(sc["title"]), styles["scenario_title"]))
+        story.append(Paragraph(f"<i>{_pdf_escape(sc.get('description',''))}</i>", styles["body"]))
+        story.append(Paragraph(f"<b>Question:</b> Which advanced measure is most appropriate?", styles["label"]))
+        story.append(Paragraph(f"<b>Your answer:</b> {_pdf_escape(student_answer)}", styles["label"]))
+        if is_correct:
+            story.append(Paragraph(f"<b>Result:</b> Correct ✓", styles["correct"]))
+        else:
+            story.append(Paragraph(f"<b>Result:</b> Incorrect ✗", styles["incorrect"]))
+            story.append(Paragraph(f"<b>Correct answer:</b> {_pdf_escape(correct_answer)}", styles["correct"]))
+        story.append(Paragraph(f"<b>Reasoning:</b> {_pdf_escape(sc.get('measure_hint',''))}", styles["body"]))
+        story.append(Spacer(1, 0.1*inch))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
+
+
+def generate_practice_screening_pdf(scenarios_list) -> bytes:
+    """PDF for Practice — Screening & Disease Frequency (radio + optional follow-up)."""
+    submitted = fetch_submitted_scenarios("practice_screening.")
+    if not submitted:
+        return b""
+    from reportlab.platypus import Paragraph, Spacer
+    from reportlab.lib.units import inch
+
+    doc, buffer, styles, story = _pdf_setup("Practice: Screening & Disease Frequency", len(scenarios_list), len(submitted))
+
+    for sc in scenarios_list:
+        sid = sc["id"]
+        key = f"practice_screening.{sid}"
+        if key not in submitted:
+            continue
+        state = submitted[key]
+        student_answer = state.get("choice", "")
+        is_correct = (student_answer == sc.get("correct", ""))
+
+        story.append(Paragraph(_pdf_escape(sc["title"]), styles["scenario_title"]))
+        story.append(Paragraph(f"<i>{_pdf_escape(sc.get('description',''))}</i>", styles["body"]))
+        story.append(Paragraph(f"<b>Question:</b> {_pdf_escape(sc.get('question',''))}", styles["label"]))
+        story.append(Paragraph(f"<b>Your answer:</b> {_pdf_escape(student_answer)}", styles["label"]))
+        if is_correct:
+            story.append(Paragraph(f"<b>Result:</b> Correct ✓", styles["correct"]))
+        else:
+            story.append(Paragraph(f"<b>Result:</b> Incorrect ✗", styles["incorrect"]))
+            story.append(Paragraph(f"<b>Correct answer:</b> {_pdf_escape(sc.get('correct',''))}", styles["correct"]))
+        story.append(Paragraph(f"<b>Explanation:</b> {_pdf_escape(sc.get('explanation',''))}", styles["body"]))
+
+        if "follow_up" in sc and state.get("fu_submitted"):
+            fu_student = state.get("fu_choice", "")
+            fu_correct = (fu_student == sc.get("correct_follow_up", ""))
+            story.append(Paragraph(f"<b>Follow-up:</b> {_pdf_escape(sc.get('follow_up',''))}", styles["label"]))
+            story.append(Paragraph(f"<b>Your answer:</b> {_pdf_escape(fu_student)}", styles["label"]))
+            if fu_correct:
+                story.append(Paragraph(f"<b>Result:</b> Correct ✓", styles["correct"]))
+            else:
+                story.append(Paragraph(f"<b>Result:</b> Incorrect ✗", styles["incorrect"]))
+                story.append(Paragraph(f"<b>Correct answer:</b> {_pdf_escape(sc.get('correct_follow_up',''))}", styles["correct"]))
+            story.append(Paragraph(f"<b>Explanation:</b> {_pdf_escape(sc.get('follow_up_explanation',''))}", styles["body"]))
+
+        story.append(Spacer(1, 0.1*inch))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
+
+
 def do_login(email: str, password: str):
     """
     Attempt to sign in via Supabase email/password.
@@ -9813,7 +9981,28 @@ elif current_page == "practice_design":
             keys_to_delete = [k for k in st.session_state.keys() if k.startswith("prac_") and k not in ["prac_scenario_order","prac_reset_count"]]
             for k in keys_to_delete: del st.session_state[k]
             if "prac_scenario_order" in st.session_state: del st.session_state["prac_scenario_order"]
+            st.session_state.pop("_prac_design_pdf_bytes", None)
+            st.session_state.pop("_prac_design_pdf_ready", None)
             st.rerun()
+
+    col_exp_pd1, col_exp_pd2 = st.columns([1.3, 5])
+    with col_exp_pd1:
+        if st.button("📥 Export PDF", key="export_prac_design", help="Download your submitted answers as a PDF"):
+            pdf_bytes = generate_practice_design_pdf(PRACTICE_SCENARIOS)
+            if not pdf_bytes:
+                st.warning("No submitted answers yet. Submit at least one scenario before exporting.")
+            else:
+                st.session_state["_prac_design_pdf_bytes"] = pdf_bytes
+                st.session_state["_prac_design_pdf_ready"] = True
+    if st.session_state.get("_prac_design_pdf_ready") and st.session_state.get("_prac_design_pdf_bytes"):
+        with col_exp_pd1:
+            st.download_button(
+                "⬇️ Download",
+                data=st.session_state["_prac_design_pdf_bytes"],
+                file_name=_pdf_filename("practice_design"),
+                mime="application/pdf",
+                key="dl_prac_design_pdf",
+            )
 
     rc4 = st.session_state["prac_reset_count"]
 
@@ -10061,7 +10250,28 @@ elif current_page == "practice_advanced":
             keys_to_delete = [k for k in st.session_state.keys() if k.startswith("adv_") and k not in ["adv_scenario_order","adv_reset_count"]]
             for k in keys_to_delete: del st.session_state[k]
             if "adv_scenario_order" in st.session_state: del st.session_state["adv_scenario_order"]
+            st.session_state.pop("_prac_adv_pdf_bytes", None)
+            st.session_state.pop("_prac_adv_pdf_ready", None)
             st.rerun()
+
+    col_exp_pa1, col_exp_pa2 = st.columns([1.3, 5])
+    with col_exp_pa1:
+        if st.button("📥 Export PDF", key="export_prac_adv", help="Download your submitted answers as a PDF"):
+            pdf_bytes = generate_practice_advanced_pdf(ADV_SCENARIOS)
+            if not pdf_bytes:
+                st.warning("No submitted answers yet. Submit at least one scenario before exporting.")
+            else:
+                st.session_state["_prac_adv_pdf_bytes"] = pdf_bytes
+                st.session_state["_prac_adv_pdf_ready"] = True
+    if st.session_state.get("_prac_adv_pdf_ready") and st.session_state.get("_prac_adv_pdf_bytes"):
+        with col_exp_pa1:
+            st.download_button(
+                "⬇️ Download",
+                data=st.session_state["_prac_adv_pdf_bytes"],
+                file_name=_pdf_filename("practice_advanced"),
+                mime="application/pdf",
+                key="dl_prac_adv_pdf",
+            )
 
     rc5 = st.session_state["adv_reset_count"]
 
@@ -10930,7 +11140,29 @@ For Patient A, despite a negative mammogram, there is still a **2.9% chance she 
         if st.button("🔄 Reset", key="reset_ss"):
             for _sc in SCREEN_SCENARIOS:
                 delete_scenario_state(f"practice_screening.{_sc['id']}")
-            st.session_state["ss_rc"] += 1; st.rerun()
+            st.session_state["ss_rc"] += 1
+            st.session_state.pop("_ss_pdf_bytes", None)
+            st.session_state.pop("_ss_pdf_ready", None)
+            st.rerun()
+
+    col_exp_ss1, col_exp_ss2 = st.columns([1.3, 5])
+    with col_exp_ss1:
+        if st.button("📥 Export PDF", key="export_ss", help="Download your submitted answers as a PDF"):
+            pdf_bytes = generate_practice_screening_pdf(SCREEN_SCENARIOS)
+            if not pdf_bytes:
+                st.warning("No submitted answers yet. Submit at least one scenario before exporting.")
+            else:
+                st.session_state["_ss_pdf_bytes"] = pdf_bytes
+                st.session_state["_ss_pdf_ready"] = True
+    if st.session_state.get("_ss_pdf_ready") and st.session_state.get("_ss_pdf_bytes"):
+        with col_exp_ss1:
+            st.download_button(
+                "⬇️ Download",
+                data=st.session_state["_ss_pdf_bytes"],
+                file_name=_pdf_filename("practice_screening"),
+                mime="application/pdf",
+                key="dl_ss_pdf",
+            )
 
     for sc in SCREEN_SCENARIOS:
         st.divider()

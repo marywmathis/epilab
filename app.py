@@ -10195,6 +10195,8 @@ elif current_page == "practice_confounding":
     with col_hdr: st.caption(f"**{len(CB_SCENARIOS)} scenarios**")
     with col_rst:
         if st.button("🔄 Reset", key="reset_cb"):
+            for _sc in CB_SCENARIOS:
+                delete_scenario_state(f"practice_confounding.{_sc['id']}")
             st.session_state["cb_rc"] += 1; st.rerun()
 
     for sc in CB_SCENARIOS:
@@ -10203,10 +10205,24 @@ elif current_page == "practice_confounding":
         sub_key = f"cb_submitted_{sid}_{rc}"
         already = st.session_state.get(sub_key, False)
 
-        choice = st.radio(sc["question"], ["— Select —"] + sc["options"], key=f"cb_choice_{sid}_{rc}", index=0, disabled=already)
+        _cb_state = get_scenario_state(f"practice_confounding.{sid}", defaults={"choice": "— Select —", "submitted": False, "fu_choice": "— Select —", "fu_submitted": False})
+        _main_options = ["— Select —"] + sc["options"]
+        _main_idx = _main_options.index(_cb_state["choice"]) if _cb_state.get("choice") in _main_options else 0
+        if _cb_state.get("submitted") and not already:
+            st.session_state[sub_key] = True
+            already = True
+
+        choice = st.radio(sc["question"], _main_options, key=f"cb_choice_{sid}_{rc}", index=_main_idx, disabled=already)
+
+        _cb_has_user_input = (choice != "— Select —" or already)
+        if _cb_has_user_input:
+            autosave_scenario(f"practice_confounding.{sid}", {"choice": str(choice), "submitted": bool(already), "fu_choice": str(_cb_state.get("fu_choice", "— Select —")), "fu_submitted": bool(_cb_state.get("fu_submitted", False))})
+
         if not already and choice != "— Select —":
             if st.button("Submit", key=f"cb_submit_{sid}_{rc}", type="primary"):
-                st.session_state[sub_key] = True; st.rerun()
+                st.session_state[sub_key] = True
+                autosave_scenario(f"practice_confounding.{sid}", {"choice": str(choice), "submitted": True, "fu_choice": str(_cb_state.get("fu_choice", "— Select —")), "fu_submitted": bool(_cb_state.get("fu_submitted", False))})
+                st.rerun()
 
         if already:
             val = st.session_state.get(f"cb_choice_{sid}_{rc}")
@@ -10221,10 +10237,22 @@ elif current_page == "practice_confounding":
                 st.markdown(f"**Follow-up: {sc['follow_up']}**")
                 sub_key2 = f"cb_fu_submitted_{sid}_{rc}"
                 already2 = st.session_state.get(sub_key2, False)
-                fu_choice = st.radio("", ["— Select —"] + sc["follow_up_options"], key=f"cb_fu_{sid}_{rc}", index=0, disabled=already2, label_visibility="collapsed")
+                _fu_options = ["— Select —"] + sc["follow_up_options"]
+                _fu_idx = _fu_options.index(_cb_state["fu_choice"]) if _cb_state.get("fu_choice") in _fu_options else 0
+                if _cb_state.get("fu_submitted") and not already2:
+                    st.session_state[sub_key2] = True
+                    already2 = True
+
+                fu_choice = st.radio("", _fu_options, key=f"cb_fu_{sid}_{rc}", index=_fu_idx, disabled=already2, label_visibility="collapsed")
+
+                if fu_choice != "— Select —" or already2:
+                    autosave_scenario(f"practice_confounding.{sid}", {"choice": str(val), "submitted": True, "fu_choice": str(fu_choice), "fu_submitted": bool(already2)})
+
                 if not already2 and fu_choice != "— Select —":
                     if st.button("Submit Follow-up", key=f"cb_fu_submit_{sid}_{rc}"):
-                        st.session_state[sub_key2] = True; st.rerun()
+                        st.session_state[sub_key2] = True
+                        autosave_scenario(f"practice_confounding.{sid}", {"choice": str(val), "submitted": True, "fu_choice": str(fu_choice), "fu_submitted": True})
+                        st.rerun()
                 if already2:
                     fu_val = st.session_state.get(f"cb_fu_{sid}_{rc}")
                     if fu_val == sc["correct_follow_up"]:
@@ -10235,6 +10263,7 @@ elif current_page == "practice_confounding":
                     st.info(f"**Explanation:** {sc['follow_up_explanation']}")
 
             if st.button("🔄 Try Again", key=f"cb_retry_{sid}_{rc}"):
+                delete_scenario_state(f"practice_confounding.{sid}")
                 for k in [sub_key, f"cb_choice_{sid}_{rc}", f"cb_fu_submitted_{sid}_{rc}", f"cb_fu_{sid}_{rc}"]:
                     if k in st.session_state: del st.session_state[k]
                 st.rerun()

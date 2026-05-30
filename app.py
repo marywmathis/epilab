@@ -484,6 +484,99 @@ def generate_practice_screening_pdf(scenarios_list) -> bytes:
     return buffer.read()
 
 
+
+def generate_ob3_pdf() -> bytes:
+    """PDF for Outbreak Lab Scenario 3 — Salmonellosis at a Community Church Potluck."""
+    state = get_scenario_state("outbreak_lab.ob3", defaults=OB3_DEFAULTS)
+    if not _ob_has_user_input(state, OB3_DEFAULTS):
+        return b""
+    from io import BytesIO
+    from datetime import datetime
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib.colors import HexColor
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
+    from reportlab.lib.enums import TA_LEFT
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter,
+        leftMargin=0.75*inch, rightMargin=0.75*inch,
+        topMargin=0.75*inch, bottomMargin=0.75*inch,
+        title="EpiLab — Outbreak Investigation Report: Salmonella")
+    base = getSampleStyleSheet()
+    title_s  = ParagraphStyle("OB3Title",  parent=base["Title"],    fontSize=18, textColor=HexColor("#1f2937"), spaceAfter=6)
+    sub_s    = ParagraphStyle("OB3Sub",    parent=base["Heading2"], fontSize=13, textColor=HexColor("#111827"), spaceBefore=14, spaceAfter=6, alignment=TA_LEFT)
+    meta_s   = ParagraphStyle("OB3Meta",   parent=base["Normal"],   fontSize=10, textColor=HexColor("#6b7280"), spaceAfter=4)
+    body_s   = ParagraphStyle("OB3Body",   parent=base["BodyText"], fontSize=10, textColor=HexColor("#1f2937"), spaceAfter=6, leading=14)
+    label_s  = ParagraphStyle("OB3Label",  parent=base["BodyText"], fontSize=10, textColor=HexColor("#374151"), spaceAfter=2, leading=13)
+    ok_s     = ParagraphStyle("OB3Ok",     parent=base["BodyText"], fontSize=10, textColor=HexColor("#065f46"), spaceAfter=2, leading=13)
+    err_s    = ParagraphStyle("OB3Err",    parent=base["BodyText"], fontSize=10, textColor=HexColor("#991b1b"), spaceAfter=2, leading=13)
+    draft_s  = ParagraphStyle("OB3Draft",  parent=base["BodyText"], fontSize=10, textColor=HexColor("#1e3a5f"), spaceAfter=6, leading=14, leftIndent=12)
+
+    student_name = st.session_state.get("user_full_name") or st.session_state.get("user_email") or "Student"
+    story = []
+    story.append(Paragraph("EpiLab Interactive — Outbreak Investigation Report", title_s))
+    story.append(Paragraph("<b>Scenario:</b> Salmonellosis at a Community Church Potluck", meta_s))
+    story.append(Paragraph(f"<b>Student:</b> {_pdf_escape(student_name)}", meta_s))
+    story.append(Paragraph(f"<b>Date:</b> {datetime.now().strftime('%B %d, %Y')}", meta_s))
+    story.append(Spacer(1, 0.1*inch))
+    story.append(Paragraph("Outbreak brief", sub_s))
+    story.append(Paragraph("23 cases | 2 hospitalizations | 0 deaths | ~120 attendees | Sunday 12:30 PM meal", body_s))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=HexColor("#d1d5db"), spaceAfter=8))
+
+    QUESTIONS = {
+        "q1a": "Decision 1A: What does the line list suggest about the most likely vehicle?",
+        "q2a": "Decision 2A: What does the epidemic curve confirm?",
+        "q3a": "Decision 3A: Which food item is the most likely vehicle?",
+        "q4a": "Decision 4A: The chicken salad was 58°F at service. Why does this matter?",
+        "q4b": "Decision 4B: Lab results confirm Salmonella Enteritidis. What do you do?",
+    }
+    CORRECT = {
+        "q1a": "Chicken salad or deviled eggs — egg/poultry = Salmonella, and most cases ate one or both",
+        "q2a": "Point-source outbreak — all cases within one incubation period of a single exposure",
+        "q3a": "Both chicken salad AND deviled eggs — same cook, cross-contamination likely",
+        "q4a": "Temperatures between 41°F and 135°F allow Salmonella to multiply rapidly — the 'danger zone'",
+        "q4b": "Contact the state health department and FDA/USDA to investigate the grocery store chicken supplier",
+    }
+
+    story.append(Paragraph("Step 1 — Case definition and line list", sub_s))
+    _pdf_decision(story, "q1a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    cd_parts = [state.get("cd_person",""), state.get("cd_time",""), state.get("cd_clinical","")]
+    if any(cd_parts):
+        story.append(Paragraph(f"<b>Case definition builder:</b> {_pdf_escape(' | '.join(p for p in cd_parts if p))}", label_s))
+    if state.get("case_def_text","").strip():
+        story.append(Paragraph("<b>Written case definition:</b>", label_s))
+        story.append(Paragraph(_pdf_escape(state["case_def_text"]), draft_s))
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 2 — Epidemic curve and incubation period", sub_s))
+    _pdf_decision(story, "q2a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 3 — Food-specific attack rates", sub_s))
+    _pdf_decision(story, "q3a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    if any(state.get(k, 0) > 0 for k in ["ar_exp", "ar_unexp", "rr"]):
+        story.append(Paragraph(
+            f"<b>Chicken salad calculation:</b> AR exposed = {state.get('ar_exp',0)}% | "
+            f"AR unexposed = {state.get('ar_unexp',0)}% | RR = {state.get('rr',0)}", label_s))
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 4 — Environmental investigation", sub_s))
+    _pdf_decision(story, "q4a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    _pdf_decision(story, "q4b", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 5 — Control, reporting, and prevention", sub_s))
+    if state.get("report_text","").strip():
+        story.append(Paragraph("<b>Investigation report:</b>", label_s))
+        story.append(Paragraph(_pdf_escape(state["report_text"]).replace("\n", "<br/>"), draft_s))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
+
+
 def do_login(email: str, password: str):
     """
     Attempt to sign in via Supabase email/password.
@@ -12907,11 +13000,31 @@ This is how local foodborne investigations become national — the church potluc
             st.markdown("#### 📝 Final outbreak investigation report")
             ob3_report_text = st.text_area(
                 "Your outbreak report:",
-                value=st.session_state.get("ob3_report_text", ""),
+                value=_ob3_state.get("report_text", ""),
                 height=200,
                 placeholder="Background: ...\n\nMethods: ...\n\nResults: ...\n\nConclusions: ...\n\nRecommendations: ...",
                 key="ob3_report_text"
             )
+            _ob3_s5_current = {
+                "last_step_idx": st.session_state.get("ob3_idx", 0),
+                "cd_person": _ob3_state.get("cd_person", OB3_DEFAULTS["cd_person"]),
+                "cd_time": _ob3_state.get("cd_time", OB3_DEFAULTS["cd_time"]),
+                "cd_clinical": _ob3_state.get("cd_clinical", OB3_DEFAULTS["cd_clinical"]),
+                "cd_lab": _ob3_state.get("cd_lab", OB3_DEFAULTS["cd_lab"]),
+                "q1a": _ob3_state.get("q1a", "— Select —"),
+                "case_def_text": _ob3_state.get("case_def_text", ""),
+                "q2a": _ob3_state.get("q2a", "— Select —"),
+                "q3a": _ob3_state.get("q3a", "— Select —"),
+                "ar_exp": _ob3_state.get("ar_exp", 0.0),
+                "ar_unexp": _ob3_state.get("ar_unexp", 0.0),
+                "rr": _ob3_state.get("rr", 0.0),
+                "q4a": _ob3_state.get("q4a", "— Select —"),
+                "q4b": _ob3_state.get("q4b", "— Select —"),
+                "q5a": "n/a",
+                "report_text": st.session_state.get("ob3_report_text", ""),
+            }
+            if _ob_has_user_input(_ob3_s5_current, OB3_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob3", _ob3_s5_current)
             next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
     elif ob_scenario == "— Choose an outbreak —":

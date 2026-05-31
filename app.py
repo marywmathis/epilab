@@ -1127,27 +1127,23 @@ def login_screen():
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
 
-# ── F5 recovery: restore session from cookie if not authenticated ──
-if not st.session_state.get("authenticated") and _COOKIE_MANAGER_AVAILABLE:
+# ── F5 recovery: restore session from cached Supabase client ──
+if not st.session_state.get("authenticated"):
     try:
-        _cm = get_cookie_manager()
-        if _cm:
-            _token = _cm.get("epilab_token")
-            _refresh = _cm.get("epilab_refresh")
-            if _token:
-                _supabase = get_supabase_client()
-                _auth = _supabase.auth.set_session(_token, _refresh or "")
-                if _auth and _auth.user:
-                    _profile = load_user_profile(_supabase, _auth.user.id)
-                    st.session_state["authenticated"] = True
-                    st.session_state["user_id"] = _auth.user.id
-                    st.session_state["user_email"] = _auth.user.email
-                    st.session_state["user_full_name"] = _profile.get("full_name") or _auth.user.email
-                    st.session_state["user_role"] = _profile.get("role") or "student"
-                    st.session_state["user_institution"] = _profile.get("institution") or ""
-                    st.session_state["current_user"] = _profile.get("full_name") or _auth.user.email
+        _supabase = get_supabase_client()
+        _session_resp = _supabase.auth.get_session()
+        if _session_resp and _session_resp.session and _session_resp.session.user:
+            _user = _session_resp.session.user
+            _profile = load_user_profile(_supabase, _user.id)
+            st.session_state["authenticated"] = True
+            st.session_state["user_id"] = _user.id
+            st.session_state["user_email"] = _user.email
+            st.session_state["user_full_name"] = _profile.get("full_name") or _user.email
+            st.session_state["user_role"] = _profile.get("role") or "student"
+            st.session_state["user_institution"] = _profile.get("institution") or ""
+            st.session_state["current_user"] = _profile.get("full_name") or _user.email
     except Exception:
-        pass  # Cookie expired or invalid — fall through to login screen
+        pass  # No valid session — fall through to login screen
 
 if not st.session_state["authenticated"]:
     login_screen()

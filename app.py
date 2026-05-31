@@ -11713,7 +11713,7 @@ You build your case file using only the 5 lab-confirmed cases. Your attack rate 
                 "Case definition:",
                 value=st.session_state.get("ob1_case_def_text", ""),
                 height=100,
-                placeholder="A student or staff member who ate in the main dining hall on Tuesday evening and developed vomiting or \u22653 loose stools within 72 hours of the meal.",
+                placeholder="Write your complete working case definition (person, place, time, clinical criteria).",
                 key="ob1_case_def_text"
             )
             next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
@@ -12286,7 +12286,7 @@ This is why outbreak control is so difficult: by the time measles is diagnosed (
                 "Case definition:",
                 value=st.session_state.get("ob2_case_def_text", ""),
                 height=100,
-                placeholder="A student or staff member at [school name] with fever (\u226538\u00b0C) and maculopapular rash, with onset between [date range], with or without lab confirmation.",
+                placeholder="Write your complete working case definition (person, place, time, clinical criteria).",
                 key="ob2_case_def_text"
             )
             next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
@@ -12581,6 +12581,10 @@ The outbreak is now controlled after an emergency vaccination clinic raised cove
     # ════════════════════════════════════════════════════════════════
     elif ob_scenario == "🥘 Scenario 3: Salmonellosis at a Community Church Potluck":
 
+        _ob3_state = get_scenario_state("outbreak_lab.ob3", defaults=OB3_DEFAULTS)
+        if st.session_state.get("ob3_idx", 0) == 0 and _ob3_state.get("last_step_idx", 0) > 0:
+            st.session_state["ob3_idx"] = _ob3_state["last_step_idx"]
+
         col_brief, col_stats = st.columns([2,1])
         with col_brief:
             st.markdown("""
@@ -12599,6 +12603,24 @@ It's Sunday evening. The county health department receives 4 calls from individu
 🕐 <b>Meal time:</b> Sunday 12:30 PM
 </div>
             """, unsafe_allow_html=True)
+
+        _ob3_exp_col1, _ob3_exp_col2 = st.columns([4, 1])
+        with _ob3_exp_col2:
+            if st.button("📥 Export PDF", key="export_ob3"):
+                pdf_bytes = generate_ob3_pdf()
+                if not pdf_bytes:
+                    st.warning("Complete at least one step before exporting.")
+                else:
+                    st.session_state["_ob3_pdf_bytes"] = pdf_bytes
+                    st.session_state["_ob3_pdf_ready"] = True
+        if st.session_state.get("_ob3_pdf_ready"):
+            st.download_button(
+                "⬇️ Download investigation report",
+                data=st.session_state["_ob3_pdf_bytes"],
+                file_name=_pdf_filename("outbreak_salmonella"),
+                mime="application/pdf",
+                key="dl_ob3"
+            )
 
         ob3_step = st.radio("Jump to step:", [
             "Step 1 — Build the case definition & line list",
@@ -12703,7 +12725,7 @@ You need to systematically characterize who is sick before you can analyze the d
                 "Case definition:",
                 value=st.session_state.get("ob3_case_def_text", ""),
                 height=100,
-                placeholder="Any person who attended the First Baptist Church potluck on Sunday, with diarrhea (\u22653 loose stools/24h) and/or fever (\u226538\u00b0C), with symptom onset between Sunday noon and Tuesday midnight.",
+                placeholder="Write your complete working case definition (person, place, time, clinical criteria).",
                 key="ob3_case_def_text"
             )
             next_step_button(ob3_step, OB3_STEPS, "ob3_idx")

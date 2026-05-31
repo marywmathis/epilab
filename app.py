@@ -11805,8 +11805,14 @@ A university student health center has reported an unusual cluster of gastrointe
 </div>
             """, unsafe_allow_html=True)
 
-        _ob1_exp_col1, _ob1_exp_col2 = st.columns([4, 1])
+        _ob1_exp_col1, _ob1_exp_col2, _ob1_exp_col3 = st.columns([3, 1, 1])
         with _ob1_exp_col2:
+            if st.button("🔄 Reset", key="reset_ob1"):
+                delete_scenario_state("outbreak_lab.ob1")
+                st.session_state["ob1_idx"] = 0
+                st.session_state.pop("_ob1_pdf_ready", None)
+                st.rerun()
+        with _ob1_exp_col3:
             if st.button("📥 Export PDF", key="export_ob1"):
                 pdf_bytes = generate_ob1_pdf()
                 if not pdf_bytes:
@@ -12512,8 +12518,14 @@ A parent calls the county health department: their 7-year-old is home from schoo
 </div>
             """, unsafe_allow_html=True)
 
-        _ob2_exp_col1, _ob2_exp_col2 = st.columns([4, 1])
+        _ob2_exp_col1, _ob2_exp_col2, _ob2_exp_col3 = st.columns([3, 1, 1])
         with _ob2_exp_col2:
+            if st.button("🔄 Reset", key="reset_ob2"):
+                delete_scenario_state("outbreak_lab.ob2")
+                st.session_state["ob2_idx"] = 0
+                st.session_state.pop("_ob2_pdf_ready", None)
+                st.rerun()
+        with _ob2_exp_col3:
             if st.button("📥 Export PDF", key="export_ob2"):
                 pdf_bytes = generate_ob2_pdf()
                 if not pdf_bytes:
@@ -12941,8 +12953,14 @@ It's Sunday evening. The county health department receives 4 calls from individu
 </div>
             """, unsafe_allow_html=True)
 
-        _ob3_exp_col1, _ob3_exp_col2 = st.columns([4, 1])
+        _ob3_exp_col1, _ob3_exp_col2, _ob3_exp_col3 = st.columns([3, 1, 1])
         with _ob3_exp_col2:
+            if st.button("🔄 Reset", key="reset_ob3"):
+                delete_scenario_state("outbreak_lab.ob3")
+                st.session_state["ob3_idx"] = 0
+                st.session_state.pop("_ob3_pdf_ready", None)
+                st.rerun()
+        with _ob3_exp_col3:
             if st.button("📥 Export PDF", key="export_ob3"):
                 pdf_bytes = generate_ob3_pdf()
                 if not pdf_bytes:

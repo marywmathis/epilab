@@ -235,7 +235,7 @@ def _ob_has_user_input(current: dict, defaults: dict) -> bool:
 
 def _pdf_decision(story, key, state, questions, correct_answers, label_s, correct_s, incorrect_s):
     """Append a single decision Q/A/result block to a ReportLab story list."""
-    from reportlab.platypus import Spacer
+    from reportlab.platypus import Spacer, Paragraph
     from reportlab.lib.units import inch
     answer = state.get(key, "— Select —")
     if not answer or answer == "— Select —":

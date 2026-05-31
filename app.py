@@ -13725,27 +13725,35 @@ John,Doe,jdoe@university.edu
                                     .execute()
                                 )
                                 if existing.data:
-                                    # User exists — link to this instructor if not already linked
+                                    # User exists — link to this instructor (handles retakes too)
                                     existing_profile = existing.data[0]
-                                    if not existing_profile.get("instructor_id"):
-                                        svc.table("profiles").update({
-                                            "instructor_id": instructor_id,
-                                            "first_name": first,
-                                            "last_name": last,
-                                        }).eq("id", existing_profile["id"]).execute()
+                                    svc.table("profiles").update({
+                                        "instructor_id": instructor_id,
+                                        "first_name": first,
+                                        "last_name": last,
+                                    }).eq("id", existing_profile["id"]).execute()
                                     skip_count += 1
                                 else:
                                     # New user — send invite email
-                                    svc.auth.admin.invite_user_by_email(email, {
-                                        "data": {
-                                            "first_name": first,
-                                            "last_name": last,
-                                            "full_name": f"{first} {last}".strip(),
-                                            "instructor_id": instructor_id,
-                                            "role": "student",
-                                        }
-                                    })
-                                    success_count += 1
+                                    try:
+                                        svc.auth.admin.invite_user_by_email(email, {
+                                            "data": {
+                                                "first_name": first,
+                                                "last_name": last,
+                                                "full_name": f"{first} {last}".strip(),
+                                                "instructor_id": instructor_id,
+                                                "role": "student",
+                                            }
+                                        })
+                                        success_count += 1
+                                    except Exception as invite_err:
+                                        # Supabase says already registered but not in profiles yet
+                                        # — still counts as linked
+                                        err_str = str(invite_err).lower()
+                                        if "already registered" in err_str or "already been registered" in err_str:
+                                            skip_count += 1
+                                        else:
+                                            error_msgs.append(f"{email}: {str(invite_err)[:80]}")
                             except Exception as e:
                                 error_msgs.append(f"{email}: {str(e)[:80]}")
 
@@ -13755,7 +13763,7 @@ John,Doe,jdoe@university.edu
                         if success_count:
                             st.success(f"✅ {success_count} invitation{'s' if success_count != 1 else ''} sent.")
                         if skip_count:
-                            st.info(f"ℹ️ {skip_count} student{'s' if skip_count != 1 else ''} already have accounts and were linked to your roster.")
+                            st.info(f"ℹ️ {skip_count} student{'s' if skip_count != 1 else ''} already had accounts and {'were' if skip_count != 1 else 'was'} linked to your roster. They can log in with their existing credentials.")
                         if error_msgs:
                             st.error("Some invitations failed:")
                             for msg in error_msgs:

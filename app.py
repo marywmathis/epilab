@@ -183,6 +183,77 @@ def fetch_submitted_scenarios(prefix: str) -> dict:
         return {}
 
 
+# ── OUTBREAK LAB DEFAULTS & HELPERS ──────────────────────────────────────────
+
+OB1_DEFAULTS = {
+    "last_step_idx": 0,
+    "q1": "— Select —", "q1b": "— Select —",
+    "q2a": "— Select —",
+    "cc1": "Any person", "cc2": "Anywhere on campus",
+    "cc3": "At any point this semester", "cc4": "With any GI complaint",
+    "case_def_text": "",
+    "q3a": "— Select —",
+    "q4a": "— Select —", "ar1": 0, "ar2": 0, "q4b": "— Select —",
+    "q5a": "— Select —",
+    "cm1": False, "cm2": False, "cm3": False,
+    "cm4": False, "cm5": False, "cm6": False, "cm7": False,
+    "report_text": "",
+}
+
+OB2_DEFAULTS = {
+    "last_step_idx": 0,
+    "q1a": "— Select —", "case_def_text": "",
+    "r0": 15,
+    "q3a": "— Select —",
+    "q4a": "— Select —",
+    "q5a": "— Select —", "report_text": "",
+}
+
+OB3_DEFAULTS = {
+    "last_step_idx": 0,
+    "cd_person": "Any person who attended the First Baptist Church potluck",
+    "cd_time": "Symptom onset between Sunday noon and Tuesday midnight",
+    "cd_clinical": "Diarrhea (≥3 loose stools/24h) AND/OR fever (≥38°C) within 72h of meal",
+    "cd_lab": "Use both confirmed AND probable",
+    "q1a": "— Select —", "case_def_text": "",
+    "q2a": "— Select —",
+    "q3a": "— Select —", "ar_exp": 0.0, "ar_unexp": 0.0, "rr": 0.0,
+    "q4a": "— Select —", "q4b": "— Select —",
+    "q5a": "n/a", "report_text": "",
+}
+
+
+def _ob_has_user_input(current: dict, defaults: dict) -> bool:
+    """Return True if any value (besides last_step_idx) differs from defaults."""
+    for k, v in current.items():
+        if k == "last_step_idx":
+            continue
+        if v != defaults.get(k):
+            return True
+    return False
+
+
+def _pdf_decision(story, key, state, questions, correct_answers, label_s, correct_s, incorrect_s):
+    """Append a single decision Q/A/result block to a ReportLab story list."""
+    from reportlab.platypus import Spacer
+    from reportlab.lib.units import inch
+    answer = state.get(key, "— Select —")
+    if not answer or answer == "— Select —":
+        return
+    q_text = questions.get(key, key)
+    correct = correct_answers.get(key, "")
+    is_correct = (answer == correct)
+    story.append(Paragraph(f"<b>{_pdf_escape(q_text)}</b>", label_s))
+    story.append(Paragraph(f"Your answer: {_pdf_escape(answer)}", label_s))
+    if is_correct:
+        story.append(Paragraph("Result: Correct ✓", correct_s))
+    else:
+        story.append(Paragraph("Result: Incorrect ✗", incorrect_s))
+        story.append(Paragraph(f"Correct answer: {_pdf_escape(correct)}", correct_s))
+    story.append(Spacer(1, 0.05 * inch))
+
+
+
 def generate_practice_confounding_pdf(scenarios_list) -> bytes:
     """
     Generate a PDF of the student's submitted Practice Confounding answers.

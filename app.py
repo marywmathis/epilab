@@ -12772,6 +12772,16 @@ You need to systematically characterize who is sick before you can analyze the d
                 st.error("❌ Biological plausibility matters: Salmonella's primary vehicles are poultry, eggs, and egg-containing dishes. The line list shows these items prominently in cases.")
 
 
+            _ob3_s1 = {**_ob3_state,
+                "last_step_idx": st.session_state.get("ob3_idx", 0),
+                "cd_person": st.session_state.get("ob3_cd_person", _ob3_state.get("cd_person", OB3_DEFAULTS["cd_person"])),
+                "cd_time": st.session_state.get("ob3_cd_time", _ob3_state.get("cd_time", OB3_DEFAULTS["cd_time"])),
+                "cd_clinical": st.session_state.get("ob3_cd_clinical", _ob3_state.get("cd_clinical", OB3_DEFAULTS["cd_clinical"])),
+                "cd_lab": st.session_state.get("ob3_cd_lab", _ob3_state.get("cd_lab", OB3_DEFAULTS["cd_lab"])),
+                "q1a": st.session_state.get("ob3_q1a", _ob3_state.get("q1a", "— Select —")),
+            }
+            if _ob_has_user_input(_ob3_s1, OB3_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob3", _ob3_s1)
             next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 2 — Epidemic curve & incubation period estimation":
@@ -12840,6 +12850,12 @@ This technique is used in investigations where the exposure time is unknown.
                 """)
 
 
+            _ob3_s2 = {**_ob3_state,
+                "last_step_idx": st.session_state.get("ob3_idx", 0),
+                "q2a": st.session_state.get("ob3_q2a", _ob3_state.get("q2a", "— Select —")),
+            }
+            if _ob_has_user_input(_ob3_s2, OB3_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob3", _ob3_s2)
             next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 3 — Food-specific attack rates (calculate)":
@@ -12937,6 +12953,15 @@ An RR of {correct_rr} means students who ate the chicken salad were {correct_rr}
                         st.info("Check your arithmetic — divide sick ÷ total (not sick + well) to get the attack rate.")
 
 
+            _ob3_s3 = {**_ob3_state,
+                "last_step_idx": st.session_state.get("ob3_idx", 0),
+                "q3a": st.session_state.get("ob3_q3a", _ob3_state.get("q3a", "— Select —")),
+                "ar_exp": float(st.session_state.get("ob3_ar_exp", _ob3_state.get("ar_exp", 0.0))),
+                "ar_unexp": float(st.session_state.get("ob3_ar_unexp", _ob3_state.get("ar_unexp", 0.0))),
+                "rr": float(st.session_state.get("ob3_rr", _ob3_state.get("rr", 0.0))),
+            }
+            if _ob_has_user_input(_ob3_s3, OB3_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob3", _ob3_s3)
             next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 4 — Environmental investigation":
@@ -12999,6 +13024,13 @@ This is how local foodborne investigations become national — the church potluc
                     st.error("❌ When a commercially distributed product is the source, the investigation extends beyond the local outbreak. Other communities may be at risk from the same supplier.")
 
 
+            _ob3_s4 = {**_ob3_state,
+                "last_step_idx": st.session_state.get("ob3_idx", 0),
+                "q4a": st.session_state.get("ob3_q4a", _ob3_state.get("q4a", "— Select —")),
+                "q4b": st.session_state.get("ob3_q4b", _ob3_state.get("q4b", "— Select —")),
+            }
+            if _ob_has_user_input(_ob3_s4, OB3_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob3", _ob3_s4)
             next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 5 — Control, report & prevent recurrence":

@@ -556,6 +556,189 @@ def generate_practice_screening_pdf(scenarios_list) -> bytes:
 
 
 
+
+
+def generate_ob2_pdf() -> bytes:
+    """PDF for Outbreak Lab Scenario 2 — Measles in an Under-Vaccinated Elementary School."""
+    state = get_scenario_state("outbreak_lab.ob2", defaults=OB2_DEFAULTS)
+    if not _ob_has_user_input(state, OB2_DEFAULTS):
+        return b""
+    from io import BytesIO
+    from datetime import datetime
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib.colors import HexColor
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
+    from reportlab.lib.enums import TA_LEFT
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter,
+        leftMargin=0.75*inch, rightMargin=0.75*inch,
+        topMargin=0.75*inch, bottomMargin=0.75*inch,
+        title="EpiLab — Outbreak Investigation Report: Measles")
+    base = getSampleStyleSheet()
+    title_s = ParagraphStyle("OB2Title", parent=base["Title"],    fontSize=18, textColor=HexColor("#1f2937"), spaceAfter=6)
+    sub_s   = ParagraphStyle("OB2Sub",   parent=base["Heading2"], fontSize=13, textColor=HexColor("#111827"), spaceBefore=14, spaceAfter=6, alignment=TA_LEFT)
+    meta_s  = ParagraphStyle("OB2Meta",  parent=base["Normal"],   fontSize=10, textColor=HexColor("#6b7280"), spaceAfter=4)
+    body_s  = ParagraphStyle("OB2Body",  parent=base["BodyText"], fontSize=10, textColor=HexColor("#1f2937"), spaceAfter=6, leading=14)
+    label_s = ParagraphStyle("OB2Label", parent=base["BodyText"], fontSize=10, textColor=HexColor("#374151"), spaceAfter=2, leading=13)
+    ok_s    = ParagraphStyle("OB2Ok",    parent=base["BodyText"], fontSize=10, textColor=HexColor("#065f46"), spaceAfter=2, leading=13)
+    err_s   = ParagraphStyle("OB2Err",   parent=base["BodyText"], fontSize=10, textColor=HexColor("#991b1b"), spaceAfter=2, leading=13)
+    draft_s = ParagraphStyle("OB2Draft", parent=base["BodyText"], fontSize=10, textColor=HexColor("#1e3a5f"), spaceAfter=6, leading=14, leftIndent=12)
+
+    student_name = st.session_state.get("user_full_name") or st.session_state.get("user_email") or "Student"
+    story = []
+    story.append(Paragraph("EpiLab Interactive — Outbreak Investigation Report", title_s))
+    story.append(Paragraph("<b>Scenario:</b> Measles in an Under-Vaccinated Elementary School", meta_s))
+    story.append(Paragraph(f"<b>Student:</b> {_pdf_escape(student_name)}", meta_s))
+    story.append(Paragraph(f"<b>Date:</b> {datetime.now().strftime('%B %d, %Y')}", meta_s))
+    story.append(Spacer(1, 0.1*inch))
+    story.append(Paragraph("Outbreak brief", sub_s))
+    story.append(Paragraph("7 initial cases (growing) | 1 hospitalization | 0 deaths | Elementary school | 72% MMR coverage", body_s))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=HexColor("#d1d5db"), spaceAfter=8))
+
+    QUESTIONS = {
+        "q1a": "Decision 1A: How long was the index case potentially infectious at school before diagnosis?",
+        "q3a": "Decision 3A: How should contacts be classified by risk?",
+        "q4a": "Decision 4A: Should the school be closed?",
+        "q5a": "Decision 5A: What policy change would most prevent future outbreaks?",
+    }
+    CORRECT = {
+        "q1a": "3 days — infectious during the prodrome (4 days before to 4 days after rash onset)",
+        "q3a": "Duration and proximity determine risk — classroom and gym (prolonged, enclosed) = highest",
+        "q4a": "No — targeted exclusion of unvaccinated students is more proportionate and maintains education",
+        "q5a": "Enforce existing vaccination requirements and restrict non-medical exemptions",
+    }
+
+    story.append(Paragraph("Step 1 — Verify diagnosis and chain of infection", sub_s))
+    _pdf_decision(story, "q1a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 2 — Herd immunity and the math behind the outbreak", sub_s))
+    r0_used = state.get("r0", 15)
+    import math as _m2
+    hit_used = round((1 - 1/r0_used) * 100, 1) if r0_used else 93.3
+    story.append(Paragraph(f"<b>R₀ used:</b> {r0_used} → Herd immunity threshold = {hit_used}% | School coverage = 72% → Rₑ = {round(r0_used*(1-72/100),2)}", label_s))
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 3 — Contact tracing and case finding", sub_s))
+    _pdf_decision(story, "q3a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 4 — Control measures", sub_s))
+    _pdf_decision(story, "q4a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 5 — Prevention and policy implications", sub_s))
+    _pdf_decision(story, "q5a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    if state.get("report_text","").strip():
+        story.append(Paragraph("<b>Investigation report:</b>", label_s))
+        story.append(Paragraph(_pdf_escape(state["report_text"]).replace("\n", "<br/>"), draft_s))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
+
+
+def generate_ob1_pdf() -> bytes:
+    """PDF for Outbreak Lab Scenario 1 — Norovirus at a University Dining Hall."""
+    state = get_scenario_state("outbreak_lab.ob1", defaults=OB1_DEFAULTS)
+    if not _ob_has_user_input(state, OB1_DEFAULTS):
+        return b""
+    from io import BytesIO
+    from datetime import datetime
+    from reportlab.lib.pagesizes import letter
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    from reportlab.lib.units import inch
+    from reportlab.lib.colors import HexColor
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
+    from reportlab.lib.enums import TA_LEFT
+
+    buffer = BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter,
+        leftMargin=0.75*inch, rightMargin=0.75*inch,
+        topMargin=0.75*inch, bottomMargin=0.75*inch,
+        title="EpiLab — Outbreak Investigation Report: Norovirus")
+    base = getSampleStyleSheet()
+    title_s = ParagraphStyle("OB1Title", parent=base["Title"],    fontSize=18, textColor=HexColor("#1f2937"), spaceAfter=6)
+    sub_s   = ParagraphStyle("OB1Sub",   parent=base["Heading2"], fontSize=13, textColor=HexColor("#111827"), spaceBefore=14, spaceAfter=6, alignment=TA_LEFT)
+    meta_s  = ParagraphStyle("OB1Meta",  parent=base["Normal"],   fontSize=10, textColor=HexColor("#6b7280"), spaceAfter=4)
+    body_s  = ParagraphStyle("OB1Body",  parent=base["BodyText"], fontSize=10, textColor=HexColor("#1f2937"), spaceAfter=6, leading=14)
+    label_s = ParagraphStyle("OB1Label", parent=base["BodyText"], fontSize=10, textColor=HexColor("#374151"), spaceAfter=2, leading=13)
+    ok_s    = ParagraphStyle("OB1Ok",    parent=base["BodyText"], fontSize=10, textColor=HexColor("#065f46"), spaceAfter=2, leading=13)
+    err_s   = ParagraphStyle("OB1Err",   parent=base["BodyText"], fontSize=10, textColor=HexColor("#991b1b"), spaceAfter=2, leading=13)
+    draft_s = ParagraphStyle("OB1Draft", parent=base["BodyText"], fontSize=10, textColor=HexColor("#1e3a5f"), spaceAfter=6, leading=14, leftIndent=12)
+
+    student_name = st.session_state.get("user_full_name") or st.session_state.get("user_email") or "Student"
+    story = []
+    story.append(Paragraph("EpiLab Interactive — Outbreak Investigation Report", title_s))
+    story.append(Paragraph("<b>Scenario:</b> Norovirus at a University Dining Hall", meta_s))
+    story.append(Paragraph(f"<b>Student:</b> {_pdf_escape(student_name)}", meta_s))
+    story.append(Paragraph(f"<b>Date:</b> {datetime.now().strftime('%B %d, %Y')}", meta_s))
+    story.append(Spacer(1, 0.1*inch))
+    story.append(Paragraph("Outbreak brief", sub_s))
+    story.append(Paragraph("47 cases | 3 hospitalizations | 0 deaths | University campus | Tuesday dinner exposure", body_s))
+    story.append(HRFlowable(width="100%", thickness=0.5, color=HexColor("#d1d5db"), spaceAfter=8))
+
+    QUESTIONS = {
+        "q1":  "Decision 1A: Does an outbreak exist?",
+        "q1b": "Decision 1B: What agent does the clinical picture most suggest?",
+        "q2a": "Decision 2A: How sensitive should your initial case definition be?",
+        "q3a": "Decision 3A: What transmission pattern does the epidemic curve represent?",
+        "q4a": "Decision 4A: Which food item is the most likely specific vehicle?",
+        "q5a": "Decision 5A: The two new Thursday cases indicate what?",
+    }
+    CORRECT = {
+        "q1":  "Yes — 47 cases vs. expected 2–3/week clearly exceeds baseline",
+        "q1b": "Norovirus (onset 12–48 hours, rapid spread, projectile vomiting)",
+        "q2a": "Moderate (vomiting OR ≥3 loose stools within 72h of Tuesday dinner) — balances sensitivity and specificity",
+        "q3a": "Point source — single peak, all cases within one incubation period range",
+        "q4a": "Caesar salad dressing — strong RR, biologically plausible, more specific than greens",
+        "q5a": "Person-to-person transmission has begun — secondary spread",
+    }
+
+    story.append(Paragraph("Step 1 — Verify the diagnosis and establish the outbreak", sub_s))
+    _pdf_decision(story, "q1",  state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    _pdf_decision(story, "q1b", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 2 — Construct a case definition", sub_s))
+    _pdf_decision(story, "q2a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    cd_parts = [state.get("cc1",""), state.get("cc2",""), state.get("cc3",""), state.get("cc4","")]
+    if any(p != OB1_DEFAULTS.get(k,"") for p, k in zip(cd_parts, ["cc1","cc2","cc3","cc4"])):
+        story.append(Paragraph(f"<b>Case definition builder:</b> {_pdf_escape(' | '.join(p for p in cd_parts if p))}", label_s))
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 3 — Epidemic curve and descriptive epidemiology", sub_s))
+    _pdf_decision(story, "q3a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 4 — Attack rates and hypothesis testing", sub_s))
+    _pdf_decision(story, "q4a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    if state.get("ar1", 0) > 0 or state.get("ar2", 0) > 0:
+        story.append(Paragraph(f"<b>Overall attack rate calculation:</b> {state.get('ar1',0)} sick / {state.get('ar2',0)} total", label_s))
+    story.append(Spacer(1, 0.08*inch))
+
+    story.append(Paragraph("Step 5 — Control measures and resolution", sub_s))
+    _pdf_decision(story, "q5a", state, QUESTIONS, CORRECT, label_s, ok_s, err_s)
+    checked = [lbl for lbl, key in [
+        ("Remove Caesar dressing", "cm1"), ("Close university", "cm2"),
+        ("Exclude ill food handlers", "cm3"), ("Reinforce hand hygiene", "cm4"),
+        ("Guidance to ill students", "cm5"), ("Enhanced disinfection", "cm6"),
+        ("Test all food items", "cm7"),
+    ] if state.get(key)]
+    if checked:
+        story.append(Paragraph(f"<b>Control measures selected:</b> {_pdf_escape(', '.join(checked))}", label_s))
+    if state.get("report_text","").strip():
+        story.append(Paragraph("<b>Investigation report:</b>", label_s))
+        story.append(Paragraph(_pdf_escape(state["report_text"]).replace("\n", "<br/>"), draft_s))
+
+    doc.build(story)
+    buffer.seek(0)
+    return buffer.read()
+
+
 def generate_ob3_pdf() -> bytes:
     """PDF for Outbreak Lab Scenario 3 — Salmonellosis at a Community Church Potluck."""
     state = get_scenario_state("outbreak_lab.ob3", defaults=OB3_DEFAULTS)
@@ -11599,6 +11782,10 @@ You are an Epidemic Intelligence Service (EIS) officer. Three outbreaks have bee
     # ════════════════════════════════════════════════════════════════
     if ob_scenario == "🍽️ Scenario 1: Norovirus at a University Dining Hall":
 
+        _ob1_state = get_scenario_state("outbreak_lab.ob1", defaults=OB1_DEFAULTS)
+        if st.session_state.get("ob1_idx", 0) == 0 and _ob1_state.get("last_step_idx", 0) > 0:
+            st.session_state["ob1_idx"] = _ob1_state["last_step_idx"]
+
         col_brief, col_stats = st.columns([2,1])
         with col_brief:
             st.markdown("""
@@ -11617,6 +11804,24 @@ A university student health center has reported an unusual cluster of gastrointe
 🦠 <b>Suspected agent:</b> Unknown
 </div>
             """, unsafe_allow_html=True)
+
+        _ob1_exp_col1, _ob1_exp_col2 = st.columns([4, 1])
+        with _ob1_exp_col2:
+            if st.button("📥 Export PDF", key="export_ob1"):
+                pdf_bytes = generate_ob1_pdf()
+                if not pdf_bytes:
+                    st.warning("Complete at least one step before exporting.")
+                else:
+                    st.session_state["_ob1_pdf_bytes"] = pdf_bytes
+                    st.session_state["_ob1_pdf_ready"] = True
+        if st.session_state.get("_ob1_pdf_ready"):
+            st.download_button(
+                "⬇️ Download investigation report",
+                data=st.session_state["_ob1_pdf_bytes"],
+                file_name=_pdf_filename("outbreak_norovirus"),
+                mime="application/pdf",
+                key="dl_ob1"
+            )
 
         ob1_step = st.radio("Jump to step:", [
             "Step 1 — Verify the diagnosis & establish the outbreak",
@@ -11655,12 +11860,11 @@ The student health center has seen 47 students with vomiting and diarrhea in 48 
 This is what outbreak investigation looks like before all the data is in: incomplete, time-pressured, and full of stakeholders with different priorities. You make the best call you can with what you have.
                 """)
 
-            q1 = st.radio("**Decision 1A:** Based on the information above, does an outbreak exist?", [
-                "— Select —",
-                "Yes — 47 cases vs. expected 2–3/week clearly exceeds baseline",
-                "No — wait for lab results before declaring an outbreak",
-                "Maybe — need to interview students first",
-            ], key="ob1_q1")
+            _ob1_q1_opts = ["— Select —", "Yes — 47 cases vs. expected 2–3/week clearly exceeds baseline", "No — wait for lab results before declaring an outbreak", "Maybe — need to interview students first"]
+            q1 = st.radio("**Decision 1A:** Based on the information above, does an outbreak exist?",
+                _ob1_q1_opts,
+                index=_ob1_q1_opts.index(_ob1_state["q1"]) if _ob1_state.get("q1") in _ob1_q1_opts else 0,
+                key="ob1_q1")
 
             if q1 == "Yes — 47 cases vs. expected 2–3/week clearly exceeds baseline":
                 st.success("""
@@ -11689,13 +11893,11 @@ When the lab results finally arrive — confirming what your clinical picture al
 
             if q1 != "— Select —":
                 st.divider()
-                q1b = st.radio("**Decision 1B:** What agent does the clinical picture most suggest?", [
-                    "— Select —",
-                    "Staphylococcus aureus toxin (onset 2–6 hours)",
-                    "Norovirus (onset 12–48 hours, rapid spread, projectile vomiting)",
-                    "Salmonella (onset 6–72 hours, bloody diarrhea common)",
-                    "E. coli O157 (onset 1–10 days, bloody diarrhea, HUS risk)",
-                ], key="ob1_q1b")
+                _ob1_q1b_opts = ["— Select —", "Staphylococcus aureus toxin (onset 2–6 hours)", "Norovirus (onset 12–48 hours, rapid spread, projectile vomiting)", "Salmonella (onset 6–72 hours, bloody diarrhea common)", "E. coli O157 (onset 1–10 days, bloody diarrhea, HUS risk)"]
+                q1b = st.radio("**Decision 1B:** What agent does the clinical picture most suggest?",
+                    _ob1_q1b_opts,
+                    index=_ob1_q1b_opts.index(_ob1_state["q1b"]) if _ob1_state.get("q1b") in _ob1_q1b_opts else 0,
+                    key="ob1_q1b")
 
                 if q1b == "Norovirus (onset 12–48 hours, rapid spread, projectile vomiting)":
                     st.success("""
@@ -11707,7 +11909,13 @@ When the lab results finally arrive — confirming what your clinical picture al
                     """)
 
         # ── STEP 2 ──
-
+            _ob1_s1 = {**_ob1_state,
+                "last_step_idx": st.session_state.get("ob1_idx", 0),
+                "q1": st.session_state.get("ob1_q1", "— Select —"),
+                "q1b": st.session_state.get("ob1_q1b", "— Select —"),
+            }
+            if _ob_has_user_input(_ob1_s1, OB1_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob1", _ob1_s1)
             next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 2 — Construct a case definition":
@@ -11723,12 +11931,11 @@ You currently have:
             """)
             st.info("💡 **Step 4 of 10:** Construct a working case definition")
 
-            q2a = st.radio("**Decision 2A:** How sensitive should your initial case definition be?", [
-                "— Select —",
-                "Narrow (confirmed lab-positive only) — precise but will miss most cases",
-                "Broad (any GI symptoms after Tuesday dinner) — sensitive, captures more cases early",
-                "Moderate (vomiting OR ≥3 loose stools within 72h of Tuesday dinner) — balances sensitivity and specificity",
-            ], key="ob1_q2a")
+            _ob1_q2a_opts = ["— Select —", "Narrow (confirmed lab-positive only) — precise but will miss most cases", "Broad (any GI symptoms after Tuesday dinner) — sensitive, captures more cases early", "Moderate (vomiting OR ≥3 loose stools within 72h of Tuesday dinner) — balances sensitivity and specificity"]
+            q2a = st.radio("**Decision 2A:** How sensitive should your initial case definition be?",
+                _ob1_q2a_opts,
+                index=_ob1_q2a_opts.index(_ob1_state["q2a"]) if _ob1_state.get("q2a") in _ob1_q2a_opts else 0,
+                key="ob1_q2a")
 
             if q2a == "Moderate (vomiting OR ≥3 loose stools within 72h of Tuesday dinner) — balances sensitivity and specificity":
                 st.success("""
@@ -11755,14 +11962,14 @@ You build your case file using only the 5 lab-confirmed cases. Your attack rate 
                 st.markdown("#### ✏️ Build Your Case Definition")
                 st.markdown("Using the components below, construct the full working case definition:")
 
-                cc_who = st.selectbox("Person:", ["Any person", "Student or staff member", "Student only"], key="ob1_cc1")
-                cc_where = st.selectbox("Place:", ["Anywhere on campus", "Who ate in the main dining hall", "Who ate any campus meal"], key="ob1_cc2")
-                cc_when = st.selectbox("Time:", ["At any point this semester", "On Tuesday evening (Nov 5)", "Between Nov 4–7"], key="ob1_cc3")
-                cc_clinical = st.selectbox("Clinical:", [
-                    "With any GI complaint",
-                    "With vomiting OR ≥3 loose stools within 72 hours of the meal",
-                    "With lab-confirmed norovirus",
-                ], key="ob1_cc4")
+                _ob1_cc1_opts = ["Any person", "Student or staff member", "Student only"]
+                _ob1_cc2_opts = ["Anywhere on campus", "Who ate in the main dining hall", "Who ate any campus meal"]
+                _ob1_cc3_opts = ["At any point this semester", "On Tuesday evening (Nov 5)", "Between Nov 4–7"]
+                _ob1_cc4_opts = ["With any GI complaint", "With vomiting OR ≥3 loose stools within 72 hours of the meal", "With lab-confirmed norovirus"]
+                cc_who = st.selectbox("Person:", _ob1_cc1_opts, index=_ob1_cc1_opts.index(_ob1_state["cc1"]) if _ob1_state.get("cc1") in _ob1_cc1_opts else 0, key="ob1_cc1")
+                cc_where = st.selectbox("Place:", _ob1_cc2_opts, index=_ob1_cc2_opts.index(_ob1_state["cc2"]) if _ob1_state.get("cc2") in _ob1_cc2_opts else 0, key="ob1_cc2")
+                cc_when = st.selectbox("Time:", _ob1_cc3_opts, index=_ob1_cc3_opts.index(_ob1_state["cc3"]) if _ob1_state.get("cc3") in _ob1_cc3_opts else 0, key="ob1_cc3")
+                cc_clinical = st.selectbox("Clinical:", _ob1_cc4_opts, index=_ob1_cc4_opts.index(_ob1_state["cc4"]) if _ob1_state.get("cc4") in _ob1_cc4_opts else 0, key="ob1_cc4")
 
                 if cc_who and cc_where and cc_when and cc_clinical:
                     st.info(f"""
@@ -11777,7 +11984,16 @@ You build your case file using only the 5 lab-confirmed cases. Your attack rate 
                         st.info("This definition will work for now. Note your choices — they affect who gets counted as a case.")
 
         # ── STEP 3 ──
-
+            _ob1_s2 = {**_ob1_state,
+                "last_step_idx": st.session_state.get("ob1_idx", 0),
+                "q2a": st.session_state.get("ob1_q2a", "— Select —"),
+                "cc1": st.session_state.get("ob1_cc1", OB1_DEFAULTS["cc1"]),
+                "cc2": st.session_state.get("ob1_cc2", OB1_DEFAULTS["cc2"]),
+                "cc3": st.session_state.get("ob1_cc3", OB1_DEFAULTS["cc3"]),
+                "cc4": st.session_state.get("ob1_cc4", OB1_DEFAULTS["cc4"]),
+            }
+            if _ob_has_user_input(_ob1_s2, OB1_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob1", _ob1_s2)
             next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 3 — Epidemic curve & descriptive epidemiology":
@@ -11860,13 +12076,11 @@ You have now interviewed 89 students who ate Tuesday dinner. 47 meet your case d
                 """)
 
             st.divider()
-            q3a = st.radio("**Decision 3A:** Based on the epidemic curve, what transmission pattern does this represent?", [
-                "— Select —",
-                "Propagated (person-to-person) — multiple waves",
-                "Point source — single peak, all cases within one incubation period range",
-                "Endemic — stable background rate",
-                "Mixed — initial point source with secondary spread",
-            ], key="ob1_q3a")
+            _ob1_q3a_opts = ["— Select —", "Propagated (person-to-person) — multiple waves", "Point source — single peak, all cases within one incubation period range", "Endemic — stable background rate", "Mixed — initial point source with secondary spread"]
+            q3a = st.radio("**Decision 3A:** Based on the epidemic curve, what transmission pattern does this represent?",
+                _ob1_q3a_opts,
+                index=_ob1_q3a_opts.index(_ob1_state["q3a"]) if _ob1_state.get("q3a") in _ob1_q3a_opts else 0,
+                key="ob1_q3a")
 
             if q3a == "Point source — single peak, all cases within one incubation period range":
                 st.success("""
@@ -11915,7 +12129,12 @@ You have now interviewed 89 students who ate Tuesday dinner. 47 meet your case d
 
 
         # ── STEP 4 ──
-
+            _ob1_s3 = {**_ob1_state,
+                "last_step_idx": st.session_state.get("ob1_idx", 0),
+                "q3a": st.session_state.get("ob1_q3a", "— Select —"),
+            }
+            if _ob_has_user_input(_ob1_s3, OB1_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob1", _ob1_s3)
             next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 4 — Generate & test hypotheses (attack rates)":
@@ -12059,13 +12278,11 @@ The vehicles are not the most *popular* foods — they're the foods where eating
                             st.error("❌ Absolute counts and overall popularity are misleading. The defining pattern of a vehicle: people who ate it got sick at a much higher rate than people who didn't eat it. High AR exposed + low AR unexposed = high RR = strong vehicle signal.")
 
             st.divider()
-            q4a = st.radio("**Decision 4A:** Based on your analysis, which food item is the most likely specific vehicle?", [
-                "— Select —",
-                "Hot entrée (pasta) — most students ate it",
-                "Caesar salad dressing — strong RR, biologically plausible, more specific than greens",
-                "Salad bar (mixed greens) — highest RR in the table",
-                "Soft-serve ice cream — high absolute case count",
-            ], key="ob1_q4a")
+            _ob1_q4a_opts = ["— Select —", "Hot entrée (pasta) — most students ate it", "Caesar salad dressing — strong RR, biologically plausible, more specific than greens", "Salad bar (mixed greens) — highest RR in the table", "Soft-serve ice cream — high absolute case count"]
+            q4a = st.radio("**Decision 4A:** Based on your analysis, which food item is the most likely specific vehicle?",
+                _ob1_q4a_opts,
+                index=_ob1_q4a_opts.index(_ob1_state["q4a"]) if _ob1_state.get("q4a") in _ob1_q4a_opts else 0,
+                key="ob1_q4a")
 
             if q4a == "Caesar salad dressing — strong RR, biologically plausible, more specific than greens":
                 st.success("""
@@ -12086,9 +12303,9 @@ The vehicles are not the most *popular* foods — they're the foods where eating
                 st.markdown("The outbreak brief told you: **47 cases** among **89 students** who ate Tuesday dinner.")
                 col_ar1, col_ar2 = st.columns(2)
                 with col_ar1:
-                    total_sick_input = st.number_input("Total sick (cases):", min_value=0, max_value=200, value=0, key="ob1_ar1")
+                    total_sick_input = st.number_input("Total sick (cases):", min_value=0, max_value=200, value=int(_ob1_state.get("ar1", 0)), key="ob1_ar1")
                 with col_ar2:
-                    total_exposed_input = st.number_input("Total who ate Tuesday dinner:", min_value=0, max_value=500, value=0, key="ob1_ar2")
+                    total_exposed_input = st.number_input("Total who ate Tuesday dinner:", min_value=0, max_value=500, value=int(_ob1_state.get("ar2", 0)), key="ob1_ar2")
 
                 if total_exposed_input > 0 and total_sick_input > 0:
                     overall_ar = round(total_sick_input / total_exposed_input * 100, 1)
@@ -12112,7 +12329,14 @@ The vehicles are not the most *popular* foods — they're the foods where eating
 
 
         # ── STEP 5 ──
-
+            _ob1_s4 = {**_ob1_state,
+                "last_step_idx": st.session_state.get("ob1_idx", 0),
+                "q4a": st.session_state.get("ob1_q4a", "— Select —"),
+                "ar1": int(st.session_state.get("ob1_ar1", 0)),
+                "ar2": int(st.session_state.get("ob1_ar2", 0)),
+            }
+            if _ob_has_user_input(_ob1_s4, OB1_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob1", _ob1_s4)
             next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 5 — Control measures & resolution":
@@ -12127,12 +12351,11 @@ The vehicles are not the most *popular* foods — they're the foods where eating
 **Current situation:** 47 cases, 3 hospitalizations (rehydration only, all recovered). No deaths. Two new cases reported Thursday from students who did not eat Tuesday but had contact with ill roommates.
             """)
 
-            q5a = st.radio("**Decision 5A:** The two new Thursday cases (contact with ill roommates) indicate what?", [
-                "— Select —",
-                "The outbreak is over — these are unrelated",
-                "Person-to-person transmission has begun — secondary spread",
-                "The Caesar dressing is still being served — still point-source exposure",
-            ], key="ob1_q5a")
+            _ob1_q5a_opts = ["— Select —", "The outbreak is over — these are unrelated", "Person-to-person transmission has begun — secondary spread", "The Caesar dressing is still being served — still point-source exposure"]
+            q5a = st.radio("**Decision 5A:** The two new Thursday cases (contact with ill roommates) indicate what?",
+                _ob1_q5a_opts,
+                index=_ob1_q5a_opts.index(_ob1_state["q5a"]) if _ob1_state.get("q5a") in _ob1_q5a_opts else 0,
+                key="ob1_q5a")
 
             if q5a == "Person-to-person transmission has begun — secondary spread":
                 st.success("""
@@ -12152,13 +12375,13 @@ You stand down active surveillance and tell residential life "we're past the pea
             if q5a != "— Select —":
                 st.divider()
                 st.markdown("#### Select ALL appropriate control measures (check all that apply):")
-                cm1 = st.checkbox("Remove Caesar dressing from service immediately", key="ob1_cm1")
-                cm2 = st.checkbox("Close the entire university", key="ob1_cm2")
-                cm3 = st.checkbox("Exclude ill food handlers from work until 48h symptom-free", key="ob1_cm3")
-                cm4 = st.checkbox("Reinforce hand hygiene among all dining staff", key="ob1_cm4")
-                cm5 = st.checkbox("Issue guidance to ill students on isolation and hygiene", key="ob1_cm5")
-                cm6 = st.checkbox("Enhance cleaning and disinfection of dining surfaces", key="ob1_cm6")
-                cm7 = st.checkbox("Test all food items in the dining hall", key="ob1_cm7")
+                cm1 = st.checkbox("Remove Caesar dressing from service immediately", value=bool(_ob1_state.get("cm1", False)), key="ob1_cm1")
+                cm2 = st.checkbox("Close the entire university", value=bool(_ob1_state.get("cm2", False)), key="ob1_cm2")
+                cm3 = st.checkbox("Exclude ill food handlers from work until 48h symptom-free", value=bool(_ob1_state.get("cm3", False)), key="ob1_cm3")
+                cm4 = st.checkbox("Reinforce hand hygiene among all dining staff", value=bool(_ob1_state.get("cm4", False)), key="ob1_cm4")
+                cm5 = st.checkbox("Issue guidance to ill students on isolation and hygiene", value=bool(_ob1_state.get("cm5", False)), key="ob1_cm5")
+                cm6 = st.checkbox("Enhance cleaning and disinfection of dining surfaces", value=bool(_ob1_state.get("cm6", False)), key="ob1_cm6")
+                cm7 = st.checkbox("Test all food items in the dining hall", value=bool(_ob1_state.get("cm7", False)), key="ob1_cm7")
 
                 if st.button("Submit control measures", key="ob1_cm_submit"):
                     score = sum([cm1, cm3, cm4, cm5, cm6])
@@ -12240,17 +12463,35 @@ This scenario gave you a clean signal because it's your first one. Later scenari
             st.markdown("#### 📝 Final outbreak investigation report")
             ob1_report_text = st.text_area(
                 "Your outbreak report:",
-                value=st.session_state.get("ob1_report_text", ""),
+                value=_ob1_state.get("report_text", ""),
                 height=200,
                 placeholder="Background: ...\n\nMethods: ...\n\nResults: ...\n\nConclusions: ...\n\nRecommendations: ...",
                 key="ob1_report_text"
             )
+            _ob1_s5 = {**_ob1_state,
+                "last_step_idx": st.session_state.get("ob1_idx", 0),
+                "q5a": st.session_state.get("ob1_q5a", "— Select —"),
+                "cm1": bool(st.session_state.get("ob1_cm1", False)),
+                "cm2": bool(st.session_state.get("ob1_cm2", False)),
+                "cm3": bool(st.session_state.get("ob1_cm3", False)),
+                "cm4": bool(st.session_state.get("ob1_cm4", False)),
+                "cm5": bool(st.session_state.get("ob1_cm5", False)),
+                "cm6": bool(st.session_state.get("ob1_cm6", False)),
+                "cm7": bool(st.session_state.get("ob1_cm7", False)),
+                "report_text": st.session_state.get("ob1_report_text", ""),
+            }
+            if _ob_has_user_input(_ob1_s5, OB1_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob1", _ob1_s5)
             next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
     # ════════════════════════════════════════════════════════════════
     # SCENARIO 2: MEASLES
     # ════════════════════════════════════════════════════════════════
     elif ob_scenario == "📚 Scenario 2: Measles in an Under-Vaccinated Elementary School":
+
+        _ob2_state = get_scenario_state("outbreak_lab.ob2", defaults=OB2_DEFAULTS)
+        if st.session_state.get("ob2_idx", 0) == 0 and _ob2_state.get("last_step_idx", 0) > 0:
+            st.session_state["ob2_idx"] = _ob2_state["last_step_idx"]
 
         col_brief, col_stats = st.columns([2,1])
         with col_brief:
@@ -12270,6 +12511,24 @@ A parent calls the county health department: their 7-year-old is home from schoo
 💉 <b>MMR coverage:</b> 72%
 </div>
             """, unsafe_allow_html=True)
+
+        _ob2_exp_col1, _ob2_exp_col2 = st.columns([4, 1])
+        with _ob2_exp_col2:
+            if st.button("📥 Export PDF", key="export_ob2"):
+                pdf_bytes = generate_ob2_pdf()
+                if not pdf_bytes:
+                    st.warning("Complete at least one step before exporting.")
+                else:
+                    st.session_state["_ob2_pdf_bytes"] = pdf_bytes
+                    st.session_state["_ob2_pdf_ready"] = True
+        if st.session_state.get("_ob2_pdf_ready"):
+            st.download_button(
+                "⬇️ Download investigation report",
+                data=st.session_state["_ob2_pdf_bytes"],
+                file_name=_pdf_filename("outbreak_measles"),
+                mime="application/pdf",
+                key="dl_ob2"
+            )
 
         ob2_step = st.radio("Jump to step:", [
             "Step 1 — Verify diagnosis & chain of infection",
@@ -12307,13 +12566,11 @@ A parent calls the county health department: their 7-year-old is home from schoo
 This is measles in 2026: highly preventable, scientifically straightforward, and politically charged. Your call is medical and epidemiologic. The implementation will be neither.
                 """)
 
-            q1 = st.radio("**Decision 1A:** How long was the index case potentially infectious at school before diagnosis?", [
-                "— Select —",
-                "0 days — measles is only infectious after rash appears",
-                "3 days — infectious during the prodrome (4 days before to 4 days after rash onset)",
-                "Only on the day of rash — maximum infectiousness",
-                "10 days — for the full incubation period",
-            ], key="ob2_q1a")
+            _ob2_q1a_opts = ["— Select —", "0 days — measles is only infectious after rash appears", "3 days — infectious during the prodrome (4 days before to 4 days after rash onset)", "Only on the day of rash — maximum infectiousness", "10 days — for the full incubation period"]
+            q1 = st.radio("**Decision 1A:** How long was the index case potentially infectious at school before diagnosis?",
+                _ob2_q1a_opts,
+                index=_ob2_q1a_opts.index(_ob2_state["q1a"]) if _ob2_state.get("q1a") in _ob2_q1a_opts else 0,
+                key="ob2_q1a")
 
             if q1 == "3 days — infectious during the prodrome (4 days before to 4 days after rash onset)":
                 st.success("""
@@ -12342,6 +12599,12 @@ This is why outbreak control is so difficult: by the time measles is diagnosed (
                 """)
 
 
+            _ob2_s1 = {**_ob2_state,
+                "last_step_idx": st.session_state.get("ob2_idx", 0),
+                "q1a": st.session_state.get("ob2_q1a", "— Select —"),
+            }
+            if _ob_has_user_input(_ob2_s1, OB2_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob2", _ob2_s1)
             next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 2 — Herd immunity & the math behind the outbreak":
@@ -12352,7 +12615,7 @@ The school has 72% MMR vaccination rate. Let's calculate whether this is enough 
             """)
 
             st.markdown("#### 🧮 Calculate the herd immunity threshold")
-            r0_measles = st.slider("R₀ for measles in this school setting:", 10, 18, 15, key="ob2_r0")
+            r0_measles = st.slider("R₀ for measles in this school setting:", 10, 18, int(_ob2_state.get("r0", 15)), key="ob2_r0")
             hit = round((1 - 1/r0_measles) * 100, 1)
             current_immunity = 72
             effective_r = round(r0_measles * (1 - current_immunity/100), 2)
@@ -12404,6 +12667,12 @@ This exponential growth pattern continues until susceptibles are exhausted or va
                 """)
 
 
+            _ob2_s2 = {**_ob2_state,
+                "last_step_idx": st.session_state.get("ob2_idx", 0),
+                "r0": int(st.session_state.get("ob2_r0", 15)),
+            }
+            if _ob_has_user_input(_ob2_s2, OB2_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob2", _ob2_s2)
             next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 3 — Contact tracing & case finding":
@@ -12422,12 +12691,11 @@ You now have 7 confirmed cases. The index case attended school for 3 days during
 5. **Hallways and common areas** — indirect exposure, hard to quantify
             """)
 
-            q3a = st.radio("**Decision 3A:** For each exposure setting, should you classify contacts as high, medium, or low risk?", [
-                "— Select —",
-                "All contacts are equal — anyone in the school is at equal risk",
-                "Duration and proximity determine risk — classroom and gym (prolonged, enclosed) = highest",
-                "Only direct face-to-face contact counts — hallway contacts are not at risk",
-            ], key="ob2_q3a")
+            _ob2_q3a_opts = ["— Select —", "All contacts are equal — anyone in the school is at equal risk", "Duration and proximity determine risk — classroom and gym (prolonged, enclosed) = highest", "Only direct face-to-face contact counts — hallway contacts are not at risk"]
+            q3a = st.radio("**Decision 3A:** For each exposure setting, should you classify contacts as high, medium, or low risk?",
+                _ob2_q3a_opts,
+                index=_ob2_q3a_opts.index(_ob2_state["q3a"]) if _ob2_state.get("q3a") in _ob2_q3a_opts else 0,
+                key="ob2_q3a")
 
             if q3a == "Duration and proximity determine risk — classroom and gym (prolonged, enclosed) = highest":
                 st.success("""
@@ -12502,6 +12770,12 @@ You request enough MMR doses for the entire school (450 students). The state imm
                         """)
 
 
+            _ob2_s3 = {**_ob2_state,
+                "last_step_idx": st.session_state.get("ob2_idx", 0),
+                "q3a": st.session_state.get("ob2_q3a", "— Select —"),
+            }
+            if _ob_has_user_input(_ob2_s3, OB2_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob2", _ob2_s3)
             next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 4 — Control measures":
@@ -12540,12 +12814,11 @@ You request enough MMR doses for the entire school (450 students). The state imm
                 st.warning(f"⚠️ At {current_cov}% coverage, Rₑ = {reff} > 1. Outbreak will continue to grow until coverage reaches {hit_val}%.")
 
             st.divider()
-            q4a = st.radio("**Decision 4A:** Should the school be closed?", [
-                "— Select —",
-                "Yes, immediately close for 2 weeks",
-                "No — targeted exclusion of unvaccinated students is more proportionate and maintains education",
-                "Only close if cases exceed 25",
-            ], key="ob2_q4a")
+            _ob2_q4a_opts = ["— Select —", "Yes, immediately close for 2 weeks", "No — targeted exclusion of unvaccinated students is more proportionate and maintains education", "Only close if cases exceed 25"]
+            q4a = st.radio("**Decision 4A:** Should the school be closed?",
+                _ob2_q4a_opts,
+                index=_ob2_q4a_opts.index(_ob2_state["q4a"]) if _ob2_state.get("q4a") in _ob2_q4a_opts else 0,
+                key="ob2_q4a")
 
             if q4a == "No — targeted exclusion of unvaccinated students is more proportionate and maintains education":
                 st.success("""
@@ -12559,6 +12832,12 @@ You request enough MMR doses for the entire school (450 students). The state imm
                 st.error("❌ Waiting for a specific case count threshold before acting allows exponential growth to occur. Act early with targeted measures.")
 
 
+            _ob2_s4 = {**_ob2_state,
+                "last_step_idx": st.session_state.get("ob2_idx", 0),
+                "q4a": st.session_state.get("ob2_q4a", "— Select —"),
+            }
+            if _ob_has_user_input(_ob2_s4, OB2_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob2", _ob2_s4)
             next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 5 — Could this have been prevented?":
@@ -12587,13 +12866,11 @@ The outbreak is now controlled after an emergency vaccination clinic raised cove
                 """)
 
             st.divider()
-            q5a = st.radio("**Decision 5A:** What policy change would most prevent future outbreaks?", [
-                "— Select —",
-                "Require vaccination of all staff but allow student exemptions to continue",
-                "Enforce existing vaccination requirements and restrict non-medical exemptions",
-                "Provide education campaigns — choice is sufficient",
-                "Conduct annual screenings but take no policy action",
-            ], key="ob2_q5a")
+            _ob2_q5a_opts = ["— Select —", "Require vaccination of all staff but allow student exemptions to continue", "Enforce existing vaccination requirements and restrict non-medical exemptions", "Provide education campaigns — choice is sufficient", "Conduct annual screenings but take no policy action"]
+            q5a = st.radio("**Decision 5A:** What policy change would most prevent future outbreaks?",
+                _ob2_q5a_opts,
+                index=_ob2_q5a_opts.index(_ob2_state["q5a"]) if _ob2_state.get("q5a") in _ob2_q5a_opts else 0,
+                key="ob2_q5a")
 
             if q5a == "Enforce existing vaccination requirements and restrict non-medical exemptions":
                 st.success("""
@@ -12622,11 +12899,18 @@ The outbreak is now controlled after an emergency vaccination clinic raised cove
             st.markdown("#### 📝 Final outbreak investigation report")
             ob2_report_text = st.text_area(
                 "Your outbreak report:",
-                value=st.session_state.get("ob2_report_text", ""),
+                value=_ob2_state.get("report_text", ""),
                 height=200,
                 placeholder="Background: ...\n\nMethods: ...\n\nResults: ...\n\nConclusions: ...\n\nRecommendations: ...",
                 key="ob2_report_text"
             )
+            _ob2_s5 = {**_ob2_state,
+                "last_step_idx": st.session_state.get("ob2_idx", 0),
+                "q5a": st.session_state.get("ob2_q5a", "— Select —"),
+                "report_text": st.session_state.get("ob2_report_text", ""),
+            }
+            if _ob_has_user_input(_ob2_s5, OB2_DEFAULTS):
+                autosave_scenario("outbreak_lab.ob2", _ob2_s5)
             next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
     # ════════════════════════════════════════════════════════════════

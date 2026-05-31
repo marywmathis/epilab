@@ -1,4 +1,9 @@
 import streamlit as st
+try:
+    import extra_streamlit_components as stx
+    _COOKIE_MANAGER_AVAILABLE = True
+except ImportError:
+    _COOKIE_MANAGER_AVAILABLE = False
 import pandas as pd
 import numpy as np
 from scipy.stats import chi2_contingency

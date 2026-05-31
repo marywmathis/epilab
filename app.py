@@ -13587,6 +13587,49 @@ elif current_page == "instructor_dashboard":
             st.download_button("⬇️ Download roster CSV", data=csv_bytes,
                 file_name="epilab_roster.csv", mime="text/csv", key="dl_roster")
 
+            st.divider()
+            st.subheader("🔄 Start a new semester")
+            st.markdown("This will unlink all students from your roster. Their accounts are preserved — they can be re-enrolled next semester. This cannot be undone.")
+
+            clear_progress = st.checkbox(
+                "Also clear all student progress data (optional — students will start fresh)",
+                value=False, key="new_sem_clear_progress"
+            )
+
+            if st.button("Start new semester", key="new_semester_btn", type="secondary"):
+                st.session_state["new_semester_confirm"] = True
+
+            if st.session_state.get("new_semester_confirm"):
+                st.warning(f"⚠️ This will unlink **{len(students)} student{'s' if len(students) != 1 else ''}** from your roster{' and delete all their progress data' if clear_progress else ''}. Are you sure?")
+                col_yes, col_no = st.columns([1, 3])
+                with col_yes:
+                    if st.button("✅ Yes, start new semester", key="new_sem_yes"):
+                        student_ids = [s["id"] for s in students]
+                        errors = []
+                        try:
+                            # Unlink all students
+                            svc.table("profiles").update({"instructor_id": None}).in_("id", student_ids).execute()
+                        except Exception as e:
+                            errors.append(f"Unlink failed: {e}")
+
+                        if clear_progress and not errors:
+                            try:
+                                svc.table("scenario_progress").delete().in_("user_id", student_ids).execute()
+                            except Exception as e:
+                                errors.append(f"Progress clear failed: {e}")
+
+                        st.session_state.pop("new_semester_confirm", None)
+                        if errors:
+                            for err in errors:
+                                st.error(err)
+                        else:
+                            st.success(f"✅ New semester started. {len(students)} student{'s' if len(students) != 1 else ''} unlinked{'and progress cleared' if clear_progress else ''}. Upload a new roster in the Invite Students tab.")
+                            st.rerun()
+                with col_no:
+                    if st.button("Cancel", key="new_sem_no"):
+                        st.session_state.pop("new_semester_confirm", None)
+                        st.rerun()
+
     # ═══════════════════════════════════════════════
     # TAB 2: PROGRESS
     # ═══════════════════════════════════════════════

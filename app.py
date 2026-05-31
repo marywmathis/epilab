@@ -29,6 +29,16 @@ st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
+SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
+
+@st.cache_resource
+def get_service_client():
+    """Supabase admin client using service role key — for instructor operations only."""
+    if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+        return None
+    from supabase import create_client
+    return create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
+
 
 def get_cookie_manager():
     """Return a CookieManager instance, or None if library unavailable."""
@@ -58,7 +68,7 @@ def load_user_profile(supabase: Client, user_id: str) -> dict:
     try:
         result = (
             supabase.table("profiles")
-            .select("full_name, role, institution, email")
+            .select("full_name, role, institution, email, first_name, last_name, instructor_id")
             .eq("id", user_id)
             .single()
             .execute()
@@ -872,6 +882,23 @@ def do_login(email: str, password: str):
     # Load profile details (role, full_name, institution) from public.profiles
     profile = load_user_profile(supabase, user.id)
 
+    # If invited student has metadata from the invite, update their profile
+    meta = getattr(user, "user_metadata", {}) or {}
+    if meta.get("instructor_id") and not profile.get("instructor_id"):
+        try:
+            supabase.table("profiles").update({
+                "instructor_id": meta["instructor_id"],
+                "first_name": meta.get("first_name", ""),
+                "last_name": meta.get("last_name", ""),
+                "full_name": meta.get("full_name", "") or profile.get("full_name", ""),
+                "role": "student",
+            }).eq("id", user.id).execute()
+            profile["instructor_id"] = meta["instructor_id"]
+            profile["first_name"] = meta.get("first_name", "")
+            profile["last_name"] = meta.get("last_name", "")
+        except Exception:
+            pass
+
     st.session_state["authenticated"] = True
     st.session_state["user_id"] = user.id
     st.session_state["user_email"] = user.email
@@ -1481,7 +1508,7 @@ if "current_page" not in st.session_state:
 if "current_page" not in st.session_state:
     st.session_state["current_page"] = "study_designs"
 
-ALL_PAGES = [
+STUDENT_PAGES = [
     ("🏛️ Foundations",                   "foundations"),
     ("📐 Study Designs",                "study_designs"),
     ("⚠️ Bias",                          "bias"),
@@ -1500,6 +1527,18 @@ ALL_PAGES = [
     ("🔍 Outbreak Lab",                  "outbreak_lab"),
     ("📖 Glossary",                      "glossary"),
 ]
+
+INSTRUCTOR_EXTRA = [
+    ("📋 Instructor Dashboard",          "instructor_dashboard"),
+]
+
+def get_all_pages():
+    if st.session_state.get("user_role") == "instructor":
+        return STUDENT_PAGES + INSTRUCTOR_EXTRA
+    return STUDENT_PAGES
+
+ALL_PAGES = get_all_pages()
+ALL_PAGES  = get_all_pages()
 PAGE_LABELS = [p[0] for p in ALL_PAGES]
 PAGE_KEYS   = [p[1] for p in ALL_PAGES]
 
@@ -13496,6 +13535,263 @@ Each scenario walks you through a real-style outbreak investigation, applying th
 # ==================================================
 # REFERENCE: GLOSSARY (existing tab7, expanded)
 # ==================================================
+elif current_page == "instructor_dashboard":
+    st.title("📋 Instructor Dashboard")
+
+    svc = get_service_client()
+    instructor_id = st.session_state.get("user_id")
+
+    if not svc:
+        st.error("Service client unavailable — check SUPABASE_SERVICE_KEY in Railway.")
+        st.stop()
+
+    if st.session_state.get("user_role") != "instructor":
+        st.error("Access denied.")
+        st.stop()
+
+    # ── TABS ──
+    tab_roster, tab_progress, tab_invite = st.tabs(["👥 Roster", "📊 Progress", "📨 Invite Students"])
+
+    # ═══════════════════════════════════════════════
+    # TAB 1: ROSTER
+    # ═══════════════════════════════════════════════
+    with tab_roster:
+        st.subheader("Your students")
+
+        try:
+            roster_resp = (
+                svc.table("profiles")
+                .select("id, first_name, last_name, full_name, email, institution")
+                .eq("instructor_id", instructor_id)
+                .execute()
+            )
+            students = roster_resp.data or []
+        except Exception as e:
+            st.error(f"Could not load roster: {e}")
+            students = []
+
+        if not students:
+            st.info("No students linked to your account yet. Use the **Invite Students** tab to add them.")
+        else:
+            roster_df = pd.DataFrame([{
+                "First name": s.get("first_name") or "",
+                "Last name":  s.get("last_name") or "",
+                "Email":      s.get("email") or "",
+                "Institution": s.get("institution") or "",
+            } for s in students])
+            st.dataframe(roster_df, use_container_width=True, hide_index=True)
+            st.caption(f"{len(students)} student{'s' if len(students) != 1 else ''} enrolled")
+
+            # CSV export
+            csv_bytes = roster_df.to_csv(index=False).encode()
+            st.download_button("⬇️ Download roster CSV", data=csv_bytes,
+                file_name="epilab_roster.csv", mime="text/csv", key="dl_roster")
+
+    # ═══════════════════════════════════════════════
+    # TAB 2: PROGRESS
+    # ═══════════════════════════════════════════════
+    with tab_progress:
+        st.subheader("Student progress")
+
+        if not students:
+            st.info("No students enrolled yet.")
+        else:
+            student_ids = [s["id"] for s in students]
+            student_map = {s["id"]: f"{s.get('first_name','')} {s.get('last_name','') or s.get('full_name','') or s.get('email','')}".strip() for s in students}
+
+            try:
+                prog_resp = (
+                    svc.table("scenario_progress")
+                    .select("user_id, scenario_key, state, updated_at")
+                    .in_("user_id", student_ids)
+                    .execute()
+                )
+                progress_rows = prog_resp.data or []
+            except Exception as e:
+                st.error(f"Could not load progress: {e}")
+                progress_rows = []
+
+            if not progress_rows:
+                st.info("No progress recorded yet for any enrolled students.")
+            else:
+                # Build summary: per student, which modules have any saved state
+                MODULE_LABELS = {
+                    "practice_design":      "Practice: Study Design",
+                    "practice_advanced":    "Practice: Advanced Measures",
+                    "practice_confounding": "Practice: Confounding & Bias",
+                    "practice_screening":   "Practice: Screening & Freq.",
+                    "outbreak_lab":         "Outbreak Lab",
+                    "bias":                 "Bias",
+                    "hypothesis_testing":   "Hypothesis Testing",
+                }
+
+                # Count submitted scenarios per student per module
+                from collections import defaultdict
+                summary = defaultdict(lambda: defaultdict(int))
+                for row in progress_rows:
+                    uid = row["user_id"]
+                    key = row["scenario_key"]
+                    module = key.split(".")[0]
+                    summary[uid][module] += 1
+
+                # Build display table
+                all_modules = sorted(set(k.split(".")[0] for k in [r["scenario_key"] for r in progress_rows]))
+                rows = []
+                for uid in student_ids:
+                    row = {"Student": student_map.get(uid, uid)}
+                    for mod in all_modules:
+                        count = summary[uid].get(mod, 0)
+                        row[MODULE_LABELS.get(mod, mod)] = count if count > 0 else "—"
+                    rows.append(row)
+
+                progress_df = pd.DataFrame(rows)
+                st.dataframe(progress_df, use_container_width=True, hide_index=True)
+                st.caption("Numbers show saved scenario count per module. — means not started.")
+
+                # Full export
+                export_rows = []
+                for row in progress_rows:
+                    uid = row["user_id"]
+                    try:
+                        state = json.loads(row["state"]) if isinstance(row["state"], str) else row["state"]
+                    except Exception:
+                        state = {}
+                    export_rows.append({
+                        "student": student_map.get(uid, uid),
+                        "scenario_key": row["scenario_key"],
+                        "updated_at": row["updated_at"],
+                        **{f"state_{k}": str(v) for k, v in (state.items() if isinstance(state, dict) else {}.items())},
+                    })
+                export_df = pd.DataFrame(export_rows)
+                csv_exp = export_df.to_csv(index=False).encode()
+                st.download_button("⬇️ Export full progress CSV", data=csv_exp,
+                    file_name="epilab_progress.csv", mime="text/csv", key="dl_progress")
+
+    # ═══════════════════════════════════════════════
+    # TAB 3: INVITE STUDENTS
+    # ═══════════════════════════════════════════════
+    with tab_invite:
+        st.subheader("Invite students by CSV")
+        st.markdown("""
+Upload a CSV file with three columns: `first_name`, `last_name`, `email`
+
+Students will receive an email invitation to create their EpiLab account. Once they register, they'll be automatically linked to your roster.
+
+**CSV format:**
+```
+first_name,last_name,email
+Jane,Smith,jsmith@university.edu
+John,Doe,jdoe@university.edu
+```
+        """)
+
+        uploaded = st.file_uploader("Upload student CSV", type=["csv"], key="invite_csv")
+
+        if uploaded:
+            try:
+                invite_df = pd.read_csv(uploaded)
+                invite_df.columns = [c.strip().lower() for c in invite_df.columns]
+
+                required = {"first_name", "last_name", "email"}
+                if not required.issubset(set(invite_df.columns)):
+                    st.error(f"CSV must have columns: first_name, last_name, email. Found: {list(invite_df.columns)}")
+                else:
+                    invite_df = invite_df.dropna(subset=["email"])
+                    invite_df["email"] = invite_df["email"].str.strip().str.lower()
+                    st.dataframe(invite_df[["first_name","last_name","email"]], use_container_width=True, hide_index=True)
+                    st.caption(f"{len(invite_df)} students in this CSV")
+
+                    if st.button("📨 Send invitations", key="send_invites"):
+                        success_count = 0
+                        skip_count = 0
+                        error_msgs = []
+
+                        progress_bar = st.progress(0)
+                        status = st.empty()
+
+                        for i, row in invite_df.iterrows():
+                            email = row["email"]
+                            first = str(row.get("first_name","")).strip()
+                            last  = str(row.get("last_name","")).strip()
+                            progress_bar.progress((i+1) / len(invite_df))
+                            status.text(f"Processing {email}...")
+
+                            try:
+                                # Check if user already exists in profiles
+                                existing = (
+                                    svc.table("profiles")
+                                    .select("id, instructor_id")
+                                    .eq("email", email)
+                                    .execute()
+                                )
+                                if existing.data:
+                                    # User exists — link to this instructor if not already linked
+                                    existing_profile = existing.data[0]
+                                    if not existing_profile.get("instructor_id"):
+                                        svc.table("profiles").update({
+                                            "instructor_id": instructor_id,
+                                            "first_name": first,
+                                            "last_name": last,
+                                        }).eq("id", existing_profile["id"]).execute()
+                                    skip_count += 1
+                                else:
+                                    # New user — send invite email
+                                    svc.auth.admin.invite_user_by_email(email, {
+                                        "data": {
+                                            "first_name": first,
+                                            "last_name": last,
+                                            "full_name": f"{first} {last}".strip(),
+                                            "instructor_id": instructor_id,
+                                            "role": "student",
+                                        }
+                                    })
+                                    success_count += 1
+                            except Exception as e:
+                                error_msgs.append(f"{email}: {str(e)[:80]}")
+
+                        progress_bar.empty()
+                        status.empty()
+
+                        if success_count:
+                            st.success(f"✅ {success_count} invitation{'s' if success_count != 1 else ''} sent.")
+                        if skip_count:
+                            st.info(f"ℹ️ {skip_count} student{'s' if skip_count != 1 else ''} already have accounts and were linked to your roster.")
+                        if error_msgs:
+                            st.error("Some invitations failed:")
+                            for msg in error_msgs:
+                                st.caption(msg)
+
+            except Exception as e:
+                st.error(f"Could not read CSV: {e}")
+
+        st.divider()
+        st.subheader("Manually link an existing student")
+        st.markdown("If a student already has an account, enter their email to link them to your roster.")
+        manual_email = st.text_input("Student email:", key="manual_link_email")
+        if st.button("Link student", key="manual_link_btn"):
+            if not manual_email or "@" not in manual_email:
+                st.error("Please enter a valid email address.")
+            else:
+                try:
+                    found = (
+                        svc.table("profiles")
+                        .select("id, first_name, last_name, full_name, instructor_id")
+                        .eq("email", manual_email.strip().lower())
+                        .execute()
+                    )
+                    if not found.data:
+                        st.error("No account found with that email. Ask the student to register first, or use the CSV invite.")
+                    elif found.data[0].get("instructor_id") == instructor_id:
+                        st.info("That student is already on your roster.")
+                    else:
+                        svc.table("profiles").update({
+                            "instructor_id": instructor_id
+                        }).eq("id", found.data[0]["id"]).execute()
+                        name = found.data[0].get("full_name") or found.data[0].get("email") or manual_email
+                        st.success(f"✅ {name} has been added to your roster.")
+                except Exception as e:
+                    st.error(f"Error: {e}")
+
 elif current_page == "glossary":
     st.title("📖 Glossary of Key Terms")
     st.markdown("A complete reference for all major concepts in the lab. Use this while working through practice scenarios.")

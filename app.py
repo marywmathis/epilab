@@ -26,6 +26,14 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
 
 @st.cache_resource
+def get_cookie_manager():
+    """Return a singleton CookieManager, or None if library unavailable."""
+    if not _COOKIE_MANAGER_AVAILABLE:
+        return None
+    return stx.CookieManager(key="epilab_cookie_mgr")
+
+
+@st.cache_resource
 def get_supabase_client() -> Client:
     """Create a single Supabase client instance, cached across reruns."""
     if not SUPABASE_URL or not SUPABASE_ANON_KEY:
@@ -868,6 +876,14 @@ def do_login(email: str, password: str):
     st.session_state["user_institution"] = profile.get("institution") or ""
     # For display compatibility with the existing sidebar code
     st.session_state["current_user"] = profile.get("full_name") or user.email
+    # Persist session token in cookie for F5 recovery
+    try:
+        _cm = get_cookie_manager()
+        if _cm and session.access_token:
+            _cm.set("epilab_token", session.access_token, key="set_token")
+            _cm.set("epilab_refresh", session.refresh_token or "", key="set_refresh")
+    except Exception:
+        pass
     return True, ""
 
 
@@ -884,6 +900,14 @@ def do_logout():
     ]:
         if key in st.session_state:
             del st.session_state[key]
+    # Clear session cookie
+    try:
+        _cm = get_cookie_manager()
+        if _cm:
+            _cm.delete("epilab_token", key="del_token")
+            _cm.delete("epilab_refresh", key="del_refresh")
+    except Exception:
+        pass
 
 
 def send_password_reset(email: str):
@@ -1098,6 +1122,28 @@ def login_screen():
 
 if "authenticated" not in st.session_state:
     st.session_state["authenticated"] = False
+
+# ── F5 recovery: restore session from cookie if not authenticated ──
+if not st.session_state.get("authenticated") and _COOKIE_MANAGER_AVAILABLE:
+    try:
+        _cm = get_cookie_manager()
+        if _cm:
+            _token = _cm.get("epilab_token")
+            _refresh = _cm.get("epilab_refresh")
+            if _token:
+                _supabase = get_supabase_client()
+                _auth = _supabase.auth.set_session(_token, _refresh or "")
+                if _auth and _auth.user:
+                    _profile = load_user_profile(_supabase, _auth.user.id)
+                    st.session_state["authenticated"] = True
+                    st.session_state["user_id"] = _auth.user.id
+                    st.session_state["user_email"] = _auth.user.email
+                    st.session_state["user_full_name"] = _profile.get("full_name") or _auth.user.email
+                    st.session_state["user_role"] = _profile.get("role") or "student"
+                    st.session_state["user_institution"] = _profile.get("institution") or ""
+                    st.session_state["current_user"] = _profile.get("full_name") or _auth.user.email
+    except Exception:
+        pass  # Cookie expired or invalid — fall through to login screen
 
 if not st.session_state["authenticated"]:
     login_screen()

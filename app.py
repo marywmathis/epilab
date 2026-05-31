@@ -30,9 +30,8 @@ st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 SUPABASE_URL = os.environ.get("SUPABASE_URL", "")
 SUPABASE_ANON_KEY = os.environ.get("SUPABASE_ANON_KEY", "")
 
-@st.cache_resource
 def get_cookie_manager():
-    """Return a singleton CookieManager, or None if library unavailable."""
+    """Return a CookieManager instance, or None if library unavailable."""
     if not _COOKIE_MANAGER_AVAILABLE:
         return None
     return stx.CookieManager(key="epilab_cookie_mgr")

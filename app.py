@@ -13566,10 +13566,6 @@ elif current_page == "instructor_dashboard":
                 .execute()
             )
             students = roster_resp.data or []
-            with st.expander("🔧 Debug info (remove after testing)"):
-                st.write(f"Querying instructor_id: `{instructor_id}`")
-                st.write(f"Rows returned: {len(students)}")
-                st.write(students)
         except Exception as e:
             st.error(f"Could not load roster: {e}")
             students = []

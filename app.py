@@ -11778,15 +11778,6 @@ You build your case file using only the 5 lab-confirmed cases. Your attack rate 
 
         # ── STEP 3 ──
 
-            st.divider()
-            st.markdown("#### ✏️ Write your full working case definition")
-            ob1_case_def_text = st.text_area(
-                "Case definition:",
-                value=st.session_state.get("ob1_case_def_text", ""),
-                height=100,
-                placeholder="Write your complete working case definition (person, place, time, clinical criteria).",
-                key="ob1_case_def_text"
-            )
             next_step_button(ob1_step, OB1_STEPS, "ob1_idx")
 
         elif ob1_step == "Step 3 — Epidemic curve & descriptive epidemiology":
@@ -12351,15 +12342,6 @@ This is why outbreak control is so difficult: by the time measles is diagnosed (
                 """)
 
 
-            st.divider()
-            st.markdown("#### ✏️ Write your working case definition")
-            ob2_case_def_text = st.text_area(
-                "Case definition:",
-                value=st.session_state.get("ob2_case_def_text", ""),
-                height=100,
-                placeholder="Write your complete working case definition (person, place, time, clinical criteria).",
-                key="ob2_case_def_text"
-            )
             next_step_button(ob2_step, OB2_STEPS, "ob2_idx")
 
         elif ob2_step == "Step 2 — Herd immunity & the math behind the outbreak":
@@ -12790,15 +12772,6 @@ You need to systematically characterize who is sick before you can analyze the d
                 st.error("❌ Biological plausibility matters: Salmonella's primary vehicles are poultry, eggs, and egg-containing dishes. The line list shows these items prominently in cases.")
 
 
-            st.divider()
-            st.markdown("#### ✏️ Write your full working case definition")
-            ob3_case_def_text = st.text_area(
-                "Case definition:",
-                value=st.session_state.get("ob3_case_def_text", ""),
-                height=100,
-                placeholder="Write your complete working case definition (person, place, time, clinical criteria).",
-                key="ob3_case_def_text"
-            )
             next_step_button(ob3_step, OB3_STEPS, "ob3_idx")
 
         elif ob3_step == "Step 2 — Epidemic curve & incubation period estimation":

@@ -1124,6 +1124,7 @@ def login_screen():
                     st.rerun()
         else:
             st.markdown("**Please sign in to continue.**")
+            st.caption("🔑 **First time here?** Enter your email and create a new password to get started.")
             email = st.text_input("Email", key="login_email")
             password = st.text_input(
                 "Password", type="password", key="login_password"

@@ -974,10 +974,10 @@ def _hash_to_query_redirect():
         """
         <script>
         (function() {
-            var h = window.location.hash;
+            var h = window.parent.location.hash;
             if (!h || h.indexOf("access_token") === -1) return;
             var qs = h.substring(1);
-            var newUrl = window.location.pathname + "?" + qs;
+            var newUrl = window.parent.location.pathname + "?" + qs;
             window.parent.location.replace(newUrl);
         })();
         </script>

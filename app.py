@@ -997,9 +997,10 @@ def _detect_recovery_mode():
         return
     flow_type = params.get("type", "")
     token_hash = params.get("token_hash", "")
-    if flow_type == "recovery" and token_hash:
+    if flow_type in ("recovery", "invite", "signup") and token_hash:
         st.session_state["auth_mode"] = "reset"
         st.session_state["recovery_token_hash"] = token_hash
+        st.session_state["invite_flow"] = (flow_type == "invite")
         try:
             st.query_params.clear()
         except Exception:
@@ -1056,8 +1057,12 @@ def login_screen():
             st.markdown("## 🧭 Epidemiology Decision Simulator")
             st.markdown("*EpiLab Interactive — licensed access only*")
             st.divider()
-            st.markdown("**Set a new password**")
-            st.caption("Choose a new password for your account.")
+            if st.session_state.get("invite_flow"):
+                st.markdown("**Welcome! Create your password**")
+                st.caption("You're almost in — choose a password to activate your account.")
+            else:
+                st.markdown("**Set a new password**")
+                st.caption("Choose a new password for your account.")
             new_pw = st.text_input(
                 "New password",
                 type="password",

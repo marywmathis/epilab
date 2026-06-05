@@ -59,6 +59,21 @@ def get_supabase_client() -> Client:
     return create_client(SUPABASE_URL, SUPABASE_ANON_KEY)
 
 
+def load_user_subscription(supabase, user_id: str) -> dict:
+    """Load active subscription for a user. Returns tier and status."""
+    try:
+        result = supabase.from_("subscriptions").select(
+            "tier, status, current_period_end"
+        ).eq("user_id", user_id).eq("status", "active").order(
+            "current_period_end", desc=True
+        ).limit(1).execute()
+        if result.data:
+            return result.data[0]
+        return {}
+    except Exception:
+        return {}
+
+
 def load_user_profile(supabase: Client, user_id: str) -> dict:
     """
     Fetch the user's profile row (full_name, role, institution) from
@@ -899,17 +914,21 @@ def do_login(email: str, password: str):
         except Exception:
             pass
 
-    st.session_state["authenticated"] = True
+    
     st.session_state["user_id"] = user.id
     st.session_state["user_email"] = user.email
     st.session_state["user_full_name"] = profile.get("full_name") or user.email
     st.session_state["user_role"] = profile.get("role") or "student"
+    _sub = load_user_subscription(supabase, user.id)
+    st.session_state["user_tier"] = _sub.get("tier", "")
+    st.session_state["subscription_active"] = bool(_sub.get("tier"))
     st.session_state["user_institution"] = profile.get("institution") or ""
     # For display compatibility with the existing sidebar code
     st.session_state["current_user"] = profile.get("full_name") or user.email
     # Persist session token in cookie for F5 recovery
     try:
         _cm = get_cookie_manager()
+        st.session_state["authenticated"] = True
         if _cm and session.access_token:
             _cm.set("epilab_token", session.access_token, key="set_token")
             _cm.set("epilab_refresh", session.refresh_token or "", key="set_refresh")

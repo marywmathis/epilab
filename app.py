@@ -1201,6 +1201,29 @@ if not st.session_state["authenticated"]:
     login_screen()
     st.stop()
 
+# Subscription gate — instructors must have active subscription
+if st.session_state.get("user_role") == "instructor":
+    if not st.session_state.get("subscription_active"):
+        st.markdown("<br><br>", unsafe_allow_html=True)
+        col_l, col_m, col_r = st.columns([1, 2, 1])
+        with col_m:
+            st.error("Your EpiLab Interactive license is inactive or has expired.")
+            st.markdown(
+                "To renew your access, please purchase a subscription below."
+            )
+            st.markdown(
+                """
+                - [Single Course — $299/year](https://buy.stripe.com/28E00j94u1ju6eT9Qq3VC00)
+                - [Program License — $799/year](https://buy.stripe.com/14A7sL4Oe8LW8n1faK3VC01)
+                - [Institution — $1,499/year](https://buy.stripe.com/14A6oH80q8LWfPte6G3VC02)
+                """
+            )
+            st.caption("After purchase you will receive a confirmation email within a few minutes.")
+            if st.button("Log out", key="expired_logout"):
+                do_logout()
+                st.rerun()
+        st.stop()
+
 # ==================================================
 # HELPER FUNCTIONS
 # ==================================================

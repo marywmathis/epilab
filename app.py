@@ -1707,19 +1707,27 @@ if current_page == "foundations":
     ]
     if "found_section" not in st.session_state:
         st.session_state["found_section"] = _found_options[0]
-    st.markdown("""<style>
-button[data-testid="baseButton-primary"]{background:#4f46e5!important;border-color:#4f46e5!important;color:#fff!important;font-weight:600!important;}
-button[data-testid="baseButton-secondary"]{background:#fff!important;border:1.5px solid #e2e8f0!important;color:#334155!important;}
-button[data-testid="baseButton-secondary"]:hover{border-color:#6366f1!important;background:#eef2ff!important;color:#4338ca!important;}
-</style>""", unsafe_allow_html=True)
-    _found_cols = st.columns(len(_found_options))
-    for _i, _opt in enumerate(_found_options):
-        with _found_cols[_i]:
-            _active = st.session_state["found_section"] == _opt
-            if st.button(_found_labels[_i], key=f"found_{_i}", use_container_width=True,
-                        type="primary" if _active else "secondary"):
-                st.session_state["found_section"] = _opt
-                st.rerun()
+    # ── HTML section selector ──
+    _found_active_idx = next((i for i, o in enumerate(_found_options) if o == st.session_state["found_section"]), 0)
+    _found_selector_html = "<div style='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;'>" + "".join([
+        f"""<button onclick="window.parent.postMessage({{type:'streamlit:setComponentValue',key:'found_section_sel',value:'{_found_options[i]}'}}, '*');
+        var btns=this.parentNode.querySelectorAll('button');
+        btns.forEach(function(b){{b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#e2e8f0';b.style.fontWeight='400';}});
+        this.style.background='#4f46e5';this.style.color='#fff';this.style.borderColor='#4f46e5';this.style.fontWeight='600';"
+        style="padding:8px 16px;border-radius:8px;border:1.5px solid {'#4f46e5' if i==_found_active_idx else '#e2e8f0'};
+        background:{'#4f46e5' if i==_found_active_idx else '#fff'};
+        color:{'#fff' if i==_found_active_idx else '#334155'};
+        font-weight:{'600' if i==_found_active_idx else '400'};
+        font-size:13px;cursor:pointer;font-family:sans-serif;">{_found_labels[i]}</button>"""
+        for i in range(len(_found_options))
+    ]) + "</div>"
+    import streamlit.components.v1 as _found_comp
+    _found_comp.html(_found_selector_html, height=60)
+    _found_qp = st.query_params.get("found_sel", "")
+    if _found_qp and _found_qp in _found_options:
+        st.session_state["found_section"] = _found_qp
+        st.query_params.clear()
+        st.rerun()
     found_section = st.session_state["found_section"]
     st.divider()
 

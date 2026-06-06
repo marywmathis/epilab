@@ -1697,13 +1697,21 @@ if current_page == "foundations":
         "5️⃣ Outbreak Investigation — The 10 Steps",
         "6️⃣ PICO Framework",
     ]
+    _found_labels = [
+        "Epidemiology Triangle",
+        "Natural History & Prevention",
+        "Chain of Infection",
+        "Herd Immunity & R₀",
+        "Outbreak Investigation",
+        "PICO Framework",
+    ]
     if "found_section" not in st.session_state:
         st.session_state["found_section"] = _found_options[0]
     _found_cols = st.columns(len(_found_options))
     for _i, _opt in enumerate(_found_options):
         with _found_cols[_i]:
             _active = st.session_state["found_section"] == _opt
-            if st.button(_opt, key=f"found_{_i}", use_container_width=True,
+            if st.button(_found_labels[_i], key=f"found_{_i}", use_container_width=True,
                         type="primary" if _active else "secondary"):
                 st.session_state["found_section"] = _opt
                 st.rerun()

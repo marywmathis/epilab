@@ -83,6 +83,11 @@ section[data-testid="stSidebar"] hr {border-color: #3730a3 !important; margin: 8
 .main .stButton > button[kind="primary"] {background: #4f46e5 !important; border: none !important; color: #ffffff !important; border-radius: 6px !important; font-weight: 500 !important;}
 .stTabs [data-baseweb="tab-list"] {border-bottom: 2px solid #e2e8f0 !important;}
 .main .stButton > button[kind="primary"] {background: #4f46e5 !important; border-color: #4f46e5 !important; color: #ffffff !important; border-radius: 8px !important; font-size: 13px !important; padding: 8px 12px !important; white-space: nowrap !important; height: auto !important;}
+.main .stButton button {border-radius: 8px !important; font-size: 13px !important; min-height: 2.5rem !important;}
+.main .stButton button[style*="255, 75, 75"], .main .stButton button[style*="rgb(255, 75, 75)"] {background: #4f46e5 !important; border-color: #4f46e5 !important;}
+button[data-testid="baseButton-primary"] {background-color: #4f46e5 !important; border-color: #4f46e5 !important; color: #ffffff !important;}
+button[data-testid="baseButton-secondary"] {background-color: #f8fafc !important; border: 1.5px solid #e2e8f0 !important; color: #334155 !important;}
+button[data-testid="baseButton-secondary"]:hover {border-color: #6366f1 !important; background: #eef2ff !important; color: #4338ca !important;}
 .main .stButton > button[kind="secondary"] {background: #f8fafc !important; border: 1.5px solid #e2e8f0 !important; color: #334155 !important; border-radius: 8px !important; font-size: 13px !important; padding: 8px 12px !important; white-space: nowrap !important; height: auto !important;}
 .main .stButton > button[kind="secondary"]:hover {border-color: #6366f1 !important; background: #eef2ff !important; color: #4338ca !important;}
 .stTabs [aria-selected="true"] {color: #4f46e5 !important; border-bottom: 2px solid #4f46e5 !important;}

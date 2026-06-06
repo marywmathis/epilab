@@ -36,6 +36,19 @@ section[data-testid="stSidebar"] .stButton > button:hover {background: #2e1065 !
 section[data-testid="stSidebar"] .stRadio > div {gap: 2px !important;}
 .main input[type="radio"] {display: none !important;}
 .main .stRadio label svg {display: none !important;}
+.main .stRadio label > div[data-testid] {display: none !important;}
+.main .stRadio label > div:first-child > div {display: none !important;}
+.main .stRadio label > div:first-child {
+    width: 0px !important;
+    height: 0px !important;
+    min-width: 0px !important;
+    min-height: 0px !important;
+    padding: 0px !important;
+    margin: 0px !important;
+    border: none !important;
+    overflow: hidden !important;
+    position: absolute !important;
+}
 .main .stRadio label > div:first-child {width: 0 !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important;}
 .main input[type="radio"] + div {display: none !important;}
 .main .stRadio label > div:first-of-type {display: none !important;}

@@ -35,6 +35,8 @@ section[data-testid="stSidebar"] .stButton > button {background: transparent !im
 section[data-testid="stSidebar"] .stButton > button:hover {background: #2e1065 !important; border-color: #6366f1 !important; color: #c7d2fe !important;}
 section[data-testid="stSidebar"] .stRadio > div {gap: 2px !important;}
 .main input[type="radio"] {display: none !important;}
+.main .stRadio label svg {display: none !important;}
+.main .stRadio label > div:first-child {width: 0 !important; min-width: 0 !important; padding: 0 !important; margin: 0 !important; overflow: hidden !important;}
 .main input[type="radio"] + div {display: none !important;}
 .main .stRadio label > div:first-of-type {display: none !important;}
 .main .stRadio label {background: #f8fafc !important; border: 1.5px solid #e2e8f0 !important; border-radius: 8px !important; padding: 10px 16px !important; margin: 4px !important; cursor: pointer !important;}

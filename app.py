@@ -1689,47 +1689,14 @@ if current_page == "foundations":
     st.title("🏛️ Foundations of Epidemiology")
     st.markdown("Core frameworks that underpin all of epidemiology — how disease develops, how we prevent it, how we study it, and what counts as a cause.")
 
-    _found_options = [
+    found_section = st.pills("Section", [
         "1️⃣ Epidemiology Triangle",
         "2️⃣ Natural History & Levels of Prevention",
         "3️⃣ Chain of Infection & Infectious Disease",
         "4️⃣ Herd Immunity & R₀",
         "5️⃣ Outbreak Investigation — The 10 Steps",
         "6️⃣ PICO Framework",
-    ]
-    _found_labels = [
-        "Epidemiology Triangle",
-        "Natural History & Prevention",
-        "Chain of Infection",
-        "Herd Immunity & R₀",
-        "Outbreak Investigation",
-        "PICO Framework",
-    ]
-    if "found_section" not in st.session_state:
-        st.session_state["found_section"] = _found_options[0]
-    # ── HTML section selector ──
-    _found_active_idx = next((i for i, o in enumerate(_found_options) if o == st.session_state["found_section"]), 0)
-    _found_selector_html = "<div style='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;'>" + "".join([
-        f"""<button onclick="var btns=this.parentNode.querySelectorAll('button');
-        btns.forEach(function(b){{b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#e2e8f0';b.style.fontWeight='400';}});
-        this.style.background='#4f46e5';this.style.color='#fff';this.style.borderColor='#4f46e5';this.style.fontWeight='600';
-        var url=new URL(window.parent.location.href);url.searchParams.set('found_sel',encodeURIComponent('{_found_options[i]}'));window.parent.location.href=url.toString();"
-        style="padding:8px 16px;border-radius:8px;border:1.5px solid {'#4f46e5' if i==_found_active_idx else '#e2e8f0'};
-        background:{'#4f46e5' if i==_found_active_idx else '#fff'};
-        color:{'#fff' if i==_found_active_idx else '#334155'};
-        font-weight:{'600' if i==_found_active_idx else '400'};
-        font-size:13px;cursor:pointer;font-family:sans-serif;">{_found_labels[i]}</button>"""
-        for i in range(len(_found_options))
-    ]) + "</div>"
-    import streamlit.components.v1 as _found_comp
-    _found_comp.html(_found_selector_html, height=120)
-    _found_qp = st.query_params.get("found_sel", "")
-    if _found_qp: _found_qp = _found_qp.replace("%E2%80%94", "—").replace("%E2%82%80", "₀")
-    if _found_qp and _found_qp in _found_options:
-        st.session_state["found_section"] = _found_qp
-        st.query_params.clear()
-        st.rerun()
-    found_section = st.session_state["found_section"]
+    ], default="1️⃣ Epidemiology Triangle", label_visibility="collapsed")
     st.divider()
 
     # ── SECTION 1: EPIDEMIOLOGY TRIANGLE ──

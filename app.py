@@ -37,6 +37,10 @@ section[data-testid="stSidebar"] .stRadio > div {gap: 2px !important;}
 section[data-testid="stSidebar"] .stRadio label {background: transparent !important; border-radius: 6px !important; padding: 7px 12px !important; font-size: 13px !important; color: #c7d2fe !important; cursor: pointer !important; display: block !important; width: 100% !important;}
 section[data-testid="stSidebar"] .stRadio label:hover {background: rgba(99,102,241,0.15) !important; color: #ffffff !important;}
 section[data-testid="stSidebar"] .stRadio input[type="radio"] {display: none !important;}
+section[data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p {font-size: 13px !important; color: #c7d2fe !important;}
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label {display: flex !important; align-items: center !important; padding: 7px 12px !important; border-radius: 6px !important; cursor: pointer !important; width: 100% !important; box-sizing: border-box !important;}
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label:has(input:checked) {background: #4f46e5 !important;}
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child {display: none !important;}
 section[data-testid="stSidebar"] hr {border-color: #3730a3 !important; margin: 8px 0 !important;}
 .main .block-container {padding: 2rem 2.5rem !important; max-width: 900px !important;}
 .main h1 {font-size: 28px !important; font-weight: 600 !important; color: #1e1b4b !important;}

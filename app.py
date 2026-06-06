@@ -42,7 +42,7 @@ section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label {displa
 section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label:has(input:checked) {background: #4f46e5 !important;}
 section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child {display: none !important;}
 section[data-testid="stSidebar"] hr {border-color: #3730a3 !important; margin: 8px 0 !important;}
-.main .block-container {padding: 2rem 2.5rem !important; max-width: 900px !important;}
+.main .block-container {padding: 2rem 2.5rem !important;}
 .main h1 {font-size: 28px !important; font-weight: 600 !important; color: #1e1b4b !important;}
 .main h2 {font-size: 20px !important; font-weight: 600 !important; color: #1e1b4b !important;}
 .main h3 {font-size: 16px !important; font-weight: 600 !important; color: #312e81 !important;}
@@ -53,6 +53,10 @@ section[data-testid="stSidebar"] hr {border-color: #3730a3 !important; margin: 8
 .main .stRadio div[role="radiogroup"] {display: flex !important; flex-wrap: wrap !important; gap: 8px !important;}
 .main .stRadio div[role="radiogroup"] > label {background: #f8fafc !important; border: 1.5px solid #e2e8f0 !important; border-radius: 8px !important; padding: 10px 16px !important; cursor: pointer !important; min-width: 180px !important; flex: 1 !important;}
 .main .stRadio div[role="radiogroup"] > label > div:first-child {display: none !important;}
+.main [data-testid="stRadio"] > div > label > div:first-child {display: none !important;}
+.main [data-testid="stRadio"] > div {display: flex !important; flex-wrap: wrap !important; gap: 8px !important;}
+.main [data-testid="stRadio"] > div > label {background: #f8fafc !important; border: 1.5px solid #e2e8f0 !important; border-radius: 8px !important; padding: 10px 16px !important; cursor: pointer !important; min-width: 160px !important; flex: 1 1 160px !important;}
+.main [data-testid="stRadio"] > div > label:hover {border-color: #6366f1 !important; background: #eef2ff !important;}
 .main .stRadio div[role="radiogroup"] > label:has(input:checked) {background: #eef2ff !important; border-color: #6366f1 !important;}
 .main .stRadio div[role="radiogroup"] > label:has(input:checked) p {color: #4338ca !important; font-weight: 600 !important;}
 .main .stRadio div[role="radiogroup"] > label p {color: #334155 !important; font-size: 13px !important; margin: 0 !important;}

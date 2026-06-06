@@ -1722,7 +1722,7 @@ if current_page == "foundations":
         for i in range(len(_found_options))
     ]) + "</div>"
     import streamlit.components.v1 as _found_comp
-    _found_comp.html(_found_selector_html, height=60)
+    _found_comp.html(_found_selector_html, height=120)
     _found_qp = st.query_params.get("found_sel", "")
     if _found_qp and _found_qp in _found_options:
         st.session_state["found_section"] = _found_qp

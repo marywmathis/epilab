@@ -1710,10 +1710,10 @@ if current_page == "foundations":
     # ── HTML section selector ──
     _found_active_idx = next((i for i, o in enumerate(_found_options) if o == st.session_state["found_section"]), 0)
     _found_selector_html = "<div style='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;'>" + "".join([
-        f"""<button onclick="window.parent.postMessage({{type:'streamlit:setComponentValue',key:'found_section_sel',value:'{_found_options[i]}'}}, '*');
-        var btns=this.parentNode.querySelectorAll('button');
+        f"""<button onclick="var btns=this.parentNode.querySelectorAll('button');
         btns.forEach(function(b){{b.style.background='#fff';b.style.color='#334155';b.style.borderColor='#e2e8f0';b.style.fontWeight='400';}});
-        this.style.background='#4f46e5';this.style.color='#fff';this.style.borderColor='#4f46e5';this.style.fontWeight='600';"
+        this.style.background='#4f46e5';this.style.color='#fff';this.style.borderColor='#4f46e5';this.style.fontWeight='600';
+        var url=new URL(window.parent.location.href);url.searchParams.set('found_sel',encodeURIComponent('{_found_options[i]}'));window.parent.location.href=url.toString();"
         style="padding:8px 16px;border-radius:8px;border:1.5px solid {'#4f46e5' if i==_found_active_idx else '#e2e8f0'};
         background:{'#4f46e5' if i==_found_active_idx else '#fff'};
         color:{'#fff' if i==_found_active_idx else '#334155'};
@@ -1724,6 +1724,7 @@ if current_page == "foundations":
     import streamlit.components.v1 as _found_comp
     _found_comp.html(_found_selector_html, height=120)
     _found_qp = st.query_params.get("found_sel", "")
+    if _found_qp: _found_qp = _found_qp.replace("%E2%80%94", "—").replace("%E2%82%80", "₀")
     if _found_qp and _found_qp in _found_options:
         st.session_state["found_section"] = _found_qp
         st.query_params.clear()

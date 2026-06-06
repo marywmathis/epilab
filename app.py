@@ -34,11 +34,11 @@ section[data-testid="stSidebar"] .stCaption p {color: #818cf8 !important; font-s
 section[data-testid="stSidebar"] .stButton > button {background: transparent !important; border: 1px solid #3730a3 !important; color: #818cf8 !important; font-size: 12px !important; padding: 4px 12px !important; border-radius: 6px !important; width: 100% !important;}
 section[data-testid="stSidebar"] .stButton > button:hover {background: #2e1065 !important; border-color: #6366f1 !important; color: #c7d2fe !important;}
 section[data-testid="stSidebar"] .stRadio > div {gap: 2px !important;}
-section[data-testid="stSidebar"] .stRadio label {background: transparent !important; border-radius: 6px !important; padding: 7px 12px !important; font-size: 13px !important; color: #c7d2fe !important; cursor: pointer !important; display: block !important; width: 100% !important;}
+section[data-testid="stSidebar"] .stRadio label {background: transparent !important; border-radius: 6px !important; padding: 5px 10px !important; font-size: 12px !important; color: #c7d2fe !important; cursor: pointer !important; display: block !important; width: 100% !important;}
 section[data-testid="stSidebar"] .stRadio label:hover {background: rgba(99,102,241,0.15) !important; color: #ffffff !important;}
 section[data-testid="stSidebar"] .stRadio input[type="radio"] {display: none !important;}
 section[data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p {font-size: 13px !important; color: #c7d2fe !important;}
-section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label {display: flex !important; align-items: center !important; padding: 7px 12px !important; border-radius: 6px !important; cursor: pointer !important; width: 100% !important; box-sizing: border-box !important;}
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label {display: flex !important; align-items: center !important; padding: 5px 10px !important; border-radius: 6px !important; cursor: pointer !important; width: 100% !important; box-sizing: border-box !important;}
 section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label:has(input:checked) {background: #4f46e5 !important;}
 section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > label > div:first-child {display: none !important;}
 section[data-testid="stSidebar"] hr {border-color: #3730a3 !important; margin: 8px 0 !important;}
@@ -50,6 +50,12 @@ section[data-testid="stSidebar"] hr {border-color: #3730a3 !important; margin: 8
 .main .stRadio label {background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; padding: 10px 16px !important; font-size: 13px !important; color: #334155 !important; cursor: pointer !important; min-width: 160px !important;}
 .main .stRadio label:hover {border-color: #6366f1 !important; background: #eef2ff !important; color: #4338ca !important;}
 .main .stRadio input[type="radio"] {display: none !important;}
+.main .stRadio div[role="radiogroup"] {display: flex !important; flex-wrap: wrap !important; gap: 8px !important;}
+.main .stRadio div[role="radiogroup"] > label {background: #f8fafc !important; border: 1.5px solid #e2e8f0 !important; border-radius: 8px !important; padding: 10px 16px !important; cursor: pointer !important; min-width: 180px !important; flex: 1 !important;}
+.main .stRadio div[role="radiogroup"] > label > div:first-child {display: none !important;}
+.main .stRadio div[role="radiogroup"] > label:has(input:checked) {background: #eef2ff !important; border-color: #6366f1 !important;}
+.main .stRadio div[role="radiogroup"] > label:has(input:checked) p {color: #4338ca !important; font-weight: 600 !important;}
+.main .stRadio div[role="radiogroup"] > label p {color: #334155 !important; font-size: 13px !important; margin: 0 !important;}
 .main .stButton > button[kind="primary"] {background: #4f46e5 !important; border: none !important; color: #ffffff !important; border-radius: 6px !important; font-weight: 500 !important;}
 .stTabs [data-baseweb="tab-list"] {border-bottom: 2px solid #e2e8f0 !important;}
 .stTabs [aria-selected="true"] {color: #4f46e5 !important; border-bottom: 2px solid #4f46e5 !important;}

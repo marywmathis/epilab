@@ -2880,11 +2880,11 @@ elif current_page == "study_designs":
     st.title("📐 Study Designs")
     st.markdown("Epidemiologic study design determines what measure of association you can calculate, what biases are possible, and how strong the evidence for causation can be.")
 
-    section = st.radio("Section:", [
+    section = st.pills("Section", [
         "1️⃣ Design Overview",
         "2️⃣ Design Selector",
         "3️⃣ RCT & Evidence Hierarchy"
-    ], horizontal=True)
+    ], default="1️⃣ Design Overview", label_visibility="collapsed")
     st.divider()
 
     if section == "1️⃣ Design Overview":
@@ -3983,12 +3983,12 @@ elif current_page == "bias":
     st.markdown("Bias is a **systematic error** that leads to an incorrect estimate of the association between exposure and outcome. Unlike random error, bias does not average out with larger sample sizes.")
     st.info("**Key principle:** Bias operates in one direction — it either inflates or deflates the true association. Recognizing the type of bias helps you predict whether your result is likely an over- or under-estimate.")
 
-    bias_section = st.radio("Section:", [
+    bias_section = st.pills("Section", [
         "1️⃣ Selection Bias",
         "2️⃣ Information Bias",
         "3️⃣ Bias Direction Exercise",
         "4️⃣ Reliability & Validity"
-    ], horizontal=True)
+    ], default="1️⃣ Selection Bias", label_visibility="collapsed")
     st.divider()
 
     if bias_section == "1️⃣ Selection Bias":
@@ -4808,13 +4808,13 @@ Simple % agreement was {pct_agree}%. Kappa adjusts for {round(p_exp*100,1)}% exp
 elif current_page == "confounding":
     st.title("🔀 Confounding & Effect Modification")
 
-    conf_section = st.radio("Section:", [
+    conf_section = st.pills("Section", [
         "1️⃣ Confounding",
         "2️⃣ Controlling Confounding",
         "3️⃣ Effect Modification",
         "4️⃣ Interactive: Stratified Analysis",
         "5️⃣ DAG Library"
-    ], horizontal=True)
+    ], default="1️⃣ Confounding", label_visibility="collapsed")
     st.divider()
 
     if conf_section == "1️⃣ Confounding":
@@ -6094,12 +6094,12 @@ elif current_page == "causal_inference":
     st.title("🔗 Causal Inference")
     st.markdown("Association does not equal causation. Causal inference is the process of evaluating whether an observed statistical association reflects a true cause-and-effect relationship.")
 
-    ci_section = st.radio("Section:", [
+    ci_section = st.pills("Section", [
         "1️⃣ Bradford Hill Criteria",
         "2️⃣ Criteria Application Exercise",
         "3️⃣ Rothman's Sufficient-Component Cause Model",
         "4️⃣ Web of Causation"
-    ], horizontal=True)
+    ], default="1️⃣ Bradford Hill Criteria", label_visibility="collapsed")
     st.divider()
 
     if ci_section == "1️⃣ Bradford Hill Criteria":
@@ -6745,7 +6745,7 @@ elif current_page == "disease_frequency":
     st.title("📊 Disease Frequency")
     st.markdown("Before comparing rates across groups, you need to be able to measure disease frequency accurately in a single population.")
 
-    df_section = st.radio("Section:", ["1️⃣ Core Measures", "2️⃣ Interactive Calculator", "3️⃣ Prevalence-Incidence Relationship", "4️⃣ Epidemic Curves", "5️⃣ Person, Place & Time", "6️⃣ Public Health Surveillance", "7️⃣ Mortality Measures & YPLL"], horizontal=True)
+    df_section = st.pills("Section", ["1️⃣ Core Measures", "2️⃣ Interactive Calculator", "3️⃣ Prevalence-Incidence Relationship", "4️⃣ Epidemic Curves", "5️⃣ Person, Place & Time", "6️⃣ Public Health Surveillance", "7️⃣ Mortality Measures & YPLL"], default="1️⃣ Core Measures", label_visibility="collapsed")
     st.divider()
 
     if df_section == "1️⃣ Core Measures":
@@ -8133,14 +8133,14 @@ elif current_page == "screening":
     st.title("🔬 Screening & Diagnostic Tests")
     st.markdown("Evaluating the performance of a test requires understanding how sensitivity, specificity, and the prevalence of disease in the population interact.")
 
-    screen_section = st.radio("Section:", [
+    screen_section = st.pills("Section", [
         "1️⃣ Core Concepts",
         "2️⃣ Interactive 2×2 Calculator",
         "3️⃣ Likelihood Ratios & Fagan Nomogram",
         "4️⃣ Prevalence Effect on PPV",
         "5️⃣ Wilson & Jungner Criteria",
         "6️⃣ ROC Curve"
-    ], horizontal=True)
+    ], default="1️⃣ Core Concepts", label_visibility="collapsed")
     st.divider()
 
     if screen_section == "1️⃣ Core Concepts":

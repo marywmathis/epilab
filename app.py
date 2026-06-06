@@ -22,6 +22,35 @@ except ImportError:
 from supabase import create_client, Client
 
 st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
+st.markdown("""
+<style>
+#MainMenu, footer, header {visibility: hidden;}
+[data-testid="stSidebarNav"] {display: none;}
+section[data-testid="stSidebar"] > div:first-child {padding-top: 0;}
+section[data-testid="stSidebar"] {background-color: #1e1b4b !important; min-width: 240px !important; max-width: 240px !important;}
+section[data-testid="stSidebar"] * {color: #c7d2fe !important;}
+section[data-testid="stSidebar"] h3 {color: #ffffff !important; font-size: 16px !important; font-weight: 600 !important;}
+section[data-testid="stSidebar"] .stCaption p {color: #818cf8 !important; font-size: 11px !important;}
+section[data-testid="stSidebar"] .stButton > button {background: transparent !important; border: 1px solid #3730a3 !important; color: #818cf8 !important; font-size: 12px !important; padding: 4px 12px !important; border-radius: 6px !important; width: 100% !important;}
+section[data-testid="stSidebar"] .stButton > button:hover {background: #2e1065 !important; border-color: #6366f1 !important; color: #c7d2fe !important;}
+section[data-testid="stSidebar"] .stRadio > div {gap: 2px !important;}
+section[data-testid="stSidebar"] .stRadio label {background: transparent !important; border-radius: 6px !important; padding: 7px 12px !important; font-size: 13px !important; color: #c7d2fe !important; cursor: pointer !important; display: block !important; width: 100% !important;}
+section[data-testid="stSidebar"] .stRadio label:hover {background: rgba(99,102,241,0.15) !important; color: #ffffff !important;}
+section[data-testid="stSidebar"] .stRadio input[type="radio"] {display: none !important;}
+section[data-testid="stSidebar"] hr {border-color: #3730a3 !important; margin: 8px 0 !important;}
+.main .block-container {padding: 2rem 2.5rem !important; max-width: 900px !important;}
+.main h1 {font-size: 28px !important; font-weight: 600 !important; color: #1e1b4b !important;}
+.main h2 {font-size: 20px !important; font-weight: 600 !important; color: #1e1b4b !important;}
+.main h3 {font-size: 16px !important; font-weight: 600 !important; color: #312e81 !important;}
+.main .stRadio > div {display: flex !important; flex-wrap: wrap !important; gap: 8px !important;}
+.main .stRadio label {background: #f8fafc !important; border: 1px solid #e2e8f0 !important; border-radius: 8px !important; padding: 10px 16px !important; font-size: 13px !important; color: #334155 !important; cursor: pointer !important; min-width: 160px !important;}
+.main .stRadio label:hover {border-color: #6366f1 !important; background: #eef2ff !important; color: #4338ca !important;}
+.main .stRadio input[type="radio"] {display: none !important;}
+.main .stButton > button[kind="primary"] {background: #4f46e5 !important; border: none !important; color: #ffffff !important; border-radius: 6px !important; font-weight: 500 !important;}
+.stTabs [data-baseweb="tab-list"] {border-bottom: 2px solid #e2e8f0 !important;}
+.stTabs [aria-selected="true"] {color: #4f46e5 !important; border-bottom: 2px solid #4f46e5 !important;}
+</style>
+""", unsafe_allow_html=True)
 st.markdown(CSS, unsafe_allow_html=True)
 
 # ==================================================

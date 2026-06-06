@@ -34,7 +34,12 @@ section[data-testid="stSidebar"] .stCaption p {color: #818cf8 !important; font-s
 section[data-testid="stSidebar"] .stButton > button {background: transparent !important; border: 1px solid #3730a3 !important; color: #818cf8 !important; font-size: 12px !important; padding: 4px 12px !important; border-radius: 6px !important; width: 100% !important;}
 section[data-testid="stSidebar"] .stButton > button:hover {background: #2e1065 !important; border-color: #6366f1 !important; color: #c7d2fe !important;}
 section[data-testid="stSidebar"] .stRadio > div {gap: 2px !important;}
-section[data-testid="stSidebar"] .stRadio label {background: transparent !important; border-radius: 6px !important; padding: 5px 10px !important; font-size: 12px !important; color: #c7d2fe !important; cursor: pointer !important; display: block !important; width: 100% !important;}
+.main input[type="radio"] {display: none !important;}
+.main input[type="radio"] + div {display: none !important;}
+.main .stRadio label > div:first-of-type {display: none !important;}
+.main .stRadio label {background: #f8fafc !important; border: 1.5px solid #e2e8f0 !important; border-radius: 8px !important; padding: 10px 16px !important; margin: 4px !important; cursor: pointer !important;}
+.main .stRadio label:hover {border-color: #6366f1 !important; background: #eef2ff !important;}
+section[data-testid="stSidebar"] .stRadio label {background: transparent !important; border-radius: 6px !important; padding: 4px 8px !important; font-size: 11px !important; color: #c7d2fe !important; cursor: pointer !important; display: block !important; width: 100% !important; white-space: nowrap !important; overflow: hidden !important; text-overflow: ellipsis !important;}
 section[data-testid="stSidebar"] .stRadio label:hover {background: rgba(99,102,241,0.15) !important; color: #ffffff !important;}
 section[data-testid="stSidebar"] .stRadio input[type="radio"] {display: none !important;}
 section[data-testid="stSidebar"] .stRadio [data-testid="stMarkdownContainer"] p {font-size: 13px !important; color: #c7d2fe !important;}

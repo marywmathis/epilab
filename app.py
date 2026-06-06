@@ -51,7 +51,6 @@ section[data-testid="stSidebar"] hr {border-color: #3730a3 !important; margin: 8
 .stTabs [aria-selected="true"] {color: #4f46e5 !important; border-bottom: 2px solid #4f46e5 !important;}
 </style>
 """, unsafe_allow_html=True)
-st.markdown(CSS, unsafe_allow_html=True)
 
 # ==================================================
 # SUPABASE AUTH

@@ -22,6 +22,7 @@ except ImportError:
 from supabase import create_client, Client
 
 st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
+st.markdown(CSS, unsafe_allow_html=True)
 
 # ==================================================
 # SUPABASE AUTH

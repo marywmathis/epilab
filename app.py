@@ -1679,14 +1679,25 @@ if current_page == "foundations":
     st.title("🏛️ Foundations of Epidemiology")
     st.markdown("Core frameworks that underpin all of epidemiology — how disease develops, how we prevent it, how we study it, and what counts as a cause.")
 
-    found_section = st.radio("Section:", [
+    _found_options = [
         "1️⃣ Epidemiology Triangle",
         "2️⃣ Natural History & Levels of Prevention",
         "3️⃣ Chain of Infection & Infectious Disease",
         "4️⃣ Herd Immunity & R₀",
         "5️⃣ Outbreak Investigation — The 10 Steps",
         "6️⃣ PICO Framework",
-    ], horizontal=True)
+    ]
+    if "found_section" not in st.session_state:
+        st.session_state["found_section"] = _found_options[0]
+    _found_cols = st.columns(len(_found_options))
+    for _i, _opt in enumerate(_found_options):
+        with _found_cols[_i]:
+            _active = st.session_state["found_section"] == _opt
+            if st.button(_opt, key=f"found_{_i}", use_container_width=True,
+                        type="primary" if _active else "secondary"):
+                st.session_state["found_section"] = _opt
+                st.rerun()
+    found_section = st.session_state["found_section"]
     st.divider()
 
     # ── SECTION 1: EPIDEMIOLOGY TRIANGLE ──

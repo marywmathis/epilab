@@ -1707,6 +1707,11 @@ if current_page == "foundations":
     ]
     if "found_section" not in st.session_state:
         st.session_state["found_section"] = _found_options[0]
+    st.markdown("""<style>
+button[data-testid="baseButton-primary"]{background:#4f46e5!important;border-color:#4f46e5!important;color:#fff!important;font-weight:600!important;}
+button[data-testid="baseButton-secondary"]{background:#fff!important;border:1.5px solid #e2e8f0!important;color:#334155!important;}
+button[data-testid="baseButton-secondary"]:hover{border-color:#6366f1!important;background:#eef2ff!important;color:#4338ca!important;}
+</style>""", unsafe_allow_html=True)
     _found_cols = st.columns(len(_found_options))
     for _i, _opt in enumerate(_found_options):
         with _found_cols[_i]:

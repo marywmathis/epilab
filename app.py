@@ -8377,9 +8377,6 @@ This is why the same test can perform differently in different populations.
             """)
 
         st.divider()
-        st.markdown("#### Sensitivity-Specificity Tradeoff")
-        st.info("For any test, you can shift the cutpoint: lowering it increases sensitivity but decreases specificity (more positive results, including more false positives). Raising it increases specificity but decreases sensitivity (fewer positive results, but more missed cases). The ROC curve plots this tradeoff.")
-
     elif screen_section == "2️⃣ Interactive 2×2 Calculator":
         st.subheader("Screening Test Calculator")
 

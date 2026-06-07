@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import streamlit as st
 try:
     import extra_streamlit_components as stx

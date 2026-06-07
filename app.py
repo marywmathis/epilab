@@ -6979,7 +6979,7 @@ elif current_page == "disease_frequency":
 
         elif calc_type == "Incidence Rate (Person-Time)":
             st.markdown("""
-**Why person-time?** When participants are followed for different lengths of time — some drop out, some die of unrelated causes, some join late — simply counting who got sick is unfair. Someone followed for 10 years had far more *opportunity* to develop disease than someone followed for 6 months. Person-time puts everyone on equal footing by counting the time each person was actually at risk.
+**Why person-time?** When participants are followed for different lengths of time -- some drop out, some die of unrelated causes, some join late -- simply counting who got sick is unfair. Someone followed for 10 years had far more *opportunity* to develop disease than someone followed for 6 months. Person-time puts everyone on equal footing by counting the time each person was actually at risk.
             """)
             st.divider()
 

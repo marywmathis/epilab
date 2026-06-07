@@ -8755,8 +8755,8 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
 
         # Build inline PPV/NPV curve SVG — the visual punch
         import streamlit.components.v1 as _prev_comp
-        CW, CH = 720, 370
-        margin_l, margin_r, margin_t, margin_b = 60, 60, 30, 50
+        CW, CH = 720, 420
+        margin_l, margin_r, margin_t, margin_b = 60, 60, 30, 100
         plot_w = CW - margin_l - margin_r
         plot_h = CH - margin_t - margin_b
 

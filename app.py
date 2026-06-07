@@ -6843,6 +6843,10 @@ elif current_page == "disease_frequency":
             st.markdown("""
 **Definition:** The proportion of a disease-free population that develops the disease during a specified time period.
 
+**Why it matters:** Cumulative incidence measures risk. It answers the question: If I am disease-free today, what is the probability I will develop the disease during this period? Public health professionals use it to identify high-risk groups and evaluate whether exposures increase disease risk.
+
+**Example:** If smokers have a much higher cumulative incidence of lung cancer than non-smokers, smoking is likely increasing risk.
+
 **Formula:** Cumulative Incidence = New cases during period ÷ Population at risk at start of period
 
 **Key features:**
@@ -6866,6 +6870,10 @@ elif current_page == "disease_frequency":
 **Key features:**
 - Numerator: new cases
 - Denominator: person-time (e.g., person-years) — accounts for varying follow-up
+**Why it matters:** Incidence rate allows researchers to measure disease occurrence when people are followed for different lengths of time. It provides a more precise estimate of how quickly new cases are occurring in a population.
+
+**Example:** Researchers studying cancer over 20 years often use incidence rates because participants may enter or leave the study at different times.
+
 - Units: cases per person-year, per 100,000 person-years, etc.
 - Used when: follow-up varies (people enter/leave, die, are censored)
 - More precise than cumulative incidence for cohort studies with variable follow-up
@@ -6878,11 +6886,21 @@ elif current_page == "disease_frequency":
         with st.expander("📌 Mortality Rate & Case Fatality Rate"):
             st.markdown("""
 **Mortality Rate:** Incidence of death in a population per unit time.
+
+**Why it matters:** Mortality rates help public health officials identify leading causes of death, monitor trends over time, and evaluate whether interventions are improving population health.
+
+**Example:** A declining heart disease mortality rate may indicate improvements in prevention, treatment, or both.
+
 - Formula: Deaths ÷ Population × time unit
 - Includes *all* causes of death unless specified (cause-specific mortality rate)
 - Used for: population health surveillance, comparing mortality across populations
 
 **Case Fatality Rate (CFR):** The proportion of *cases* (people with disease) who die from it.
+
+**Why it matters:** CFR reflects disease severity. It helps clinicians and public health officials understand how dangerous a disease is once a person becomes ill.
+
+**Example:** A disease may infect relatively few people but still be a major concern if its CFR is very high.
+
 - Formula: Deaths from disease ÷ Total cases × 100
 - Reflects severity of disease given diagnosis
 - Higher CFR = more fatal disease
@@ -6899,6 +6917,10 @@ elif current_page == "disease_frequency":
         with st.expander("📌 Epidemic Curves (Point-Source vs. Propagated)"):
             st.markdown("""
 **Epidemic curve:** A histogram of case counts by time of symptom onset. Shape reveals transmission pattern.
+
+**Why it matters:** Epidemic curves help investigators identify how an outbreak is spreading, estimate likely exposure periods, and guide control measures.
+
+**Example:** A sharp single peak suggests a common exposure source, while multiple waves suggest person-to-person transmission.
 
 **Point-source epidemic:**
 - All cases exposed to the same source at approximately the same time
@@ -6918,6 +6940,10 @@ elif current_page == "disease_frequency":
         with st.expander("📌 Secondary Attack Rate (SAR)"):
             st.markdown("""
 **Definition:** The proportion of susceptible contacts of a case who develop disease within one incubation period of exposure.
+
+**Why it matters:** SAR measures how effectively a disease spreads among close contacts. It helps assess transmissibility in households, schools, dormitories, and other close-contact settings.
+
+**Example:** A high household SAR suggests that isolation, quarantine, vaccination, or prophylaxis may be particularly important for controlling spread.
 
 **Formula:** SAR = Secondary cases ÷ Susceptible contacts × 100
 

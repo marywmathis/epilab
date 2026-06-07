@@ -4041,6 +4041,15 @@ In observational studies, the investigator must identify and control for every c
     st.markdown("---")
     st.markdown("*Strong epidemiologists think structurally before computing.*")
 
+    st.markdown("""
+<div style="background:#eef2ff;border-left:4px solid #6366f1;padding:20px 24px;margin:32px 0 8px 0;border-radius:0 8px 8px 0;">
+<strong>📐 → 📈 Ready to calculate?</strong><br><br>
+Now that you know which study design produces which measure of association, head to <strong>Measures of Association</strong> to practice with real data — preloaded scenarios or your own.
+<br><br>
+<em>Cohort → RR &nbsp;|&nbsp; Case-Control → OR &nbsp;|&nbsp; Cross-Sectional → PR &nbsp;|&nbsp; RCT → RR / HR</em>
+</div>
+""", unsafe_allow_html=True)
+
 
 # ==================================================
 # MODULE 1: BIAS

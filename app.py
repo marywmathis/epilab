@@ -8755,7 +8755,7 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
 
         # Build inline PPV/NPV curve SVG — the visual punch
         import streamlit.components.v1 as _prev_comp
-        CW, CH = 720, 320
+        CW, CH = 720, 370
         margin_l, margin_r, margin_t, margin_b = 60, 60, 30, 50
         plot_w = CW - margin_l - margin_r
         plot_h = CH - margin_t - margin_b
@@ -8775,10 +8775,24 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
 
         # X-axis tick labels
         x_ticks_svg = ""
+        prev_labels = {
+            0.001: ("Very Rare", "1 in 1,000"),
+            0.005: ("Rare", "1 in 200"),
+            0.01:  ("Uncommon", "1 in 100"),
+            0.02:  ("Uncommon", "1 in 50"),
+            0.05:  ("Moderate", "1 in 20"),
+            0.10:  ("Common", "1 in 10"),
+            0.20:  ("Common", "1 in 5"),
+            0.30:  ("Very Common", "1 in 3"),
+            0.50:  ("Extremely Common", "1 in 2"),
+        }
         for p in prevalences:
             xt = x_for_prev(p)
+            label, ratio = prev_labels.get(p, ("", ""))
             x_ticks_svg += f'<line x1="{xt:.1f}" y1="{margin_t+plot_h}" x2="{xt:.1f}" y2="{margin_t+plot_h+4}" stroke="#9ca3af" stroke-width="1"/>'
             x_ticks_svg += f'<text x="{xt:.1f}" y="{margin_t+plot_h+16}" font-size="9" fill="#6b7280" text-anchor="middle">{round(p*100,1)}%</text>'
+            x_ticks_svg += f'<text x="{xt:.1f}" y="{margin_t+plot_h+28}" font-size="8" fill="#6366f1" text-anchor="middle">{label}</text>'
+            x_ticks_svg += f'<text x="{xt:.1f}" y="{margin_t+plot_h+39}" font-size="8" fill="#9ca3af" text-anchor="middle">{ratio}</text>'
 
         # Y-axis tick labels (0, 25, 50, 75, 100)
         y_ticks_svg = ""

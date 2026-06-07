@@ -4915,9 +4915,9 @@ A **confounder** is a variable that distorts the apparent association between an
   <text x="280" y="22" font-size="13" font-weight="700" fill="#1f2937" text-anchor="middle">Coffee &amp; Heart Disease — Confounded by Smoking</text>
 
   <!-- Smoking (confounder) — top center -->
-  <rect x="220" y="40" width="120" height="50" rx="8" fill="#fff3e0" stroke="#ef6c00" stroke-width="2.5"/>
-  <text x="280" y="62" font-size="13" font-weight="700" fill="#ef6c00" text-anchor="middle">Smoking</text>
-  <text x="280" y="80" font-size="10" fill="#9a3412" text-anchor="middle">CONFOUNDER (common cause)</text>
+  <rect x="210" y="40" width="140" height="58" rx="8" fill="#fff3e0" stroke="#ef6c00" stroke-width="2.5"/>
+  <text x="280" y="64" font-size="13" font-weight="700" fill="#ef6c00" text-anchor="middle">Smoking</text>
+  <text x="280" y="82" font-size="10" fill="#9a3412" text-anchor="middle">CONFOUNDER (common cause)</text>
 
   <!-- Coffee (exposure) — bottom left -->
   <rect x="40" y="190" width="140" height="50" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>
@@ -4939,8 +4939,8 @@ A **confounder** is a variable that distorts the apparent association between an
 
   <!-- Coffee → Heart Disease (apparent/spurious — dashed) -->
   <line x1="184" y1="215" x2="376" y2="215" stroke="#9ca3af" stroke-width="2" stroke-dasharray="7,4" marker-end="url(#cf_dashed)"/>
-  <text x="280" y="208" font-size="10" fill="#6b7280" font-style="italic" text-anchor="middle">apparent association</text>
-  <text x="280" y="232" font-size="9" fill="#6b7280" font-style="italic" text-anchor="middle">(what we observe — but the cause is upstream)</text>
+  <text x="280" y="200" font-size="10" fill="#6b7280" font-style="italic" text-anchor="middle">apparent association</text>
+  <text x="280" y="240" font-size="9" fill="#6b7280" font-style="italic" text-anchor="middle">(what we observe — but the cause is upstream)</text>
 
   <!-- Backdoor path annotation -->
   <text x="280" y="265" font-size="11" font-weight="600" fill="#7c2d12" text-anchor="middle">Backdoor path: Coffee ← Smoking → Heart Disease</text>

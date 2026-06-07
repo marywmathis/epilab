@@ -10291,11 +10291,25 @@ Research Question &nbsp;→&nbsp; Null & Alternative Hypotheses &nbsp;→&nbsp; 
         st.markdown("""
 **Two-tailed (default):** You're testing whether any difference exists, regardless of direction. Your 5% tolerance for Type I error is split — 2.5% in each tail.
 
+*In plain language: You don't care whether the effect is higher or lower. You're simply asking: Is there a difference?*
+
+*Example: Do smokers and nonsmokers have different lung cancer rates?*
+
 **One-tailed:** You've predicted a specific direction before collecting data. All 5% goes in one tail, making the test more sensitive in that direction but unable to detect effects in the other.
+
+*In plain language: You are betting on one specific outcome before you see the data.*
+
+*Example: Do smokers have higher lung cancer rates than nonsmokers?*
 
 **In practice:** Use two-tailed as the default. One-tailed requires a strong, pre-specified directional hypothesis. Using one-tailed post-hoc (after seeing the data) inflates Type I error.
 
+*In plain language: Most studies should use two-tailed tests. Only use a one-tailed test if you had a strong reason to predict the direction before collecting data.*
+
 **Chi-square tests are nondirectional** — the chi-square statistic is always non-negative (it measures total squared departure from independence), so the test cannot distinguish which group has higher rates. The p-value comes from the right tail of the chi-square distribution. It is more precise to call this a nondirectional test rather than "two-tailed," since the mechanics differ from a two-sided t-test.
+
+*In plain language: A chi-square test can tell you that two groups differ, but not which group is higher. It asks, "Is there evidence of an association?" rather than "Is one group larger than the other?"*
+
+*Example: A chi-square test may show that smoking and lung cancer are associated, but you must examine the data to determine which group has the higher rate.*
         """)
 
     elif ht_section == "2️⃣ What Does Rejecting the Null Actually Mean?":

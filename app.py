@@ -6834,6 +6834,7 @@ elif current_page == "disease_frequency":
 
 **Example:** 1,200 of 10,000 adults have diabetes at a health fair → Prevalence = 12%
             """)
+            st.info("**Why it matters:** Prevalence tells us how much disease currently exists in a population. It helps healthcare systems estimate the burden of disease and determine how many services, staff, medications, and resources are needed.\n\n**Example:** A city with high diabetes prevalence needs more endocrinologists and diabetes educators regardless of whether incidence is rising or falling.")
 
         with st.expander("📌 Cumulative Incidence (Attack Rate)"):
             st.markdown("""
@@ -6852,6 +6853,7 @@ elif current_page == "disease_frequency":
 
 **Attack rate:** Cumulative incidence in the context of an outbreak (same formula, shorter time frame). E.g., 42 of 200 attendees at a catered event developed food poisoning → Attack rate = 21%
             """)
+            st.info("**Why it matters:** Cumulative incidence measures risk. It answers: If I am disease-free today, what is the probability I will develop the disease during this period? Used to identify high-risk groups and evaluate whether exposures increase disease risk.\n\n**Example:** If smokers have a much higher 10-year cumulative incidence of lung cancer than non-smokers, smoking is likely increasing risk.")
 
         with st.expander("📌 Incidence Rate (Incidence Density)"):
             st.markdown("""
@@ -6870,6 +6872,7 @@ elif current_page == "disease_frequency":
 
 **Person-time calculation:** A subject followed for 3.5 years contributes 3.5 person-years. 100 people followed for 1 year = 100 person-years = 10 people followed for 10 years = 100 person-years.
             """)
+            st.info("**Why it matters:** Incidence rate allows researchers to measure disease occurrence when people are followed for different lengths of time. It handles dropouts, deaths, and staggered enrollment without bias.\n\n**Example:** Researchers studying cancer over 20 years use incidence rates because participants may enter or leave the study at different times.")
 
         with st.expander("📌 Mortality Rate & Case Fatality Rate"):
             st.markdown("""
@@ -6891,6 +6894,7 @@ elif current_page == "disease_frequency":
 
 **Example:** COVID-19 in early 2020 — high CFR in elderly (~10–20%), but overall population mortality rate was low because prevalence was still low.
             """)
+            st.info("**Why it matters:**\n- Mortality rate helps officials identify leading causes of death and monitor trends over time.\n- CFR reflects disease severity once a person is ill. A disease infecting few people can still be a major concern if its CFR is very high.\n\nMortality rate = How common is death in the population? CFR = How deadly is the disease once you have it?")
 
         with st.expander("📌 Epidemic Curves (Point-Source vs. Propagated)"):
             st.markdown("""
@@ -6910,6 +6914,7 @@ elif current_page == "disease_frequency":
 
 **Incubation period:** Time from exposure to symptom onset. For a point-source outbreak, the range of onset times tells you the plausible incubation period for that pathogen.
             """)
+            st.info("**Why it matters:** Epidemic curves help investigators identify how an outbreak is spreading and guide control measures before lab confirmation is available.\n\n**Example:** A sharp single peak suggests a common food source. Multiple waves suggest person-to-person spread. The shape alone changes the entire investigation strategy.")
 
         with st.expander("📌 Secondary Attack Rate (SAR)"):
             st.markdown("""
@@ -6938,6 +6943,8 @@ elif current_page == "disease_frequency":
 - Higher SAR = more transmissible pathogen or more intimate setting
 
 **Example values:** Norovirus household SAR ≈ 30–80%; Measles SAR in unvaccinated households ≈ 75–90%; Seasonal influenza SAR ≈ 10–30%
+            """)
+            st.info("**Why it matters:** SAR measures how effectively a disease spreads among close contacts. It helps assess whether isolation, quarantine, or vaccination will contain spread.\n\n**One-sentence summaries:**\nPrevalence = How much disease exists? | Cumulative incidence = What is the risk? | Incidence rate = How fast are new cases occurring? | Mortality rate = How common is death? | CFR = How deadly once infected? | SAR = How easily does it spread to contacts?"
             """)
 
     elif df_section == "2️⃣ Interactive Calculator":

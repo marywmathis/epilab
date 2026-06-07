@@ -1669,6 +1669,71 @@ with st.sidebar:
     if st.button("↩ Log Out", key="logout_btn"):
         st.session_state["authenticated"] = False
         st.rerun()
+    import streamlit.components.v1 as _rec_comp
+    _rec_comp.html("""
+<style>
+#rec-btn {
+    width: 100%;
+    padding: 6px 12px;
+    border-radius: 6px;
+    border: 1px solid #3730a3;
+    background: transparent;
+    color: #818cf8;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Source Sans', sans-serif;
+    margin-top: 4px;
+    transition: all 0.2s;
+}
+#rec-btn:hover { background: #2e1065; color: #c7d2fe; }
+#rec-btn.recording { border-color: #ef4444; color: #ef4444; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+</style>
+<button id="rec-btn" onclick="toggleRecording()">⏺ Record Screen</button>
+<script>
+let mediaRecorder = null;
+let chunks = [];
+let recording = false;
+
+async function toggleRecording() {
+    const btn = document.getElementById('rec-btn');
+    if (!recording) {
+        try {
+            const stream = await navigator.mediaDevices.getDisplayMedia({
+                video: { mediaSource: 'screen' },
+                audio: true
+            });
+            mediaRecorder = new MediaRecorder(stream);
+            chunks = [];
+            mediaRecorder.ondataavailable = e => chunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                const blob = new Blob(chunks, { type: 'video/webm' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'epilab-recording-' + new Date().toISOString().slice(0,19).replace(/:/g,'-') + '.webm';
+                a.click();
+                URL.revokeObjectURL(url);
+                btn.textContent = '⏺ Record Screen';
+                btn.classList.remove('recording');
+                recording = false;
+            };
+            mediaRecorder.start();
+            recording = true;
+            btn.textContent = '⏹ Stop Recording';
+            btn.classList.add('recording');
+            stream.getVideoTracks()[0].onended = () => {
+                if (recording) { mediaRecorder.stop(); }
+            };
+        } catch(e) {
+            console.log('Recording cancelled or not supported');
+        }
+    } else {
+        mediaRecorder.stop();
+    }
+}
+</script>
+""", height=48)
     st.divider()
     cur = st.session_state.get("current_page", "study_designs")
     cur_idx = PAGE_KEYS.index(cur) if cur in PAGE_KEYS else 0

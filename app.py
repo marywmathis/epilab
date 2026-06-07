@@ -4932,7 +4932,7 @@ A **confounder** is a variable that distorts the apparent association between an
 
   <!-- Smoking → Coffee (real causal arrow) -->
   <line x1="240" y1="92" x2="140" y2="188" stroke="#ef6c00" stroke-width="2.5" marker-end="url(#cf_solid)"/>
-  <text x="170" y="135" font-size="10" fill="#9a3412" font-style="italic">causes</text>
+  <text x="145" y="135" font-size="10" fill="#9a3412" font-style="italic">causes</text>
 
   <!-- Smoking → Heart Disease (real causal arrow) -->
   <line x1="320" y1="92" x2="420" y2="188" stroke="#ef6c00" stroke-width="2.5" marker-end="url(#cf_solid)"/>

@@ -6847,6 +6847,10 @@ elif current_page == "disease_frequency":
 
 **Example:** If smokers have a much higher cumulative incidence of lung cancer than non-smokers, smoking is likely increasing risk.
 
+**Why it matters:** Cumulative incidence measures risk. It answers the question: If I am disease-free today, what is the probability I will develop the disease during this period? Public health professionals use it to identify high-risk groups and evaluate whether exposures increase disease risk.
+
+**Example:** If smokers have a much higher cumulative incidence of lung cancer than non-smokers, smoking is likely increasing risk.
+
 **Formula:** Cumulative Incidence = New cases during period ÷ Population at risk at start of period
 
 **Key features:**
@@ -6870,6 +6874,10 @@ elif current_page == "disease_frequency":
 **Key features:**
 - Numerator: new cases
 - Denominator: person-time (e.g., person-years) — accounts for varying follow-up
+**Why it matters:** Incidence rate allows researchers to measure disease occurrence when people are followed for different lengths of time. It provides a more precise estimate of how quickly new cases are occurring in a population.
+
+**Example:** Researchers studying cancer over 20 years often use incidence rates because participants may enter or leave the study at different times.
+
 **Why it matters:** Incidence rate allows researchers to measure disease occurrence when people are followed for different lengths of time. It provides a more precise estimate of how quickly new cases are occurring in a population.
 
 **Example:** Researchers studying cancer over 20 years often use incidence rates because participants may enter or leave the study at different times.

@@ -9989,7 +9989,12 @@ elif current_page == "advanced_measures":
                 draw_ci("HR", hr, ci_low_hr, ci_high_hr)
 
     st.markdown("---")
-    st.markdown("*Strong epidemiologists think structurally before computing.*")
+    st.markdown("""
+<div style="background:#f8f9fa;border:1px solid #e2e8f0;padding:16px 20px;margin:24px 0 8px 0;border-radius:8px;font-size:13px;color:#64748b;line-height:2;">
+<strong>The epidemiologic reasoning chain:</strong><br>
+📐 Study Design &nbsp;→&nbsp; 📈 Measure of Association &nbsp;→&nbsp; 📉 Advanced Measures &nbsp;→&nbsp; 🔍 Interpretation &nbsp;→&nbsp; 🏛️ Public Health Action
+</div>
+""", unsafe_allow_html=True)
 
 
 # ==================================================

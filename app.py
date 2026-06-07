@@ -4915,9 +4915,10 @@ A **confounder** is a variable that distorts the apparent association between an
   <text x="280" y="22" font-size="13" font-weight="700" fill="#1f2937" text-anchor="middle">Coffee &amp; Heart Disease — Confounded by Smoking</text>
 
   <!-- Smoking (confounder) — top center -->
-  <rect x="210" y="40" width="140" height="58" rx="8" fill="#fff3e0" stroke="#ef6c00" stroke-width="2.5"/>
+  <rect x="210" y="40" width="140" height="70" rx="8" fill="#fff3e0" stroke="#ef6c00" stroke-width="2.5"/>
   <text x="280" y="64" font-size="13" font-weight="700" fill="#ef6c00" text-anchor="middle">Smoking</text>
-  <text x="280" y="82" font-size="10" fill="#9a3412" text-anchor="middle">CONFOUNDER (common cause)</text>
+  <text x="280" y="80" font-size="10" fill="#9a3412" text-anchor="middle">CONFOUNDER</text>
+  <text x="280" y="95" font-size="10" fill="#9a3412" text-anchor="middle">(common cause)</text>
 
   <!-- Coffee (exposure) — bottom left -->
   <rect x="40" y="190" width="140" height="50" rx="8" fill="#e3f2fd" stroke="#1565c0" stroke-width="2"/>

@@ -9840,6 +9840,28 @@ elif current_page == "measures_association":
 elif current_page == "advanced_measures":
     st.title("📉 Advanced Epi Measures")
 
+    st.markdown("""
+<div style="background:#f8f9fa;border-left:4px solid #6366f1;padding:16px 20px;margin:8px 0 16px 0;border-radius:0 8px 8px 0;font-size:14px;color:#1e1b4b;line-height:1.8;">
+<strong>Beyond Risk Ratios and Odds Ratios</strong><br><br>
+Measures of association tell us whether an exposure is related to an outcome. Advanced epidemiologic measures help answer practical public health questions about <strong>impact, prevention, treatment, survival, and population burden</strong>.<br><br>
+• How much disease is attributable to an exposure?<br>
+• How many cases could be prevented if the exposure disappeared?<br>
+• How does observed disease compare to expected disease?<br>
+• How many people must be treated to help or harm one person?<br>
+• How does risk change over time?
+</div>
+""", unsafe_allow_html=True)
+
+    st.markdown("""
+| Measure | Answers the Question |
+|---|---|
+| **PAR** | How much disease in the population is due to the exposure? |
+| **AR%** | Among exposed people, what proportion of disease is attributable to the exposure? |
+| **SMR** | Is mortality higher or lower than expected in this population? |
+| **NNT/NNH** | How many people must receive an intervention to produce one benefit or harm? |
+| **HR** | How does event risk compare between groups over time? |
+""")
+
     col_t2, col_r2 = st.columns([5,1])
     with col_r2:
         st.markdown("<br>", unsafe_allow_html=True)
@@ -9860,7 +9882,20 @@ elif current_page == "advanced_measures":
 
     if measure == "Population Attributable Risk (PAR)":
         st.subheader("Population Attributable Risk (PAR)")
-        st.info("PAR estimates the proportion of disease in the **total population** attributable to a specific exposure.")
+        st.markdown("""
+**The Question:** How much disease in the entire population is attributable to a specific exposure?
+
+**Why It Matters:** PAR estimates the public health impact of an exposure. It combines both the strength of the association and how common the exposure is in the population. A strong risk factor that affects only a few people may have a small PAR. A modest risk factor that affects millions of people may have a large PAR.
+
+**Interpretation:** PAR represents the amount of disease that could theoretically be prevented if the exposure were completely eliminated from the population.
+
+**Example:** Suppose smoking causes 40 additional lung cancer cases per 100,000 people each year. PAR = 40 cases per 100,000. Approximately 40 lung cancer cases per 100,000 population are attributable to smoking and could potentially be prevented if smoking were eliminated.
+
+**Public Health Use:** Prioritizing prevention programs · Estimating population burden · Guiding policy decisions · Evaluating potential impact of interventions
+
+**Key Insight:** A risk factor can have a high individual risk but a low population impact if few people are exposed.
+        """)
+        st.info("✓ Think Before You Calculate: Is there evidence the exposure causes the disease? How common is the exposure in the population? Are we interested in population impact rather than individual risk?")
         data_mode = st.radio("Data entry", ["Use preset scenario","Enter my own data"], horizontal=True)
         if data_mode == "Use preset scenario":
             scenario = st.selectbox("Scenario", ["Smoking & Lung Cancer","Physical Inactivity & T2D","Obesity & CVD"])
@@ -9878,7 +9913,20 @@ elif current_page == "advanced_measures":
 
     elif measure == "Standardized Mortality Ratio (SMR)":
         st.subheader("Standardized Mortality Ratio (SMR)")
-        st.info("SMR = Observed Deaths / Expected Deaths. Compares a study group to a reference population.")
+        st.markdown("""
+**The Question:** Is mortality in this population higher or lower than what we would expect based on a reference population?
+
+**Why It Matters:** SMR accounts for differences in age structure and other demographic factors when comparing mortality across populations. It tells us whether a group is dying at a higher or lower rate than expected.
+
+**Interpretation:** SMR = Observed Deaths ÷ Expected Deaths. SMR > 1 means more deaths than expected. SMR < 1 means fewer deaths than expected. SMR = 1 means observed equals expected.
+
+**Example:** An SMR of 1.4 in coal miners means they experienced 40% more deaths than expected compared to the general population after accounting for age.
+
+**Public Health Use:** Occupational health surveillance · Identifying high-risk populations · Evaluating effectiveness of health programs
+
+**Key Insight:** SMR does not tell you why mortality differs — only that it does. Follow-up investigation is needed to identify causes.
+        """)
+        st.info("✓ Think Before You Calculate: Do you have observed death counts for your study group? Do you have age-specific rates from a reference population to calculate expected deaths? Is the comparison population appropriate?")
         data_mode = st.radio("Data entry", ["Use preset scenario","Enter my own data"], horizontal=True, key="smr_mode")
         if data_mode == "Use preset scenario":
             scenario = st.selectbox("Scenario", ["Coal Miners & Respiratory Disease","Nuclear Workers & All-Cause Mortality","Firefighters & Cancer"], key="smr_scenario")
@@ -9919,6 +9967,20 @@ elif current_page == "advanced_measures":
 
     elif measure == "Attributable Risk & AR%":
         st.subheader("Attributable Risk (AR) & AR%")
+        st.markdown("""
+**The Question:** How much of the disease risk among exposed individuals is due to the exposure itself, beyond background risk?
+
+**Why It Matters:** While relative risk tells us how many times more likely exposed individuals are to develop disease, AR tells us the absolute difference in risk — a more direct measure of the exposure's impact on individuals.
+
+**Interpretation:** AR is the absolute difference in risk between exposed and unexposed groups. AR% is the proportion of disease in the exposed group attributable to the exposure.
+
+**Example:** If lung cancer risk is 10% in smokers and 1% in non-smokers: AR = 9%. AR% = 90%. This means 9 out of every 100 smokers developed cancer specifically because of smoking, and 90% of lung cancer in smokers is attributable to smoking.
+
+**Public Health Use:** Quantifying individual-level impact · Clinical counseling · Communicating risk to patients · Comparing interventions
+
+**Key Insight:** AR and AR% apply only to the exposed group. For population-level impact, use PAR.
+        """)
+        st.info("✓ Think Before You Calculate: Do you have risk estimates for both exposed and unexposed groups? Is the comparison group truly unexposed? Is the association causal or just associative?")
         data_mode = st.radio("Data entry", ["Use preset scenario","Enter my own data"], horizontal=True, key="ar_mode")
         if data_mode == "Use preset scenario":
             scenario = st.selectbox("Scenario", ["Hypertension & CVD","Unvaccinated & Measles","High Sodium & Stroke"], key="ar_scenario")
@@ -9937,7 +9999,21 @@ elif current_page == "advanced_measures":
             st.success(f"AR% = {round(ar_pct,1)}%: fraction of disease in the exposed group attributable to the exposure.")
 
     elif measure == "Number Needed to Harm / Treat (NNH/NNT)":
-        st.subheader("NNH / NNT")
+        st.subheader("NNH / NNT — Number Needed to Harm / Treat")
+        st.markdown("""
+**The Question:** NNT: How many people must receive a treatment for one additional person to benefit? NNH: How many people must be exposed to a risk factor before one additional person is harmed?
+
+**Why It Matters:** NNT and NNH translate statistical associations into clinically and practically meaningful numbers. They help clinicians, patients, and policymakers understand the real-world impact of treatments and exposures.
+
+**Interpretation:** Lower NNT = more effective treatment. Higher NNH = exposure causes harm less frequently. Both are expressed as whole numbers rounded up.
+
+**Example:** NNT of 20 means 20 patients must be treated for one additional patient to benefit. NNH of 50 means 50 people must be exposed for one additional person to be harmed.
+
+**Public Health Use:** Clinical decision-making · Communicating treatment benefit to patients · Comparing competing interventions · Policy analysis
+
+**Key Insight:** NNT and NNH are the inverse of Attributable Risk. A small AR produces a large NNT/NNH, and vice versa.
+        """)
+        st.info("✓ Think Before You Calculate: Is the outcome clinically meaningful? Are the exposed and unexposed groups truly comparable? Over what time period is the NNT or NNH calculated?")
         data_mode = st.radio("Data entry", ["Use preset scenario","Enter my own data"], horizontal=True, key="nnt_mode")
         if data_mode == "Use preset scenario":
             scenario = st.selectbox("Scenario", ["Statins & Cardiac Events (NNT)","Aspirin & GI Bleeding (NNH)","Smoking Cessation (NNT)"], key="nnt_scenario")
@@ -9963,7 +10039,20 @@ elif current_page == "advanced_measures":
 
     elif measure == "Hazard Ratio (HR)":
         st.subheader("Hazard Ratio (HR)")
-        st.info("HR compares the instantaneous event rate over time. Output of Cox proportional hazards regression.")
+        st.markdown("""
+**The Question:** How does the rate of events compare between groups over time?
+
+**Why It Matters:** HR is used in survival analysis, where the outcome is time-to-event rather than simple presence or absence of disease. It accounts for the fact that people may be followed for different lengths of time and events can occur at any point during follow-up.
+
+**Interpretation:** HR > 1 means the event occurs faster in the exposed group. HR < 1 means the event occurs more slowly. HR = 1 means no difference in event timing between groups.
+
+**Example:** An HR of 0.75 for a cancer treatment means treated patients had a 25% lower rate of death at any given point in time compared to untreated patients throughout the follow-up period.
+
+**Public Health Use:** Survival analysis · Clinical trials · Cancer registry studies · Chronic disease research
+
+**Key Insight:** HR is not the same as relative risk. HR reflects the instantaneous rate of events at any point in time, not cumulative risk over a fixed period.
+        """)
+        st.info("✓ Think Before You Calculate: Is your outcome time-to-event? Do you have censored observations? Does the proportional hazards assumption hold — meaning the HR is roughly constant over time?")
         data_mode = st.radio("Data entry", ["Use preset scenario","Enter my own data"], horizontal=True, key="hr_mode")
         if data_mode == "Use preset scenario":
             scenario = st.selectbox("Scenario", ["Statins & Time to MI","HIV & Time to AIDS","Physical Activity & Dementia"], key="hr_scenario")

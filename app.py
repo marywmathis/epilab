@@ -8812,6 +8812,10 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
             annotations_svg += f'<text x="{cx:.1f}" y="{ly:.1f}" font-size="11" font-weight="700" fill="{color}" text-anchor="middle">PPV={ppv_vals[i]}%</text>'
 
         curve_svg = f"""<svg xmlns="http://www.w3.org/2000/svg" width="{CW}" height="{CH}" style="background:white;border:1px solid #e5e7eb;border-radius:8px;">
+  <!-- Low-prevalence shaded region -->
+  <rect x="{margin_l:.1f}" y="{margin_t}" width="{x_for_prev(0.05)-margin_l:.1f}" height="{plot_h}" fill="#f3f4f6" opacity="0.7"/>
+  <text x="{(margin_l + x_for_prev(0.05))/2:.1f}" y="{margin_t+14}" font-size="9" fill="#9ca3af" text-anchor="middle" font-style="italic">Low-prevalence</text>
+  <text x="{(margin_l + x_for_prev(0.05))/2:.1f}" y="{margin_t+25}" font-size="9" fill="#9ca3af" text-anchor="middle" font-style="italic">populations</text>
   <!-- Axes -->
   <line x1="{margin_l}" y1="{margin_t}" x2="{margin_l}" y2="{margin_t+plot_h}" stroke="#9ca3af" stroke-width="1.5"/>
   <line x1="{margin_l}" y1="{margin_t+plot_h}" x2="{margin_l+plot_w}" y2="{margin_t+plot_h}" stroke="#9ca3af" stroke-width="1.5"/>
@@ -8839,7 +8843,7 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
 
         st.markdown("""
 <div style="background:#eef2ff;border-left:4px solid #6366f1;padding:14px 16px;margin:14px 0;border-radius:0 8px 8px 0;font-size:13.5px;color:#1e1b4b;line-height:1.7;">
-<b>Reading the curves:</b> When the lines are far apart, the test performs very differently depending on the result. In low-prevalence populations, the green line (NPV) stays very high while the blue line (PPV) drops sharply — negative results are usually trustworthy, but many positive results may be false alarms. The farther apart the lines, the bigger the difference in reliability between positive and negative results. The closer together they are, the more similar that reliability becomes.
+<b>Reading the curves:</b> Prevalence tells us how common the disease is in the population. As prevalence increases (moving right), positive test results become more trustworthy, causing the blue PPV line to rise. As prevalence decreases (moving left), negative results remain highly trustworthy, while positive results are more likely to be false alarms.
 </div>
 """, unsafe_allow_html=True)
 

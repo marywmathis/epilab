@@ -8826,6 +8826,12 @@ Pre-test odds: {round(pre_odds,3)} → Post-test odds: {round(post_odds,3)} → 
 </svg>"""
         _prev_comp.html(f"<div style='font-family:sans-serif;'>{curve_svg}</div>", height=CH+10, scrolling=False)
 
+        st.markdown("""
+<div style="background:#eef2ff;border-left:4px solid #6366f1;padding:14px 16px;margin:14px 0;border-radius:0 8px 8px 0;font-size:13.5px;color:#1e1b4b;line-height:1.7;">
+<b>Reading the curves:</b> When the lines are far apart, the test performs very differently depending on the result. In low-prevalence populations, the green line (NPV) stays very high while the blue line (PPV) drops sharply — negative results are usually trustworthy, but many positive results may be false alarms. The farther apart the lines, the bigger the difference in reliability between positive and negative results. The closer together they are, the more similar that reliability becomes.
+</div>
+""", unsafe_allow_html=True)
+
         # Color-graded HTML table — PPV column is the focal point
         def ppv_color(v):
             if v < 50: return ("#fef2f2", "#b91c1c")  # red - alarming

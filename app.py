@@ -9926,10 +9926,7 @@ Measures of association tell us whether an exposure is associated with an outcom
 **Key Insight:** SMR does not tell you why mortality differs — only that it does. Follow-up investigation is needed to identify causes.
         """)
         st.info("✓ Think Before You Calculate: Do you have observed death counts for your study group? Do you have age-specific rates from a reference population to calculate expected deaths? Is the comparison population appropriate?")
-        st.markdown("📊 Want more practice with standardization? See the **Standardization** module for direct and indirect standardization exercises.")
-        if st.button("→ Go to Standardization", key="smr_to_std"):
-            st.session_state["current_page"] = "standardization"
-            st.rerun()
+
         data_mode = st.radio("Data entry", ["Use preset scenario","Enter my own data"], horizontal=True, key="smr_mode")
         if data_mode == "Use preset scenario":
             scenario = st.selectbox("Scenario", ["Coal Miners & Respiratory Disease","Nuclear Workers & All-Cause Mortality","Firefighters & Cancer"], key="smr_scenario")
@@ -9967,6 +9964,10 @@ Measures of association tell us whether an exposure is associated with an outcom
                 elif smr > 1: st.error(f"SMR = {round(smr,2)} — Excess mortality vs. reference population.")
                 else: st.success(f"SMR = {round(smr,2)} — Lower mortality. May reflect healthy worker effect.")
                 draw_ci("SMR", smr, ci_low_s, ci_high_s)
+                st.markdown("📊 Want more practice with standardization? See the **Standardization** module for direct and indirect standardization exercises.")
+                if st.button("→ Go to Standardization", key="smr_to_std"):
+                    st.session_state["current_page"] = "standardization"
+                    st.rerun()
 
     elif measure == "Attributable Risk & AR%":
         st.subheader("Attributable Risk (AR) & AR%")

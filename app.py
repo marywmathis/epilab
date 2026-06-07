@@ -9843,24 +9843,21 @@ elif current_page == "advanced_measures":
     st.markdown("""
 <div style="background:#f8f9fa;border-left:4px solid #6366f1;padding:16px 20px;margin:8px 0 16px 0;border-radius:0 8px 8px 0;font-size:14px;color:#1e1b4b;line-height:1.8;">
 <strong>Beyond Risk Ratios and Odds Ratios</strong><br><br>
-Measures of association tell us whether an exposure is related to an outcome. Advanced epidemiologic measures help answer practical public health questions about <strong>impact, prevention, treatment, survival, and population burden</strong>.<br><br>
-• How much disease is attributable to an exposure?<br>
-• How many cases could be prevented if the exposure disappeared?<br>
-• How does observed disease compare to expected disease?<br>
-• How many people must be treated to help or harm one person?<br>
-• How does risk change over time?
+Measures of association tell us whether an exposure is associated with an outcome. Advanced epidemiologic measures help answer practical questions about <strong>population impact, prevention, treatment effectiveness, survival, and public health decision-making</strong>.<br><br>
+<strong>📉 Which Question Are You Trying to Answer?</strong><br><br>
+• <strong>PAR</strong> → How much disease in the population is attributable to the exposure?<br>
+• <strong>AR%</strong> → Among exposed individuals, what proportion of disease is attributable to the exposure?<br>
+• <strong>SMR</strong> → Is mortality higher or lower than expected?<br>
+• <strong>NNT/NNH</strong> → How many people must receive an intervention for one additional benefit or harm?<br>
+• <strong>HR</strong> → How does event risk compare between groups over time?
 </div>
 """, unsafe_allow_html=True)
 
     st.markdown("""
-| Measure | Answers the Question |
-|---|---|
-| **PAR** | How much disease in the population is due to the exposure? |
-| **AR%** | Among exposed people, what proportion of disease is attributable to the exposure? |
-| **SMR** | Is mortality higher or lower than expected in this population? |
-| **NNT/NNH** | How many people must receive an intervention to produce one benefit or harm? |
-| **HR** | How does event risk compare between groups over time? |
-""")
+<div style="background:#eef2ff;border:1px solid #c7d2fe;padding:12px 20px;margin:0 0 16px 0;border-radius:8px;font-size:13px;color:#3730a3;line-height:2;text-align:center;">
+📐 Study Design &nbsp;→&nbsp; 📈 Measure of Association &nbsp;→&nbsp; <strong>📉 Advanced Measures</strong> &nbsp;→&nbsp; 🔍 Interpretation &nbsp;→&nbsp; 🏛️ Public Health Action
+</div>
+""", unsafe_allow_html=True)
 
     col_t2, col_r2 = st.columns([5,1])
     with col_r2:
@@ -9893,9 +9890,11 @@ Measures of association tell us whether an exposure is related to an outcome. Ad
 
 **Public Health Use:** Prioritizing prevention programs · Estimating population burden · Guiding policy decisions · Evaluating potential impact of interventions
 
+**How PAR Connects to Earlier Concepts:** Measures such as the Risk Ratio tell us how strongly an exposure is associated with disease. PAR goes one step further by asking how much disease burden the exposure creates in the entire population.
+
 **Key Insight:** A risk factor can have a high individual risk but a low population impact if few people are exposed.
         """)
-        st.info("✓ Think Before You Calculate: Is there evidence the exposure causes the disease? How common is the exposure in the population? Are we interested in population impact rather than individual risk?")
+        st.info("✓ Think Before You Calculate: Is the exposure plausibly causal? How common is the exposure? Are we interested in population impact or individual risk?")
         data_mode = st.radio("Data entry", ["Use preset scenario","Enter my own data"], horizontal=True)
         if data_mode == "Use preset scenario":
             scenario = st.selectbox("Scenario", ["Smoking & Lung Cancer","Physical Inactivity & T2D","Obesity & CVD"])
@@ -10078,12 +10077,7 @@ Measures of association tell us whether an exposure is related to an outcome. Ad
                 draw_ci("HR", hr, ci_low_hr, ci_high_hr)
 
     st.markdown("---")
-    st.markdown("""
-<div style="background:#f8f9fa;border:1px solid #e2e8f0;padding:16px 20px;margin:24px 0 8px 0;border-radius:8px;font-size:13px;color:#64748b;line-height:2;">
-<strong>The epidemiologic reasoning chain:</strong><br>
-📐 Study Design &nbsp;→&nbsp; 📈 Measure of Association &nbsp;→&nbsp; 📉 Advanced Measures &nbsp;→&nbsp; 🔍 Interpretation &nbsp;→&nbsp; 🏛️ Public Health Action
-</div>
-""", unsafe_allow_html=True)
+    st.markdown("*Strong epidemiologists think structurally before computing.*")
 
 
 # ==================================================

@@ -4049,6 +4049,9 @@ Now that you know which study design produces which measure of association, head
 <em>Cohort → RR &nbsp;|&nbsp; Case-Control → OR &nbsp;|&nbsp; Cross-Sectional → PR &nbsp;|&nbsp; RCT → RR / HR</em>
 </div>
 """, unsafe_allow_html=True)
+    if st.button("📈 Go to Measures of Association", key="sd_to_moa"):
+        st.session_state["current_page"] = "measures_association"
+        st.rerun()
 
 
 # ==================================================
@@ -9526,6 +9529,9 @@ The point at the upper-left corner of the ROC curve (high sensitivity AND high s
 # MODULE 3: MEASURES OF ASSOCIATION (existing tab1)
 # ==================================================
 elif current_page == "measures_association":
+    if st.button("← Back to Study Designs", key="moa_to_sd"):
+        st.session_state["current_page"] = "study_designs"
+        st.rerun()
     st.title("📈 Measures of Association")
 
     PRESETS = {

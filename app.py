@@ -10245,7 +10245,38 @@ elif current_page == "hypothesis_testing":
             for _sid in ["h1","h2","h3","h4","h5","h6","h7","h8"]:
                 delete_scenario_state(f"hypothesis_testing.hypothesis_builder.{_sid}")
             st.rerun()
-    st.markdown("Build your understanding of hypothesis testing, interpreting p-values, and statistical power.")
+    st.markdown("""
+<div style="background:#f8f9fa;border-left:4px solid #6366f1;padding:16px 20px;margin:8px 0 16px 0;border-radius:0 8px 8px 0;font-size:14px;color:#1e1b4b;line-height:1.8;">
+<strong>Why This Matters</strong><br><br>
+Epidemiologists rarely observe perfect differences between groups. Some observed differences reflect real population effects, while others occur because of random sampling variation.<br><br>
+Hypothesis testing helps determine whether an observed association is likely to represent a real effect or simply chance.<br><br>
+<strong>The Core Question</strong><br>
+When we observe a difference between groups, is it:<br>
+• A real effect?<br>
+• Random variation?<br>
+• A result of inadequate sample size?
+</div>
+""", unsafe_allow_html=True)
+
+    st.markdown("""
+<div style="background:#eef2ff;border:1px solid #c7d2fe;padding:12px 20px;margin:0 0 8px 0;border-radius:8px;font-size:13px;color:#3730a3;line-height:2;text-align:center;">
+Research Question &nbsp;→&nbsp; Null & Alternative Hypotheses &nbsp;→&nbsp; Statistical Test &nbsp;→&nbsp; p-value &nbsp;→&nbsp; Decision &nbsp;→&nbsp; Power & Interpretation
+</div>
+""", unsafe_allow_html=True)
+
+    st.markdown("""
+**① One- vs. Two-Tailed Tests** — Learn when direction matters and how rejection regions differ.
+
+**② What Does Rejecting the Null Actually Mean?** — Understand p-values, statistical significance, and Type I/II errors.
+
+**③ Hypothesis Builder** — Practice constructing null and alternative hypotheses from real epidemiologic questions.
+
+**④ Statistical Power & Sample Size** — Explore how sample size, effect size, variability, and α affect the ability to detect true effects.
+""")
+
+    st.warning("⚠ Statistical significance does not prove causation. Even statistically significant findings must still be evaluated for bias, confounding, study design quality, and clinical or public health importance.")
+
+    st.divider()
 
     ht_section = st.radio("Choose a section:", [
         "1️⃣ One vs. Two Tailed Tests",

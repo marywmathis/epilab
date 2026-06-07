@@ -25,6 +25,8 @@ st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 st.markdown("""
 <style>
 #MainMenu, footer, header {visibility: hidden;}
+section[data-testid="stSidebar"][aria-expanded="false"] {display: block !important; min-width: 240px !important; transform: none !important;}
+button[data-testid="collapsedControl"] {display: none !important;}
 [data-testid="stSidebarNav"] {display: none;}
 section[data-testid="stSidebar"] > div:first-child {padding-top: 0;}
 section[data-testid="stSidebar"] {background-color: #1e1b4b !important; min-width: 240px !important; max-width: 240px !important;}

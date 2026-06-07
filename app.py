@@ -5819,7 +5819,7 @@ A **collider** is a variable that is caused by **both** the exposure and the out
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:{DAG_FONT};">
   <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;font-family:{DAG_FONT};">Collider DAG: Talent and Hard Work → Success (collider)</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 230" width="560" height="230" style="font-family:{DAG_FONT};">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 260" width="560" height="260" style="font-family:{DAG_FONT};">
     <defs>
       <marker id="cp" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#7b1fa2"/></marker>
       <marker id="cg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#2e7d32"/></marker>
@@ -6050,7 +6050,7 @@ A **proxy** (or surrogate) is a measured variable that stands in for an unmeasur
             dag_html = f"""
 <div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin:16px 0;text-align:center;font-family:{DAG_FONT};">
   <div style="font-weight:700;font-size:13px;margin-bottom:16px;color:#1a202c;font-family:{DAG_FONT};">Proxy DAG: Education proxies for SES</div>
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 230" width="560" height="230" style="font-family:{DAG_FONT};">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 260" width="560" height="260" style="font-family:{DAG_FONT};">
     <defs>
       <marker id="pg" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#9e9e9e"/></marker>
       <marker id="po" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto"><path d="M0,0 L9,4.5 L0,9 Z" fill="#e65100"/></marker>
@@ -6080,7 +6080,7 @@ A **proxy** (or surrogate) is a measured variable that stands in for an unmeasur
     <text x="280" y="220" font-size="9" fill="#718096" text-anchor="middle" font-style="italic">Residual confounding remains: Education ≠ SES. Weaker proxy = more residual confounding.</text>
   </svg>
 </div>"""
-            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=280, scrolling=False)
+            import streamlit.components.v1 as _dag_comp; _dag_comp.html(dag_html, height=320, scrolling=False)
 
             st.info("""
 **💬 Plain-language explanation:**

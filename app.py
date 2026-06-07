@@ -8262,6 +8262,52 @@ elif current_page == "screening":
     st.divider()
 
     if screen_section == "1️⃣ Core Concepts":
+        st.markdown("### 🔑 Foundational Concepts")
+
+        with st.expander("Screening vs. Diagnostic Testing", expanded=True):
+            st.markdown("""
+**Screening tests** are used to identify people who may have a disease before symptoms appear or before a diagnosis is confirmed. They are usually quick, inexpensive, and designed to cast a wide net.
+
+**Diagnostic tests** are used to confirm whether disease is truly present after a positive screening result or clinical suspicion.
+
+**Examples:**
+- Mammography is a screening test for breast cancer. Biopsy is a diagnostic test that confirms breast cancer.
+- Rapid HIV testing is a screening test. Confirmatory laboratory testing establishes the diagnosis.
+
+**Why this matters:** A positive screening test does not necessarily mean a person has the disease.
+            """)
+
+        with st.expander("No Test Is Perfect", expanded=True):
+            st.markdown("""
+Every screening test makes two types of errors:
+
+- **False Positive (FP):** The test says disease is present when it is not.
+- **False Negative (FN):** The test says disease is absent when it is actually present.
+
+The challenge in screening is balancing these errors.
+
+**Example:**
+- If a cancer screening test is extremely sensitive, it will miss very few true cases — but it may generate more false positives.
+- If the same test is made more specific, fewer healthy people will test positive — but more true cases may be missed.
+            """)
+
+        with st.expander("Why Disease Prevalence Matters", expanded=True):
+            st.markdown("""
+The usefulness of a test depends not only on the test itself but also on how common the disease is in the population being tested.
+
+**When disease is rare:**
+- Most people do not have the disease.
+- False positives can outnumber true positives.
+- Positive results become less trustworthy.
+
+**When disease is common:**
+- Positive results are more likely to represent true disease.
+- Negative results become less trustworthy.
+
+This is why the same test can perform differently in different populations.
+            """)
+
+        st.divider()
         st.subheader("The Screening 2×2 Table")
         st.markdown("All screening test metrics come from a single 2×2 table comparing test result to true disease status.")
 

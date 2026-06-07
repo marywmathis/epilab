@@ -6833,6 +6833,10 @@ elif current_page == "disease_frequency":
 - Useful for: planning healthcare capacity, estimating burden, cross-sectional studies
 
 **Example:** 1,200 of 10,000 adults have diabetes at a health fair → Prevalence = 12%
+
+**Why it matters:** Prevalence tells us how much disease currently exists in a population. It helps healthcare systems estimate the burden of disease and determine how many services, staff, medications, and resources may be needed. High prevalence means many people are living with the condition, even if few new cases are occurring.
+
+**Clinical example:** A city with a high prevalence of diabetes may need more endocrinologists, diabetes educators, and treatment programs.
             """)
 
         with st.expander("📌 Cumulative Incidence (Attack Rate)"):
@@ -6939,6 +6943,18 @@ elif current_page == "disease_frequency":
 
 **Example values:** Norovirus household SAR ≈ 30–80%; Measles SAR in unvaccinated households ≈ 75–90%; Seasonal influenza SAR ≈ 10–30%
             """)
+
+        st.markdown("""
+<div style="background:#eef2ff;border-left:4px solid #6366f1;padding:16px 20px;margin:20px 0;border-radius:0 8px 8px 0;font-size:14px;color:#1e1b4b;line-height:1.8;">
+<strong>Quick reference — what each measure answers:</strong><br>
+• <strong>Prevalence</strong> — How much disease exists right now?<br>
+• <strong>Cumulative Incidence</strong> — What is the risk of getting the disease?<br>
+• <strong>Incidence Rate</strong> — How fast are new cases occurring?<br>
+• <strong>Mortality Rate</strong> — How common is death in the population?<br>
+• <strong>Case Fatality Rate</strong> — How deadly is the disease once you have it?<br>
+• <strong>Secondary Attack Rate</strong> — How easily does it spread to close contacts?
+</div>
+""", unsafe_allow_html=True)
 
     elif df_section == "2️⃣ Interactive Calculator":
         st.subheader("Disease Frequency Calculator")

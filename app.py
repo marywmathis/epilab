@@ -11670,6 +11670,15 @@ A hospital is deciding which screening test to use for two different purposes:
                 "NPV — to ensure negatives are real"
             ],
             "correct": "Sensitivity — to minimize false negatives (missing true cases)",
+            "follow_up": "For Purpose B (confirmatory testing after a positive screen), which property should be maximized?",
+            "follow_up_options": [
+                "Specificity — to minimize false positives and avoid mislabeling healthy people as diseased",
+                "Sensitivity — to catch any remaining cases",
+                "PPV — already high after the initial positive screen",
+                "NPV — to ensure negatives are truly negative"
+            ],
+            "correct_follow_up": "Specificity — to minimize false positives and avoid mislabeling healthy people as diseased",
+            "follow_up_explanation": "Confirmatory tests must be highly specific. After a positive screen, the goal is to rule in disease with confidence — a false positive at this stage leads to unnecessary treatment with serious side effects and significant stigma. High specificity means very few healthy people test positive. SpPin applies: a Specific test whose result is Positive rules in the diagnosis.",
             "explanation": """
 **Purpose A — maximize sensitivity:**
 - The disease is rapidly fatal and treatment can start immediately
@@ -11804,14 +11813,14 @@ AR measures the **probability of developing disease given exposure** — it uses
 
 Ebola's CFR of 70% in this outbreak reflects its extreme virulence. The attack rate of 15% reflects the transmission dynamics in this specific setting.
             """,
-            "follow_up": "What is the mortality rate (deaths per population at risk) for this outbreak?",
+            "follow_up": "What is the cumulative mortality risk (deaths per population at risk) for this outbreak?",
             "follow_up_options": [
-                "10.5% (42 ÷ 400 × 100) — proportion of the whole village who died",
+                "10.5% (42 ÷ 400 × 100) — cumulative mortality risk: proportion of the whole village who died",
                 "70% (42 ÷ 60 × 100) — that's the CFR, not mortality rate",
                 "15% (60 ÷ 400 × 100) — that's the attack rate",
                 "42% (42 ÷ 100 × 100) — incorrect denominator"
             ],
-            "correct_follow_up": "10.5% (42 ÷ 400 × 100) — proportion of the whole village who died",
+            "correct_follow_up": "10.5% (42 ÷ 400 × 100) — cumulative mortality risk: proportion of the whole village who died",
             "follow_up_explanation": "Mortality rate uses the full population at risk as the denominator — it answers 'what fraction of people in the exposed population died?' CFR (70%) is higher than mortality rate (10.5%) because CFR is conditional on being a case. Mortality rate accounts for the fact that most exposed people (340/400) never developed disease at all."
         },
         {
@@ -11883,10 +11892,12 @@ At steady state: **P ≈ I × D**
 
 Rearranging: **D = P ÷ I** = 220 ÷ 22 = **10 years**
 
-This means the average person with Type 1 diabetes in this population has had the disease for approximately 10 years — which seems low for a lifelong condition. This might suggest:
-- Significant mortality reducing the prevalent pool (people dying with the disease)
-- Recent changes in incidence (P lags behind recent incidence changes)
+This means the average person with Type 1 diabetes in this population has had the disease for approximately 10 years — which seems low for a lifelong condition — and that instinct is correct. Type 1 diabetes is typically managed for decades, so an implied duration of 10 years suggests one or more assumptions of the steady-state model may be violated. This might include:
+- Significant mortality reducing the prevalent pool (people dying with the disease before old age)
+- Recent changes in incidence (P lags behind recent incidence changes — if incidence rose recently, prevalence hasn't caught up yet)
 - Migration of cases out of the population
+
+The key teaching point: when the formula gives you an answer that feels biologically implausible, that's a signal to examine the model's assumptions, not just accept the number.
 
 **When P = I × D is valid:**
 - Disease incidence is stable over time (steady state)

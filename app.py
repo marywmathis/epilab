@@ -9639,6 +9639,7 @@ elif current_page == "measures_association":
 
                 chi2_val, p_val, dof, _ = chi2_contingency(table_array)
                 st.write(f"χ²({dof}) = {round(chi2_val,3)}, p = {round(p_val,4) if p_val >= 0.0001 else '< 0.0001'}")
+                st.caption("RR and OR quantify the **strength** of association. The chi-square test evaluates whether the observed association could plausibly be due to random variation.")
                 if p_val < 0.05: st.success("Statistically significant. Reject H₀.")
                 else: st.warning("Insufficient evidence to reject H₀.")
 
@@ -10742,13 +10743,13 @@ elif current_page == "practice_design":
                  "row_names":["Lead-exposed","Unexposed"],"col_names":["Learning Disability","No Learning Disability"],"cells":[[52,348],[21,379]]}},
         {"id":"s2","title":"Scenario 2: Fast Food & Obesity",
          "description":"One-time survey of 2,500 adults. Weekly fast food frequency (never/1–2x/3–4x/5+x) and obesity (BMI ≥30) measured simultaneously.",
-         "correct_design":"Cross-sectional","correct_outcome":"Binary","correct_exposure":"Categorical (>2 groups)",
+         "correct_design":"Cross-sectional","correct_outcome":"Binary","correct_exposure":"Ordinal",
          "design_hint":"One-time survey — both measured simultaneously = cross-sectional.",
          "outcome_hint":"Obesity: BMI ≥30 vs. <30 — two categories = binary.",
-         "exposure_hint":"Four frequency categories — more than 2 = categorical.",
+         "exposure_hint":"Never → 1–2x → 3–4x → 5+x has a natural rank order — ordinal. Categorical (>2 groups) is also defensible but ordinal is more precise.",
          "design_wrong":{"Cohort":"❌ Cohort follows people over time. One-time survey = no follow-up.","Case-Control":"❌ Case-control recruits by disease status and looks back. Survey measured everything at once."},
          "outcome_wrong":{"Continuous":"❌ Obesity (BMI ≥30) is a yes/no classification — not a continuous measurement.","Categorical (Nominal >2 levels)":"❌ Obesity is yes or no — two categories = binary.","Ordinal":"❌ A diagnosis is binary.","Rate (person-time)":"❌ One-time survey — no follow-up time."},
-         "exposure_wrong":{"Binary (2 groups)":"❌ Four frequency categories = categorical.","Ordinal":"❌ Close — the categories do have a natural order, but they are named discrete groups, not a measured quantity. Categorical (>2 groups) is the standard classification here.","Continuous":"❌ Fast food frequency is recorded in four discrete named categories, not as a measured quantity on a numeric scale — categorical."},
+         "exposure_wrong":{"Binary (2 groups)":"❌ Four frequency categories — never/1–2x/3–4x/5+x — cannot be collapsed to two groups without losing information.","Categorical (>2 groups)":"⚠️ Defensible — four groups, more than 2. However, Never → 1–2x → 3–4x → 5+x has a clear natural rank order, making Ordinal the more precise classification. Both are acceptable in practice.","Continuous":"❌ Fast food frequency is recorded in four discrete named categories, not as a measured quantity on a numeric scale — categorical."},
          "data":{"type":"contingency_wide","context":"Survey data by fast food frequency and obesity.",
                  "row_names":["Never","1–2x/week","3–4x/week","5+x/week"],"col_names":["Obese","Not Obese"],"cells":[[62,538],[118,682],[189,561],[141,209]]}},
         {"id":"s3","title":"Scenario 3: HPV Vaccine & Cervical Cancer",
@@ -10770,11 +10771,11 @@ elif current_page == "practice_design":
          "exposure_hint":"Three shift types — more than 2 = categorical.",
          "design_wrong":{"Case-Control":"❌ Case-control starts with people who already have metabolic syndrome. Here employees classified by shift type first.","Cross-sectional":"❌ Employees followed 5 years — not a snapshot."},
          "outcome_wrong":{"Continuous":"❌ Metabolic syndrome is recorded as present or absent — a yes/no outcome, not a numeric measurement.","Categorical (Nominal >2 levels)":"❌ Metabolic syndrome = yes/no = binary.","Ordinal":"❌ Binary.","Rate (person-time)":"❌ All followed same 5-year period."},
-         "exposure_wrong":{"Binary (2 groups)":"❌ Three categories = categorical.","Ordinal":"❌ Shift type (day/rotating/night) is an unordered nominal grouping, not a naturally ranked scale — categorical.","Continuous":"❌ Shift type is a named category (day/rotating/night), not a quantity measured on a numeric scale — categorical."},
+         "exposure_wrong":{"Binary (2 groups)":"❌ Three categories = categorical.","Ordinal":"⚠️ Reasonable argument — day → rotating → night can be seen as increasing circadian disruption. However, the ordering is not universally agreed upon and the groups are treated as nominal categories in analysis. Categorical (>2 groups) is the standard epidemiologic classification here.","Continuous":"❌ Shift type is a named category (day/rotating/night), not a quantity measured on a numeric scale — categorical."},
          "data":{"type":"contingency_wide","context":"5-year follow-up data by shift type.",
                  "row_names":["Day shift","Rotating shift","Night shift"],"col_names":["Metabolic Syndrome","No Metabolic Syndrome"],"cells":[[62,338],[98,302],[121,279]]}},
         {"id":"s5","title":"Scenario 5: Air Pollution & ED Visits",
-         "description":"3,000 adults monitored for PM2.5 over 2 years. Participants vary in outdoor time — each contributes different observation time. Outcome: new ED visits for respiratory illness.",
+         "description":"3,000 adults monitored for PM2.5 over 2 years. Participants enter and leave the study at different times, resulting in different amounts of person-time at risk. Outcome: new ED visits for respiratory illness.",
          "correct_design":"Cohort","correct_outcome":"Rate (person-time)","correct_exposure":"Binary (2 groups)",
          "design_hint":"Classified by PM2.5 level → tracked for new events = cohort.",
          "outcome_hint":"Varying follow-up time — must use person-time. Rate outcome.",
@@ -10786,9 +10787,9 @@ elif current_page == "practice_design":
                  "row_names":["High PM2.5","Low PM2.5"],"cases":[187,64],"person_time":[4200,5100]}},
         {"id":"s7","title":"Scenario 6: Air Pollution Spikes & MI",
          "description":"2,100 MI patients. PM2.5 in hour before symptom onset (hazard period) compared to PM2.5 at same time one week earlier for same patient (control period). No separate control group.",
-         "correct_design":"Case-Crossover","correct_outcome":"Binary","correct_exposure":"Binary (2 groups)",
+         "correct_design":"Case-Crossover","correct_outcome":"N/A","correct_exposure":"Binary (2 groups)",
          "design_hint":"Each patient compared to themselves at a different time — no separate control group = case-crossover.",
-         "outcome_hint":"MI: occurred or did not occur — binary.",
+         "outcome_hint":"In a case-crossover study, everyone already had the MI — the outcome is fixed by design. The comparison is between exposure levels at different time windows, not between diseased and disease-free people.",
          "exposure_hint":"High vs. low PM2.5 — two groups = binary.",
          "design_wrong":{"Cohort":"❌ Cohort groups by exposure and follows forward. Here everyone already had MI.","Case-Control":"❌ Standard case-control recruits a separate control group. Here each case is their own control.","Cross-sectional":"❌ Cross-sectional is one time point. Here two time windows per person."},
          "outcome_wrong":{"Continuous":"❌ MI either occurred or did not — a yes/no outcome, not a numeric measurement.","Categorical (Nominal >2 levels)":"❌ MI: yes or no = binary.","Ordinal":"❌ Binary.","Rate (person-time)":"❌ Comparison between two windows per person, not varying follow-up."},
@@ -10819,10 +10820,10 @@ elif current_page == "practice_design":
         {"id":"s9","title":"Scenario 8: Country-Level Alcohol Consumption & Liver Cirrhosis",
          "description":"A researcher compiles data from 42 countries. For each country, she records the national average alcohol consumption (liters per capita per year) and the national age-standardized liver cirrhosis mortality rate (per 100,000). She finds a strong positive correlation (r = 0.74) between the two country-level measures.",
          "correct_design":"Ecological",
-         "correct_outcome":"Rate (person-time)",
+         "correct_outcome":"Continuous",
          "correct_exposure":"Continuous",
          "design_hint":"The unit of analysis is **countries**, not individuals. Exposure and outcome are both measured at the aggregate (population) level — this is an ecological study.",
-         "outcome_hint":"Liver cirrhosis mortality rate per 100,000 is a **rate with a person-time denominator** — countries contribute population-years of observation.",
+         "outcome_hint":"Liver cirrhosis mortality rate per 100,000 is a continuous measure at the country level. Rate (person-time) is also defensible, but in ecological studies the outcome is best understood as a continuous variable measured at the group level.",
          "exposure_hint":"Average alcohol consumption in liters per capita is a **continuous** measure — it takes any numeric value along a scale, not discrete groups.",
          "design_wrong":{
              "Cohort":"❌ A cohort study would follow individual people classified by their own alcohol consumption. Here the data are country averages — no individual-level data exist.",
@@ -10830,8 +10831,8 @@ elif current_page == "practice_design":
              "Case-Control":"❌ Case-control recruits individuals with and without disease. Here the units are entire countries, not individuals.",
          },
          "outcome_wrong":{
-             "Binary":"❌ The outcome is a mortality rate per 100,000 — a continuous rate variable, not a yes/no for each person.",
-             "Continuous":"❌ Close — it is numerically continuous, but because it has a person-time denominator (population-years), the precise type is Rate (person-time).",
+             "Binary":"❌ The outcome is a mortality rate per 100,000 — a continuous numeric measure, not a yes/no for each country.",
+             "Rate (person-time)":"⚠️ Defensible — the rate has a person-time denominator. However, in ecological studies the outcome is a group-level continuous measure; Continuous is the more straightforward classification here.",
              "Categorical (Nominal >2 levels)":"❌ A continuous rate is not an unordered categorical variable.",
              "Ordinal":"❌ A mortality rate is a continuous measure, not ordered categories.",
          },

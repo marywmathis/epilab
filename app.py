@@ -25,8 +25,20 @@ st.set_page_config(page_title="Epidemiology Decision Simulator", layout="wide")
 st.markdown("""
 <style>
 #MainMenu, footer, header {visibility: hidden;}
-section[data-testid="stSidebar"][aria-expanded="false"] {display: block !important; min-width: 240px !important; transform: none !important;}
-button[data-testid="collapsedControl"] {display: none !important;}
+button[data-testid="collapsedControl"] {display: flex !important; visibility: visible !important;}
+@media (max-width: 768px) {
+    button[data-testid="collapsedControl"] {
+        display: flex !important;
+        visibility: visible !important;
+        position: fixed !important;
+        top: 12px !important;
+        left: 12px !important;
+        z-index: 9999 !important;
+        background: #1e1b4b !important;
+        border-radius: 8px !important;
+        padding: 6px !important;
+    }
+}
 [data-testid="stSidebarNav"] {display: none;}
 section[data-testid="stSidebar"] > div:first-child {padding-top: 0;}
 section[data-testid="stSidebar"] {background-color: #1e1b4b !important; min-width: 240px !important; max-width: 240px !important;}
@@ -1626,6 +1638,25 @@ NAV_STRUCTURE = [
 
 if "current_page" not in st.session_state:
     st.session_state["current_page"] = "home"
+
+# Mobile sidebar reopen button
+import streamlit.components.v1 as _mob_comp
+_mob_comp.html("""
+<script>
+function openSidebar() {
+    var btn = window.parent.document.querySelector('[data-testid="collapsedControl"]');
+    if (btn) btn.click();
+}
+</script>
+<div id="mob-sidebar-btn" style="display:none;position:fixed;top:12px;left:12px;z-index:9998;">
+  <button onclick="openSidebar()" style="background:#1e1b4b;color:white;border:none;border-radius:8px;padding:8px 12px;font-size:18px;cursor:pointer;">☰</button>
+</div>
+<style>
+@media (max-width: 768px) {
+  #mob-sidebar-btn { display: block !important; }
+}
+</style>
+""", height=0)
 
 # ── NAVIGATION ────────────────────────────────────────────────
 if "current_page" not in st.session_state:

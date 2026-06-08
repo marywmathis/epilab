@@ -11505,6 +11505,8 @@ elif current_page == "practice_confounding":
                 st.error(f"❌ You selected: *{val}*")
                 st.markdown(f"✅ **Correct:** {sc['correct']}")
             st.info(f"**Explanation:** {sc['explanation']}")
+            if sc.get('clue'):
+                st.markdown(f"🔍 **{sc['clue']}**")
 
             if "follow_up" in sc:
                 st.markdown(f"**Follow-up: {sc['follow_up']}**")

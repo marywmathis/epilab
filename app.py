@@ -11047,29 +11047,29 @@ elif current_page == "practice_advanced":
          "measure_hint":"Population-level preventable burden — PAR combines exposure prevalence (Pe) with RR.",
          "measure_wrong":{"Standardized Mortality Ratio (SMR)":"❌ SMR compares observed to expected deaths. This asks about population-level preventable fraction — PAR.","Attributable Risk & AR%":"❌ AR% estimates fraction within the **exposed group**. PAR estimates across the **total population**.","Number Needed to Harm / Treat (NNH/NNT)":"❌ NNT/NNH express per-person benefit/harm. This asks about a population fraction — PAR.","Hazard Ratio (HR)":"❌ HR compares event rates over time. Population fraction = PAR."},
          "data":{"type":"par","context":"Calculate PAR%.","Pe":0.42,"RR":1.8}},
-        {"id":"adv_2","title":"Scenario 2: Rubber Workers & Bladder Cancer",
-         "description":"4,200 rubber workers followed 15 years. 38 developed bladder cancer. Applying general population rates to this cohort's age structure predicts only 18.4 expected cases.",
+        {"id":"adv_2","title":"Scenario 2: Rubber Workers & Bladder Cancer Mortality",
+         "description":"4,200 rubber workers followed 15 years. 38 died from bladder cancer. Applying general population age-specific mortality rates to this cohort's age structure predicts only 18.4 expected deaths.",
          "correct_measure":"Standardized Mortality Ratio (SMR)",
-         "measure_hint":"Observed cases (38) and expected cases (18.4) from reference rates. Observed ÷ Expected = SMR.",
+         "measure_hint":"Observed deaths (38) and expected deaths (18.4) from reference mortality rates. Observed ÷ Expected = SMR.",
          "measure_wrong":{"Population Attributable Risk (PAR)":"❌ PAR requires exposure prevalence and RR. You have observed vs. expected = SMR.","Attributable Risk & AR%":"❌ AR% compares two groups within same study. Here comparing to reference population = SMR.","Number Needed to Harm / Treat (NNH/NNT)":"❌ NNH requires a risk difference. Observed vs. expected = SMR.","Hazard Ratio (HR)":"❌ HR requires Cox regression. Total observed vs. expected = SMR."},
-         "data":{"type":"smr","context":"Calculate SMR.","observed":38,"expected":18.4,"group_label":"Rubber workers","outcome_label":"bladder cancer"}},
+         "data":{"type":"smr","context":"Calculate SMR.","observed":38,"expected":18.4,"group_label":"Rubber workers","outcome_label":"bladder cancer deaths"}},
         {"id":"adv_3","title":"Scenario 3: Hypertension & Stroke",
          "description":"14% of uncontrolled hypertension patients had a stroke over 10 years vs. 4% of controlled patients. Of all strokes in the uncontrolled group, what fraction is due to uncontrolled BP?",
          "correct_measure":"Attributable Risk & AR%",
          "measure_hint":"Fraction of disease within the exposed group (uncontrolled hypertension) = AR%.",
          "measure_wrong":{"Population Attributable Risk (PAR)":"❌ PAR estimates fraction across the **entire population**. This asks about fraction within the **exposed group** = AR%.","Standardized Mortality Ratio (SMR)":"❌ SMR compares to reference population. This compares two groups = AR%.","Number Needed to Harm / Treat (NNH/NNT)":"❌ NNT tells how many need treatment to prevent one event. Fraction attributable = AR%.","Hazard Ratio (HR)":"❌ HR uses Cox regression. 10-year cumulative risks = AR%."},
          "data":{"type":"ar","context":"Calculate AR and AR%.","r_exposed":0.14,"r_unexposed":0.04,"exposed_label":"Uncontrolled hypertension","unexposed_label":"Controlled hypertension"}},
-        {"id":"adv_4","title":"Scenario 4: Naloxone Programs & Overdose Deaths",
-         "description":"3% of communities with naloxone programs had overdose deaths vs. 7% without. How many communities need the program to prevent one additional overdose death?",
+        {"id":"adv_4","title":"Scenario 4: Naloxone Training & Overdose Deaths",
+         "description":"3% of individuals who received naloxone training experienced a fatal overdose over 2 years, compared with 7% of similar individuals who did not receive training. How many people need to receive naloxone training to prevent one additional fatal overdose?",
          "correct_measure":"Number Needed to Harm / Treat (NNH/NNT)",
-         "measure_hint":"How many need the intervention to prevent one event = NNT = 1 / Risk Difference.",
+         "measure_hint":"How many must receive the intervention for one additional person to benefit = NNT = 1 ÷ Risk Difference.",
          "measure_wrong":{"Population Attributable Risk (PAR)":"❌ PAR estimates preventable fraction. This asks how many need treatment = NNT.","Standardized Mortality Ratio (SMR)":"❌ SMR compares to reference population. Per-community benefit = NNT.","Attributable Risk & AR%":"❌ AR% estimates fraction attributable. Per-community figure = NNT.","Hazard Ratio (HR)":"❌ HR uses time-to-event Cox regression. Simple proportions + per-treatment benefit = NNT."},
          "data":{"type":"nnt","context":"Calculate NNT.","r_treatment":0.03,"r_control":0.07,"treatment_label":"Naloxone program","control_label":"No program","outcome_label":"overdose death"}},
         {"id":"adv_5","title":"Scenario 5: Physical Activity & Hip Fracture",
          "description":"2,800 adults 65+ followed up to 10 years. Follow-up varies due to deaths and losses. A Cox proportional hazards model was fitted.",
          "correct_measure":"Hazard Ratio (HR)",
          "measure_hint":"Varying follow-up, censoring, and Cox model = HR.",
-         "measure_wrong":{"Population Attributable Risk (PAR)":"❌ PAR requires exposure prevalence and RR. Cox regression = HR.","Standardized Mortality Ratio (SMR)":"❌ SMR requires observed vs. expected. Cox regression = HR.","Attributable Risk & AR%":"❌ AR% requires complete fixed follow-up. Censored + Cox = HR.","Number Needed to Harm / Treat (NNH/NNT)":"❌ NNT requires fixed time point. Censored data + Cox = HR.","Incidence Rate Ratio (IRR)":"❌ IRR uses person-time rates. Cox regression produces a Hazard Ratio, not an IRR."},
+         "measure_wrong":{"Population Attributable Risk (PAR)":"❌ PAR requires exposure prevalence and RR. Cox regression = HR.","Standardized Mortality Ratio (SMR)":"❌ SMR requires observed vs. expected. Cox regression = HR.","Attributable Risk & AR%":"❌ The presence of censoring and use of a Cox proportional hazards model makes HR the appropriate measure. AR% is calculated from cumulative risks, not from survival models.","Number Needed to Harm / Treat (NNH/NNT)":"❌ NNT requires fixed time point. Censored data + Cox = HR.","Incidence Rate Ratio (IRR)":"❌ IRR uses person-time rates. Cox regression produces a Hazard Ratio, not an IRR."},
          "data":{"type":"hr","context":"Interpret the HR from the Cox model.","hr":0.61,"ci_low":0.48,"ci_high":0.78,"exposed_label":"Physically active","outcome_label":"hip fracture"}},
         {"id":"adv_6","title":"Scenario 6: Long-Term PPI Use & Chronic Kidney Disease",
          "description":"A large cohort study finds that 3.2% of daily proton pump inhibitor (PPI) users developed chronic kidney disease (CKD) over 5 years, compared to 1.1% of non-users. A nephrologist asks: for every how many patients prescribed long-term PPIs will one additional case of CKD occur that would not have occurred otherwise?",
@@ -11086,7 +11086,7 @@ elif current_page == "practice_advanced":
                  "r_treatment":0.032,"r_control":0.011,
                  "treatment_label":"Long-term PPI use","control_label":"No PPI use","outcome_label":"chronic kidney disease"}},
         {"id":"adv_7","title":"Scenario 7: Air Pollution & Asthma Hospitalizations",
-         "description":"A cohort of 6,200 children in an urban area is monitored for asthma-related hospitalizations. Children are classified as living in high vs. low PM2.5 exposure zones. Because families move in and out of the city during the study, each child contributes a different amount of observation time. The research team calculates rates using person-years at risk.",
+         "description":"A cohort of 6,200 children in an urban area is monitored for asthma-related hospitalizations. Children are classified as living in high vs. low PM2.5 exposure zones. Because families move in and out of the city during the study, each child contributes a different amount of observation time. The research team compares incidence rates between exposure groups using person-years at risk as the denominator.",
          "correct_measure":"Incidence Rate Ratio (IRR)",
          "measure_hint":"**Varying follow-up time** + rates expressed per person-years = IRR. When participants contribute different amounts of observation time, you must use person-time denominators and compare incidence rates — not cumulative risks.",
          "measure_wrong":{
@@ -11172,7 +11172,7 @@ elif current_page == "practice_advanced":
             st.session_state[submitted_key] = True
             already_submitted = True
 
-        measure_choice = st.selectbox("Which advanced measure is most appropriate?", measure_options, index=_measure_idx, key=f"adv_measure_{sid}_{rc5}", disabled=already_submitted)
+        measure_choice = st.selectbox("Which measure best answers the question being asked?", measure_options, index=_measure_idx, key=f"adv_measure_{sid}_{rc5}", disabled=already_submitted)
         selected = st.session_state.get(f"adv_measure_{sid}_{rc5}") not in [None, "— Select —"]
 
         _adv_has_user_input = (measure_choice != "— Select —" or already_submitted)
@@ -11203,6 +11203,11 @@ elif current_page == "practice_advanced":
                     st.rerun()
             else:
                 st.success(f"✅ Correct! **{sc['correct_measure']}** — {sc['measure_hint']}")
+
+                if sc.get("measure_wrong"):
+                    with st.expander("Why not the others?"):
+                        for wrong_measure, wrong_reason in sc["measure_wrong"].items():
+                            st.markdown(f"**{wrong_measure}:** {wrong_reason.lstrip('❌ ').lstrip('⚠️ ')}")
 
             if correct:
                 st.markdown("---"); st.markdown("### 📋 Now run the analysis")
@@ -11316,7 +11321,8 @@ IRR = {round(c1/pt1,6)} ÷ {round(c2/pt2,6)} = **{round(irr,3)}**
                     col2.metric(f"Risk ({d['control_label']})", f"{round(d['r_control']*100,1)}%")
                     if st.button("Calculate NNT/NNH", key=f"run_{sid}_{rc5}"):
                         risk_diff = abs(d["r_treatment"] - d["r_control"])
-                        nnt = round(1/risk_diff, 1)
+                        import math as _nnt_math
+                        nnt = _nnt_math.ceil(1/risk_diff)
                         is_benefit = d["r_treatment"] < d["r_control"]
                         label = "NNT" if is_benefit else "NNH"
                         st.metric(label, nnt)

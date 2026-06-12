@@ -12032,6 +12032,68 @@ For Patient A, despite a negative mammogram, there is still a **2.9% chance she 
             "correct_follow_up": "Additional imaging (breast MRI) — NPV of 97.1% means a 2.9% miss rate is clinically unacceptable for a BRCA1 carrier",
             "follow_up_explanation": "For a BRCA1 carrier with 15% pre-test probability, a 2.9% post-negative-test probability of missed cancer is clinically significant. Current guidelines recommend annual MRI in addition to mammography for BRCA1/2 carriers — MRI has higher sensitivity (>90%) for this population. This scenario illustrates why 'negative' doesn't mean 'all clear' in high-risk populations, and why understanding NPV is essential for clinical decision-making."
         },
+        {
+            "id": "ss12",
+            "title": "Scenario 12: Choosing the Right HIV Rapid Test",
+            "description": """
+You are an epidemiologist advising two public health clinics on which rapid HIV test to adopt. Two tests are under consideration — both validated and approved for use.
+
+**Test A:** AUC = 0.94. At its optimal threshold: Sensitivity = 98%, Specificity = 72%.
+
+**Test B:** AUC = 0.91. At its optimal threshold: Sensitivity = 82%, Specificity = 94%.
+
+A colleague reviews the summary sheet and says: "Test A is obviously better — higher AUC means better test."
+            """,
+            "question": "Is your colleague's statement correct?",
+            "options": [
+                "Yes — AUC is the definitive measure of test performance; higher is always better",
+                "Yes — a higher AUC means the test is more accurate in all situations",
+                "No — AUC summarizes overall discrimination but does not determine which test is right for a specific context",
+                "No — AUC is not a useful measure for comparing tests",
+            ],
+            "correct": "No — AUC summarizes overall discrimination but does not determine which test is right for a specific context",
+            "explanation": """
+**Your colleague is partially right but drawing the wrong conclusion.**
+
+AUC tells you how well a test separates diseased from non-diseased people across *all possible thresholds* — it is a summary of the entire ROC curve. A higher AUC generally means better overall discrimination, and Test A does discriminate better overall.
+
+But in practice, you don't use all thresholds simultaneously. You choose one — and which threshold is right depends entirely on the clinical context: what kind of error costs more, and in what population.
+
+**Test A (AUC 0.94, Sens 98%, Spec 72%):** Catches nearly all true cases but calls 28% of healthy people positive.
+
+**Test B (AUC 0.91, Sens 82%, Spec 94%):** Misses 18% of true cases but correctly clears 94% of healthy people.
+
+AUC tells you about *overall* discrimination. Context tells you *where on the curve* to land. Neither test is universally "better" — the right choice depends on what happens downstream of a positive or negative result.
+
+**Why the other options are wrong:**
+- "Higher AUC = more accurate in all situations" — AUC is scale-agnostic and context-independent. The same AUC can represent a test that is useful in one setting and harmful in another.
+- "AUC is not useful for comparing tests" — it is genuinely useful for comparing overall discrimination ability. It just cannot make the final clinical decision for you.
+            """,
+            "follow_up": "Clinic 1 operates in a high-prevalence urban setting (HIV prevalence 8%). A missed HIV diagnosis means delayed treatment and continued transmission. False positives will be caught by confirmatory testing. Which test do you recommend for Clinic 1?",
+            "follow_up_options": [
+                "Test A — higher sensitivity means fewer missed cases, and false positives will be caught by confirmatory testing",
+                "Test B — higher specificity reduces unnecessary confirmatory testing",
+                "Either test — AUC is similar enough that it does not matter",
+                "Neither test — you need more information before making any recommendation",
+            ],
+            "correct_follow_up": "Test A — higher sensitivity means fewer missed cases, and false positives will be caught by confirmatory testing",
+            "follow_up_explanation": """
+**Test A is the right choice for Clinic 1.**
+
+In a high-prevalence setting where missing a case has serious consequences — delayed treatment, ongoing transmission — you prioritize sensitivity. Test A catches 98% of true cases versus Test B's 82%. The cost of a false positive here is manageable: confirmatory testing exists and is standard practice.
+
+This is the classic **rule-out** situation. A highly sensitive test ensures that a negative result is meaningful — if Test A is negative, you can be confident the patient does not have HIV.
+
+**Why the other options are wrong:**
+- *Test B:* Specificity matters most when false positives carry high cost and no confirmatory mechanism exists. Here, false positives are resolved downstream. The 16-percentage-point sensitivity gap means Test B misses roughly 1 in 6 cases — not acceptable when prevalence is 8% and consequences are serious.
+- *Either test:* The AUC difference is modest (0.03), but the sensitivity difference (98% vs 82%) is clinically significant in this context. AUC alone does not resolve the decision.
+- *Neither test:* You have enough information. Real public health decisions are made under uncertainty with available evidence.
+
+**The setup tells you the answer:** high prevalence + serious consequences of a missed case + confirmatory testing available = prioritize sensitivity = Test A.
+
+**Now consider the inverse:** Clinic 2 serves a university student health center with very low HIV prevalence (0.3%). Most students tested will not have HIV. In that setting, the calculus reverses — most positive results will be false positives regardless of which test you use, and Test B's higher specificity dramatically reduces the false alarm rate. Same tests, same AUC values, completely different recommendation. The ROC curve shows you what is possible; the clinical context tells you where on the curve to stand.
+            """,
+        },
     ]
 
     if "ss_rc" not in st.session_state:

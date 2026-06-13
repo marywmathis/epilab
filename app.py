@@ -1771,7 +1771,7 @@ if current_page == "foundations":
         st.subheader("The Epidemiology Triangle")
         st.caption("Toggle agent, host, and environment factors to see how disease risk changes. Connecting lines activate when two vertices interact.")
         import streamlit.components.v1 as _tri_comp
-        _tri_comp.html("""
+        _tri_comp.html("""<!DOCTYPE html><html><head><meta charset="UTF-8"><style>html,body{background:#fff!important;color:#1f2937!important;margin:0;padding:0;font-family:system-ui,sans-serif}</style></head><body>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:system-ui,-apple-system,sans-serif;font-size:14px;color:#1f2937;background:#f9fafb}
@@ -1870,7 +1870,7 @@ function setDisease(key,btn){cur=key;state={};lastToggled=null;document.querySel
 function resetAll(){state={};lastToggled=null;render();}
 render();
 </script>
-""", height=760, scrolling=False)
+</body></html>""", height=760, scrolling=False)
 
     elif found_section == "2️⃣ Natural History & Levels of Prevention":
         st.subheader("Natural History of Disease")

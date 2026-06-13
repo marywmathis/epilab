@@ -1916,8 +1916,8 @@ This is why more complex models — the **Web of Causation**, **Rothman's causal
             "Adjust risk factors to see how disease progression and outcomes change. "
             "Toggle risk factors on or off — stages illuminate as susceptibility rises."
         )
-        from natural_history_epilab import render_natural_history
-        render_natural_history()
+        import streamlit.components.v1 as _nh_comp
+        _nh_comp.html(open("natural_history_epilab.py").read(), height=900, scrolling=False)
 
     elif found_section == "3️⃣ Chain of Infection & Infectious Disease":
         st.subheader("The Chain of Infection")

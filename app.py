@@ -1768,147 +1768,109 @@ if current_page == "foundations":
 
     # ── SECTION 1: EPIDEMIOLOGY TRIANGLE ──
     if found_section == "1️⃣ Epidemiology Triangle":
-        st.subheader("The Epidemiology Triangle (Epidemiologic Triad)")
-        st.markdown("""
-The **epidemiology triangle** is one of the oldest and most widely used frameworks for understanding why disease occurs in populations. It holds that disease results from the interaction of three elements: **agent**, **host**, and **environment** — with **time** at the center, recognizing that the relationship among all three unfolds over time.
-
-Remove or modify any one element, and the disease dynamic changes.
-        """)
-
+        st.subheader("The Epidemiology Triangle")
+        st.caption("Toggle agent, host, and environment factors to see how disease risk changes. Connecting lines activate when two vertices interact.")
         import streamlit.components.v1 as _tri_comp
         _tri_comp.html("""
-<div style="font-family:sans-serif;text-align:center;padding:10px 0;">
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 410" width="500" height="410">
-  <!-- Title: mid-tone slate reads on both light and dark backgrounds -->
-  <text x="250" y="22" font-size="16" font-weight="700" fill="#64748b" text-anchor="middle">The Epidemiology Triangle</text>
-
-  <!-- Triangle fill -->
-  <polygon points="250,68 40,340 460,340" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
-  <!-- Triangle sides colored -->
-  <line x1="250" y1="68" x2="40" y2="340" stroke="#1565c0" stroke-width="2.5" stroke-dasharray="7,4"/>
-  <line x1="250" y1="68" x2="460" y2="340" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="7,4"/>
-  <line x1="40" y1="340" x2="460" y2="340" stroke="#c62828" stroke-width="2.5" stroke-dasharray="7,4"/>
-
-  <!-- AGENT top -->
-  <rect x="185" y="48" width="130" height="52" rx="9" fill="#fce4ec" stroke="#c62828" stroke-width="2.5"/>
-  <text x="250" y="71" font-size="14" font-weight="700" fill="#c62828" text-anchor="middle">AGENT</text>
-  <text x="250" y="89" font-size="10" fill="#888" text-anchor="middle">What causes disease</text>
-
-  <!-- HOST bottom-left -->
-  <rect x="8" y="314" width="120" height="52" rx="9" fill="#e3f2fd" stroke="#1565c0" stroke-width="2.5"/>
-  <text x="68" y="337" font-size="14" font-weight="700" fill="#1565c0" text-anchor="middle">HOST</text>
-  <text x="68" y="354" font-size="10" fill="#888" text-anchor="middle">Who gets disease</text>
-
-  <!-- ENVIRONMENT bottom-right -->
-  <rect x="372" y="314" width="120" height="52" rx="9" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
-  <text x="432" y="337" font-size="14" font-weight="700" fill="#2e7d32" text-anchor="middle">ENVIRONMENT</text>
-  <text x="432" y="354" font-size="10" fill="#888" text-anchor="middle">Where it occurs</text>
-
-  <!-- TIME center ellipse -->
-  <ellipse cx="250" cy="230" rx="62" ry="36" fill="#fff8e1" stroke="#f9a825" stroke-width="2.5"/>
-  <text x="250" y="225" font-size="13" font-weight="700" fill="#f57f17" text-anchor="middle">TIME</text>
-  <text x="250" y="242" font-size="10" fill="#999" text-anchor="middle">When it unfolds</text>
-
-  <!-- Arrows: TIME → vertices. Endpoints shortened so arrowheads don't overlap box corners -->
-  <defs>
-    <marker id="arr" markerWidth="9" markerHeight="9" refX="5" refY="4.5" orient="auto">
-      <path d="M0,0 L9,4.5 L0,9 Z" fill="#f9a825"/>
-    </marker>
-  </defs>
-  <!-- Arrow to AGENT (top): tip stops just above the box -->
-  <line x1="250" y1="194" x2="250" y2="105" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
-  <!-- Arrow to HOST (bottom-left): tip stops short of the box corner -->
-  <line x1="196" y1="244" x2="135" y2="316" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
-  <!-- Arrow to ENVIRONMENT (bottom-right): tip stops short of the box corner -->
-  <line x1="304" y1="244" x2="365" y2="316" stroke="#f9a825" stroke-width="1.8" marker-end="url(#arr)"/>
-
-  <!-- Caption: increased font size, moved down to clear the bottom boxes -->
-  <text x="250" y="395" font-size="11" fill="#64748b" text-anchor="middle" font-style="italic">Disease occurs at the intersection of agent, host, environment — unfolding over time</text>
-</svg>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,sans-serif;font-size:14px;color:#1f2937;background:#f9fafb}
+.outer{padding:16px}
+.disease-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.dtab{padding:6px 14px;border-radius:6px;border:1px solid #d1d5db;background:#fff;color:#6b7280;cursor:pointer;font-size:13px;transition:all .15s}
+.dtab:hover{border-color:#9ca3af;color:#111827}
+.dtab.on{background:#f3f4f6;border-color:#6b7280;color:#111827;font-weight:500}
+.main{display:grid;grid-template-columns:1fr 210px;gap:16px;align-items:start}
+svg#tri{width:100%;max-width:480px;display:block;margin:0 auto}
+.controls{background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.ctrl-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:4px}
+.factor-item{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;padding:5px 0;border-bottom:1px solid #f3f4f6;font-size:13px}
+.factor-item:last-child{border-bottom:none}
+.factor-label{flex:1;line-height:1.3}
+.factor-check{width:15px;height:15px;cursor:pointer;flex-shrink:0;margin-top:1px}
+.factor-check.agent{accent-color:#dc2626}
+.factor-check.host{accent-color:#1d4ed8}
+.factor-check.env{accent-color:#16a34a}
+.section-label{font-size:11px;font-weight:600;margin:8px 0 2px;padding-top:8px;border-top:1px solid #f3f4f6}
+.section-label.agent{color:#dc2626}
+.section-label.host{color:#1d4ed8}
+.section-label.env{color:#16a34a}
+.profile-section{margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6}
+.profile-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:6px}
+.bar-row{display:flex;align-items:center;gap:6px;margin-bottom:5px}
+.bar-row-label{font-size:11px;width:36px;color:#6b7280;flex-shrink:0}
+.bar-track{flex:1;height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width .4s ease}
+.bar-pct{font-size:11px;font-weight:500;min-width:52px;text-align:right;color:#6b7280}
+.interaction-badge{margin-top:6px;padding:5px 8px;border-radius:6px;font-size:11px;font-weight:600;text-align:center;transition:all .3s;min-height:24px}
+.detail-box{padding:10px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;font-size:12px;color:#374151;line-height:1.6;min-height:52px}
+.factor-explain{padding:8px 10px;background:#fff;border-radius:8px;border-left:3px solid #e5e7eb;font-size:12px;color:#374151;line-height:1.5}
+.reset-btn{display:block;width:100%;margin-top:4px;padding:6px 0;border-radius:6px;border:1px solid #e5e7eb;background:transparent;color:#9ca3af;font-size:12px;cursor:pointer;transition:all .15s;text-align:center}
+.reset-btn:hover{border-color:#6b7280;color:#374151;background:#f9fafb}
+</style>
+<div class="outer">
+  <div class="disease-row">
+    <button class="dtab on" onclick="setDisease('flu',this)">Influenza</button>
+    <button class="dtab" onclick="setDisease('tb',this)">Tuberculosis</button>
+    <button class="dtab" onclick="setDisease('lead',this)">Lead Poisoning</button>
+    <button class="dtab" onclick="setDisease('covid',this)">COVID-19</button>
+    <button class="dtab" onclick="setDisease('chd',this)">Coronary Heart Disease</button>
+  </div>
+  <div class="main">
+    <svg id="tri" viewBox="0 0 500 360" xmlns="http://www.w3.org/2000/svg">
+      <line id="side-ah" x1="213" y1="86" x2="138" y2="275" stroke-linecap="round"/>
+      <line id="side-ae" x1="287" y1="86" x2="322" y2="275" stroke-linecap="round"/>
+      <line id="side-he" x1="166" y1="300" x2="314" y2="300" stroke-linecap="round"/>
+      <g id="g-agent" style="transform-origin:250px 62px;transition:transform .35s ease">
+        <rect id="box-agent" x="175" y="36" width="150" height="52" rx="10" stroke-width="2"/>
+        <text x="250" y="58" font-size="15" font-weight="700" text-anchor="middle" fill="#dc2626">AGENT</text>
+        <text x="250" y="77" font-size="11" font-weight="500" text-anchor="middle" fill="#6b7280">Disease-producing factor</text>
+      </g>
+      <g id="g-host" style="transform-origin:100px 300px;transition:transform .35s ease">
+        <rect id="box-host" x="35" y="274" width="130" height="52" rx="10" stroke-width="2"/>
+        <text x="100" y="296" font-size="15" font-weight="700" text-anchor="middle" fill="#1d4ed8">HOST</text>
+        <text x="100" y="315" font-size="11" font-weight="500" text-anchor="middle" fill="#6b7280">Susceptibility</text>
+      </g>
+      <g id="g-env" style="transform-origin:390px 300px;transition:transform .35s ease">
+        <rect id="box-env" x="315" y="274" width="150" height="52" rx="10" stroke-width="2"/>
+        <text x="390" y="296" font-size="15" font-weight="700" text-anchor="middle" fill="#16a34a">ENVIRONMENT</text>
+        <text x="390" y="315" font-size="11" font-weight="500" text-anchor="middle" fill="#6b7280">Transmission conditions</text>
+      </g>
+    </svg>
+    <div class="controls">
+      <div>
+        <div class="ctrl-title">Toggle factors</div>
+        <div class="section-label agent">Agent</div>
+        <div id="agent-factors"></div>
+        <div class="section-label host">Host</div>
+        <div id="host-factors"></div>
+        <div class="section-label env">Environment</div>
+        <div id="env-factors"></div>
+      </div>
+      <div class="profile-section">
+        <div class="profile-title">Contributing factors activated</div>
+        <div class="bar-row"><span class="bar-row-label" style="color:#dc2626">Agent</span><div class="bar-track"><div class="bar-fill" id="bar-a" style="background:#fca5a5"></div></div><span class="bar-pct" id="pct-a">0/3 active</span></div>
+        <div class="bar-row"><span class="bar-row-label" style="color:#1d4ed8">Host</span><div class="bar-track"><div class="bar-fill" id="bar-h" style="background:#93c5fd"></div></div><span class="bar-pct" id="pct-h">0/3 active</span></div>
+        <div class="bar-row"><span class="bar-row-label" style="color:#16a34a">Env</span><div class="bar-track"><div class="bar-fill" id="bar-e" style="background:#86efac"></div></div><span class="bar-pct" id="pct-e">0/3 active</span></div>
+        <div class="interaction-badge" id="int-badge"></div>
+      </div>
+      <div class="detail-box" id="detail-box">Toggle factors to see how each element contributes.</div>
+      <div class="factor-explain" id="factor-explain" style="display:none"></div>
+      <button class="reset-btn" onclick="resetAll()">&#8635; Reset</button>
+    </div>
+  </div>
 </div>
-        """, height=440, scrolling=False)
-
-        st.markdown("""
-| Element | Definition | Key factors |
-|---|---|---|
-| **Agent** | The cause of the disease — biological, chemical, physical, or nutritional | Infectivity, pathogenicity, virulence, dose |
-| **Host** | The person or animal that harbors the disease | Age, sex, genetics, immunity, behavior, nutritional status |
-| **Environment** | External conditions that affect the agent and host interaction | Climate, sanitation, housing, social determinants, season |
-| **Time** | The temporal dimension — incubation, duration, trends, seasonality | Incubation period, duration of infectiousness, secular trends |
-        """)
-
-        st.info("""
-🔑 **Why the triangle matters for intervention:**
-Each vertex represents a point of intervention:
-- **Agent** → destroy, deactivate, or reduce infectivity (disinfection, antibiotics, food safety)
-- **Host** → increase resistance (vaccination, nutrition, behavior change)
-- **Environment** → modify conditions that allow transmission (sanitation, housing, vector control)
-- **Time** → act early in the natural history; prevent chronic exposure; use time-limited interventions
-
-Public health interventions rarely target just one vertex. A comprehensive response addresses all simultaneously.
-        """)
-
-        st.markdown("#### ⚠️ Limitations of the triangle")
-        st.warning("""
-The epidemiology triangle was designed for **infectious disease with a single identifiable agent**. For chronic disease, mental health, and injury:
-- There is rarely a single agent — causes are **multifactorial**
-- Social and structural determinants don't fit neatly into "environment"
-- The model doesn't capture dose-response relationships or causal pathways
-
-This is why more complex models — the **Web of Causation**, **Rothman's causal pies**, and **DAGs** — were developed as extensions and alternatives.
-        """)
-
-        st.divider()
-        st.markdown("#### 🧠 Apply the triangle")
-
-        tri_scenarios = [
-            {
-                "q": "**Scenario 1:** Childhood lead poisoning from old paint in urban housing. Which element does lead-safe housing remediation primarily target?",
-                "opts": ["— Select —",
-                         "Agent — removes the lead from the environment",
-                         "Host — increases resistance in children",
-                         "Environment — modifies the condition supporting exposure",
-                         "Both agent and environment — they overlap here"],
-                "correct": "Both agent and environment — they overlap here",
-                "fb_correct": "✅ Correct. Housing remediation removes the lead (agent) by modifying the environment. These vertices blur here — a known limitation of the model. This is also a time intervention: acting before long-term exposure accumulates.",
-                "fb_wrong": "❌ Lead remediation modifies both the agent (removes lead) and the environment (changes housing condition). The model's limitation shows here — agent and environment aren't always separable.",
-                "key": "tri_q1"
-            },
-            {
-                "q": "**Scenario 2:** During the 1918 influenza pandemic, soldiers living in crowded barracks had dramatically higher attack rates than civilians in rural areas. Using the triangle, what primarily explains the higher transmission in barracks?",
-                "opts": ["— Select —",
-                         "Agent — the influenza virus was more virulent in military settings",
-                         "Host — soldiers had weaker immune systems than civilians",
-                         "Environment — crowded indoor living conditions facilitated airborne transmission",
-                         "Time — soldiers were exposed at a different point in the epidemic curve"],
-                "correct": "Environment — crowded indoor living conditions facilitated airborne transmission",
-                "fb_correct": "✅ Correct. The agent (influenza virus) was the same. The hosts (healthy young adults) were actually immunologically comparable. The environment — crowded indoor barracks with poor ventilation — was the primary differentiating factor. Environmental modification (spacing bunks, improving ventilation) was one of the few available interventions. Time also matters: sustained exposure in shared quarters increased cumulative dose.",
-                "fb_wrong": "❌ Same virus, comparable hosts. The environmental difference (crowded indoor barracks vs. dispersed rural settings) is what drove higher transmission. Environmental factors are a powerful intervention target for airborne disease.",
-                "key": "tri_q2"
-            },
-            {
-                "q": "**Scenario 3:** HIV transmission rates are far higher in sub-Saharan Africa than in Western Europe despite similar viral biology. A public health team wants to prioritize intervention using the triangle. Which element(s) most explain the geographic disparity?",
-                "opts": ["— Select —",
-                         "Agent — HIV is more virulent in Africa",
-                         "Host — genetic susceptibility differs by population",
-                         "Environment — structural factors including poverty, gender inequality, limited healthcare access, and concurrent infections that increase susceptibility",
-                         "Time — Africa is earlier in the epidemic"],
-                "correct": "Environment — structural factors including poverty, gender inequality, limited healthcare access, and concurrent infections that increase susceptibility",
-                "fb_correct": "✅ Correct. HIV-1 biology is essentially the same globally. Genetic host factors play a minor role. The environmental vertex captures structural determinants: poverty limiting condom access, gender inequality reducing women's negotiating power, co-infections (HSV-2, STIs) increasing mucosal susceptibility, and limited antiretroviral treatment availability. This illustrates both the triangle's strength (identifies modifiable targets) and its limitation (the 'environment' box is doing a lot of work for what are really complex social structures).",
-                "fb_wrong": "❌ HIV viral biology is similar globally. The geographic disparity is driven by structural environmental factors — poverty, gender inequality, healthcare infrastructure, and co-infection rates — all of which are modifiable intervention targets.",
-                "key": "tri_q3"
-            },
-        ]
-
-        for scen in tri_scenarios:
-            ans = st.radio(scen["q"], scen["opts"], key=scen["key"])
-            if ans == scen["correct"]:
-                st.success(scen["fb_correct"])
-            elif ans != "— Select —":
-                st.error(scen["fb_wrong"])
-            st.markdown("")
-
-
+<script>
+const DISEASES={flu:{name:'Influenza',agent:[{id:'strain',label:'Novel strain (H3N2)',w:30,explain:'Increases probability that exposed individuals have no pre-existing immunity, amplifying the attack rate across the population.'},{id:'viral',label:'High viral load in source',w:20,explain:'Increases probability of transmission with each exposure event — higher inoculum means more virus reaching susceptible mucosa.'},{id:'mutation',label:'Antigenic shift',w:25,explain:'A major reassortment of viral surface proteins renders existing vaccine-derived and natural immunity ineffective, creating pandemic potential.'}],host:[{id:'unvacc',label:'Unvaccinated',w:30,explain:'Removes the primary layer of immunologic protection, increasing susceptibility to both infection and severe disease.'},{id:'elderly',label:'Age > 65 or < 2',w:20,explain:'Immune senescence in older adults and immature immunity in infants reduce the ability to mount effective antiviral responses.'},{id:'immune',label:'Immunocompromised',w:25,explain:'Defects in cellular immunity impair viral clearance, prolonging illness and increasing viral shedding — which also amplifies transmission.'}],env:[{id:'crowd',label:'Crowded indoor spaces',w:30,explain:'Increases contact rate between infectious and susceptible individuals, directly raising the effective reproductive number (R₀).'},{id:'winter',label:'Winter season',w:20,explain:'Low humidity preserves aerosolized viral particles longer and increases time spent indoors in close contact with others.'},{id:'ventil',label:'Poor ventilation',w:25,explain:'Allows airborne viral particles to accumulate in shared air, increasing the dose received by susceptible individuals over time.'}],detail:{agent:'Influenza viruses mutate rapidly. Antigenic shift can create pandemic strains against which no population has immunity.',host:'Vaccine-naive individuals, the elderly, young children, and immunocompromised hosts face the highest risk of severe disease.',env:'Crowded indoor spaces in winter — low humidity, poor ventilation, and close contact — drive seasonal epidemic peaks.',all:'All three elements converge: a novel strain, a susceptible population, and indoor winter crowding. The interaction is multiplicative — each element amplifies the others.',mixed:'Multiple elements active. The triangle shows that disease requires all three — modifying any one vertex changes the outcome.'}},tb:{name:'Tuberculosis',agent:[{id:'virulent',label:'Virulent M. tuberculosis',w:30,explain:'More virulent strains evade macrophage killing more effectively, increasing the probability that initial infection progresses to active disease.'},{id:'mdr',label:'Drug-resistant strain (MDR-TB)',w:25,explain:'Resistance to isoniazid and rifampin drastically limits treatment options and prolongs the period of infectiousness in the community.'},{id:'load',label:'High bacillary load in source',w:20,explain:'A source case with cavitary TB is more likely to transmit sufficient organisms to establish infection in a close contact.'}],host:[{id:'hiv',label:'HIV co-infection',w:35,explain:'HIV destroys CD4+ T cells that orchestrate macrophage activation against M. tuberculosis, increasing lifetime TB reactivation risk by 5–10%.'},{id:'malnour',label:'Malnutrition',w:25,explain:'Protein-energy malnutrition impairs T cell function, complement activity, and mucosal barriers — all critical for containing mycobacterial infection.'},{id:'latent',label:'Latent TB reactivation risk',w:20,explain:'An estimated 1.7 billion people carry latent TB. Any immunosuppressive condition — aging, diabetes, or steroids — can trigger reactivation.'}],env:[{id:'overcrowd',label:'Overcrowded housing / prison',w:35,explain:'Close prolonged contact in poorly ventilated spaces is the primary driver of TB transmission — prisons and shelters sustain community chains.'},{id:'poorair',label:'Poor air circulation',w:25,explain:'TB bacilli in droplet nuclei remain suspended in still air for hours. Effective ventilation is one of the most evidence-based transmission controls.'},{id:'poverty',label:'Poverty / limited healthcare',w:20,explain:'Poverty delays diagnosis, limits treatment access, and concentrates TB in overcrowded settings — all of which sustain the transmission chain.'}],detail:{agent:'M. tuberculosis is an obligate human pathogen. MDR strains complicate treatment dramatically — second-line drugs are toxic and less effective.',host:'HIV is the single strongest risk factor for progression from latent to active TB — it transforms a contained infection into active disease.',env:'TB is a disease of poverty and crowding. Ventilation and housing improvements have historically driven TB decline as much as antibiotics.',all:'The TB triangle is stark: a resilient pathogen, an immunocompromised host, and a crowded low-resource environment. HIV plus overcrowding is a public health emergency.',mixed:'Multiple elements active. TB illustrates how social determinants are biological — poverty and overcrowding operate through the same pathways as immunodeficiency.'}},lead:{name:'Lead Poisoning',agent:[{id:'paint',label:'Lead-based paint (pre-1978)',w:35,explain:'Deteriorating lead paint produces dust and chips that are the primary exposure route for children — even invisible dust levels can elevate blood lead.'},{id:'water',label:'Lead pipes / solder',w:30,explain:'Corroding lead service lines leach lead directly into drinking water. The Flint crisis demonstrated how quickly infrastructure failures become health emergencies.'},{id:'soil',label:'Contaminated soil',w:20,explain:'Leaded gasoline and industrial emissions left a legacy of soil contamination in urban areas, creating ongoing low-level exposure for children who play outdoors.'}],host:[{id:'child',label:'Age < 6 (developing CNS)',w:40,explain:'Children absorb 4–5 times more ingested lead than adults, and the developing brain has no safe threshold — even low blood lead levels reduce IQ.'},{id:'pica',label:'Pica behavior',w:25,explain:'Compulsive ingestion of non-food substances dramatically increases lead exposure through direct ingestion of paint chips and contaminated soil.'},{id:'iron',label:'Iron deficiency',w:20,explain:'Iron deficiency increases gastrointestinal lead absorption because the same transporter handles both ions — a common co-exposure in low-income children.'}],env:[{id:'old_house',label:'Pre-1978 housing',w:35,explain:'Housing built before 1978 is the single strongest predictor of elevated blood lead in children — age of housing is a direct proxy for lead paint presence.'},{id:'urban',label:'Urban / industrial area',w:25,explain:'Proximity to former industrial sites, smelters, or high-traffic roads correlates with soil and air lead levels that elevate background exposure.'},{id:'poverty2',label:'Poverty (no remediation)',w:25,explain:'Families in poverty are less able to remediate lead hazards or access treatment — concentrating lead's burden in the most disadvantaged communities.'}],detail:{agent:'Lead has no safe blood level in children. Paint chips and dust are the primary source; aging water infrastructure is an increasingly recognized second route.',host:'Children under 6 are uniquely vulnerable — their developing nervous systems have no safe threshold and they absorb far more lead per unit exposure than adults.',env:'Lead poisoning is an environmental justice issue. Older housing in low-income urban neighborhoods concentrates exposure in the most vulnerable populations.',all:'Lead poisoning collapses the agent-environment distinction — the agent IS the environment. Poverty amplifies both exposure and susceptibility simultaneously.',mixed:'Multiple elements active. Lead poisoning shows the triangle at its most environmental — intervention must focus on source elimination, not just host protection.'}},covid:{name:'COVID-19',agent:[{id:'variant',label:'High-transmissibility variant',w:30,explain:'Each major variant increased transmissibility — Omicron's R₀ of ~15 exceeded measles, driven by increased ACE2 binding and immune evasion.'},{id:'immune_ev',label:'Immune evasion',w:25,explain:'Mutations in the spike protein allow newer variants to partially escape vaccine-induced and natural antibody responses, enabling reinfection.'},{id:'shedding',label:'Pre-symptomatic shedding',w:20,explain:'Peak viral shedding occurs 1–2 days before symptom onset, making symptom-based isolation strategies insufficient to interrupt transmission.'}],host:[{id:'unvacc2',label:'Unvaccinated',w:35,explain:'Vaccination reduces risk of severe disease by >90% — the host vertex is the most modifiable element with available public health tools.'},{id:'comorbid',label:'Obesity / DM / CVD',w:25,explain:'Metabolic and cardiovascular comorbidities amplify the cytokine storm response and impair viral clearance, driving the majority of severe outcomes.'},{id:'age2',label:'Age > 65',w:20,explain:'Immune senescence reduces the speed and magnitude of the antiviral response, increasing both the probability and severity of disease.'}],env:[{id:'indoor2',label:'Indoor crowded settings',w:30,explain:'Indoor settings with poor ventilation are the primary transmission context — aerosol accumulation drives the majority of super-spreading events.'},{id:'noppe',label:'No masking / PPE',w:25,explain:'High-quality masks reduce both source emission and recipient inhalation of viral aerosols — directly modifying the transmission route.'},{id:'global',label:'Global travel networks',w:20,explain:'Modern travel networks compressed the 2020 pandemic timeline from months to weeks — a purely environmental amplifier of local outbreaks.'}],detail:{agent:'SARS-CoV-2 variants with higher transmissibility and immune evasion spread faster even in vaccinated populations.',host:'Vaccination fundamentally reshapes the host vertex — the same exposure produces a very different outcome in vaccinated versus unvaccinated individuals.',env:'COVID-19 proved ventilation as a public health intervention — the environment vertex can be modified at the building level, not just the individual level.',all:'COVID-19 redefined all three vertices simultaneously: a novel rapidly-evolving pathogen, a globally naive host population, and a hyperconnected world with indoor gathering norms.',mixed:'Multiple elements active. COVID-19's pandemic trajectory was shaped by how all three vertices interacted — and how interventions on each vertex changed the disease dynamic.'}},chd:{name:'Coronary Heart Disease',agent:[{id:'ldl',label:'Elevated LDL cholesterol',w:30,explain:'Oxidized LDL infiltrates the arterial intima, triggering the inflammatory cascade that drives atherosclerotic plaque formation.'},{id:'inflam',label:'Chronic inflammation (CRP)',w:25,explain:'Systemic inflammation, reflected by elevated CRP and IL-6, independently predicts cardiovascular events even in individuals with normal LDL.'},{id:'htn2',label:'Hypertension',w:25,explain:'Sustained elevated arterial pressure causes endothelial shear stress and injury, accelerating plaque formation and risk of rupture.'}],host:[{id:'genetics',label:'Family history / genetics',w:30,explain:'First-degree relatives with premature CHD indicate a 2-fold increase in risk, reflecting polygenic liability not captured by traditional risk factors.'},{id:'dm2',label:'Diabetes mellitus',w:25,explain:'Chronic hyperglycemia causes advanced glycation end-product formation and endothelial dysfunction — diabetes is treated as a CHD risk equivalent.'},{id:'male',label:'Male sex / post-menopause',w:20,explain:'Estrogen has cardioprotective effects; menopause eliminates this protection, equalizing CHD risk between sexes by age 65–70.'}],env:[{id:'diet',label:'Western diet (high sat. fat)',w:30,explain:'Diets high in saturated fat raise LDL and promote systemic inflammation — the dietary environment directly drives the agent vertex through lipid metabolism.'},{id:'sedenv',label:'Sedentary built environment',w:25,explain:'Car-dependent urban design and desk-bound work reduce physical activity at the population level, independent of individual choices.'},{id:'stress2',label:'Chronic psychosocial stress',w:20,explain:'Chronic stress activates the HPA axis and sympathetic nervous system, raising cortisol, blood pressure, and inflammatory markers — each accelerating atherosclerosis.'}],detail:{agent:'For chronic non-communicable disease, the agent is the biological insult — oxidized LDL, chronic inflammation, and sustained hypertension driving atherosclerosis.',host:'Genetic predisposition, diabetes, and sex hormones shape individual susceptibility independently — two people with identical environments can have very different CHD trajectories.',env:'The built environment shapes CHD risk at the population level. Food deserts, sedentary infrastructure, and high-stress occupational environments operate upstream of individual behavior.',all:'CHD shows the triangle at its most complex: no single agent, interacting host factors, and an environment that actively promotes the disease. Risk is multiplicative, not additive.',modify:'Multiple elements active. CHD illustrates why population-level interventions on the environment vertex often have greater public health impact than clinical interventions on individual hosts.',mixed:'Multiple elements active. CHD illustrates why population-level interventions on the environment vertex often have greater public health impact than clinical interventions on individual hosts.'}}};
+let cur='flu',state={},lastToggled=null;
+function getCounts(){const d=DISEASES[cur];let aw=0,at=0,hw=0,ht=0,ew=0,et=0;d.agent.forEach(f=>{at++;if(state[f.id])aw++;});d.host.forEach(f=>{ht++;if(state[f.id])hw++;});d.env.forEach(f=>{et++;if(state[f.id])ew++;});return{aw,at,hw,ht,ew,et,ap:at>0?Math.round(aw/at*100):0,hp:ht>0?Math.round(hw/ht*100):0,ep:et>0?Math.round(ew/et*100):0};}
+function rgba(hex,op){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${op})`;}
+function render(){const d=DISEASES[cur];const c=getCounts();const activeV=[c.aw>0,c.hw>0,c.ew>0].filter(Boolean).length;const ao=0.15+c.ap/100*0.75,ho=0.15+c.hp/100*0.75,eo=0.15+c.ep/100*0.75;document.getElementById('box-agent').setAttribute('fill',rgba('#dc2626',ao*0.18));document.getElementById('box-agent').setAttribute('stroke',rgba('#dc2626',0.2+ao*0.8));document.getElementById('box-host').setAttribute('fill',rgba('#1d4ed8',ho*0.18));document.getElementById('box-host').setAttribute('stroke',rgba('#1d4ed8',0.2+ho*0.8));document.getElementById('box-env').setAttribute('fill',rgba('#16a34a',eo*0.18));document.getElementById('box-env').setAttribute('stroke',rgba('#16a34a',0.2+eo*0.8));document.getElementById('g-agent').style.transform=`scale(${1+c.ap/100*0.15})`;document.getElementById('g-host').style.transform=`scale(${1+c.hp/100*0.15})`;document.getElementById('g-env').style.transform=`scale(${1+c.ep/100*0.15})`;const lAH=c.aw>0&&c.hw>0,lAE=c.aw>0&&c.ew>0,lHE=c.hw>0&&c.ew>0;document.getElementById('side-ah').setAttribute('stroke',rgba('#7c3aed',lAH?0.65:0.12));document.getElementById('side-ah').setAttribute('stroke-width',lAH?2+activeV*1.2:1.2);document.getElementById('side-ae').setAttribute('stroke',rgba('#0891b2',lAE?0.65:0.12));document.getElementById('side-ae').setAttribute('stroke-width',lAE?2+activeV*1.2:1.2);document.getElementById('side-he').setAttribute('stroke',rgba('#059669',lHE?0.65:0.12));document.getElementById('side-he').setAttribute('stroke-width',lHE?2+activeV*1.2:1.2);document.getElementById('bar-a').style.width=c.ap+'%';document.getElementById('bar-h').style.width=c.hp+'%';document.getElementById('bar-e').style.width=c.ep+'%';document.getElementById('pct-a').textContent=c.aw+'/'+c.at+' active';document.getElementById('pct-h').textContent=c.hw+'/'+c.ht+' active';document.getElementById('pct-e').textContent=c.ew+'/'+c.et+' active';const badge=document.getElementById('int-badge');if(activeV===0){badge.textContent='';badge.style.background='transparent';}else if(activeV===1){badge.textContent='Single vertex active';badge.style.background='#f3f4f6';badge.style.color='#6b7280';}else if(activeV===2){badge.textContent='⚠ Two-way interaction';badge.style.background='#fffbeb';badge.style.color='#92400e';}else{badge.textContent='⚡ Three-way interaction — multiplicative risk';badge.style.background='#fff1f2';badge.style.color='#9f1239';}const box=document.getElementById('detail-box');const aA=c.aw>0,hA=c.hw>0,eA=c.ew>0;if(activeV===0)box.textContent='Toggle factors to see how each element contributes.';else if(activeV===3)box.textContent=d.detail.all;else if(aA&&!hA&&!eA)box.textContent=d.detail.agent;else if(!aA&&hA&&!eA)box.textContent=d.detail.host;else if(!aA&&!hA&&eA)box.textContent=d.detail.env;else box.textContent=d.detail.mixed;const expBox=document.getElementById('factor-explain');if(lastToggled&&state[lastToggled]){const all=[...d.agent,...d.host,...d.env];const f=all.find(x=>x.id===lastToggled);if(f){const type=d.agent.find(x=>x.id===lastToggled)?'#dc2626':d.host.find(x=>x.id===lastToggled)?'#1d4ed8':'#16a34a';expBox.style.display='block';expBox.style.borderLeftColor=type;expBox.textContent=f.label+': '+f.explain;}}else expBox.style.display='none';['agent','host','env'].forEach(type=>{document.getElementById(`${type}-factors`).innerHTML=DISEASES[cur][type].map(f=>`<div class="factor-item"><span class="factor-label">${f.label}</span><input type="checkbox" class="factor-check ${type}" ${state[f.id]?'checked':''} onchange="lastToggled='${f.id}';state['${f.id}']=this.checked;render()"></div>`).join('');});}
+function setDisease(key,btn){cur=key;state={};lastToggled=null;document.querySelectorAll('.dtab').forEach(t=>t.classList.remove('on'));btn.classList.add('on');render();}
+function resetAll(){state={};lastToggled=null;render();}
+render();
+</script>
+""", height=760, scrolling=False)
 
     elif found_section == "2️⃣ Natural History & Levels of Prevention":
         st.subheader("Natural History of Disease")

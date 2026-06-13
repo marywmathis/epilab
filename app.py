@@ -1771,248 +1771,30 @@ if current_page == "foundations":
         st.subheader("The Epidemiology Triangle")
         st.caption("Toggle agent, host, and environment factors to see how disease risk changes. Connecting lines activate when two vertices interact.")
         import streamlit.components.v1 as _tri_comp
+        import streamlit.components.v1 as _tri_comp
         _tri_comp.html("""
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,sans-serif;font-size:14px;color:#1f2937;background:#ffffff}
-.outer{padding:12px}
-.disease-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
-.dtab{padding:6px 14px;border-radius:6px;border:1px solid #d1d5db;background:#ffffff;color:#6b7280;cursor:pointer;font-size:13px}
-.dtab.on{background:#f3f4f6;border-color:#6b7280;color:#111827;font-weight:500}
-.main{display:grid;grid-template-columns:1fr 210px;gap:16px}
-.svgwrap{width:100%;max-width:460px;margin:0 auto}
-svg{width:100%;background:#ffffff}
-.panel{background:#ffffff;border:1px solid #e5e7eb;border-radius:10px;padding:14px}
-.ctrl-title{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:8px}
-.sec{font-size:11px;font-weight:600;margin:10px 0 4px;padding-top:8px;border-top:1px solid #f3f4f6}
-.sec-a{color:#dc2626}.sec-h{color:#1d4ed8}.sec-e{color:#16a34a}
-.fi{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;padding:5px 0;border-bottom:1px solid #f3f4f6;font-size:13px;color:#374151}
-.fi:last-child{border-bottom:none}
-.fi span{flex:1;line-height:1.3}
-.fi input[type=checkbox]{width:15px;height:15px;cursor:pointer;flex-shrink:0;margin-top:1px}
-.prow{display:flex;align-items:center;gap:6px;margin-bottom:5px}
-.plbl{font-size:11px;width:36px;flex-shrink:0}
-.ptrack{flex:1;height:6px;background:#f3f4f6;border-radius:3px;overflow:hidden}
-.pfill{height:100%;border-radius:3px;transition:width .4s}
-.ppct{font-size:11px;min-width:36px;text-align:right;color:#6b7280}
-.bdg{margin-top:6px;padding:5px 8px;border-radius:6px;font-size:11px;font-weight:600;text-align:center;min-height:22px}
-.dbox{padding:10px;background:#f9fafb;border-radius:8px;border:1px solid #e5e7eb;font-size:12px;color:#374151;line-height:1.6;min-height:48px;margin-top:8px}
-.ebox{padding:8px 10px;background:#ffffff;border-radius:8px;border-left:3px solid #e5e7eb;font-size:12px;color:#374151;line-height:1.5;margin-top:6px;display:none}
-.rbtn{display:block;width:100%;margin-top:8px;padding:6px 0;border-radius:6px;border:1px solid #e5e7eb;background:#ffffff;color:#9ca3af;font-size:12px;cursor:pointer;text-align:center}
-.prof{margin-top:10px;padding-top:10px;border-top:1px solid #f3f4f6}
-.ptitle{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#9ca3af;margin-bottom:6px}
-.hidden{display:none}
-</style>
-<div class="outer">
-<div class="disease-row">
-  <button class="dtab on" onclick="sw('flu',this)">Influenza</button>
-  <button class="dtab" onclick="sw('tb',this)">Tuberculosis</button>
-  <button class="dtab" onclick="sw('lead',this)">Lead Poisoning</button>
-  <button class="dtab" onclick="sw('covid',this)">COVID-19</button>
-  <button class="dtab" onclick="sw('chd',this)">Coronary Heart Disease</button>
+<div style="font-family:sans-serif;text-align:center;padding:10px 0;">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 410" width="500" height="410">
+  <text x="250" y="22" font-size="16" font-weight="700" fill="#64748b" text-anchor="middle">The Epidemiology Triangle</text>
+  <polygon points="250,68 40,340 460,340" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+  <line x1="250" y1="68" x2="40" y2="340" stroke="#1565c0" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <line x1="250" y1="68" x2="460" y2="340" stroke="#2e7d32" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <line x1="40" y1="340" x2="460" y2="340" stroke="#c62828" stroke-width="2.5" stroke-dasharray="7,4"/>
+  <rect x="185" y="48" width="130" height="52" rx="9" fill="#fce4ec" stroke="#c62828" stroke-width="2.5"/>
+  <text x="250" y="71" font-size="14" font-weight="700" fill="#c62828" text-anchor="middle">AGENT</text>
+  <text x="250" y="89" font-size="10" fill="#888" text-anchor="middle">What causes disease</text>
+  <rect x="8" y="314" width="120" height="52" rx="9" fill="#e3f2fd" stroke="#1565c0" stroke-width="2.5"/>
+  <text x="68" y="337" font-size="14" font-weight="700" fill="#1565c0" text-anchor="middle">HOST</text>
+  <text x="68" y="354" font-size="10" fill="#888" text-anchor="middle">Who gets disease</text>
+  <rect x="372" y="314" width="120" height="52" rx="9" fill="#e8f5e9" stroke="#2e7d32" stroke-width="2.5"/>
+  <text x="432" y="337" font-size="14" font-weight="700" fill="#2e7d32" text-anchor="middle">ENVIRONMENT</text>
+  <text x="432" y="354" font-size="10" fill="#888" text-anchor="middle">Where it occurs</text>
+  <ellipse cx="250" cy="230" rx="62" ry="36" fill="#fff8e1" stroke="#f9a825" stroke-width="2.5"/>
+  <text x="250" y="225" font-size="13" font-weight="700" fill="#f57f17" text-anchor="middle">TIME</text>
+  <text x="250" y="242" font-size="10" fill="#999" text-anchor="middle">When it unfolds</text>
+</svg>
 </div>
-<div class="main">
-  <div class="svgwrap">
-  <svg id="tri" viewBox="0 0 500 360">
-    <line id="lah" x1="213" y1="86" x2="138" y2="275" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round"/>
-    <line id="lae" x1="287" y1="86" x2="322" y2="275" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round"/>
-    <line id="lhe" x1="166" y1="300" x2="314" y2="300" stroke="#e5e7eb" stroke-width="1.5" stroke-linecap="round"/>
-    <g id="ga" style="transform-origin:250px 62px">
-      <rect id="ra" x="175" y="36" width="150" height="52" rx="10" fill="#fff5f5" stroke="#dc2626" stroke-width="2"/>
-      <text x="250" y="58" font-size="15" font-weight="700" text-anchor="middle" fill="#dc2626">AGENT</text>
-      <text x="250" y="77" font-size="11" text-anchor="middle" fill="#6b7280">Disease-producing factor</text>
-    </g>
-    <g id="gh" style="transform-origin:100px 300px">
-      <rect id="rh" x="35" y="274" width="130" height="52" rx="10" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2"/>
-      <text x="100" y="296" font-size="15" font-weight="700" text-anchor="middle" fill="#1d4ed8">HOST</text>
-      <text x="100" y="315" font-size="11" text-anchor="middle" fill="#6b7280">Susceptibility</text>
-    </g>
-    <g id="ge" style="transform-origin:390px 300px">
-      <rect id="re" x="315" y="274" width="150" height="52" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="2"/>
-      <text x="390" y="296" font-size="15" font-weight="700" text-anchor="middle" fill="#16a34a">ENVIRONMENT</text>
-      <text x="390" y="315" font-size="11" text-anchor="middle" fill="#6b7280">Transmission conditions</text>
-    </g>
-  </svg>
-  </div>
-  <div class="panel">
-    <div class="ctrl-title">Toggle factors</div>
-
-    <!-- FLU factors (default visible) -->
-    <div id="factors-flu">
-      <div class="sec sec-a">Agent</div>
-      <div class="fi"><span>Novel strain (H3N2)</span><input type="checkbox" onchange="tog('flu','a1',this,'Increases probability that exposed individuals have no pre-existing immunity, amplifying the attack rate across the population.')"></div>
-      <div class="fi"><span>High viral load in source</span><input type="checkbox" onchange="tog('flu','a2',this,'Increases probability of transmission with each exposure \u2014 higher inoculum means more virus reaching susceptible mucosa.')"></div>
-      <div class="fi"><span>Antigenic shift</span><input type="checkbox" onchange="tog('flu','a3',this,'A major reassortment of viral surface proteins renders existing immunity ineffective, creating pandemic potential.')"></div>
-      <div class="sec sec-h">Host</div>
-      <div class="fi"><span>Unvaccinated</span><input type="checkbox" onchange="tog('flu','h1',this,'Removes the primary layer of immunologic protection, increasing susceptibility to both infection and severe disease.')"></div>
-      <div class="fi"><span>Age &gt; 65 or &lt; 2</span><input type="checkbox" onchange="tog('flu','h2',this,'Immune senescence in older adults and immature immunity in infants reduce the ability to mount effective antiviral responses.')"></div>
-      <div class="fi"><span>Immunocompromised</span><input type="checkbox" onchange="tog('flu','h3',this,'Defects in cellular immunity impair viral clearance, prolonging illness and increasing viral shedding.')"></div>
-      <div class="sec sec-e">Environment</div>
-      <div class="fi"><span>Crowded indoor spaces</span><input type="checkbox" onchange="tog('flu','e1',this,'Increases contact rate between infectious and susceptible individuals, directly raising the effective reproductive number.')"></div>
-      <div class="fi"><span>Winter season</span><input type="checkbox" onchange="tog('flu','e2',this,'Low humidity preserves aerosolized viral particles longer and increases time spent indoors in close contact.')"></div>
-      <div class="fi"><span>Poor ventilation</span><input type="checkbox" onchange="tog('flu','e3',this,'Allows airborne viral particles to accumulate in shared air, increasing dose received by susceptible individuals.')"></div>
-    </div>
-
-    <div id="factors-tb" class="hidden">
-      <div class="sec sec-a">Agent</div>
-      <div class="fi"><span>Virulent M. tuberculosis</span><input type="checkbox" onchange="tog('tb','a1',this,'More virulent strains evade macrophage killing, increasing probability that initial infection progresses to active disease.')"></div>
-      <div class="fi"><span>Drug-resistant strain (MDR-TB)</span><input type="checkbox" onchange="tog('tb','a2',this,'Resistance to isoniazid and rifampin drastically limits treatment options and prolongs infectiousness in the community.')"></div>
-      <div class="fi"><span>High bacillary load in source</span><input type="checkbox" onchange="tog('tb','a3',this,'A source case with cavitary TB is more likely to transmit sufficient organisms to establish infection in a close contact.')"></div>
-      <div class="sec sec-h">Host</div>
-      <div class="fi"><span>HIV co-infection</span><input type="checkbox" onchange="tog('tb','h1',this,'HIV destroys CD4+ T cells that orchestrate macrophage activation against M. tuberculosis, increasing reactivation risk by 5\u201310%.')"></div>
-      <div class="fi"><span>Malnutrition</span><input type="checkbox" onchange="tog('tb','h2',this,'Protein-energy malnutrition impairs T cell function, complement activity, and mucosal barriers critical for containing mycobacterial infection.')"></div>
-      <div class="fi"><span>Latent TB reactivation risk</span><input type="checkbox" onchange="tog('tb','h3',this,'An estimated 1.7 billion people carry latent TB. Any immunosuppressive condition can trigger reactivation.')"></div>
-      <div class="sec sec-e">Environment</div>
-      <div class="fi"><span>Overcrowded housing / prison</span><input type="checkbox" onchange="tog('tb','e1',this,'Close prolonged contact in poorly ventilated spaces is the primary driver of TB transmission \u2014 prisons and shelters sustain community chains.')"></div>
-      <div class="fi"><span>Poor air circulation</span><input type="checkbox" onchange="tog('tb','e2',this,'TB bacilli in droplet nuclei remain suspended in still air for hours. Effective ventilation is one of the most evidence-based controls.')"></div>
-      <div class="fi"><span>Poverty / limited healthcare</span><input type="checkbox" onchange="tog('tb','e3',this,'Poverty delays diagnosis, limits treatment access, and concentrates TB in overcrowded settings.')"></div>
-    </div>
-
-    <div id="factors-lead" class="hidden">
-      <div class="sec sec-a">Agent</div>
-      <div class="fi"><span>Lead-based paint (pre-1978)</span><input type="checkbox" onchange="tog('lead','a1',this,'Deteriorating lead paint produces dust and chips that are the primary exposure route for children \u2014 even invisible dust levels elevate blood lead.')"></div>
-      <div class="fi"><span>Lead pipes / solder</span><input type="checkbox" onchange="tog('lead','a2',this,'Corroding lead service lines leach lead directly into drinking water. The Flint crisis demonstrated how quickly infrastructure failures become health emergencies.')"></div>
-      <div class="fi"><span>Contaminated soil</span><input type="checkbox" onchange="tog('lead','a3',this,'Leaded gasoline and industrial emissions left a legacy of soil contamination in urban areas, creating ongoing exposure for children who play outdoors.')"></div>
-      <div class="sec sec-h">Host</div>
-      <div class="fi"><span>Age &lt; 6 (developing CNS)</span><input type="checkbox" onchange="tog('lead','h1',this,'Children absorb 4\u20135 times more ingested lead than adults, and the developing brain has no safe threshold \u2014 even low blood lead levels reduce IQ.')"></div>
-      <div class="fi"><span>Pica behavior</span><input type="checkbox" onchange="tog('lead','h2',this,'Compulsive ingestion of non-food substances dramatically increases lead exposure through direct ingestion of paint chips and contaminated soil.')"></div>
-      <div class="fi"><span>Iron deficiency</span><input type="checkbox" onchange="tog('lead','h3',this,'Iron deficiency increases gastrointestinal lead absorption because the same transporter handles both ions.')"></div>
-      <div class="sec sec-e">Environment</div>
-      <div class="fi"><span>Pre-1978 housing</span><input type="checkbox" onchange="tog('lead','e1',this,'Housing built before 1978 is the single strongest predictor of elevated blood lead \u2014 age of housing is a direct proxy for lead paint presence.')"></div>
-      <div class="fi"><span>Urban / industrial area</span><input type="checkbox" onchange="tog('lead','e2',this,'Proximity to former industrial sites, smelters, or high-traffic roads correlates with soil and air lead levels that elevate background exposure.')"></div>
-      <div class="fi"><span>Poverty (no remediation)</span><input type="checkbox" onchange="tog('lead','e3',this,'Families in poverty are less able to remediate lead hazards or access treatment, concentrating lead burden in the most disadvantaged communities.')"></div>
-    </div>
-
-    <div id="factors-covid" class="hidden">
-      <div class="sec sec-a">Agent</div>
-      <div class="fi"><span>High-transmissibility variant</span><input type="checkbox" onchange="tog('covid','a1',this,'Each major variant increased transmissibility \u2014 Omicron R0 of ~15 exceeded measles, driven by increased ACE2 binding and immune evasion.')"></div>
-      <div class="fi"><span>Immune evasion</span><input type="checkbox" onchange="tog('covid','a2',this,'Mutations in the spike protein allow newer variants to partially escape vaccine-induced and natural antibody responses, enabling reinfection.')"></div>
-      <div class="fi"><span>Pre-symptomatic shedding</span><input type="checkbox" onchange="tog('covid','a3',this,'Peak viral shedding occurs 1\u20132 days before symptom onset, making symptom-based isolation insufficient to interrupt transmission.')"></div>
-      <div class="sec sec-h">Host</div>
-      <div class="fi"><span>Unvaccinated</span><input type="checkbox" onchange="tog('covid','h1',this,'Vaccination reduces risk of severe disease by more than 90% \u2014 the host vertex is the most modifiable element with available public health tools.')"></div>
-      <div class="fi"><span>Obesity / DM / CVD</span><input type="checkbox" onchange="tog('covid','h2',this,'Metabolic and cardiovascular comorbidities amplify the cytokine storm response and impair viral clearance, driving most severe outcomes.')"></div>
-      <div class="fi"><span>Age &gt; 65</span><input type="checkbox" onchange="tog('covid','h3',this,'Immune senescence reduces the speed and magnitude of the antiviral response, increasing both the probability and severity of disease.')"></div>
-      <div class="sec sec-e">Environment</div>
-      <div class="fi"><span>Indoor crowded settings</span><input type="checkbox" onchange="tog('covid','e1',this,'Indoor settings with poor ventilation are the primary transmission context \u2014 aerosol accumulation drives most super-spreading events.')"></div>
-      <div class="fi"><span>No masking / PPE</span><input type="checkbox" onchange="tog('covid','e2',this,'High-quality masks reduce both source emission and recipient inhalation of viral aerosols \u2014 directly modifying the transmission route.')"></div>
-      <div class="fi"><span>Global travel networks</span><input type="checkbox" onchange="tog('covid','e3',this,'Modern travel networks compressed the 2020 pandemic timeline from months to weeks \u2014 a purely environmental amplifier of local outbreaks.')"></div>
-    </div>
-
-    <div id="factors-chd" class="hidden">
-      <div class="sec sec-a">Agent</div>
-      <div class="fi"><span>Elevated LDL cholesterol</span><input type="checkbox" onchange="tog('chd','a1',this,'Oxidized LDL infiltrates the arterial intima, triggering the inflammatory cascade that drives atherosclerotic plaque formation.')"></div>
-      <div class="fi"><span>Chronic inflammation (CRP)</span><input type="checkbox" onchange="tog('chd','a2',this,'Systemic inflammation, reflected by elevated CRP and IL-6, independently predicts cardiovascular events even with normal LDL.')"></div>
-      <div class="fi"><span>Hypertension</span><input type="checkbox" onchange="tog('chd','a3',this,'Sustained elevated arterial pressure causes endothelial shear stress and injury, accelerating plaque formation and risk of rupture.')"></div>
-      <div class="sec sec-h">Host</div>
-      <div class="fi"><span>Family history / genetics</span><input type="checkbox" onchange="tog('chd','h1',this,'First-degree relatives with premature CHD indicate a 2-fold increase in risk, reflecting polygenic liability not captured by standard risk factors.')"></div>
-      <div class="fi"><span>Diabetes mellitus</span><input type="checkbox" onchange="tog('chd','h2',this,'Chronic hyperglycemia causes advanced glycation end-product formation and endothelial dysfunction \u2014 diabetes is treated as a CHD risk equivalent.')"></div>
-      <div class="fi"><span>Male sex / post-menopause</span><input type="checkbox" onchange="tog('chd','h3',this,'Estrogen has cardioprotective effects; menopause eliminates this protection, equalizing CHD risk between sexes by age 65\u201370.')"></div>
-      <div class="sec sec-e">Environment</div>
-      <div class="fi"><span>Western diet (high sat. fat)</span><input type="checkbox" onchange="tog('chd','e1',this,'Diets high in saturated fat raise LDL and promote systemic inflammation \u2014 the dietary environment directly drives the agent vertex.')"></div>
-      <div class="fi"><span>Sedentary built environment</span><input type="checkbox" onchange="tog('chd','e2',this,'Car-dependent urban design and desk-bound work reduce physical activity at the population level, independent of individual choices.')"></div>
-      <div class="fi"><span>Chronic psychosocial stress</span><input type="checkbox" onchange="tog('chd','e3',this,'Chronic stress activates the HPA axis and sympathetic nervous system, raising cortisol, blood pressure, and inflammatory markers.')"></div>
-    </div>
-
-    <div class="prof">
-      <div class="ptitle">Contributing factors activated</div>
-      <div class="prow"><span class="plbl" style="color:#dc2626">Agent</span><div class="ptrack"><div class="pfill" id="ba" style="background:#fca5a5;width:0%"></div></div><span class="ppct" id="pa">0/3</span></div>
-      <div class="prow"><span class="plbl" style="color:#1d4ed8">Host</span><div class="ptrack"><div class="pfill" id="bh" style="background:#93c5fd;width:0%"></div></div><span class="ppct" id="ph">0/3</span></div>
-      <div class="prow"><span class="plbl" style="color:#16a34a">Env</span><div class="ptrack"><div class="pfill" id="be" style="background:#86efac;width:0%"></div></div><span class="ppct" id="pe">0/3</span></div>
-      <div class="bdg" id="bdg" style="background:transparent"></div>
-    </div>
-    <div class="dbox" id="dbox">Toggle factors to see how each element contributes.</div>
-    <div class="ebox" id="ebox"></div>
-    <button class="rbtn" onclick="rst()">&#8635; Reset</button>
-  </div>
-</div>
-</div>
-
-<script>
-var cur='flu';
-var st={flu:{},tb:{},lead:{},covid:{},chd:{}};
-var explain={flu:{a1:'Increases probability that exposed individuals have no pre-existing immunity, amplifying the attack rate across the population.',a2:'Increases probability of transmission with each exposure \u2014 higher inoculum means more virus reaching susceptible mucosa.',a3:'A major reassortment of viral surface proteins renders existing immunity ineffective, creating pandemic potential.',h1:'Removes the primary layer of immunologic protection, increasing susceptibility to both infection and severe disease.',h2:'Immune senescence in older adults and immature immunity in infants reduce the ability to mount effective antiviral responses.',h3:'Defects in cellular immunity impair viral clearance, prolonging illness and increasing viral shedding.',e1:'Increases contact rate between infectious and susceptible individuals, directly raising the effective reproductive number.',e2:'Low humidity preserves aerosolized viral particles longer and increases time spent indoors in close contact.',e3:'Allows airborne viral particles to accumulate in shared air, increasing dose received by susceptible individuals.'},tb:{a1:'More virulent strains evade macrophage killing, increasing probability that initial infection progresses to active disease.',a2:'Resistance to isoniazid and rifampin drastically limits treatment options and prolongs infectiousness in the community.',a3:'A source case with cavitary TB is more likely to transmit sufficient organisms to establish infection in a close contact.',h1:'HIV destroys CD4+ T cells that orchestrate macrophage activation against M. tuberculosis, increasing reactivation risk by 5\u201310%.',h2:'Protein-energy malnutrition impairs T cell function, complement activity, and mucosal barriers critical for containing mycobacterial infection.',h3:'An estimated 1.7 billion people carry latent TB. Any immunosuppressive condition can trigger reactivation.',e1:'Close prolonged contact in poorly ventilated spaces is the primary driver of TB transmission \u2014 prisons and shelters sustain community chains.',e2:'TB bacilli in droplet nuclei remain suspended in still air for hours. Effective ventilation is one of the most evidence-based controls.',e3:'Poverty delays diagnosis, limits treatment access, and concentrates TB in overcrowded settings.'},lead:{a1:'Deteriorating lead paint produces dust and chips that are the primary exposure route for children \u2014 even invisible dust levels elevate blood lead.',a2:'Corroding lead service lines leach lead directly into drinking water. The Flint crisis demonstrated how quickly infrastructure failures become health emergencies.',a3:'Leaded gasoline and industrial emissions left a legacy of soil contamination in urban areas, creating ongoing exposure for children who play outdoors.',h1:'Children absorb 4\u20135 times more ingested lead than adults, and the developing brain has no safe threshold \u2014 even low blood lead levels reduce IQ.',h2:'Compulsive ingestion of non-food substances dramatically increases lead exposure through direct ingestion of paint chips and contaminated soil.',h3:'Iron deficiency increases gastrointestinal lead absorption because the same transporter handles both ions.',e1:'Housing built before 1978 is the single strongest predictor of elevated blood lead \u2014 age of housing is a direct proxy for lead paint presence.',e2:'Proximity to former industrial sites, smelters, or high-traffic roads correlates with soil and air lead levels that elevate background exposure.',e3:'Families in poverty are less able to remediate lead hazards or access treatment, concentrating lead burden in the most disadvantaged communities.'},covid:{a1:'Each major variant increased transmissibility \u2014 Omicron R0 of ~15 exceeded measles, driven by increased ACE2 binding and immune evasion.',a2:'Mutations in the spike protein allow newer variants to partially escape vaccine-induced and natural antibody responses, enabling reinfection.',a3:'Peak viral shedding occurs 1\u20132 days before symptom onset, making symptom-based isolation insufficient to interrupt transmission.',h1:'Vaccination reduces risk of severe disease by more than 90% \u2014 the host vertex is the most modifiable element with available public health tools.',h2:'Metabolic and cardiovascular comorbidities amplify the cytokine storm response and impair viral clearance, driving most severe outcomes.',h3:'Immune senescence reduces the speed and magnitude of the antiviral response, increasing both the probability and severity of disease.',e1:'Indoor settings with poor ventilation are the primary transmission context \u2014 aerosol accumulation drives most super-spreading events.',e2:'High-quality masks reduce both source emission and recipient inhalation of viral aerosols \u2014 directly modifying the transmission route.',e3:'Modern travel networks compressed the 2020 pandemic timeline from months to weeks \u2014 a purely environmental amplifier of local outbreaks.'},chd:{a1:'Oxidized LDL infiltrates the arterial intima, triggering the inflammatory cascade that drives atherosclerotic plaque formation.',a2:'Systemic inflammation, reflected by elevated CRP and IL-6, independently predicts cardiovascular events even with normal LDL.',a3:'Sustained elevated arterial pressure causes endothelial shear stress and injury, accelerating plaque formation and risk of rupture.',h1:'First-degree relatives with premature CHD indicate a 2-fold increase in risk, reflecting polygenic liability not captured by standard risk factors.',h2:'Chronic hyperglycemia causes advanced glycation end-product formation and endothelial dysfunction \u2014 diabetes is treated as a CHD risk equivalent.',h3:'Estrogen has cardioprotective effects; menopause eliminates this protection, equalizing CHD risk between sexes by age 65\u201370.',e1:'Diets high in saturated fat raise LDL and promote systemic inflammation \u2014 the dietary environment directly drives the agent vertex.',e2:'Car-dependent urban design and desk-bound work reduce physical activity at the population level, independent of individual choices.',e3:'Chronic stress activates the HPA axis and sympathetic nervous system, raising cortisol, blood pressure, and inflammatory markers.'}};
-var detail={flu:{a:'Influenza viruses mutate rapidly. Antigenic shift can create pandemic strains against which no population has immunity.',h:'Vaccine-naive individuals, the elderly, young children, and immunocompromised hosts face the highest risk of severe disease.',e:'Crowded indoor spaces in winter \u2014 low humidity, poor ventilation, and close contact \u2014 drive seasonal epidemic peaks.',all:'All three elements converge: a novel strain, a susceptible population, and indoor winter crowding. The interaction is multiplicative \u2014 each element amplifies the others.',m:'Multiple elements active. The triangle shows that disease requires all three \u2014 modifying any one vertex changes the outcome.'},tb:{a:'M. tuberculosis is an obligate human pathogen. MDR strains complicate treatment dramatically \u2014 second-line drugs are toxic and less effective.',h:'HIV is the single strongest risk factor for progression from latent to active TB \u2014 it transforms a contained infection into active disease.',e:'TB is a disease of poverty and crowding. Ventilation and housing improvements have historically driven TB decline as much as antibiotics.',all:'The TB triangle is stark: a resilient pathogen, an immunocompromised host, and a crowded low-resource environment. HIV plus overcrowding is a public health emergency.',m:'Multiple elements active. TB illustrates how social determinants are biological \u2014 poverty and overcrowding operate through the same pathways as immunodeficiency.'},lead:{a:'Lead has no safe blood level in children. Paint chips and dust are the primary source; aging water infrastructure is an increasingly recognized second route.',h:'Children under 6 are uniquely vulnerable \u2014 their developing nervous systems have no safe threshold and they absorb far more lead per unit exposure than adults.',e:'Lead poisoning is an environmental justice issue. Older housing in low-income urban neighborhoods concentrates exposure in the most vulnerable populations.',all:'Lead poisoning collapses the agent-environment distinction \u2014 the agent IS the environment. Poverty amplifies both exposure and susceptibility simultaneously.',m:'Multiple elements active. Lead poisoning shows the triangle at its most environmental \u2014 intervention must focus on source elimination, not just host protection.'},covid:{a:'SARS-CoV-2 variants with higher transmissibility and immune evasion spread faster even in vaccinated populations.',h:'Vaccination fundamentally reshapes the host vertex \u2014 the same exposure produces a very different outcome in vaccinated versus unvaccinated individuals.',e:'COVID-19 proved ventilation as a public health intervention \u2014 the environment vertex can be modified at the building level, not just the individual level.',all:'COVID-19 redefined all three vertices simultaneously: a novel rapidly-evolving pathogen, a globally naive host population, and a hyperconnected world with indoor gathering norms.',m:"Multiple elements active. COVID-19's pandemic trajectory was shaped by how all three vertices interacted \u2014 and how interventions on each vertex changed the disease dynamic."},chd:{a:'For chronic non-communicable disease, the agent is the biological insult \u2014 oxidized LDL, chronic inflammation, and sustained hypertension driving atherosclerosis.',h:'Genetic predisposition, diabetes, and sex hormones shape individual susceptibility independently \u2014 two people with identical environments can have very different CHD trajectories.',e:'The built environment shapes CHD risk at the population level. Food deserts, sedentary infrastructure, and high-stress occupational environments operate upstream of individual behavior.',all:'CHD shows the triangle at its most complex: no single agent, interacting host factors, and an environment that actively promotes the disease. Risk is multiplicative, not additive.',m:'Multiple elements active. CHD illustrates why population-level interventions on the environment often have greater public health impact than clinical interventions on individual hosts.'}};
-var lastId=null, lastEx=null;
-
-function gc(){
-  var s=st[cur],aw=0,hw=0,ew=0;
-  ['a1','a2','a3'].forEach(function(k){if(s[k])aw++;});
-  ['h1','h2','h3'].forEach(function(k){if(s[k])hw++;});
-  ['e1','e2','e3'].forEach(function(k){if(s[k])ew++;});
-  return{aw:aw,hw:hw,ew:ew,ap:Math.round(aw/3*100),hp:Math.round(hw/3*100),ep:Math.round(ew/3*100)};
-}
-
-function rg(h,o){var r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);return'rgba('+r+','+g+','+b+','+o+')';}
-
-function render(){
-  var c=gc(),av=[c.aw>0,c.hw>0,c.ew>0].filter(function(x){return x;}).length;
-  var ao=0.15+c.ap/100*0.75,ho=0.15+c.hp/100*0.75,eo=0.15+c.ep/100*0.75;
-  document.getElementById('ra').setAttribute('fill',rg('#dc2626',0.04+ao*0.15));
-  document.getElementById('ra').setAttribute('stroke',rg('#dc2626',0.25+ao*0.75));
-  document.getElementById('rh').setAttribute('fill',rg('#1d4ed8',0.04+ho*0.15));
-  document.getElementById('rh').setAttribute('stroke',rg('#1d4ed8',0.25+ho*0.75));
-  document.getElementById('re').setAttribute('fill',rg('#16a34a',0.04+eo*0.15));
-  document.getElementById('re').setAttribute('stroke',rg('#16a34a',0.25+eo*0.75));
-  document.getElementById('ga').style.transform='scale('+(1+c.ap/100*0.14)+')';
-  document.getElementById('gh').style.transform='scale('+(1+c.hp/100*0.14)+')';
-  document.getElementById('ge').style.transform='scale('+(1+c.ep/100*0.14)+')';
-  var lah=c.aw>0&&c.hw>0,lae=c.aw>0&&c.ew>0,lhe=c.hw>0&&c.ew>0;
-  document.getElementById('lah').setAttribute('stroke',lah?rg('#7c3aed',0.7):'#e5e7eb');
-  document.getElementById('lah').setAttribute('stroke-width',lah?(2+av*1.2):1.5);
-  document.getElementById('lae').setAttribute('stroke',lae?rg('#0891b2',0.7):'#e5e7eb');
-  document.getElementById('lae').setAttribute('stroke-width',lae?(2+av*1.2):1.5);
-  document.getElementById('lhe').setAttribute('stroke',lhe?rg('#059669',0.7):'#e5e7eb');
-  document.getElementById('lhe').setAttribute('stroke-width',lhe?(2+av*1.2):1.5);
-  document.getElementById('ba').style.width=c.ap+'%';
-  document.getElementById('bh').style.width=c.hp+'%';
-  document.getElementById('be').style.width=c.ep+'%';
-  document.getElementById('pa').textContent=c.aw+'/3';
-  document.getElementById('ph').textContent=c.hw+'/3';
-  document.getElementById('pe').textContent=c.ew+'/3';
-  var bdg=document.getElementById('bdg');
-  if(av===0){bdg.textContent='';bdg.style.background='transparent';}
-  else if(av===1){bdg.textContent='Single vertex active';bdg.style.background='#f3f4f6';bdg.style.color='#6b7280';}
-  else if(av===2){bdg.textContent='\u26a0 Two-way interaction';bdg.style.background='#fffbeb';bdg.style.color='#92400e';}
-  else{bdg.textContent='\u26a1 Three-way interaction \u2014 multiplicative risk';bdg.style.background='#fff1f2';bdg.style.color='#9f1239';}
-  var d=detail[cur],aA=c.aw>0,hA=c.hw>0,eA=c.ew>0,dbox=document.getElementById('dbox');
-  if(av===0)dbox.textContent='Toggle factors to see how each element contributes.';
-  else if(av===3)dbox.textContent=d.all;
-  else if(aA&&!hA&&!eA)dbox.textContent=d.a;
-  else if(!aA&&hA&&!eA)dbox.textContent=d.h;
-  else if(!aA&&!hA&&eA)dbox.textContent=d.e;
-  else dbox.textContent=d.m;
-  var ebox=document.getElementById('ebox');
-  if(lastId&&lastEx&&st[cur][lastId]){ebox.style.display='block';ebox.textContent=lastEx;}
-  else{ebox.style.display='none';}
-}
-
-function tog(disease, id, el, expl){
-  if(disease!==cur)return;
-  st[cur][id]=el.checked;
-  if(el.checked){lastId=id;lastEx=expl;}
-  else if(lastId===id){lastId=null;lastEx=null;}
-  render();
-}
-
-function sw(key,btn){
-  document.getElementById('factors-'+cur).classList.add('hidden');
-  cur=key;
-  lastId=null;lastEx=null;
-  document.getElementById('factors-'+key).classList.remove('hidden');
-  document.querySelectorAll('.dtab').forEach(function(t){t.classList.remove('on');});
-  btn.classList.add('on');
-  render();
-}
-
-function rst(){
-  st[cur]={};lastId=null;lastEx=null;
-  document.querySelectorAll('#factors-'+cur+' input[type=checkbox]').forEach(function(cb){cb.checked=false;});
-  render();
-}
-
-render();
-</script>
-""", height=760, scrolling=False)
+""", height=450, scrolling=False)
 
     elif found_section == "2️⃣ Natural History & Levels of Prevention":
         st.subheader("Natural History of Disease")

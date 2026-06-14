@@ -5014,7 +5014,7 @@ The crude estimate was being pulled toward the null by a confounder that worked 
 </svg>"""
         _ctrl_flow_comp.html(f"<div style='font-family:sans-serif;'>{ctrl_flow_svg}</div>", height=440, scrolling=False)
 
-        st.markdown("Below, each method is detailed with **how it works**, its **strengths**, and its **limitations**.")
+        st.markdown("Design-stage methods attempt to build comparability before data collection, whereas analysis-stage methods attempt to recover comparability after data collection.")
         st.markdown("")
 
         col1, col2 = st.columns(2)
@@ -5032,25 +5032,31 @@ The crude estimate was being pulled toward the null by a confounder that worked 
                 """)
             with st.expander("Restriction"):
                 st.markdown("""
-**How:** Limit the study population to a single level of the confounder. E.g., study only non-smokers to eliminate smoking as a confounder.
+**When:** Design stage
 
-**Strength:** Simple; prevents confounding completely for that variable.
+**How:** Limit study eligibility so everyone has the same value of a potential confounder. For example, enrolling only non-smokers removes smoking as a source of confounding.
 
-**Limitation:** Reduces sample size; limits generalizability; can't control for confounders you haven't thought of; **and you cannot study the restricted variable as an exposure or effect modifier** (if you restrict to non-smokers, you cannot examine smoking effects in your data).
+**Strength:** Simple; prevents confounding by the restricted variable.
+
+**Limitation:** Cannot evaluate the effect of the restricted variable; may reduce sample size and generalizability.
                 """)
             with st.expander("Matching"):
                 st.markdown("""
-**How:** Each case is paired with one or more controls who have the same value of the confounder (e.g., same age, same sex).
+**When:** Design stage (most common in case-control studies)
 
-**Strength:** Controls confounding by design; increases efficiency in case-control studies.
+**How:** Select unexposed participants so that the distribution of one or more confounders is similar to the exposed group. For example, matching participants on age and sex.
 
-**Limitation:** Can't match on many variables; **matching at the design stage does not automatically eliminate confounding — the matched design must be analyzed with matched methods** (conditional logistic regression for matched case-control studies); can't study matched variables as exposures; overmatching possible.
+**Strength:** Ensures comparability on important confounders; useful when confounders are strongly related to the outcome.
+
+**Limitation:** Only controls matched variables; can be difficult to perform; matched variables cannot be evaluated as risk factors in the matched analysis.
                 """)
 
         with col2:
             st.markdown("#### 📊 Analysis Stage")
             with st.expander("Stratification (Mantel-Haenszel)", expanded=True):
                 st.markdown("""
+**When:** Analysis stage
+
 **How:** Stratify the analysis by levels of the confounder. Calculate stratum-specific RRs/ORs. If they're similar across strata, pool them using the Mantel-Haenszel method to get an adjusted estimate.
 
 **Strength:** Transparent; lets you see stratum-specific effects; reveals effect modification.
@@ -5059,26 +5065,26 @@ The crude estimate was being pulled toward the null by a confounder that worked 
                 """)
             with st.expander("Multivariable Regression"):
                 st.markdown("""
-**How:** Include confounders as covariates in a regression model (logistic, Poisson, Cox). The coefficient for the exposure is adjusted for all covariates simultaneously.
+**When:** Analysis stage
 
-**Plain language:** Regression statistically "holds other variables constant" while estimating the exposure-outcome association — it asks, *if two people were identical on all the covariates but differed in exposure, how different would their outcome be?*
+**How:** Include exposure and potential confounders in the same statistical model, producing an estimate of the exposure effect while holding other variables constant.
 
-**Strength:** Can control many confounders at once; flexible.
+**Strength:** Can adjust for many confounders simultaneously.
 
-**Limitation:** Requires assumptions (linearity, no multicollinearity); residual confounding if variables are measured poorly; more of a black box than stratification.
+**Limitation:** Only controls measured confounders and depends on correct model specification.
                 """)
             with st.expander("Propensity Score Methods"):
                 st.markdown("""
-**How:** Estimate each subject's probability of being exposed given their confounders (the propensity score). Match, weight, or stratify by propensity score.
+**When:** Analysis stage (observational studies)
 
-**Plain language:** The goal is to create exposed and unexposed groups that *look more comparable* on measured characteristics — mimicking what randomization does naturally in an RCT.
+**How:** Estimate each participant's probability of exposure based on observed covariates. The propensity score can then be used for matching, stratification, weighting, or covariate adjustment.
 
-**Strength:** Can handle many confounders; creates balance similar to randomization for measured variables.
+**Strength:** Can create exposed and unexposed groups that are more comparable on measured characteristics.
 
-**Limitation:** Cannot control for unmeasured confounders; complex; less intuitive than stratification.
+**Limitation:** Cannot control unmeasured confounders and requires careful assessment of balance after adjustment.
                 """)
 
-        st.info("**Residual confounding:** Even after adjustment, if confounders are measured imperfectly, some confounding remains. This is almost always present in observational studies to some degree.")
+        st.info("**Residual confounding:** Even after adjustment, some confounding may remain because confounders were measured imperfectly, categorized too broadly, omitted from the study, or entirely unknown. Residual confounding is a persistent concern in observational research.")
 
     elif conf_section == "3️⃣ Effect Modification":
         st.subheader("Effect Modification (Interaction)")

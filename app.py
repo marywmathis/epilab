@@ -5086,6 +5086,8 @@ The crude estimate was being pulled toward the null by a confounder that worked 
 
         st.info("**Residual confounding:** Even after adjustment, some confounding may remain because confounders were measured imperfectly, categorized coarsely, omitted from the study, or entirely unknown. Residual confounding is especially important in observational studies because no analytic method can fully adjust for variables that were not measured.")
 
+        st.success("💡 **Key Idea:** Strong epidemiologists think structurally before computing. Before choosing a statistical adjustment method, first identify the causal structure of the problem and determine which variables are potential confounders, mediators, colliders, or effect modifiers.")
+
         st.markdown("*Unlike confounding, which is a bias that should be controlled, effect modification is a real phenomenon that should be identified and reported.*")
 
     elif conf_section == "3️⃣ Effect Modification":

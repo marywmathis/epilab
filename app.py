@@ -4961,7 +4961,7 @@ The crude estimate was being pulled toward the null by a confounder that worked 
 
   <!-- Top: Confounder present -->
   <rect x="280" y="15" width="200" height="44" rx="8" fill="#fef3c7" stroke="#d97706" stroke-width="2"/>
-  <text x="380" y="35" font-size="13" font-weight="700" fill="#92400e" text-anchor="middle">Confounder Present</text>
+  <text x="380" y="35" font-size="13" font-weight="700" fill="#92400e" text-anchor="middle">Potential Confounding</text>
   <text x="380" y="51" font-size="10" fill="#78350f" text-anchor="middle">(threat to comparability)</text>
 
   <!-- Arrows down from top to two branches -->
@@ -4970,18 +4970,19 @@ The crude estimate was being pulled toward the null by a confounder that worked 
 
   <!-- Left branch header: Design Stage -->
   <rect x="40" y="90" width="280" height="40" rx="6" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
-  <text x="180" y="108" font-size="13" font-weight="700" fill="#1e3a8a" text-anchor="middle">🔧 DESIGN STAGE — Prevent</text>
+  <text x="180" y="108" font-size="13" font-weight="700" fill="#1e3a8a" text-anchor="middle">🔧 DESIGN STAGE — Control</text>
   <text x="180" y="122" font-size="10" fill="#1e3a8a" text-anchor="middle">Build comparability before data collection</text>
 
   <!-- Left branch methods -->
-  <rect x="55" y="145" width="250" height="32" rx="5" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
-  <text x="180" y="166" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Randomization (RCTs only)</text>
+  <rect x="55" y="145" width="250" height="44" rx="5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="2"/>
+  <text x="180" y="163" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Randomization (RCTs only)</text>
+  <text x="180" y="179" font-size="9" fill="#1e3a8a" text-anchor="middle">balances known &amp; unknown confounders</text>
 
-  <rect x="55" y="185" width="250" height="32" rx="5" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
-  <text x="180" y="206" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Restriction</text>
+  <rect x="55" y="197" width="250" height="32" rx="5" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="180" y="218" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Restriction</text>
 
-  <rect x="55" y="225" width="250" height="32" rx="5" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
-  <text x="180" y="246" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Matching</text>
+  <rect x="55" y="237" width="250" height="32" rx="5" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="180" y="258" font-size="12" font-weight="600" fill="#1e40af" text-anchor="middle">Matching</text>
 
   <!-- Right branch header: Analysis Stage -->
   <rect x="440" y="90" width="280" height="40" rx="6" fill="#dcfce7" stroke="#15803d" stroke-width="2"/>
@@ -4999,12 +5000,12 @@ The crude estimate was being pulled toward the null by a confounder that worked 
   <text x="580" y="246" font-size="12" font-weight="600" fill="#15803d" text-anchor="middle">Propensity Score Methods</text>
 
   <!-- Converging arrows to "Adjusted Estimate" -->
-  <line x1="180" y1="257" x2="320" y2="310" stroke="#4b5563" stroke-width="2" marker-end="url(#cf_arrow)"/>
+  <line x1="180" y1="269" x2="320" y2="310" stroke="#4b5563" stroke-width="2" marker-end="url(#cf_arrow)"/>
   <line x1="580" y1="257" x2="440" y2="310" stroke="#4b5563" stroke-width="2" marker-end="url(#cf_arrow)"/>
 
   <!-- Adjusted estimate box -->
   <rect x="260" y="312" width="240" height="44" rx="8" fill="#e0e7ff" stroke="#4f46e5" stroke-width="2"/>
-  <text x="380" y="332" font-size="13" font-weight="700" fill="#3730a3" text-anchor="middle">More Comparable Estimate</text>
+  <text x="380" y="332" font-size="13" font-weight="700" fill="#3730a3" text-anchor="middle">Less Confounded Estimate</text>
   <text x="380" y="348" font-size="10" fill="#312e81" text-anchor="middle">(closer to the causal effect)</text>
 
   <!-- Caveat -->

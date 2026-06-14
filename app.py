@@ -5026,7 +5026,7 @@ The crude estimate was being pulled toward the null by a confounder that worked 
 
 **How:** Random assignment distributes confounders — both measured and unmeasured — across groups by chance. **In large samples**, randomization tends to balance groups on all characteristics, both known and unknown. In smaller trials, chance imbalance can still occur, which is why baseline characteristics ("Table 1") are checked and why stratified or block randomization is often used.
 
-**Strength:** The only method that controls for confounders you don't even know about.
+**Strength:** The only method that can balance both known and unknown confounders through the study design.
 
 **Limitation:** Only available in experimental studies; not guaranteed to balance in small trials.
                 """)
